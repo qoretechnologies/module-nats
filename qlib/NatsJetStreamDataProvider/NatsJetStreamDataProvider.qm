@@ -1,0 +1,239 @@
+# -*- mode: qore; indent-tabs-mode: nil -*-
+#! @file NatsJetStreamDataProvider.qm Qore NATS JetStream data provider module
+
+/*  NatsJetStreamDataProvider.qm Copyright 2026 Qore Technologies, s.r.o.
+
+    Permission is hereby granted, free of charge, to any person obtaining a
+    copy of this software and associated documentation files (the "Software"),
+    to deal in the Software without restriction, including without limitation
+    the rights to use, copy, modify, merge, publish, distribute, sublicense,
+    and/or sell copies of the Software, and to permit persons to whom the
+    Software is furnished to do so, subject to the following conditions:
+
+    The above copyright notice and this permission notice shall be included in
+    all copies or substantial portions of the Software.
+
+    THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+    IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+    FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+    AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+    DEALINGS IN THE SOFTWARE.
+*/
+
+%modern
+%allow-weak-references
+
+%requires(reexport) DataProvider
+%requires(reexport) ConnectionProvider
+%requires nats
+%requires NatsUtil
+
+module NatsJetStreamDataProvider {
+    version = "1.0";
+    desc = "User module providing a data provider API for NATS JetStream";
+    author = "Qore Technologies, s.r.o.";
+    url = "https://github.com/qoretechnologies/module-nats";
+    license = "MIT";
+    init = sub () {
+        # Register data provider factory
+        DataProvider::registerFactory(new NatsJetStreamDataProviderFactory());
+
+        # Register app in action catalog
+        DataProviderActionCatalog::registerApp(<DataProviderAppInfo>{
+            "name": NatsJetStreamDataProvider::AppName,
+            "display_name": "NATS JetStream",
+            "short_desc": "NATS JetStream streaming and KV store",
+            "desc": "NATS JetStream provides persistent messaging with stream management, "
+                "consumer management, and key-value store capabilities",
+            "scheme": "nats",
+            "groups": (DataProvider::AppGroup::ApiIntegration,),
+            "logo": NatsJetStreamLogo,
+            "logo_mime_type": MimeTypeSvg,
+            "logo_file_name": "nats-logo.svg",
+        });
+
+        # Register actions for streams
+        DataProviderActionCatalog::registerAction(<DataProviderActionInfo>{
+            "app": NatsJetStreamDataProvider::AppName,
+            "path": "/streams/create",
+            "action": "stream-create",
+            "display_name": "Create Stream",
+            "short_desc": "Create a JetStream stream",
+            "desc": "Creates a new JetStream stream with the given configuration",
+            "action_code": DPAT_API,
+        });
+        DataProviderActionCatalog::registerAction(<DataProviderActionInfo>{
+            "app": NatsJetStreamDataProvider::AppName,
+            "path": "/streams/delete",
+            "action": "stream-delete",
+            "display_name": "Delete Stream",
+            "short_desc": "Delete a JetStream stream",
+            "desc": "Deletes a JetStream stream",
+            "action_code": DPAT_API,
+        });
+        DataProviderActionCatalog::registerAction(<DataProviderActionInfo>{
+            "app": NatsJetStreamDataProvider::AppName,
+            "path": "/streams/info",
+            "action": "stream-info",
+            "display_name": "Stream Info",
+            "short_desc": "Get JetStream stream information",
+            "desc": "Gets information about a JetStream stream",
+            "action_code": DPAT_API,
+        });
+        DataProviderActionCatalog::registerAction(<DataProviderActionInfo>{
+            "app": NatsJetStreamDataProvider::AppName,
+            "path": "/streams/purge",
+            "action": "stream-purge",
+            "display_name": "Purge Stream",
+            "short_desc": "Purge all messages from a stream",
+            "desc": "Purges all messages from a JetStream stream",
+            "action_code": DPAT_API,
+        });
+
+        # Register actions for consumers
+        DataProviderActionCatalog::registerAction(<DataProviderActionInfo>{
+            "app": NatsJetStreamDataProvider::AppName,
+            "path": "/consumers/create",
+            "action": "consumer-create",
+            "display_name": "Create Consumer",
+            "short_desc": "Create a JetStream consumer",
+            "desc": "Creates a new consumer on a JetStream stream",
+            "action_code": DPAT_API,
+        });
+        DataProviderActionCatalog::registerAction(<DataProviderActionInfo>{
+            "app": NatsJetStreamDataProvider::AppName,
+            "path": "/consumers/delete",
+            "action": "consumer-delete",
+            "display_name": "Delete Consumer",
+            "short_desc": "Delete a JetStream consumer",
+            "desc": "Deletes a consumer from a JetStream stream",
+            "action_code": DPAT_API,
+        });
+        DataProviderActionCatalog::registerAction(<DataProviderActionInfo>{
+            "app": NatsJetStreamDataProvider::AppName,
+            "path": "/consumers/info",
+            "action": "consumer-info",
+            "display_name": "Consumer Info",
+            "short_desc": "Get JetStream consumer information",
+            "desc": "Gets information about a JetStream consumer",
+            "action_code": DPAT_API,
+        });
+
+        # Register publish action
+        DataProviderActionCatalog::registerAction(<DataProviderActionInfo>{
+            "app": NatsJetStreamDataProvider::AppName,
+            "path": "/publish",
+            "action": "js-publish",
+            "display_name": "JetStream Publish",
+            "short_desc": "Publish with JetStream acknowledgment",
+            "desc": "Publishes a message to a JetStream subject and returns the publish acknowledgment",
+            "action_code": DPAT_API,
+        });
+
+        # Register KV actions
+        DataProviderActionCatalog::registerAction(<DataProviderActionInfo>{
+            "app": NatsJetStreamDataProvider::AppName,
+            "path": "/kv/put",
+            "action": "kv-put",
+            "display_name": "KV Put",
+            "short_desc": "Put a value in a KV bucket",
+            "desc": "Puts a value for a key in a NATS JetStream Key-Value store",
+            "action_code": DPAT_API,
+        });
+        DataProviderActionCatalog::registerAction(<DataProviderActionInfo>{
+            "app": NatsJetStreamDataProvider::AppName,
+            "path": "/kv/get",
+            "action": "kv-get",
+            "display_name": "KV Get",
+            "short_desc": "Get a value from a KV bucket",
+            "desc": "Gets a value for a key from a NATS JetStream Key-Value store",
+            "action_code": DPAT_API,
+        });
+        DataProviderActionCatalog::registerAction(<DataProviderActionInfo>{
+            "app": NatsJetStreamDataProvider::AppName,
+            "path": "/kv/delete",
+            "action": "kv-delete",
+            "display_name": "KV Delete",
+            "short_desc": "Delete a key from a KV bucket",
+            "desc": "Deletes a key from a NATS JetStream Key-Value store",
+            "action_code": DPAT_API,
+        });
+        DataProviderActionCatalog::registerAction(<DataProviderActionInfo>{
+            "app": NatsJetStreamDataProvider::AppName,
+            "path": "/kv/keys",
+            "action": "kv-keys",
+            "display_name": "KV Keys",
+            "short_desc": "List keys in a KV bucket",
+            "desc": "Lists all keys in a NATS JetStream Key-Value store bucket",
+            "action_code": DPAT_API,
+        });
+        DataProviderActionCatalog::registerAction(<DataProviderActionInfo>{
+            "app": NatsJetStreamDataProvider::AppName,
+            "path": "/kv/history",
+            "action": "kv-history",
+            "display_name": "KV History",
+            "short_desc": "Get revision history for a KV key",
+            "desc": "Gets the revision history for a key in a NATS JetStream Key-Value store",
+            "action_code": DPAT_API,
+        });
+    };
+}
+
+/** @mainpage NatsJetStreamDataProvider Module
+
+    @tableofcontents
+
+    @section natsjetstreamdataproviderintro NatsJetStreamDataProvider Module Introduction
+
+    The %NatsJetStreamDataProvider module integrates NATS JetStream into Qore's data provider
+    framework, enabling persistent messaging with stream management, consumer management,
+    and key-value store capabilities through a uniform API.
+
+    Key capabilities:
+    - <b>Streams</b>: create, delete, get info, and purge JetStream streams
+    - <b>Consumers</b>: create, delete, and get info on JetStream consumers
+    - <b>Publish</b>: publish messages with JetStream acknowledgment
+    - <b>Subscribe</b>: push-based observable event delivery from JetStream
+    - <b>Pull Subscribe</b>: pull-based observable event delivery from JetStream
+    - <b>Key-Value</b>: put, get, delete, list keys, and get history for KV store entries
+
+    @subsection natsjetstreamdataprovider_hierarchy Provider Hierarchy
+
+    @verbatim
+<root>
+  ├── streams
+  │   ├── create     (NatsJSStreamCreateDataProvider — DPAT_API)
+  │   ├── delete     (NatsJSStreamDeleteDataProvider — DPAT_API)
+  │   ├── info       (NatsJSStreamInfoDataProvider — DPAT_API)
+  │   └── purge      (NatsJSStreamPurgeDataProvider — DPAT_API)
+  ├── consumers
+  │   ├── create     (NatsJSConsumerCreateDataProvider — DPAT_API)
+  │   ├── delete     (NatsJSConsumerDeleteDataProvider — DPAT_API)
+  │   └── info       (NatsJSConsumerInfoDataProvider — DPAT_API)
+  ├── publish        (NatsJSPublishDataProvider — DPAT_API)
+  ├── subscribe      (NatsJSSubscribeEventDataProvider — DPAT_EVENT)
+  ├── pull-subscribe (NatsJSPullSubscribeEventDataProvider — DPAT_EVENT)
+  └── kv
+      ├── put        (NatsJSKVPutDataProvider — DPAT_API)
+      ├── get        (NatsJSKVGetDataProvider — DPAT_API)
+      ├── delete     (NatsJSKVDeleteDataProvider — DPAT_API)
+      ├── keys       (NatsJSKVKeysDataProvider — DPAT_API)
+      └── history    (NatsJSKVHistoryDataProvider — DPAT_API)
+    @endverbatim
+
+    @section natsjetstreamdataprovider_relnotes Release Notes
+
+    @subsection natsjetstreamdataprovider_v1_0 NatsJetStreamDataProvider v1.0
+    - initial release
+*/
+
+#! Contains all public definitions in the NatsJetStreamDataProvider module
+public namespace NatsJetStreamDataProvider {
+    #! Application name for the data provider action catalog
+    public const AppName = "NATSJetStream";
+
+    #! NATS JetStream logo in SVG format for the action catalog
+    public const NatsJetStreamLogo = File::readTextFile(get_script_dir() + "/nats-logo.svg");
+}

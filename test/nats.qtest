@@ -1,0 +1,658 @@
+#!/usr/bin/env qore
+# -*- mode: qore; indent-tabs-mode: nil -*-
+
+/*
+    Copyright (C) 2026 Qore Technologies, s.r.o., all rights reserved
+
+    Permission is hereby granted, free of charge, to any person obtaining a
+    copy of this software and associated documentation files (the "Software"),
+    to deal in the Software without restriction, including without limitation
+    the rights to use, copy, modify, merge, publish, distribute, sublicense,
+    and/or sell copies of the Software, and to permit persons to whom the
+    Software is furnished to do so, subject to the following conditions:
+
+    The above copyright notice and this permission notice shall be included in
+    all copies or substantial portions of the Software.
+
+    THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+    IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+    FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+    AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+    DEALINGS IN THE SOFTWARE.
+
+    NATS module core test suite
+*/
+
+%modern
+
+%requires QUnit
+%requires nats
+%requires NatsUtil
+
+%exec-class NatsTest
+
+public class NatsTest inherits QUnit::Test {
+    private {
+        int port;
+        string url;
+        *int nats_pid;
+        string pid_file;
+    }
+
+    constructor() : QUnit::Test("NatsTest", "1.0") {
+        # Connection tests
+        addTestCase("connection test", \connectionTest());
+        addTestCase("connection options test", \connectionOptionsTest());
+        addTestCase("connection status test", \connectionStatusTest());
+
+        # Pub/sub tests
+        addTestCase("publish subscribe test", \pubSubTest());
+        addTestCase("publish subscribe wildcard star test", \wildcardStarTest());
+        addTestCase("publish subscribe wildcard gt test", \wildcardGtTest());
+        addTestCase("empty payload test", \emptyPayloadTest());
+        addTestCase("large message test", \largeMessageTest());
+        addTestCase("unicode test", \unicodeTest());
+        addTestCase("headers test", \headersTest());
+
+        # Request/reply tests
+        addTestCase("request reply test", \requestReplyTest());
+        addTestCase("request timeout test", \requestTimeoutTest());
+
+        # Queue group tests
+        addTestCase("queue group test", \queueGroupTest());
+
+        # Subscription management tests
+        addTestCase("unsubscribe test", \unsubscribeTest());
+        addTestCase("auto unsubscribe test", \autoUnsubscribeTest());
+        addTestCase("drain test", \drainTest());
+
+        # Connection lifecycle tests
+        addTestCase("connection drain test", \connectionDrainTest());
+        addTestCase("connection close test", \connectionCloseTest());
+        addTestCase("flush test", \flushTest());
+
+        # NatsUtil tests
+        addTestCase("channel subscription test", \channelSubscriptionTest());
+        addTestCase("channel recv timeout test", \channelRecvTimeoutTest());
+        addTestCase("callback subscription test", \callbackSubscriptionTest());
+        addTestCase("multiple subscriptions test", \multipleSubscriptionsTest());
+
+        # NatsHelper tests
+        addTestCase("subject validation test", \subjectValidationTest());
+        addTestCase("url parsing test", \urlParsingTest());
+
+        # Negative tests
+        addTestCase("publish on closed connection test", \publishClosedTest());
+        addTestCase("invalid subject test", \invalidSubjectTest());
+        addTestCase("double close test", \doubleCloseTest());
+
+        set_return_value(main());
+    }
+
+    private startServer(*list<string> extra_args) {
+        port = 10000 + (rand() % 50000);
+        pid_file = sprintf("/tmp/nats-test-%d.pid", port);
+        list<string> args = ("nats-server", "-p", string(port), "-a", "127.0.0.1",
+            "--pid", pid_file);
+        if (extra_args) {
+            args += extra_args;
+        }
+        string cmd = foldl $1 + " " + $2, args;
+        cmd += " &";
+        system(cmd);
+        # Wait for pid file
+        for (int i = 0; i < 50; ++i) {
+            if (is_file(pid_file)) {
+                nats_pid = trim(ReadOnlyFile::readTextFile(pid_file)).toInt();
+                break;
+            }
+            usleep(100000);
+        }
+        if (!nats_pid) {
+            throw "NATS-TEST-ERROR", sprintf("nats-server failed to start on port %d", port);
+        }
+        url = sprintf("nats://127.0.0.1:%d", port);
+    }
+
+    private stopServer() {
+        if (nats_pid) {
+            kill(nats_pid, SIGTERM);
+            # Wait for process to exit
+            for (int i = 0; i < 50; ++i) {
+                if (!is_file(sprintf("/proc/%d/status", nats_pid))) {
+                    break;
+                }
+                usleep(100000);
+            }
+            nats_pid = NOTHING;
+        }
+        if (is_file(pid_file)) {
+            unlink(pid_file);
+        }
+    }
+
+    globalSetUp() {
+        startServer();
+    }
+
+    globalTearDown() {
+        stopServer();
+    }
+
+    # --- Connection tests ---
+
+    connectionTest() {
+        NatsConnection conn(url);
+        assertTrue(conn.isConnected());
+        conn.close();
+    }
+
+    connectionOptionsTest() {
+        NatsConnection conn(<NatsConnectionOptions>{
+            "url": url,
+            "name": "test-client",
+        });
+        assertTrue(conn.isConnected());
+        conn.close();
+    }
+
+    connectionStatusTest() {
+        NatsConnection conn(url);
+        # Status should be a valid integer when connected
+        int st = conn.status();
+        assertTrue(st >= 0);
+        assertTrue(conn.isConnected());
+        conn.close();
+        assertFalse(conn.isConnected());
+    }
+
+    # --- Pub/sub tests ---
+
+    pubSubTest() {
+        NatsConnection conn(url);
+        NatsSubscription sub = conn.subscribe("test.pubsub");
+
+        binary payload = binary("hello nats");
+        conn.publish("test.pubsub", payload);
+        conn.flush();
+
+        *hash<NatsMsgInfo> msg = sub.nextMsg(5s);
+        assertEq(True, exists msg);
+        assertEq("test.pubsub", msg.subject);
+        assertEq(payload, msg.data);
+
+        sub.unsubscribe();
+        conn.close();
+    }
+
+    wildcardStarTest() {
+        NatsConnection conn(url);
+        NatsSubscription sub = conn.subscribe("wc.*.test");
+
+        conn.publish("wc.foo.test", binary("star"));
+        conn.flush();
+
+        *hash<NatsMsgInfo> msg = sub.nextMsg(5s);
+        assertEq(True, exists msg);
+        assertEq("wc.foo.test", msg.subject);
+        assertEq(binary("star"), msg.data);
+
+        # Should not match more than one token
+        conn.publish("wc.foo.bar.test", binary("no-match"));
+        conn.flush();
+
+        *hash<NatsMsgInfo> msg2 = sub.nextMsg(1s);
+        assertNothing(msg2);
+
+        sub.unsubscribe();
+        conn.close();
+    }
+
+    wildcardGtTest() {
+        NatsConnection conn(url);
+        NatsSubscription sub = conn.subscribe("gt.>");
+
+        conn.publish("gt.foo.bar.baz", binary("gt-match"));
+        conn.flush();
+
+        *hash<NatsMsgInfo> msg = sub.nextMsg(5s);
+        assertEq(True, exists msg);
+        assertEq("gt.foo.bar.baz", msg.subject);
+        assertEq(binary("gt-match"), msg.data);
+
+        sub.unsubscribe();
+        conn.close();
+    }
+
+    emptyPayloadTest() {
+        NatsConnection conn(url);
+        NatsSubscription sub = conn.subscribe("test.empty");
+
+        conn.publish("test.empty");
+        conn.flush();
+
+        *hash<NatsMsgInfo> msg = sub.nextMsg(5s);
+        assertEq(True, exists msg);
+        assertEq("test.empty", msg.subject);
+        # Empty payload: data should be NOTHING or empty binary
+        assertTrue(!msg.data || msg.data.size() == 0);
+
+        sub.unsubscribe();
+        conn.close();
+    }
+
+    largeMessageTest() {
+        NatsConnection conn(url);
+        NatsSubscription sub = conn.subscribe("test.large");
+
+        # Create a 1MB payload
+        binary payload = binary();
+        string chunk = strmul("x", 1024);
+        for (int i = 0; i < 1024; ++i) {
+            payload += binary(chunk);
+        }
+        assertEq(1024 * 1024, payload.size());
+
+        conn.publish("test.large", payload);
+        conn.flush();
+
+        *hash<NatsMsgInfo> msg = sub.nextMsg(10s);
+        assertEq(True, exists msg);
+        assertEq(payload.size(), msg.data.size());
+        assertEq(payload, msg.data);
+
+        sub.unsubscribe();
+        conn.close();
+    }
+
+    unicodeTest() {
+        NatsConnection conn(url);
+        NatsSubscription sub = conn.subscribe("test.unicode");
+
+        string text = "Hello \u4e16\u754c \u00e9\u00e8\u00ea \u00fc\u00f6\u00e4";
+        conn.publishString("test.unicode", text);
+        conn.flush();
+
+        *hash<NatsMsgInfo> msg = sub.nextMsg(5s);
+        assertEq(True, exists msg);
+        assertEq(text, msg.data.toString());
+
+        sub.unsubscribe();
+        conn.close();
+    }
+
+    headersTest() {
+        NatsConnection conn(url);
+        NatsSubscription sub = conn.subscribe("test.headers");
+
+        hash<string, string> hdrs = {
+            "Content-Type": "application/json",
+            "X-Custom": "my-value",
+        };
+        conn.publishMsg("test.headers", binary("with-headers"), hdrs);
+        conn.flush();
+
+        *hash<NatsMsgInfo> msg = sub.nextMsg(5s);
+        assertEq(True, exists msg);
+        assertEq("test.headers", msg.subject);
+        assertEq(binary("with-headers"), msg.data);
+        assertEq(True, exists msg.headers);
+        assertEq("application/json", msg.headers."Content-Type");
+        assertEq("my-value", msg.headers."X-Custom");
+
+        sub.unsubscribe();
+        conn.close();
+    }
+
+    # --- Request/reply tests ---
+
+    requestReplyTest() {
+        NatsConnection conn(url);
+
+        # Set up a responder
+        NatsSubscription sub = conn.subscribe("test.echo");
+        Counter cnt(1);
+        background requestResponder(sub, cnt);
+
+        # Give the background thread a moment to start receiving
+        usleep(100000);
+
+        hash<NatsMsgInfo> reply = conn.request("test.echo", binary("ping"), 5s);
+        assertEq(True, exists reply);
+        assertEq(binary("pong"), reply.data);
+
+        sub.unsubscribe();
+        cnt.waitForZero();
+        conn.close();
+    }
+
+    private requestResponder(NatsSubscription sub, Counter cnt) {
+        on_exit cnt.dec();
+
+        *hash<NatsMsgInfo> msg = sub.nextMsg(5s);
+        if (msg && msg.reply) {
+            NatsConnection conn(url);
+            conn.publish(msg.reply, binary("pong"));
+            conn.flush();
+            conn.close();
+        }
+    }
+
+    requestTimeoutTest() {
+        NatsConnection conn(url);
+
+        # Request with no responder should time out
+        assertThrows("NATS-TIMEOUT-ERROR", sub () {
+            conn.request("test.no-responder", binary("hello"), 500ms);
+        });
+
+        conn.close();
+    }
+
+    # --- Queue group tests ---
+
+    queueGroupTest() {
+        NatsConnection conn(url);
+
+        NatsSubscription sub1 = conn.queueSubscribe("test.queue", "workers");
+        NatsSubscription sub2 = conn.queueSubscribe("test.queue", "workers");
+
+        int count = 10;
+        for (int i = 0; i < count; ++i) {
+            conn.publish("test.queue", binary(string(i)));
+        }
+        conn.flush();
+
+        int received1 = 0;
+        int received2 = 0;
+
+        for (int i = 0; i < count; ++i) {
+            # Try both subscribers
+            *hash<NatsMsgInfo> msg1 = sub1.nextMsg(1s);
+            if (msg1) {
+                ++received1;
+            }
+            *hash<NatsMsgInfo> msg2 = sub2.nextMsg(1s);
+            if (msg2) {
+                ++received2;
+            }
+        }
+
+        # Total should be count; distribution should be across both
+        assertEq(count, received1 + received2);
+
+        sub1.unsubscribe();
+        sub2.unsubscribe();
+        conn.close();
+    }
+
+    # --- Subscription management tests ---
+
+    unsubscribeTest() {
+        NatsConnection conn(url);
+        NatsSubscription sub = conn.subscribe("test.unsub");
+
+        conn.publish("test.unsub", binary("before"));
+        conn.flush();
+
+        *hash<NatsMsgInfo> msg = sub.nextMsg(5s);
+        assertEq(True, exists msg);
+
+        sub.unsubscribe();
+
+        conn.publish("test.unsub", binary("after"));
+        conn.flush();
+
+        # After unsubscribe, nextMsg should return NOTHING or throw
+        # The subscription is invalid so nextMsg may throw
+        bool got_nothing = False;
+        try {
+            *hash<NatsMsgInfo> msg2 = sub.nextMsg(500ms);
+            got_nothing = !exists msg2;
+        } catch (hash<ExceptionInfo> ex) {
+            # Expected: subscription is invalid after unsubscribe
+            got_nothing = True;
+        }
+        assertTrue(got_nothing);
+
+        conn.close();
+    }
+
+    autoUnsubscribeTest() {
+        NatsConnection conn(url);
+        NatsSubscription sub = conn.subscribe("test.autounsub");
+        sub.autoUnsubscribe(3);
+
+        for (int i = 0; i < 5; ++i) {
+            conn.publish("test.autounsub", binary(string(i)));
+        }
+        conn.flush();
+
+        int received = 0;
+        for (int i = 0; i < 5; ++i) {
+            *hash<NatsMsgInfo> msg = sub.nextMsg(1s);
+            if (msg) {
+                ++received;
+            } else {
+                break;
+            }
+        }
+        assertEq(3, received);
+
+        conn.close();
+    }
+
+    drainTest() {
+        NatsConnection conn(url);
+        NatsSubscription sub = conn.subscribe("test.drain");
+
+        # Publish some messages
+        for (int i = 0; i < 3; ++i) {
+            conn.publish("test.drain", binary(string(i)));
+        }
+        conn.flush();
+
+        # Give messages time to arrive
+        usleep(200000);
+
+        # Drain should process pending messages
+        sub.drain();
+
+        # After drain, isValid should return False eventually
+        usleep(500000);
+        assertFalse(sub.isValid());
+
+        conn.close();
+    }
+
+    # --- Connection lifecycle tests ---
+
+    connectionDrainTest() {
+        NatsConnection conn(url);
+        NatsSubscription sub = conn.subscribe("test.conndrain");
+
+        conn.publish("test.conndrain", binary("drain-test"));
+        conn.flush();
+
+        conn.drain();
+
+        # After drain, connection should be closed
+        usleep(500000);
+        assertFalse(conn.isConnected());
+    }
+
+    connectionCloseTest() {
+        NatsConnection conn(url);
+        assertTrue(conn.isConnected());
+        conn.close();
+        assertFalse(conn.isConnected());
+    }
+
+    flushTest() {
+        NatsConnection conn(url);
+        # Flush should succeed on an active connection
+        conn.flush(5s);
+        conn.close();
+    }
+
+    # --- NatsUtil channel subscription tests ---
+
+    channelSubscriptionTest() {
+        NatsClient client(url);
+        NatsChannelSubscription csub = client.channelSubscribe("test.chan", 100);
+
+        client.publishString("test.chan", "msg1");
+        client.publishString("test.chan", "msg2");
+        client.publishString("test.chan", "msg3");
+        client.flush();
+
+        int count = 0;
+        list<string> received = ();
+        while (count < 3) {
+            *hash<NatsMsgInfo> msg = csub.recv(5s);
+            if (!msg) {
+                break;
+            }
+            received += msg.data.toString();
+            ++count;
+        }
+
+        assertEq(3, count);
+        assertEq("msg1", received[0]);
+        assertEq("msg2", received[1]);
+        assertEq("msg3", received[2]);
+
+        csub.close();
+        client.close();
+    }
+
+    channelRecvTimeoutTest() {
+        NatsClient client(url);
+        NatsChannelSubscription csub = client.channelSubscribe("test.recv.timeout", 100);
+
+        # No messages published, recv should time out
+        *hash<NatsMsgInfo> msg = csub.recv(500ms);
+        assertNothing(msg);
+
+        csub.close();
+        client.close();
+    }
+
+    callbackSubscriptionTest() {
+        NatsClient client(url);
+
+        list<hash<NatsMsgInfo>> received = ();
+        Mutex mtx();
+        Counter cnt(3);
+
+        NatsChannelSubscription csub = client.subscribe("test.callback",
+            sub (hash<NatsMsgInfo> msg) {
+                {
+                    AutoLock al(mtx);
+                    received += msg;
+                }
+                cnt.dec();
+            });
+
+        client.publishString("test.callback", "cb1");
+        client.publishString("test.callback", "cb2");
+        client.publishString("test.callback", "cb3");
+        client.flush();
+
+        cnt.waitForZero(10s);
+
+        {
+            AutoLock al(mtx);
+            assertEq(3, received.size());
+        }
+
+        csub.close();
+        client.close();
+    }
+
+    multipleSubscriptionsTest() {
+        NatsConnection conn(url);
+
+        NatsSubscription sub1 = conn.subscribe("test.multi.a");
+        NatsSubscription sub2 = conn.subscribe("test.multi.b");
+
+        conn.publish("test.multi.a", binary("msg-a"));
+        conn.publish("test.multi.b", binary("msg-b"));
+        conn.flush();
+
+        *hash<NatsMsgInfo> msg1 = sub1.nextMsg(5s);
+        *hash<NatsMsgInfo> msg2 = sub2.nextMsg(5s);
+
+        assertEq(True, exists msg1);
+        assertEq(True, exists msg2);
+        assertEq("test.multi.a", msg1.subject);
+        assertEq("test.multi.b", msg2.subject);
+        assertEq(binary("msg-a"), msg1.data);
+        assertEq(binary("msg-b"), msg2.data);
+
+        sub1.unsubscribe();
+        sub2.unsubscribe();
+        conn.close();
+    }
+
+    # --- NatsHelper tests ---
+
+    subjectValidationTest() {
+        assertTrue(NatsHelper::isValidSubject("foo.bar.baz"));
+        assertTrue(NatsHelper::isValidSubject("foo.*"));
+        assertTrue(NatsHelper::isValidSubject("foo.>"));
+        assertTrue(NatsHelper::isValidSubject("foo.*.bar"));
+        assertTrue(NatsHelper::isValidSubject("a"));
+
+        # Invalid subjects
+        assertFalse(NatsHelper::isValidSubject(""));
+        assertFalse(NatsHelper::isValidSubject("foo. .bar"));
+        assertFalse(NatsHelper::isValidSubject("foo..bar"));
+        assertFalse(NatsHelper::isValidSubject("foo.>.bar"));  # > must be last
+        assertFalse(NatsHelper::isValidSubject("foo.ba*r"));  # * not as standalone token
+    }
+
+    urlParsingTest() {
+        hash<auto> result = NatsHelper::parseUrl("nats://localhost:4222");
+        assertEq("nats", result.scheme);
+        assertEq("localhost", result.host);
+        assertEq(4222, result.port);
+
+        hash<auto> result2 = NatsHelper::parseUrl("tls://myhost:5222");
+        assertEq("tls", result2.scheme);
+        assertEq("myhost", result2.host);
+        assertEq(5222, result2.port);
+
+        hash<auto> result3 = NatsHelper::parseUrl("nats://user:pass@host:4222");
+        assertEq("user", result3.username);
+        assertEq("pass", result3.password);
+        assertEq("host", result3.host);
+    }
+
+    # --- Negative tests ---
+
+    publishClosedTest() {
+        NatsConnection conn(url);
+        conn.close();
+
+        assertThrows("NATS-PUBLISH-ERROR", sub () {
+            conn.publish("test.closed", binary("fail"));
+        });
+    }
+
+    invalidSubjectTest() {
+        # Validate using NatsHelper
+        assertFalse(NatsHelper::isValidSubject(""));
+        assertFalse(NatsHelper::isValidSubject("foo bar"));  # space in subject
+    }
+
+    doubleCloseTest() {
+        NatsConnection conn(url);
+        conn.close();
+        # Second close should not crash or throw
+        conn.close();
+        assertFalse(conn.isConnected());
+    }
+}

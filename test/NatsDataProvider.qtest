@@ -1,0 +1,409 @@
+#!/usr/bin/env qore
+# -*- mode: qore; indent-tabs-mode: nil -*-
+
+/*
+    Copyright (C) 2026 Qore Technologies, s.r.o., all rights reserved
+
+    Permission is hereby granted, free of charge, to any person obtaining a
+    copy of this software and associated documentation files (the "Software"),
+    to deal in the Software without restriction, including without limitation
+    the rights to use, copy, modify, merge, publish, distribute, sublicense,
+    and/or sell copies of the Software, and to permit persons to whom the
+    Software is furnished to do so, subject to the following conditions:
+
+    The above copyright notice and this permission notice shall be included in
+    all copies or substantial portions of the Software.
+
+    THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+    IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+    FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+    AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+    DEALINGS IN THE SOFTWARE.
+
+    NATS data provider test suite
+*/
+
+%modern
+
+%requires QUnit
+%requires nats
+%requires NatsUtil
+
+%try-module NatsDataProvider
+%define HaveNatsDataProvider
+%endtry
+
+%exec-class NatsDataProviderTest
+
+public class NatsDataProviderTest inherits QUnit::Test {
+    private {
+        int port;
+        string url;
+        *int nats_pid;
+        string pid_file;
+    }
+
+    constructor() : QUnit::Test("NatsDataProviderTest", "1.0") {
+%ifdef HaveNatsDataProvider
+        # Factory tests
+        addTestCase("factory test", \factoryTest());
+
+        # Provider hierarchy tests
+        addTestCase("provider children test", \providerChildrenTest());
+
+        # Publish tests
+        addTestCase("publish test", \publishTest());
+        addTestCase("publish with headers test", \publishWithHeadersTest());
+        addTestCase("publish binary test", \publishBinaryTest());
+
+        # Request/reply tests
+        addTestCase("request test", \requestTest());
+
+        # Subscribe tests
+        addTestCase("subscribe test", \subscribeTest());
+
+        # Queue subscribe tests
+        addTestCase("queue subscribe test", \queueSubscribeTest());
+
+        # Connection provider tests
+        addTestCase("connection provider test", \connectionProviderTest());
+
+        # Negative tests
+        addTestCase("publish missing subject test", \publishMissingSubjectTest());
+        addTestCase("request timeout test", \requestTimeoutTest());
+%endif
+
+        set_return_value(main());
+    }
+
+    private startServer() {
+        port = 10000 + (rand() % 50000);
+        pid_file = sprintf("/tmp/nats-dp-test-%d.pid", port);
+        string cmd = sprintf("nats-server -p %d -a 127.0.0.1 --pid %s &", port, pid_file);
+        system(cmd);
+        # Wait for pid file
+        for (int i = 0; i < 50; ++i) {
+            if (is_file(pid_file)) {
+                nats_pid = trim(ReadOnlyFile::readTextFile(pid_file)).toInt();
+                break;
+            }
+            usleep(100000);
+        }
+        if (!nats_pid) {
+            throw "NATS-TEST-ERROR", sprintf("nats-server failed to start on port %d", port);
+        }
+        url = sprintf("nats://127.0.0.1:%d", port);
+    }
+
+    private stopServer() {
+        if (nats_pid) {
+            kill(nats_pid, SIGTERM);
+            # Wait for process to exit
+            for (int i = 0; i < 50; ++i) {
+                if (!is_file(sprintf("/proc/%d/status", nats_pid))) {
+                    break;
+                }
+                usleep(100000);
+            }
+            nats_pid = NOTHING;
+        }
+        if (is_file(pid_file)) {
+            unlink(pid_file);
+        }
+    }
+
+    globalSetUp() {
+%ifdef HaveNatsDataProvider
+        startServer();
+%endif
+    }
+
+    globalTearDown() {
+%ifdef HaveNatsDataProvider
+        stopServer();
+%endif
+    }
+
+%ifdef HaveNatsDataProvider
+    # --- Factory tests ---
+
+    factoryTest() {
+        NatsDataProviderFactory factory();
+        assertEq("nats", factory.getName());
+
+        # Create a provider from the factory
+        AbstractDataProvider dp = factory.create({"url": url});
+        assertEq("nats", dp.getName());
+    }
+
+    # --- Provider hierarchy tests ---
+
+    providerChildrenTest() {
+        NatsDataProvider dp({"url": url});
+        *list<string> children = dp.getChildProviderNames();
+        assertEq(True, exists children);
+        assertEq(4, children.size());
+        assertTrue(inlist("publish", children));
+        assertTrue(inlist("request", children));
+        assertTrue(inlist("subscribe", children));
+        assertTrue(inlist("queue-subscribe", children));
+    }
+
+    # --- Publish tests ---
+
+    publishTest() {
+        NatsDataProvider dp({"url": url});
+
+        # Set up a subscriber to verify the message
+        NatsClient client(url);
+        NatsChannelSubscription csub = client.channelSubscribe("dp.pub.test", 100);
+
+        # Publish via data provider
+        AbstractDataProvider pub_dp = dp.getChildProvider("publish");
+        pub_dp.doRequest({
+            "subject": "dp.pub.test",
+            "string_data": "hello from dp",
+        });
+
+        *hash<NatsMsgInfo> msg = csub.recv(5s);
+        assertEq(True, exists msg);
+        assertEq("dp.pub.test", msg.subject);
+        assertEq("hello from dp", msg.data.toString());
+
+        csub.close();
+        client.close();
+    }
+
+    publishWithHeadersTest() {
+        NatsDataProvider dp({"url": url});
+
+        # Set up a subscriber
+        NatsClient client(url);
+        NatsConnection conn = client.getConnection();
+        NatsSubscription sub = conn.subscribe("dp.pub.headers");
+
+        # Publish with headers via data provider
+        AbstractDataProvider pub_dp = dp.getChildProvider("publish");
+        pub_dp.doRequest({
+            "subject": "dp.pub.headers",
+            "string_data": "with-headers",
+            "headers": {
+                "Content-Type": "text/plain",
+                "X-Test": "dp-header-test",
+            },
+        });
+        conn.flush();
+
+        *hash<NatsMsgInfo> msg = sub.nextMsg(5s);
+        assertEq(True, exists msg);
+        assertEq("dp.pub.headers", msg.subject);
+        assertEq("with-headers", msg.data.toString());
+        assertEq(True, exists msg.headers);
+        assertEq("text/plain", msg.headers."Content-Type");
+        assertEq("dp-header-test", msg.headers."X-Test");
+
+        sub.unsubscribe();
+        conn.close();
+    }
+
+    publishBinaryTest() {
+        NatsDataProvider dp({"url": url});
+
+        # Set up a subscriber
+        NatsClient client(url);
+        NatsChannelSubscription csub = client.channelSubscribe("dp.pub.binary", 100);
+
+        # Publish binary data via data provider
+        binary payload = binary("binary-payload-\x00\x01\x02\xff");
+        AbstractDataProvider pub_dp = dp.getChildProvider("publish");
+        pub_dp.doRequest({
+            "subject": "dp.pub.binary",
+            "data": payload,
+        });
+
+        *hash<NatsMsgInfo> msg = csub.recv(5s);
+        assertEq(True, exists msg);
+        assertEq("dp.pub.binary", msg.subject);
+        assertEq(payload, msg.data);
+
+        csub.close();
+        client.close();
+    }
+
+    # --- Request/reply tests ---
+
+    requestTest() {
+        NatsDataProvider dp({"url": url});
+
+        # Set up a responder in the background
+        NatsClient responder_client(url);
+        NatsConnection resp_conn = responder_client.getConnection();
+        NatsSubscription sub = resp_conn.subscribe("dp.request.echo");
+        Counter cnt(1);
+        background requestResponder(resp_conn, sub, cnt);
+
+        # Give the background thread a moment to start
+        usleep(100000);
+
+        # Send request via data provider
+        AbstractDataProvider req_dp = dp.getChildProvider("request");
+        auto reply = req_dp.doRequest({
+            "subject": "dp.request.echo",
+            "string_data": "ping",
+            "timeout_ms": 5000,
+        });
+
+        assertEq(True, exists reply);
+        assertEq(binary("pong"), reply.data);
+
+        sub.unsubscribe();
+        cnt.waitForZero();
+        resp_conn.close();
+    }
+
+    private requestResponder(NatsConnection conn, NatsSubscription sub, Counter cnt) {
+        on_exit cnt.dec();
+
+        *hash<NatsMsgInfo> msg = sub.nextMsg(5s);
+        if (msg && msg.reply) {
+            conn.publish(msg.reply, binary("pong"));
+            conn.flush();
+        }
+    }
+
+    # --- Subscribe tests ---
+
+    subscribeTest() {
+        NatsDataProvider dp({"url": url});
+        AbstractDataProvider sub_dp = dp.getChildProvider("subscribe");
+
+        # Set up observer request
+        sub_dp.setObserverRequest({"subject": "dp.sub.test.>"});
+
+        # Set up observer to capture messages
+        list<hash<auto>> received();
+        Mutex mtx();
+        Counter cnt(3);
+
+        sub_dp.registerObserver(EVENT_NATS_MESSAGE, sub (string event_id, hash<auto> data) {
+            {
+                AutoLock al(mtx);
+                received += data;
+            }
+            cnt.dec();
+        });
+        sub_dp.observersReady();
+
+        # Publish some messages
+        NatsClient client(url);
+        client.publishString("dp.sub.test.one", "msg1");
+        client.publishString("dp.sub.test.two", "msg2");
+        client.publishString("dp.sub.test.three", "msg3");
+        client.flush();
+
+        cnt.waitForZero(10s);
+        sub_dp.stopEvents();
+
+        {
+            AutoLock al(mtx);
+            assertEq(3, received.size());
+        }
+
+        client.close();
+    }
+
+    # --- Queue subscribe tests ---
+
+    queueSubscribeTest() {
+        NatsDataProvider dp({"url": url});
+        AbstractDataProvider qsub_dp = dp.getChildProvider("queue-subscribe");
+
+        # Set up observer request with queue group
+        qsub_dp.setObserverRequest({
+            "subject": "dp.queue.test",
+            "queue": "test-workers",
+        });
+
+        # Set up observer to capture messages
+        list<hash<auto>> received();
+        Mutex mtx();
+        Counter cnt(3);
+
+        qsub_dp.registerObserver(EVENT_NATS_MESSAGE, sub (string event_id, hash<auto> data) {
+            {
+                AutoLock al(mtx);
+                received += data;
+            }
+            cnt.dec();
+        });
+        qsub_dp.observersReady();
+
+        # Publish some messages
+        NatsClient client(url);
+        for (int i = 0; i < 3; ++i) {
+            client.publishString("dp.queue.test", string(i));
+        }
+        client.flush();
+
+        cnt.waitForZero(10s);
+        qsub_dp.stopEvents();
+
+        {
+            AutoLock al(mtx);
+            assertEq(3, received.size());
+        }
+
+        client.close();
+    }
+
+    # --- Connection provider tests ---
+
+    connectionProviderTest() {
+        # Create a NATS connection provider
+        NatsDataProvider::NatsConnection conn("test-conn", "Test NATS connection", url);
+
+        # Verify type
+        assertEq("nats", conn.getType());
+
+        # Ping the connection
+        hash<PingInfo> ping = conn.ping();
+        assertTrue(ping.ok);
+
+        # Get data provider from the connection
+        AbstractDataProvider dp = conn.getDataProvider();
+        assertEq("nats", dp.getName());
+        *list<string> children = dp.getChildProviderNames();
+        assertEq(4, children.size());
+    }
+
+    # --- Negative tests ---
+
+    publishMissingSubjectTest() {
+        NatsDataProvider dp({"url": url});
+        AbstractDataProvider pub_dp = dp.getChildProvider("publish");
+
+        # Publishing without a subject should throw
+        assertThrows("INVALID-OPERATION|DATATYPE-VALUE-ERROR|RUNTIME-TYPE-ERROR", sub () {
+            pub_dp.doRequest({
+                "string_data": "no subject",
+            });
+        });
+    }
+
+    requestTimeoutTest() {
+        NatsDataProvider dp({"url": url});
+        AbstractDataProvider req_dp = dp.getChildProvider("request");
+
+        # Request with no responder should time out
+        assertThrows("NATS-TIMEOUT-ERROR", sub () {
+            req_dp.doRequest({
+                "subject": "dp.no-responder",
+                "string_data": "hello",
+                "timeout_ms": 500,
+            });
+        });
+    }
+%endif
+}

@@ -1,0 +1,131 @@
+# -*- mode: qore; indent-tabs-mode: nil -*-
+#! @file NatsUtil.qm Qore NATS utility module
+
+/*  NatsUtil.qm Copyright 2026 Qore Technologies, s.r.o.
+
+    Permission is hereby granted, free of charge, to any person obtaining a
+    copy of this software and associated documentation files (the "Software"),
+    to deal in the Software without restriction, including without limitation
+    the rights to use, copy, modify, merge, publish, distribute, sublicense,
+    and/or sell copies of the Software, and to permit persons to whom the
+    Software is furnished to do so, subject to the following conditions:
+
+    The above copyright notice and this permission notice shall be included in
+    all copies or substantial portions of the Software.
+
+    THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+    IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+    FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+    AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+    DEALINGS IN THE SOFTWARE.
+*/
+
+%modern
+
+%requires nats
+
+module NatsUtil {
+    version = "1.0";
+    desc = "Qore NATS utility module";
+    author = "Qore Technologies, s.r.o.";
+    url = "https://github.com/qoretechnologies/module-nats";
+    license = "MIT";
+}
+
+#! Main Nats namespace
+/** All public declarations in the %NatsUtil module are defined in this namespace.
+*/
+public namespace Nats {
+}
+
+/** @mainpage NatsUtil Module
+
+    @tableofcontents
+
+    @section natsutilintro NatsUtil Module Introduction
+
+    The %NatsUtil module provides high-level Qore utilities built on top of the
+    \c nats binary module. It provides channel-based asynchronous subscriptions
+    following the Go/Rust/Python iterator pattern, as well as a convenience
+    client class.
+
+    The following classes are provided by this module:
+    - @ref Nats::NatsClient "NatsClient": high-level client with convenience methods
+      including channel-based async subscriptions and callback subscriptions
+    - @ref Nats::NatsChannelSubscription "NatsChannelSubscription": channel-based
+      async subscription wrapper supporting \c foreach iteration and \c channel_select()
+      multiplexing
+    - @ref Nats::NatsHelper "NatsHelper": subject validation and URL parsing utilities
+
+    For the data provider API integration (factory, connections, action catalog),
+    see the @ref natsdataproviderintro "NatsDataProvider module".
+
+    @section natsutil_channel Channel-Based Subscriptions
+
+    The binary module exposes only synchronous \c nextMsg(). The %NatsUtil module
+    provides an idiomatic async API using Qore's \c Channel class (Go-style channels):
+
+    - Background thread calls \c nextMsg() in a loop, pushes messages into a \c Channel
+    - Consumer code iterates the channel using \c foreach (like Go's \c range)
+    - Proper close semantics: \c Channel.close() ends iteration cleanly
+    - Backpressure via buffered channel capacity
+    - \c channel_select() available for multiplexing multiple subscriptions
+
+    @subsection natsutil_channel_usage Usage Example
+
+    @code{.py}
+%modern
+%requires NatsUtil
+
+NatsClient client("nats://localhost:4222");
+NatsChannelSubscription sub = client.channelSubscribe("orders.>", 100);
+
+# Iterate messages until subscription closes
+foreach hash<NatsMsgInfo> msg in (sub) {
+    printf("Order: %s\n", msg.subject);
+    process(msg);
+}
+# Loop ends cleanly when sub.close() / drain() is called
+    @endcode
+
+    @subsection natsutil_channel_multiplex Multiplexing
+
+    @code{.py}
+NatsChannelSubscription sub1 = client.channelSubscribe("orders.>", 100);
+NatsChannelSubscription sub2 = client.channelSubscribe("events.>", 100);
+
+auto result = channel_select(
+    {"type": "recv", "channel": sub1.channel()},
+    {"type": "recv", "channel": sub2.channel()},
+);
+    @endcode
+
+    @section natsutilflight NatsClient
+
+    @code{.py}
+NatsClient client("nats://localhost:4222");
+
+# Simple publish
+client.publishString("events.log", "hello world");
+
+# Request/reply with string
+string reply = client.requestString("service.echo", "hello", 5s);
+
+# Callback-based subscription
+client.subscribe("events.>", sub (hash<NatsMsgInfo> msg) {
+    printf("Got: %s\n", msg.subject);
+});
+    @endcode
+
+    @section natsutilrelnotes Release Notes
+
+    @subsection natsutil_v1_0 NatsUtil Module Version 1.0
+
+    - initial release
+    - @ref Nats::NatsClient "NatsClient": high-level client with convenience methods
+    - @ref Nats::NatsChannelSubscription "NatsChannelSubscription": channel-based
+      async subscription with iterator and multiplexing support
+    - @ref Nats::NatsHelper "NatsHelper": subject validation and URL parsing
+*/

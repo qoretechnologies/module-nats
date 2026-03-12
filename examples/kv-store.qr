@@ -1,0 +1,81 @@
+#!/usr/bin/env qr
+# Example: NATS JetStream Key-Value Store
+#
+# Demonstrates the Key-Value store built on JetStream, including
+# put, get, update (CAS), keys, history, and delete operations.
+#
+# Prerequisites: NATS server with JetStream enabled
+#   docker run -p 4222:4222 nats:latest -js
+
+%requires nats
+%requires NatsUtil
+
+# Connect to NATS and get JetStream context
+NatsClient client("nats://localhost:4222");
+JetStreamContext js = client.getConnection().jetStream();
+printf("Connected to NATS JetStream\n");
+
+string bucket_name = "config";
+
+# Create a KV bucket with history
+NatsKeyValueStore kv = js.createKeyValue(<NatsKVConfig>{
+    "bucket": bucket_name,
+    "history": 5,
+});
+printf("Created KV bucket '%s'\n", bucket_name);
+
+# Put values
+int rev1 = kv.putString("app.name", "MyApp");
+int rev2 = kv.putString("app.version", "1.0");
+printf("Put app.name rev=%d, app.version rev=%d\n", rev1, rev2);
+
+# Get a value
+*hash<NatsKVEntry> entry = kv.get("app.name");
+if (entry) {
+    printf("Get: key=%s, value=%s, rev=%d, bucket=%s\n",
+        entry.key, entry.value.toString(), entry.revision, entry.bucket);
+}
+
+# Compare-and-swap update (only succeeds if revision matches)
+int rev3 = kv.update("app.name", binary("NewApp"), rev1);
+printf("CAS update app.name to 'NewApp', new rev=%d\n", rev3);
+
+# Verify the update
+entry = kv.get("app.name");
+if (entry) {
+    printf("After update: key=%s, value=%s, rev=%d\n",
+        entry.key, entry.value.toString(), entry.revision);
+}
+
+# List all keys
+list<string> keys = kv.keys();
+printf("\nAll keys: %y\n", keys);
+
+# Get revision history
+list<hash<NatsKVEntry>> hist = kv.history("app.name");
+printf("\nHistory for app.name (%d entries):\n", hist.size());
+for (int i = 0; i < hist.size(); ++i) {
+    printf("  rev=%d, value=%s, op=%d\n",
+        hist[i].revision,
+        hist[i].value ? hist[i].value.toString() : "<deleted>",
+        hist[i].operation);
+}
+
+# Soft-delete a key (marks as deleted, retains in history)
+kv.delete("app.version");
+printf("\nSoft-deleted app.version\n");
+
+# Purge a key (removes all revisions)
+kv.purge("app.version");
+printf("Purged app.version\n");
+
+# Remaining keys
+keys = kv.keys();
+printf("Remaining keys: %y\n", keys);
+
+# Clean up: delete the bucket
+js.deleteKeyValue(bucket_name);
+printf("Deleted KV bucket '%s'\n", bucket_name);
+
+client.close();
+printf("Done\n");

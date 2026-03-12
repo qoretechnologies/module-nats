@@ -1,0 +1,509 @@
+/** @mainpage Qore nats Module
+
+    @tableofcontents
+
+    @section natsintro nats Module Introduction
+
+    The \c nats module provides NATS messaging support for %Qore, wrapping the
+    <a href="https://github.com/nats-io/nats.c">nats.c</a> client library. It supports
+    core NATS publish/subscribe and request/reply messaging, JetStream persistent messaging
+    with stream and consumer management, and JetStream Key-Value stores.
+
+    To use this module, use \c "%requires nats" in your code for the binary module classes
+    and \c "%requires NatsUtil" for high-level convenience classes including channel-based
+    async subscriptions.
+
+    @section natsreqs Requirements
+
+    - <b>Qore 2.0+</b>
+    - <b>nats.c library</b> (libnats)
+      - Ubuntu/Debian: build from source or use a PPA
+      - Fedora/RHEL: build from source
+      - Alpine: build from source
+
+    @section natsbuilding Building
+
+    @verbatim
+mkdir build
+cd build
+cmake ..
+make
+sudo make install
+    @endverbatim
+
+    To build with a specific Qore installation:
+    @verbatim
+cmake -DCMAKE_INSTALL_PREFIX=/usr/local ..
+    @endverbatim
+
+    @section natsarch Architecture
+
+    The module has three layers:
+
+    - <b>Binary module (\c nats.so)</b>: C++ QPP wrapping \c libnats for connection
+      management, publish/subscribe, request/reply, JetStream, and Key-Value store.
+      Provides @ref Qore::Nats::NatsConnection, @ref Qore::Nats::NatsSubscription,
+      @ref Qore::Nats::JetStreamContext, and @ref Qore::Nats::NatsKeyValueStore.
+    - <b>Qore module (\c NatsUtil)</b>: Pure %Qore providing high-level convenience
+      classes. Provides @ref Nats::NatsClient, @ref Nats::NatsChannelSubscription,
+      and @ref Nats::NatsHelper.
+    - <b>Data provider modules</b>: @ref natsdp "NatsDataProvider" and
+      @ref natsjetdp "NatsJetStreamDataProvider" for integration with Qore's data
+      provider framework.
+
+    @section natscorequickstart Core NATS
+
+    @subsection natspubsub Publish / Subscribe
+
+    The fundamental NATS messaging pattern. Publishers send messages to subjects;
+    subscribers receive messages on matching subjects.
+
+    @code{.py}
+%requires NatsUtil
+
+NatsClient client("nats://localhost:4222");
+
+# Subscribe using channel-based async subscription
+NatsChannelSubscription sub = client.channelSubscribe("events.>");
+
+# Publish a message
+client.publishString("events.log", "Hello NATS!");
+
+# Receive the message
+*hash<NatsMsgInfo> msg = sub.recv(5s);
+if (msg) {
+    printf("Received on %s: %s\n", msg.subject, msg.data.toString());
+}
+
+sub.close();
+client.close();
+    @endcode
+
+    @subsection natsreqrep Request / Reply
+
+    Synchronous request/reply using the @ref Nats::NatsClient::requestString()
+    "NatsClient::requestString()" method.
+
+    @code{.py}
+%requires NatsUtil
+
+NatsClient client("nats://localhost:4222");
+
+# Set up a responder in the background
+NatsChannelSubscription sub = client.channelSubscribe("service.echo");
+background sub () {
+    foreach hash<NatsMsgInfo> msg in (sub) {
+        if (msg.reply) {
+            client.publishString(msg.reply, "Echo: " + msg.data.toString());
+        }
+    }
+}();
+
+# Send a request and wait for the reply
+string reply = client.requestString("service.echo", "Hello!", 5s);
+printf("Reply: %s\n", reply);
+
+sub.close();
+client.close();
+    @endcode
+
+    @subsection natsqueuegroups Queue Groups
+
+    Messages published to a subject are load-balanced across subscribers in the same
+    queue group. Only one subscriber in the group receives each message.
+
+    @code{.py}
+NatsClient client("nats://localhost:4222");
+NatsChannelSubscription sub1 = client.channelQueueSubscribe("work.tasks", "workers");
+NatsChannelSubscription sub2 = client.channelQueueSubscribe("work.tasks", "workers");
+
+# Each published message goes to exactly one worker
+for (int i = 0; i < 10; ++i) {
+    client.publishString("work.tasks", sprintf("task-%d", i));
+}
+    @endcode
+
+    @subsection natswildcards Wildcard Subscriptions
+
+    NATS supports two wildcards in subject subscriptions:
+
+    - \c * matches a single token: \c "events.*" matches \c "events.log" but not
+      \c "events.log.error"
+    - \c > matches one or more tokens (must be last): \c "events.>" matches
+      \c "events.log", \c "events.log.error", etc.
+
+    @code{.py}
+# Match any single token
+NatsChannelSubscription sub1 = client.channelSubscribe("orders.*");
+
+# Match all tokens from this point
+NatsChannelSubscription sub2 = client.channelSubscribe("events.>");
+    @endcode
+
+    @section natsjetstream JetStream
+
+    JetStream provides persistent messaging with at-least-once and exactly-once delivery
+    guarantees, stream management, consumer management, and replay capabilities.
+
+    @subsection natsjsstreams Stream Management
+
+    Streams capture and store messages published to matching subjects.
+
+    @code{.py}
+%requires nats
+
+NatsConnection conn("nats://localhost:4222");
+JetStreamContext js = conn.jetStream();
+
+# Create a stream
+hash<NatsStreamInfo> info = js.addStream(<NatsStreamConfig>{
+    "name": "ORDERS",
+    "subjects": ("orders.>",),
+    "retention": NATS_RETENTION_LIMITS,
+    "storage": NATS_STORAGE_FILE,
+    "max_msgs": 1000000,
+});
+
+# Get stream info
+info = js.getStreamInfo("ORDERS");
+printf("Messages: %d, Bytes: %d\n", info.messages, info.bytes);
+
+# Purge all messages
+js.purgeStream("ORDERS");
+
+# Delete the stream
+js.deleteStream("ORDERS");
+    @endcode
+
+    @subsection natsjsconsumers Consumer Management
+
+    Consumers track message delivery state for subscribers.
+
+    @code{.py}
+hash<NatsConsumerInfo> ci = js.addConsumer("ORDERS", <NatsConsumerConfig>{
+    "durable_name": "order-processor",
+    "ack_policy": NATS_ACK_EXPLICIT,
+    "deliver_policy": NATS_DELIVER_ALL,
+});
+
+ci = js.getConsumerInfo("ORDERS", "order-processor");
+printf("Pending: %d\n", ci.num_pending);
+
+js.deleteConsumer("ORDERS", "order-processor");
+    @endcode
+
+    @subsection natsjspubsub JetStream Publish and Subscribe
+
+    JetStream publish returns an acknowledgment confirming the message was persisted.
+    JetStream subscriptions support push and pull delivery modes with explicit
+    message acknowledgment.
+
+    @code{.py}
+# Publish with acknowledgment
+hash<NatsPubAck> ack = js.publish("orders.new", binary("order-123"));
+printf("Published to stream %s, seq %d\n", ack.stream, ack.sequence);
+
+# Push subscribe
+NatsSubscription sub = js.subscribe("orders.>");
+*hash<NatsMsgInfo> msg = sub.nextMsg(5s);
+if (msg) {
+    printf("Received: %s\n", msg.data.toString());
+    sub.ack();
+}
+
+# Pull subscribe (durable consumer)
+NatsSubscription pull_sub = js.pullSubscribe("orders.>", "order-processor");
+*hash<NatsMsgInfo> pull_msg = pull_sub.nextMsg(5s);
+if (pull_msg) {
+    pull_sub.ack();
+}
+    @endcode
+
+    @subsection natsjsacknowledgment Message Acknowledgment
+
+    JetStream subscriptions support several acknowledgment operations:
+
+    |!Method|!Description
+    |@ref Qore::Nats::NatsSubscription::ack() "ack()"|Acknowledge successful processing
+    |@ref Qore::Nats::NatsSubscription::nak() "nak()"|Negative acknowledgment (request redelivery)
+    |@ref Qore::Nats::NatsSubscription::inProgress() "inProgress()"|Signal processing is ongoing (reset redelivery timer)
+    |@ref Qore::Nats::NatsSubscription::term() "term()"|Terminate delivery (message will not be redelivered)
+
+    @section natskv Key-Value Store
+
+    JetStream provides a distributed Key-Value store built on streams.
+
+    @code{.py}
+NatsConnection conn("nats://localhost:4222");
+JetStreamContext js = conn.jetStream();
+
+# Create a KV bucket
+NatsKeyValueStore kv = js.createKeyValue(<NatsKVConfig>{
+    "bucket": "config",
+    "history": 5,
+    "ttl": 3600000,
+});
+
+# Put values
+int rev1 = kv.putString("app.name", "MyApp");
+int rev2 = kv.putString("app.version", "1.0");
+
+# Get a value
+*hash<NatsKVEntry> entry = kv.get("app.name");
+if (entry) {
+    printf("Key: %s, Value: %s, Rev: %d\n",
+        entry.key, entry.value.toString(), entry.revision);
+}
+
+# Compare-and-swap update
+int rev3 = kv.update("app.name", binary("NewApp"), rev1);
+
+# List all keys
+list<string> keys = kv.keys();
+
+# Get revision history
+list<hash<NatsKVEntry>> hist = kv.history("app.name");
+
+# Soft-delete and purge
+kv.delete("app.version");
+kv.purge("app.version");
+
+# Delete the bucket
+js.deleteKeyValue("config");
+    @endcode
+
+    @section natstls TLS Connections
+
+    The module supports TLS-encrypted connections using the @ref Qore::Nats::NatsTlsOptions
+    "NatsTlsOptions" hashdecl.
+
+    @code{.py}
+NatsConnection conn(<NatsConnectionOptions>{
+    "url": "tls://nats.example.com:4222",
+    "tls": <NatsTlsOptions>{
+        "ca_cert": "/path/to/ca.crt",
+        "client_cert": "/path/to/client.crt",
+        "client_key": "/path/to/client.key",
+    },
+});
+    @endcode
+
+    @section natsauth Authentication
+
+    The module supports several authentication methods:
+
+    @subsection natsauthtokenauth Token Authentication
+    @code{.py}
+NatsConnection conn(<NatsConnectionOptions>{
+    "url": "nats://localhost:4222",
+    "token": "secret-token",
+});
+    @endcode
+
+    @subsection natsauthuserpass Username/Password Authentication
+    @code{.py}
+NatsConnection conn(<NatsConnectionOptions>{
+    "url": "nats://localhost:4222",
+    "username": "user",
+    "password": "pass",
+});
+    @endcode
+
+    @subsection natsauthnkey NKey Authentication
+    @code{.py}
+NatsConnection conn(<NatsConnectionOptions>{
+    "url": "nats://localhost:4222",
+    "nkey_seed": "/path/to/seed.nk",
+});
+    @endcode
+
+    @subsection natsauthcreds Credentials File Authentication
+    @code{.py}
+NatsConnection conn(<NatsConnectionOptions>{
+    "url": "nats://localhost:4222",
+    "credentials": "/path/to/creds.creds",
+});
+    @endcode
+
+    @section natsdp NatsDataProvider Module
+
+    The \c NatsDataProvider module integrates core NATS messaging into Qore's data provider
+    framework. Use \c "%requires NatsDataProvider" to load the module.
+
+    @subsection natsdp_hierarchy Provider Hierarchy
+
+    @verbatim
+<root>
+  +-- publish          (NatsPublishDataProvider -- DPAT_API)
+  +-- request          (NatsRequestDataProvider -- DPAT_API)
+  +-- subscribe        (NatsSubscribeEventDataProvider -- DPAT_EVENT)
+  +-- queue-subscribe  (NatsQueueSubscribeEventDataProvider -- DPAT_EVENT)
+    @endverbatim
+
+    @subsection natsdp_connections Connection Schemes
+
+    |!Scheme|!Transport|!Example URL
+    |\c nats://|Plaintext NATS|\c nats://localhost:4222
+    |\c tls://|TLS-encrypted NATS|\c tls://nats.example.com:4222
+
+    @subsection natsdp_cli Command Line Usage
+
+    @verbatim
+# Publish a message
+qdp 'nats{url=nats://localhost:4222}/publish' dor subject=events.log,data=hello
+
+# Send a request
+qdp 'nats{url=nats://localhost:4222}/request' dor subject=service.echo,data=hello
+    @endverbatim
+
+    @section natsjetdp NatsJetStreamDataProvider Module
+
+    The \c NatsJetStreamDataProvider module integrates NATS JetStream into Qore's data
+    provider framework. Use \c "%requires NatsJetStreamDataProvider" to load the module.
+
+    @subsection natsjetdp_hierarchy Provider Hierarchy
+
+    @verbatim
+<root>
+  +-- streams
+  |   +-- create     (NatsJSStreamCreateDataProvider -- DPAT_API)
+  |   +-- delete     (NatsJSStreamDeleteDataProvider -- DPAT_API)
+  |   +-- info       (NatsJSStreamInfoDataProvider -- DPAT_API)
+  |   +-- purge      (NatsJSStreamPurgeDataProvider -- DPAT_API)
+  +-- consumers
+  |   +-- create     (NatsJSConsumerCreateDataProvider -- DPAT_API)
+  |   +-- delete     (NatsJSConsumerDeleteDataProvider -- DPAT_API)
+  |   +-- info       (NatsJSConsumerInfoDataProvider -- DPAT_API)
+  +-- publish        (NatsJSPublishDataProvider -- DPAT_API)
+  +-- subscribe      (NatsJSSubscribeEventDataProvider -- DPAT_EVENT)
+  +-- pull-subscribe (NatsJSPullSubscribeEventDataProvider -- DPAT_EVENT)
+  +-- kv
+      +-- put        (NatsJSKVPutDataProvider -- DPAT_API)
+      +-- get        (NatsJSKVGetDataProvider -- DPAT_API)
+      +-- delete     (NatsJSKVDeleteDataProvider -- DPAT_API)
+      +-- keys       (NatsJSKVKeysDataProvider -- DPAT_API)
+      +-- history    (NatsJSKVHistoryDataProvider -- DPAT_API)
+    @endverbatim
+
+    @subsection natsjetdp_cli Command Line Usage
+
+    @verbatim
+# Create a stream
+qdp 'natsjetstream{url=nats://localhost:4222}/streams/create' dor name=ORDERS,subjects=orders.>
+
+# Publish to JetStream
+qdp 'natsjetstream{url=nats://localhost:4222}/publish' dor subject=orders.new,data=order-123
+
+# Put a KV value
+qdp 'natsjetstream{url=nats://localhost:4222}/kv/put' dor bucket=config,key=app.name,value=MyApp
+
+# Get a KV value
+qdp 'natsjetstream{url=nats://localhost:4222}/kv/get' dor bucket=config,key=app.name
+    @endverbatim
+
+    @section natshashdecls Hashdecl Reference
+
+    The following hashdecls are defined in the \c Qore::Nats namespace:
+
+    |!Hashdecl|!Description
+    |@ref Qore::Nats::NatsConnectionOptions "NatsConnectionOptions"|Connection options
+    |@ref Qore::Nats::NatsTlsOptions "NatsTlsOptions"|TLS configuration options
+    |@ref Qore::Nats::NatsMsgInfo "NatsMsgInfo"|Received message information
+    |@ref Qore::Nats::NatsStreamConfig "NatsStreamConfig"|JetStream stream configuration
+    |@ref Qore::Nats::NatsStreamInfo "NatsStreamInfo"|JetStream stream information
+    |@ref Qore::Nats::NatsConsumerConfig "NatsConsumerConfig"|JetStream consumer configuration
+    |@ref Qore::Nats::NatsConsumerInfo "NatsConsumerInfo"|JetStream consumer information
+    |@ref Qore::Nats::NatsPubAck "NatsPubAck"|JetStream publish acknowledgment
+    |@ref Qore::Nats::NatsKVConfig "NatsKVConfig"|Key-Value bucket configuration
+    |@ref Qore::Nats::NatsKVEntry "NatsKVEntry"|Key-Value entry
+
+    @section natsconstants Constants
+
+    @subsection natsretentionpolicies Retention Policies
+
+    |!Constant|!Value|!Description
+    |@ref Qore::Nats::NATS_RETENTION_LIMITS|0|Retain based on limits (max messages, bytes, age)
+    |@ref Qore::Nats::NATS_RETENTION_INTEREST|1|Retain until acknowledged by all consumers
+    |@ref Qore::Nats::NATS_RETENTION_WORKQUEUE|2|Retain until acknowledged (work queue)
+
+    @subsection natsstoragetypes Storage Types
+
+    |!Constant|!Value|!Description
+    |@ref Qore::Nats::NATS_STORAGE_FILE|0|File-based storage
+    |@ref Qore::Nats::NATS_STORAGE_MEMORY|1|Memory-based storage
+
+    @subsection natsdiscardpolicies Discard Policies
+
+    |!Constant|!Value|!Description
+    |@ref Qore::Nats::NATS_DISCARD_OLD|0|Discard old messages when full
+    |@ref Qore::Nats::NATS_DISCARD_NEW|1|Reject new messages when full
+
+    @subsection natsackpolicies Ack Policies
+
+    |!Constant|!Value|!Description
+    |@ref Qore::Nats::NATS_ACK_NONE|0|No acknowledgment required
+    |@ref Qore::Nats::NATS_ACK_ALL|1|All messages must be acknowledged
+    |@ref Qore::Nats::NATS_ACK_EXPLICIT|2|Each message acknowledged individually
+
+    @subsection natsdeliverpolicies Deliver Policies
+
+    |!Constant|!Value|!Description
+    |@ref Qore::Nats::NATS_DELIVER_ALL|0|Deliver all available messages
+    |@ref Qore::Nats::NATS_DELIVER_LAST|1|Start with the last message
+    |@ref Qore::Nats::NATS_DELIVER_NEW|2|Deliver only new messages
+    |@ref Qore::Nats::NATS_DELIVER_BY_START_SEQUENCE|3|Start from a specific sequence
+    |@ref Qore::Nats::NATS_DELIVER_BY_START_TIME|4|Start from a specific time
+    |@ref Qore::Nats::NATS_DELIVER_LAST_PER_SUBJECT|5|Last message per subject
+
+    @subsection natsreplaypolicies Replay Policies
+
+    |!Constant|!Value|!Description
+    |@ref Qore::Nats::NATS_REPLAY_INSTANT|0|Replay as fast as possible
+    |@ref Qore::Nats::NATS_REPLAY_ORIGINAL|1|Replay at original delivery rate
+
+    @subsection natskvoperations Key-Value Operations
+
+    |!Constant|!Value|!Description
+    |@ref Qore::Nats::NATS_KV_OP_PUT|0|Put or update operation
+    |@ref Qore::Nats::NATS_KV_OP_DELETE|1|Delete operation
+    |@ref Qore::Nats::NATS_KV_OP_PURGE|2|Purge operation
+
+    @section natsrelnotes Release Notes
+
+    @subsection nats_v1_0 nats Module Version 1.0
+
+    <b>Dependencies</b>: \c libnats (nats.c client library)
+
+    <b>Features</b>:
+    - initial release
+    - @ref Qore::Nats::NatsConnection "NatsConnection": connect to NATS servers with
+      URL or options hash; supports token, username/password, NKey, and credentials
+      file authentication; supports TLS
+    - @ref Qore::Nats::NatsSubscription "NatsSubscription": subscribe to subjects with
+      wildcard support (\c * and \c >); queue group subscriptions for load balancing;
+      auto-unsubscribe and drain support
+    - @ref Qore::Nats::JetStreamContext "JetStreamContext": stream and consumer CRUD;
+      JetStream publish with acknowledgment; push and pull subscriptions
+    - @ref Qore::Nats::NatsKeyValueStore "NatsKeyValueStore": put, get, create, update
+      (CAS), delete, purge, keys, and history operations
+    - hashdecls for all configuration and result types
+    - constants for JetStream retention, storage, discard, ack, deliver, and replay policies
+    - @ref Nats::NatsClient "NatsClient": high-level client with string publish/request,
+      channel-based async subscriptions, and callback-based subscriptions
+    - @ref Nats::NatsChannelSubscription "NatsChannelSubscription": channel-based async
+      subscription with iterator support, timeout receive, and \c channel_select()
+      multiplexing
+    - @ref Nats::NatsHelper "NatsHelper": subject validation and URL parsing utilities
+    - \c NatsDataProvider module: data provider API for core NATS publish, request,
+      subscribe, and queue-subscribe; connection schemes \c nats:// and \c tls://;
+      action catalog registration
+    - \c NatsJetStreamDataProvider module: data provider API for JetStream streams,
+      consumers, publish, push/pull subscribe, and Key-Value store operations;
+      action catalog registration
+
+    @section natslicense License
+
+    The nats module is released under the MIT license.
+
+    Copyright (C) 2026 Qore Technologies, s.r.o.
+*/

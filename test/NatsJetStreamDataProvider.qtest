@@ -1,0 +1,692 @@
+#!/usr/bin/env qore
+# -*- mode: qore; indent-tabs-mode: nil -*-
+
+/*
+    Copyright (C) 2026 Qore Technologies, s.r.o., all rights reserved
+
+    Permission is hereby granted, free of charge, to any person obtaining a
+    copy of this software and associated documentation files (the "Software"),
+    to deal in the Software without restriction, including without limitation
+    the rights to use, copy, modify, merge, publish, distribute, sublicense,
+    and/or sell copies of the Software, and to permit persons to whom the
+    Software is furnished to do so, subject to the following conditions:
+
+    The above copyright notice and this permission notice shall be included in
+    all copies or substantial portions of the Software.
+
+    THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+    IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+    FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+    AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+    DEALINGS IN THE SOFTWARE.
+
+    NATS JetStream data provider test suite
+*/
+
+%modern
+
+%requires QUnit
+%requires nats
+%requires NatsUtil
+
+%try-module NatsJetStreamDataProvider
+%define HaveNatsJetStreamDataProvider
+%endtry
+
+%exec-class NatsJetStreamDataProviderTest
+
+public class NatsJetStreamDataProviderTest inherits QUnit::Test {
+    private {
+        int port;
+        string url;
+        *int nats_pid;
+        string pid_file;
+    }
+
+    constructor() : QUnit::Test("NatsJetStreamDataProviderTest", "1.0") {
+%ifdef HaveNatsJetStreamDataProvider
+        # Factory tests
+        addTestCase("factory test", \factoryTest());
+
+        # Provider hierarchy tests
+        addTestCase("provider children test", \providerChildrenTest());
+        addTestCase("streams children test", \streamsChildrenTest());
+        addTestCase("consumers children test", \consumersChildrenTest());
+        addTestCase("kv children test", \kvChildrenTest());
+
+        # Stream CRUD tests
+        addTestCase("stream create test", \streamCreateTest());
+        addTestCase("stream info test", \streamInfoTest());
+        addTestCase("stream purge test", \streamPurgeTest());
+        addTestCase("stream delete test", \streamDeleteTest());
+
+        # Consumer CRUD tests
+        addTestCase("consumer create test", \consumerCreateTest());
+        addTestCase("consumer info test", \consumerInfoTest());
+        addTestCase("consumer delete test", \consumerDeleteTest());
+
+        # JS publish tests
+        addTestCase("js publish test", \jsPublishTest());
+
+        # KV store tests
+        addTestCase("kv put test", \kvPutTest());
+        addTestCase("kv get test", \kvGetTest());
+        addTestCase("kv delete test", \kvDeleteTest());
+        addTestCase("kv keys test", \kvKeysTest());
+        addTestCase("kv history test", \kvHistoryTest());
+
+        # Negative tests
+        addTestCase("stream info not found test", \streamInfoNotFoundTest());
+        addTestCase("kv get not found test", \kvGetNotFoundTest());
+%endif
+
+        set_return_value(main());
+    }
+
+    private startServer() {
+        port = 10000 + (rand() % 50000);
+        pid_file = sprintf("/tmp/nats-jsdp-test-%d.pid", port);
+        string cmd = sprintf("nats-server -p %d -a 127.0.0.1 --pid %s -js &", port, pid_file);
+        system(cmd);
+        # Wait for pid file
+        for (int i = 0; i < 50; ++i) {
+            if (is_file(pid_file)) {
+                nats_pid = trim(ReadOnlyFile::readTextFile(pid_file)).toInt();
+                break;
+            }
+            usleep(100000);
+        }
+        if (!nats_pid) {
+            throw "NATS-TEST-ERROR",
+                sprintf("nats-server (JetStream) failed to start on port %d", port);
+        }
+        url = sprintf("nats://127.0.0.1:%d", port);
+    }
+
+    private stopServer() {
+        if (nats_pid) {
+            kill(nats_pid, SIGTERM);
+            # Wait for process to exit
+            for (int i = 0; i < 50; ++i) {
+                if (!is_file(sprintf("/proc/%d/status", nats_pid))) {
+                    break;
+                }
+                usleep(100000);
+            }
+            nats_pid = NOTHING;
+        }
+        if (is_file(pid_file)) {
+            unlink(pid_file);
+        }
+    }
+
+    globalSetUp() {
+%ifdef HaveNatsJetStreamDataProvider
+        startServer();
+%endif
+    }
+
+    globalTearDown() {
+%ifdef HaveNatsJetStreamDataProvider
+        stopServer();
+%endif
+    }
+
+    # Helper to create a unique name
+    private string uniqueName(string prefix) {
+        return sprintf("%s_%d_%d", prefix, port, rand() % 100000);
+    }
+
+%ifdef HaveNatsJetStreamDataProvider
+    # --- Factory tests ---
+
+    factoryTest() {
+        NatsJetStreamDataProviderFactory factory();
+        assertEq("natsjetstream", factory.getName());
+
+        # Create a provider from the factory
+        AbstractDataProvider dp = factory.create({"url": url});
+        assertEq("natsjetstream", dp.getName());
+    }
+
+    # --- Provider hierarchy tests ---
+
+    providerChildrenTest() {
+        NatsJetStreamDataProvider dp({"url": url});
+        *list<string> children = dp.getChildProviderNames();
+        assertEq(True, exists children);
+        assertEq(6, children.size());
+        assertTrue(inlist("streams", children));
+        assertTrue(inlist("consumers", children));
+        assertTrue(inlist("publish", children));
+        assertTrue(inlist("subscribe", children));
+        assertTrue(inlist("pull-subscribe", children));
+        assertTrue(inlist("kv", children));
+    }
+
+    streamsChildrenTest() {
+        NatsJetStreamDataProvider dp({"url": url});
+        AbstractDataProvider streams_dp = dp.getChildProvider("streams");
+        *list<string> children = streams_dp.getChildProviderNames();
+        assertEq(True, exists children);
+        assertEq(4, children.size());
+        assertTrue(inlist("create", children));
+        assertTrue(inlist("delete", children));
+        assertTrue(inlist("info", children));
+        assertTrue(inlist("purge", children));
+    }
+
+    consumersChildrenTest() {
+        NatsJetStreamDataProvider dp({"url": url});
+        AbstractDataProvider consumers_dp = dp.getChildProvider("consumers");
+        *list<string> children = consumers_dp.getChildProviderNames();
+        assertEq(True, exists children);
+        assertEq(3, children.size());
+        assertTrue(inlist("create", children));
+        assertTrue(inlist("delete", children));
+        assertTrue(inlist("info", children));
+    }
+
+    kvChildrenTest() {
+        NatsJetStreamDataProvider dp({"url": url});
+        AbstractDataProvider kv_dp = dp.getChildProvider("kv");
+        *list<string> children = kv_dp.getChildProviderNames();
+        assertEq(True, exists children);
+        assertEq(5, children.size());
+        assertTrue(inlist("put", children));
+        assertTrue(inlist("get", children));
+        assertTrue(inlist("delete", children));
+        assertTrue(inlist("keys", children));
+        assertTrue(inlist("history", children));
+    }
+
+    # --- Stream CRUD tests ---
+
+    streamCreateTest() {
+        NatsJetStreamDataProvider dp({"url": url});
+        AbstractDataProvider create_dp = dp.getChildProvider("streams").getChildProvider("create");
+
+        string stream_name = uniqueName("DPCR");
+        auto result = create_dp.doRequest({
+            "name": stream_name,
+            "subjects": (stream_name + ".>",),
+            "storage": NATS_STORAGE_MEMORY,
+        });
+
+        assertEq(stream_name, result.config.name);
+        assertEq(0, result.messages);
+
+        # Cleanup
+        AbstractDataProvider delete_dp = dp.getChildProvider("streams").getChildProvider("delete");
+        delete_dp.doRequest({"name": stream_name});
+    }
+
+    streamInfoTest() {
+        NatsJetStreamDataProvider dp({"url": url});
+
+        string stream_name = uniqueName("DPIN");
+
+        # Create stream first
+        AbstractDataProvider create_dp = dp.getChildProvider("streams").getChildProvider("create");
+        create_dp.doRequest({
+            "name": stream_name,
+            "subjects": (stream_name + ".>",),
+            "storage": NATS_STORAGE_MEMORY,
+        });
+
+        # Get stream info via data provider
+        AbstractDataProvider info_dp = dp.getChildProvider("streams").getChildProvider("info");
+        auto result = info_dp.doRequest({"name": stream_name});
+
+        assertEq(stream_name, result.config.name);
+        assertEq(0, result.messages);
+        assertEq(0, result.bytes);
+
+        # Cleanup
+        AbstractDataProvider delete_dp = dp.getChildProvider("streams").getChildProvider("delete");
+        delete_dp.doRequest({"name": stream_name});
+    }
+
+    streamPurgeTest() {
+        NatsJetStreamDataProvider dp({"url": url});
+
+        string stream_name = uniqueName("DPPU");
+        string subject = stream_name + ".data";
+
+        # Create stream
+        AbstractDataProvider create_dp = dp.getChildProvider("streams").getChildProvider("create");
+        create_dp.doRequest({
+            "name": stream_name,
+            "subjects": (stream_name + ".>",),
+            "storage": NATS_STORAGE_MEMORY,
+        });
+
+        # Publish some messages via JetStream to the stream
+        AbstractDataProvider pub_dp = dp.getChildProvider("publish");
+        for (int i = 0; i < 5; ++i) {
+            pub_dp.doRequest({
+                "subject": subject,
+                "string_data": string(i),
+            });
+        }
+
+        # Verify messages exist
+        AbstractDataProvider info_dp = dp.getChildProvider("streams").getChildProvider("info");
+        auto info_before = info_dp.doRequest({"name": stream_name});
+        assertEq(5, info_before.messages);
+
+        # Purge via data provider
+        AbstractDataProvider purge_dp = dp.getChildProvider("streams").getChildProvider("purge");
+        purge_dp.doRequest({"name": stream_name});
+
+        # Verify purge
+        auto info_after = info_dp.doRequest({"name": stream_name});
+        assertEq(0, info_after.messages);
+
+        # Cleanup
+        AbstractDataProvider delete_dp = dp.getChildProvider("streams").getChildProvider("delete");
+        delete_dp.doRequest({"name": stream_name});
+    }
+
+    streamDeleteTest() {
+        NatsJetStreamDataProvider dp({"url": url});
+
+        string stream_name = uniqueName("DPDE");
+
+        # Create stream
+        AbstractDataProvider create_dp = dp.getChildProvider("streams").getChildProvider("create");
+        create_dp.doRequest({
+            "name": stream_name,
+            "subjects": (stream_name + ".>",),
+            "storage": NATS_STORAGE_MEMORY,
+        });
+
+        # Delete via data provider
+        AbstractDataProvider delete_dp = dp.getChildProvider("streams").getChildProvider("delete");
+        delete_dp.doRequest({"name": stream_name});
+
+        # Getting info on deleted stream should throw
+        AbstractDataProvider info_dp = dp.getChildProvider("streams").getChildProvider("info");
+        assertThrows("NATS-JETSTREAM-ERROR", sub () {
+            info_dp.doRequest({"name": stream_name});
+        });
+    }
+
+    # --- Consumer CRUD tests ---
+
+    consumerCreateTest() {
+        NatsJetStreamDataProvider dp({"url": url});
+
+        string stream_name = uniqueName("DPCC");
+
+        # Create stream first
+        AbstractDataProvider stream_create_dp = dp.getChildProvider("streams")
+            .getChildProvider("create");
+        stream_create_dp.doRequest({
+            "name": stream_name,
+            "subjects": (stream_name + ".>",),
+            "storage": NATS_STORAGE_MEMORY,
+        });
+
+        # Create consumer via data provider
+        string consumer_name = "dp-test-consumer";
+        AbstractDataProvider consumer_create_dp = dp.getChildProvider("consumers")
+            .getChildProvider("create");
+        auto result = consumer_create_dp.doRequest({
+            "stream": stream_name,
+            "durable_name": consumer_name,
+            "ack_policy": NATS_ACK_EXPLICIT,
+        });
+
+        assertEq(consumer_name, result.config.durable_name);
+
+        # Cleanup
+        AbstractDataProvider delete_dp = dp.getChildProvider("streams").getChildProvider("delete");
+        delete_dp.doRequest({"name": stream_name});
+    }
+
+    consumerInfoTest() {
+        NatsJetStreamDataProvider dp({"url": url});
+
+        string stream_name = uniqueName("DPCI");
+
+        # Create stream
+        AbstractDataProvider stream_create_dp = dp.getChildProvider("streams")
+            .getChildProvider("create");
+        stream_create_dp.doRequest({
+            "name": stream_name,
+            "subjects": (stream_name + ".>",),
+            "storage": NATS_STORAGE_MEMORY,
+        });
+
+        # Create consumer
+        string consumer_name = "dp-info-consumer";
+        AbstractDataProvider consumer_create_dp = dp.getChildProvider("consumers")
+            .getChildProvider("create");
+        consumer_create_dp.doRequest({
+            "stream": stream_name,
+            "durable_name": consumer_name,
+            "ack_policy": NATS_ACK_EXPLICIT,
+        });
+
+        # Get consumer info via data provider
+        AbstractDataProvider consumer_info_dp = dp.getChildProvider("consumers")
+            .getChildProvider("info");
+        auto result = consumer_info_dp.doRequest({
+            "stream": stream_name,
+            "consumer": consumer_name,
+        });
+
+        assertEq(consumer_name, result.config.durable_name);
+        assertEq(0, result.delivered);
+        assertEq(0, result.ack_pending);
+
+        # Cleanup
+        AbstractDataProvider delete_dp = dp.getChildProvider("streams").getChildProvider("delete");
+        delete_dp.doRequest({"name": stream_name});
+    }
+
+    consumerDeleteTest() {
+        NatsJetStreamDataProvider dp({"url": url});
+
+        string stream_name = uniqueName("DPCD");
+
+        # Create stream
+        AbstractDataProvider stream_create_dp = dp.getChildProvider("streams")
+            .getChildProvider("create");
+        stream_create_dp.doRequest({
+            "name": stream_name,
+            "subjects": (stream_name + ".>",),
+            "storage": NATS_STORAGE_MEMORY,
+        });
+
+        # Create consumer
+        string consumer_name = "dp-del-consumer";
+        AbstractDataProvider consumer_create_dp = dp.getChildProvider("consumers")
+            .getChildProvider("create");
+        consumer_create_dp.doRequest({
+            "stream": stream_name,
+            "durable_name": consumer_name,
+            "ack_policy": NATS_ACK_EXPLICIT,
+        });
+
+        # Delete consumer via data provider
+        AbstractDataProvider consumer_delete_dp = dp.getChildProvider("consumers")
+            .getChildProvider("delete");
+        consumer_delete_dp.doRequest({
+            "stream": stream_name,
+            "consumer": consumer_name,
+        });
+
+        # Getting info on deleted consumer should throw
+        AbstractDataProvider consumer_info_dp = dp.getChildProvider("consumers")
+            .getChildProvider("info");
+        assertThrows("NATS-JETSTREAM-ERROR", sub () {
+            consumer_info_dp.doRequest({
+                "stream": stream_name,
+                "consumer": consumer_name,
+            });
+        });
+
+        # Cleanup
+        AbstractDataProvider delete_dp = dp.getChildProvider("streams").getChildProvider("delete");
+        delete_dp.doRequest({"name": stream_name});
+    }
+
+    # --- JS publish tests ---
+
+    jsPublishTest() {
+        NatsJetStreamDataProvider dp({"url": url});
+
+        string stream_name = uniqueName("DPJP");
+        string subject = stream_name + ".msg";
+
+        # Create stream first
+        AbstractDataProvider create_dp = dp.getChildProvider("streams").getChildProvider("create");
+        create_dp.doRequest({
+            "name": stream_name,
+            "subjects": (stream_name + ".>",),
+            "storage": NATS_STORAGE_MEMORY,
+        });
+
+        # Publish via data provider
+        AbstractDataProvider pub_dp = dp.getChildProvider("publish");
+        auto ack = pub_dp.doRequest({
+            "subject": subject,
+            "string_data": "js-dp-test",
+        });
+
+        assertEq(stream_name, ack.stream);
+        assertTrue(ack.sequence > 0);
+        assertFalse(ack.duplicate);
+
+        # Publish with binary data
+        auto ack2 = pub_dp.doRequest({
+            "subject": subject,
+            "data": binary("binary-js-dp"),
+        });
+        assertTrue(ack2.sequence > ack.sequence);
+
+        # Cleanup
+        AbstractDataProvider delete_dp = dp.getChildProvider("streams").getChildProvider("delete");
+        delete_dp.doRequest({"name": stream_name});
+    }
+
+    # --- KV store tests ---
+
+    kvPutTest() {
+        NatsJetStreamDataProvider dp({"url": url});
+
+        string bucket = uniqueName("dpkvput");
+
+        # Create KV bucket via direct JetStream API
+        NatsClient client(url);
+        JetStreamContext js = client.getConnection().jetStream();
+        js.createKeyValue(<NatsKVConfig>{
+            "bucket": bucket,
+            "storage": NATS_STORAGE_MEMORY,
+        });
+
+        # Put via data provider
+        AbstractDataProvider put_dp = dp.getChildProvider("kv").getChildProvider("put");
+        auto result = put_dp.doRequest({
+            "bucket": bucket,
+            "key": "testkey",
+            "string_data": "testvalue",
+        });
+
+        assertTrue(result.revision > 0);
+
+        # Put with binary data
+        auto result2 = put_dp.doRequest({
+            "bucket": bucket,
+            "key": "binkey",
+            "data": binary("binvalue"),
+        });
+        assertTrue(result2.revision > 0);
+
+        # Cleanup
+        js.deleteKeyValue(bucket);
+        client.close();
+    }
+
+    kvGetTest() {
+        NatsJetStreamDataProvider dp({"url": url});
+
+        string bucket = uniqueName("dpkvget");
+
+        # Create KV bucket and put a value
+        NatsClient client(url);
+        JetStreamContext js = client.getConnection().jetStream();
+        NatsKeyValueStore kv = js.createKeyValue(<NatsKVConfig>{
+            "bucket": bucket,
+            "storage": NATS_STORAGE_MEMORY,
+        });
+        kv.putString("mykey", "myvalue");
+
+        # Get via data provider
+        AbstractDataProvider get_dp = dp.getChildProvider("kv").getChildProvider("get");
+        auto result = get_dp.doRequest({
+            "bucket": bucket,
+            "key": "mykey",
+        });
+
+        assertEq(True, exists result);
+        assertEq("mykey", result.key);
+        assertEq("myvalue", result.value.toString());
+        assertEq(bucket, result.bucket);
+        assertTrue(result.revision > 0);
+
+        # Cleanup
+        js.deleteKeyValue(bucket);
+        client.close();
+    }
+
+    kvDeleteTest() {
+        NatsJetStreamDataProvider dp({"url": url});
+
+        string bucket = uniqueName("dpkvdel");
+
+        # Create KV bucket and put a value
+        NatsClient client(url);
+        JetStreamContext js = client.getConnection().jetStream();
+        NatsKeyValueStore kv = js.createKeyValue(<NatsKVConfig>{
+            "bucket": bucket,
+            "storage": NATS_STORAGE_MEMORY,
+        });
+        kv.putString("delkey", "to-delete");
+
+        # Delete via data provider
+        AbstractDataProvider delete_dp = dp.getChildProvider("kv").getChildProvider("delete");
+        delete_dp.doRequest({
+            "bucket": bucket,
+            "key": "delkey",
+        });
+
+        # After soft delete, get may return NOTHING or a deleted marker
+        *hash<NatsKVEntry> entry = kv.get("delkey");
+        if (entry) {
+            assertEq(NATS_KV_OP_DELETE, entry.operation);
+        }
+
+        # Cleanup
+        js.deleteKeyValue(bucket);
+        client.close();
+    }
+
+    kvKeysTest() {
+        NatsJetStreamDataProvider dp({"url": url});
+
+        string bucket = uniqueName("dpkvkeys");
+
+        # Create KV bucket and add keys
+        NatsClient client(url);
+        JetStreamContext js = client.getConnection().jetStream();
+        NatsKeyValueStore kv = js.createKeyValue(<NatsKVConfig>{
+            "bucket": bucket,
+            "storage": NATS_STORAGE_MEMORY,
+        });
+        kv.putString("key1", "val1");
+        kv.putString("key2", "val2");
+        kv.putString("key3", "val3");
+
+        # List keys via data provider
+        AbstractDataProvider keys_dp = dp.getChildProvider("kv").getChildProvider("keys");
+        auto result = keys_dp.doRequest({
+            "bucket": bucket,
+        });
+
+        assertEq(True, exists result.keys);
+        assertEq(3, result.keys.size());
+        assertTrue(inlist("key1", result.keys));
+        assertTrue(inlist("key2", result.keys));
+        assertTrue(inlist("key3", result.keys));
+
+        # Cleanup
+        js.deleteKeyValue(bucket);
+        client.close();
+    }
+
+    kvHistoryTest() {
+        NatsJetStreamDataProvider dp({"url": url});
+
+        string bucket = uniqueName("dpkvhist");
+
+        # Create KV bucket with history and put multiple revisions
+        NatsClient client(url);
+        JetStreamContext js = client.getConnection().jetStream();
+        NatsKeyValueStore kv = js.createKeyValue(<NatsKVConfig>{
+            "bucket": bucket,
+            "storage": NATS_STORAGE_MEMORY,
+            "history": 10,
+        });
+        kv.putString("hkey", "v1");
+        kv.putString("hkey", "v2");
+        kv.putString("hkey", "v3");
+
+        # Get history via data provider
+        AbstractDataProvider history_dp = dp.getChildProvider("kv").getChildProvider("history");
+        auto result = history_dp.doRequest({
+            "bucket": bucket,
+            "key": "hkey",
+        });
+
+        assertEq(True, exists result.entries);
+        assertEq(3, result.entries.size());
+
+        # Revisions should be monotonically increasing
+        assertTrue(result.entries[0].revision < result.entries[1].revision);
+        assertTrue(result.entries[1].revision < result.entries[2].revision);
+
+        # Values should match
+        assertEq("v1", result.entries[0].value.toString());
+        assertEq("v2", result.entries[1].value.toString());
+        assertEq("v3", result.entries[2].value.toString());
+
+        # Cleanup
+        js.deleteKeyValue(bucket);
+        client.close();
+    }
+
+    # --- Negative tests ---
+
+    streamInfoNotFoundTest() {
+        NatsJetStreamDataProvider dp({"url": url});
+        AbstractDataProvider info_dp = dp.getChildProvider("streams").getChildProvider("info");
+
+        assertThrows("NATS-JETSTREAM-ERROR", sub () {
+            info_dp.doRequest({"name": "NONEXISTENT_STREAM"});
+        });
+    }
+
+    kvGetNotFoundTest() {
+        NatsJetStreamDataProvider dp({"url": url});
+
+        string bucket = uniqueName("dpkvnf");
+
+        # Create empty KV bucket
+        NatsClient client(url);
+        JetStreamContext js = client.getConnection().jetStream();
+        js.createKeyValue(<NatsKVConfig>{
+            "bucket": bucket,
+            "storage": NATS_STORAGE_MEMORY,
+        });
+
+        # Get non-existent key via data provider
+        AbstractDataProvider get_dp = dp.getChildProvider("kv").getChildProvider("get");
+        auto result = get_dp.doRequest({
+            "bucket": bucket,
+            "key": "nonexistent",
+        });
+
+        # Non-existent key should return NOTHING
+        assertNothing(result);
+
+        # Cleanup
+        js.deleteKeyValue(bucket);
+        client.close();
+    }
+%endif
+}

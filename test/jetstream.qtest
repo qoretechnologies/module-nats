@@ -1,0 +1,1025 @@
+#!/usr/bin/env qore
+# -*- mode: qore; indent-tabs-mode: nil -*-
+
+/*
+    Copyright (C) 2026 Qore Technologies, s.r.o., all rights reserved
+
+    Permission is hereby granted, free of charge, to any person obtaining a
+    copy of this software and associated documentation files (the "Software"),
+    to deal in the Software without restriction, including without limitation
+    the rights to use, copy, modify, merge, publish, distribute, sublicense,
+    and/or sell copies of the Software, and to permit persons to whom the
+    Software is furnished to do so, subject to the following conditions:
+
+    The above copyright notice and this permission notice shall be included in
+    all copies or substantial portions of the Software.
+
+    THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+    IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+    FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+    AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+    DEALINGS IN THE SOFTWARE.
+
+    NATS JetStream test suite
+*/
+
+%modern
+
+%requires QUnit
+%requires nats
+%requires NatsUtil
+
+%exec-class JetStreamTest
+
+public class JetStreamTest inherits QUnit::Test {
+    private {
+        int port;
+        string url;
+        *int nats_pid;
+        string pid_file;
+    }
+
+    constructor() : QUnit::Test("JetStreamTest", "1.0") {
+        # Stream CRUD tests
+        addTestCase("stream create test", \streamCreateTest());
+        addTestCase("stream info test", \streamInfoTest());
+        addTestCase("stream update test", \streamUpdateTest());
+        addTestCase("stream purge test", \streamPurgeTest());
+        addTestCase("stream delete test", \streamDeleteTest());
+
+        # Consumer CRUD tests
+        addTestCase("consumer create test", \consumerCreateTest());
+        addTestCase("consumer info test", \consumerInfoTest());
+        addTestCase("consumer delete test", \consumerDeleteTest());
+
+        # JS publish tests
+        addTestCase("js publish ack test", \jsPublishAckTest());
+        addTestCase("js publish multiple test", \jsPublishMultipleTest());
+
+        # JS subscribe tests
+        addTestCase("js push subscribe test", \jsPushSubscribeTest());
+        addTestCase("js pull subscribe test", \jsPullSubscribeTest());
+        addTestCase("js pull ack test", \jsPullAckTest());
+        addTestCase("js pull nak test", \jsPullNakTest());
+        addTestCase("js pull in progress test", \jsPullInProgressTest());
+        addTestCase("js pull term test", \jsPullTermTest());
+
+        # Delivery policy tests
+        addTestCase("deliver all policy test", \deliverAllTest());
+        addTestCase("deliver last policy test", \deliverLastTest());
+        addTestCase("deliver new policy test", \deliverNewTest());
+
+        # KV store tests
+        addTestCase("kv create bucket test", \kvCreateBucketTest());
+        addTestCase("kv put get test", \kvPutGetTest());
+        addTestCase("kv put string test", \kvPutStringTest());
+        addTestCase("kv delete test", \kvDeleteTest());
+        addTestCase("kv purge test", \kvPurgeTest());
+        addTestCase("kv keys test", \kvKeysTest());
+        addTestCase("kv history test", \kvHistoryTest());
+        addTestCase("kv create if not exists test", \kvCreateIfNotExistsTest());
+        addTestCase("kv update cas test", \kvUpdateCasTest());
+        addTestCase("kv bucket name test", \kvBucketNameTest());
+        addTestCase("kv delete bucket test", \kvDeleteBucketTest());
+
+        # Negative tests
+        addTestCase("stream not found test", \streamNotFoundTest());
+        addTestCase("consumer not found test", \consumerNotFoundTest());
+        addTestCase("kv bucket not found test", \kvBucketNotFoundTest());
+        addTestCase("kv key not found test", \kvKeyNotFoundTest());
+        addTestCase("kv revision conflict test", \kvRevisionConflictTest());
+
+        set_return_value(main());
+    }
+
+    private startServer() {
+        port = 10000 + (rand() % 50000);
+        pid_file = sprintf("/tmp/nats-js-test-%d.pid", port);
+        string cmd = sprintf("nats-server -p %d -a 127.0.0.1 --pid %s -js &", port, pid_file);
+        system(cmd);
+        # Wait for pid file
+        for (int i = 0; i < 50; ++i) {
+            if (is_file(pid_file)) {
+                nats_pid = trim(ReadOnlyFile::readTextFile(pid_file)).toInt();
+                break;
+            }
+            usleep(100000);
+        }
+        if (!nats_pid) {
+            throw "NATS-TEST-ERROR", sprintf("nats-server (JetStream) failed to start on port %d",
+                port);
+        }
+        url = sprintf("nats://127.0.0.1:%d", port);
+    }
+
+    private stopServer() {
+        if (nats_pid) {
+            kill(nats_pid, SIGTERM);
+            for (int i = 0; i < 50; ++i) {
+                if (!is_file(sprintf("/proc/%d/status", nats_pid))) {
+                    break;
+                }
+                usleep(100000);
+            }
+            nats_pid = NOTHING;
+        }
+        if (is_file(pid_file)) {
+            unlink(pid_file);
+        }
+    }
+
+    globalSetUp() {
+        startServer();
+    }
+
+    globalTearDown() {
+        stopServer();
+    }
+
+    # Helper to create a unique stream name
+    private string uniqueName(string prefix) {
+        return sprintf("%s_%d_%d", prefix, port, rand() % 100000);
+    }
+
+    # --- Stream CRUD tests ---
+
+    streamCreateTest() {
+        NatsConnection conn(url);
+        JetStreamContext js = conn.jetStream();
+
+        string stream_name = uniqueName("STR");
+        hash<NatsStreamInfo> info = js.addStream(<NatsStreamConfig>{
+            "name": stream_name,
+            "subjects": (stream_name + ".>",),
+            "storage": NATS_STORAGE_MEMORY,
+        });
+
+        assertEq(stream_name, info.config.name);
+        assertEq(0, info.messages);
+
+        # Cleanup
+        js.deleteStream(stream_name);
+        conn.close();
+    }
+
+    streamInfoTest() {
+        NatsConnection conn(url);
+        JetStreamContext js = conn.jetStream();
+
+        string stream_name = uniqueName("STRI");
+        js.addStream(<NatsStreamConfig>{
+            "name": stream_name,
+            "subjects": (stream_name + ".>",),
+            "storage": NATS_STORAGE_MEMORY,
+        });
+
+        hash<NatsStreamInfo> info = js.getStreamInfo(stream_name);
+        assertEq(stream_name, info.config.name);
+        assertEq(0, info.messages);
+        assertEq(0, info.bytes);
+
+        js.deleteStream(stream_name);
+        conn.close();
+    }
+
+    streamUpdateTest() {
+        NatsConnection conn(url);
+        JetStreamContext js = conn.jetStream();
+
+        string stream_name = uniqueName("STRU");
+        js.addStream(<NatsStreamConfig>{
+            "name": stream_name,
+            "subjects": (stream_name + ".>",),
+            "storage": NATS_STORAGE_MEMORY,
+        });
+
+        hash<NatsStreamInfo> info = js.updateStream(<NatsStreamConfig>{
+            "name": stream_name,
+            "subjects": (stream_name + ".>",),
+            "storage": NATS_STORAGE_MEMORY,
+            "description": "updated description",
+        });
+        assertEq(stream_name, info.config.name);
+
+        js.deleteStream(stream_name);
+        conn.close();
+    }
+
+    streamPurgeTest() {
+        NatsConnection conn(url);
+        JetStreamContext js = conn.jetStream();
+
+        string stream_name = uniqueName("STRP");
+        string subject = stream_name + ".data";
+        js.addStream(<NatsStreamConfig>{
+            "name": stream_name,
+            "subjects": (stream_name + ".>",),
+            "storage": NATS_STORAGE_MEMORY,
+        });
+
+        # Publish some messages
+        for (int i = 0; i < 5; ++i) {
+            js.publish(subject, binary(string(i)));
+        }
+
+        hash<NatsStreamInfo> info_before = js.getStreamInfo(stream_name);
+        assertEq(5, info_before.messages);
+
+        js.purgeStream(stream_name);
+
+        hash<NatsStreamInfo> info_after = js.getStreamInfo(stream_name);
+        assertEq(0, info_after.messages);
+
+        js.deleteStream(stream_name);
+        conn.close();
+    }
+
+    streamDeleteTest() {
+        NatsConnection conn(url);
+        JetStreamContext js = conn.jetStream();
+
+        string stream_name = uniqueName("STRD");
+        js.addStream(<NatsStreamConfig>{
+            "name": stream_name,
+            "subjects": (stream_name + ".>",),
+            "storage": NATS_STORAGE_MEMORY,
+        });
+
+        js.deleteStream(stream_name);
+
+        # Getting info on deleted stream should throw
+        assertThrows("NATS-JETSTREAM-ERROR", sub () {
+            js.getStreamInfo(stream_name);
+        });
+
+        conn.close();
+    }
+
+    # --- Consumer CRUD tests ---
+
+    consumerCreateTest() {
+        NatsConnection conn(url);
+        JetStreamContext js = conn.jetStream();
+
+        string stream_name = uniqueName("CONC");
+        js.addStream(<NatsStreamConfig>{
+            "name": stream_name,
+            "subjects": (stream_name + ".>",),
+            "storage": NATS_STORAGE_MEMORY,
+        });
+
+        string consumer_name = "test-consumer";
+        hash<NatsConsumerInfo> info = js.addConsumer(stream_name, <NatsConsumerConfig>{
+            "durable_name": consumer_name,
+            "ack_policy": NATS_ACK_EXPLICIT,
+        });
+        assertEq(consumer_name, info.config.durable_name);
+
+        js.deleteStream(stream_name);
+        conn.close();
+    }
+
+    consumerInfoTest() {
+        NatsConnection conn(url);
+        JetStreamContext js = conn.jetStream();
+
+        string stream_name = uniqueName("CONI");
+        js.addStream(<NatsStreamConfig>{
+            "name": stream_name,
+            "subjects": (stream_name + ".>",),
+            "storage": NATS_STORAGE_MEMORY,
+        });
+
+        string consumer_name = "info-consumer";
+        js.addConsumer(stream_name, <NatsConsumerConfig>{
+            "durable_name": consumer_name,
+            "ack_policy": NATS_ACK_EXPLICIT,
+        });
+
+        hash<NatsConsumerInfo> info = js.getConsumerInfo(stream_name, consumer_name);
+        assertEq(consumer_name, info.config.durable_name);
+        assertEq(0, info.delivered);
+        assertEq(0, info.ack_pending);
+
+        js.deleteStream(stream_name);
+        conn.close();
+    }
+
+    consumerDeleteTest() {
+        NatsConnection conn(url);
+        JetStreamContext js = conn.jetStream();
+
+        string stream_name = uniqueName("COND");
+        js.addStream(<NatsStreamConfig>{
+            "name": stream_name,
+            "subjects": (stream_name + ".>",),
+            "storage": NATS_STORAGE_MEMORY,
+        });
+
+        string consumer_name = "del-consumer";
+        js.addConsumer(stream_name, <NatsConsumerConfig>{
+            "durable_name": consumer_name,
+            "ack_policy": NATS_ACK_EXPLICIT,
+        });
+
+        js.deleteConsumer(stream_name, consumer_name);
+
+        # Getting info on deleted consumer should throw
+        assertThrows("NATS-JETSTREAM-ERROR", sub () {
+            js.getConsumerInfo(stream_name, consumer_name);
+        });
+
+        js.deleteStream(stream_name);
+        conn.close();
+    }
+
+    # --- JS publish tests ---
+
+    jsPublishAckTest() {
+        NatsConnection conn(url);
+        JetStreamContext js = conn.jetStream();
+
+        string stream_name = uniqueName("JPUB");
+        string subject = stream_name + ".msg";
+        js.addStream(<NatsStreamConfig>{
+            "name": stream_name,
+            "subjects": (stream_name + ".>",),
+            "storage": NATS_STORAGE_MEMORY,
+        });
+
+        hash<NatsPubAck> ack = js.publish(subject, binary("test-data"));
+        assertEq(stream_name, ack.stream);
+        assertTrue(ack.sequence > 0);
+        assertFalse(ack.duplicate);
+
+        js.deleteStream(stream_name);
+        conn.close();
+    }
+
+    jsPublishMultipleTest() {
+        NatsConnection conn(url);
+        JetStreamContext js = conn.jetStream();
+
+        string stream_name = uniqueName("JMUL");
+        string subject = stream_name + ".msg";
+        js.addStream(<NatsStreamConfig>{
+            "name": stream_name,
+            "subjects": (stream_name + ".>",),
+            "storage": NATS_STORAGE_MEMORY,
+        });
+
+        list<int> seqs = ();
+        for (int i = 0; i < 5; ++i) {
+            hash<NatsPubAck> ack = js.publish(subject, binary(string(i)));
+            seqs += ack.sequence;
+        }
+
+        # Sequences should be monotonically increasing
+        for (int i = 1; i < seqs.size(); ++i) {
+            assertTrue(seqs[i] > seqs[i - 1]);
+        }
+
+        hash<NatsStreamInfo> info = js.getStreamInfo(stream_name);
+        assertEq(5, info.messages);
+
+        js.deleteStream(stream_name);
+        conn.close();
+    }
+
+    # --- JS subscribe tests ---
+
+    jsPushSubscribeTest() {
+        NatsConnection conn(url);
+        JetStreamContext js = conn.jetStream();
+
+        string stream_name = uniqueName("JPSH");
+        string subject = stream_name + ".msg";
+        js.addStream(<NatsStreamConfig>{
+            "name": stream_name,
+            "subjects": (stream_name + ".>",),
+            "storage": NATS_STORAGE_MEMORY,
+        });
+
+        # Publish first
+        js.publish(subject, binary("push-msg"));
+
+        # Push subscribe
+        NatsSubscription sub = js.subscribe(subject);
+        *hash<NatsMsgInfo> msg = sub.nextMsg(5s);
+        assertEq(True, exists msg);
+        assertEq(binary("push-msg"), msg.data);
+
+        sub.ack();
+        sub.unsubscribe();
+        js.deleteStream(stream_name);
+        conn.close();
+    }
+
+    jsPullSubscribeTest() {
+        NatsConnection conn(url);
+        JetStreamContext js = conn.jetStream();
+
+        string stream_name = uniqueName("JPLL");
+        string subject = stream_name + ".msg";
+        js.addStream(<NatsStreamConfig>{
+            "name": stream_name,
+            "subjects": (stream_name + ".>",),
+            "storage": NATS_STORAGE_MEMORY,
+        });
+
+        # Publish first
+        js.publish(subject, binary("pull-msg"));
+
+        # Pull subscribe with durable
+        string durable = "pull-consumer";
+        NatsSubscription sub = js.pullSubscribe(subject, durable);
+        *hash<NatsMsgInfo> msg = sub.nextMsg(5s);
+        assertEq(True, exists msg);
+        assertEq(binary("pull-msg"), msg.data);
+
+        sub.ack();
+        sub.unsubscribe();
+        js.deleteStream(stream_name);
+        conn.close();
+    }
+
+    jsPullAckTest() {
+        NatsConnection conn(url);
+        JetStreamContext js = conn.jetStream();
+
+        string stream_name = uniqueName("JACK");
+        string subject = stream_name + ".msg";
+        js.addStream(<NatsStreamConfig>{
+            "name": stream_name,
+            "subjects": (stream_name + ".>",),
+            "storage": NATS_STORAGE_MEMORY,
+        });
+
+        js.publish(subject, binary("ack-test"));
+
+        NatsSubscription sub = js.pullSubscribe(subject, "ack-consumer");
+        *hash<NatsMsgInfo> msg = sub.nextMsg(5s);
+        assertEq(True, exists msg);
+
+        # Ack should succeed
+        sub.ack();
+
+        sub.unsubscribe();
+        js.deleteStream(stream_name);
+        conn.close();
+    }
+
+    jsPullNakTest() {
+        NatsConnection conn(url);
+        JetStreamContext js = conn.jetStream();
+
+        string stream_name = uniqueName("JNAK");
+        string subject = stream_name + ".msg";
+        js.addStream(<NatsStreamConfig>{
+            "name": stream_name,
+            "subjects": (stream_name + ".>",),
+            "storage": NATS_STORAGE_MEMORY,
+        });
+
+        js.publish(subject, binary("nak-test"));
+
+        NatsSubscription sub = js.pullSubscribe(subject, "nak-consumer");
+        *hash<NatsMsgInfo> msg = sub.nextMsg(5s);
+        assertEq(True, exists msg);
+
+        # Nak should trigger redelivery
+        sub.nak();
+
+        # Message should be redelivered
+        *hash<NatsMsgInfo> msg2 = sub.nextMsg(5s);
+        assertEq(True, exists msg2);
+        assertEq(binary("nak-test"), msg2.data);
+
+        sub.ack();
+        sub.unsubscribe();
+        js.deleteStream(stream_name);
+        conn.close();
+    }
+
+    jsPullInProgressTest() {
+        NatsConnection conn(url);
+        JetStreamContext js = conn.jetStream();
+
+        string stream_name = uniqueName("JINP");
+        string subject = stream_name + ".msg";
+        js.addStream(<NatsStreamConfig>{
+            "name": stream_name,
+            "subjects": (stream_name + ".>",),
+            "storage": NATS_STORAGE_MEMORY,
+        });
+
+        js.publish(subject, binary("inprogress-test"));
+
+        NatsSubscription sub = js.pullSubscribe(subject, "inprogress-consumer");
+        *hash<NatsMsgInfo> msg = sub.nextMsg(5s);
+        assertEq(True, exists msg);
+
+        # Signal in-progress should succeed (resets ack wait timer)
+        sub.inProgress();
+
+        # Then ack
+        sub.ack();
+
+        sub.unsubscribe();
+        js.deleteStream(stream_name);
+        conn.close();
+    }
+
+    jsPullTermTest() {
+        NatsConnection conn(url);
+        JetStreamContext js = conn.jetStream();
+
+        string stream_name = uniqueName("JTRM");
+        string subject = stream_name + ".msg";
+        js.addStream(<NatsStreamConfig>{
+            "name": stream_name,
+            "subjects": (stream_name + ".>",),
+            "storage": NATS_STORAGE_MEMORY,
+        });
+
+        js.publish(subject, binary("term-test"));
+
+        NatsSubscription sub = js.pullSubscribe(subject, "term-consumer");
+        *hash<NatsMsgInfo> msg = sub.nextMsg(5s);
+        assertEq(True, exists msg);
+
+        # Term should stop redelivery
+        sub.term();
+
+        # Message should not be redelivered
+        *hash<NatsMsgInfo> msg2 = sub.nextMsg(2s);
+        assertNothing(msg2);
+
+        sub.unsubscribe();
+        js.deleteStream(stream_name);
+        conn.close();
+    }
+
+    # --- Delivery policy tests ---
+
+    deliverAllTest() {
+        NatsConnection conn(url);
+        JetStreamContext js = conn.jetStream();
+
+        string stream_name = uniqueName("DALL");
+        string subject = stream_name + ".msg";
+        js.addStream(<NatsStreamConfig>{
+            "name": stream_name,
+            "subjects": (stream_name + ".>",),
+            "storage": NATS_STORAGE_MEMORY,
+        });
+
+        # Publish messages before creating consumer
+        for (int i = 0; i < 3; ++i) {
+            js.publish(subject, binary(string(i)));
+        }
+
+        js.addConsumer(stream_name, <NatsConsumerConfig>{
+            "durable_name": "deliver-all",
+            "deliver_policy": NATS_DELIVER_ALL,
+            "ack_policy": NATS_ACK_EXPLICIT,
+        });
+
+        NatsSubscription sub = js.pullSubscribe(subject, "deliver-all");
+
+        # Should receive all 3 messages
+        for (int i = 0; i < 3; ++i) {
+            *hash<NatsMsgInfo> msg = sub.nextMsg(5s);
+            assertEq(True, exists msg);
+            assertEq(binary(string(i)), msg.data);
+            sub.ack();
+        }
+
+        sub.unsubscribe();
+        js.deleteStream(stream_name);
+        conn.close();
+    }
+
+    deliverLastTest() {
+        NatsConnection conn(url);
+        JetStreamContext js = conn.jetStream();
+
+        string stream_name = uniqueName("DLST");
+        string subject = stream_name + ".msg";
+        js.addStream(<NatsStreamConfig>{
+            "name": stream_name,
+            "subjects": (stream_name + ".>",),
+            "storage": NATS_STORAGE_MEMORY,
+        });
+
+        # Publish messages
+        for (int i = 0; i < 3; ++i) {
+            js.publish(subject, binary(string(i)));
+        }
+
+        js.addConsumer(stream_name, <NatsConsumerConfig>{
+            "durable_name": "deliver-last",
+            "deliver_policy": NATS_DELIVER_LAST,
+            "ack_policy": NATS_ACK_EXPLICIT,
+        });
+
+        NatsSubscription sub = js.pullSubscribe(subject, "deliver-last");
+
+        # Should receive only the last message
+        *hash<NatsMsgInfo> msg = sub.nextMsg(5s);
+        assertEq(True, exists msg);
+        assertEq(binary("2"), msg.data);
+        sub.ack();
+
+        sub.unsubscribe();
+        js.deleteStream(stream_name);
+        conn.close();
+    }
+
+    deliverNewTest() {
+        NatsConnection conn(url);
+        JetStreamContext js = conn.jetStream();
+
+        string stream_name = uniqueName("DNEW");
+        string subject = stream_name + ".msg";
+        js.addStream(<NatsStreamConfig>{
+            "name": stream_name,
+            "subjects": (stream_name + ".>",),
+            "storage": NATS_STORAGE_MEMORY,
+        });
+
+        # Publish messages before consumer
+        js.publish(subject, binary("old"));
+
+        js.addConsumer(stream_name, <NatsConsumerConfig>{
+            "durable_name": "deliver-new",
+            "deliver_policy": NATS_DELIVER_NEW,
+            "ack_policy": NATS_ACK_EXPLICIT,
+        });
+
+        NatsSubscription sub = js.pullSubscribe(subject, "deliver-new");
+
+        # Old message should not be delivered
+        *hash<NatsMsgInfo> msg_old = sub.nextMsg(1s);
+        assertNothing(msg_old);
+
+        # Publish new message
+        js.publish(subject, binary("new"));
+
+        # New message should be delivered
+        *hash<NatsMsgInfo> msg_new = sub.nextMsg(5s);
+        assertEq(True, exists msg_new);
+        assertEq(binary("new"), msg_new.data);
+        sub.ack();
+
+        sub.unsubscribe();
+        js.deleteStream(stream_name);
+        conn.close();
+    }
+
+    # --- KV store tests ---
+
+    kvCreateBucketTest() {
+        NatsConnection conn(url);
+        JetStreamContext js = conn.jetStream();
+
+        string bucket = uniqueName("kvbkt");
+        NatsKeyValueStore kv = js.createKeyValue(<NatsKVConfig>{
+            "bucket": bucket,
+            "storage": NATS_STORAGE_MEMORY,
+        });
+
+        assertEq(bucket, kv.bucketName());
+
+        js.deleteKeyValue(bucket);
+        conn.close();
+    }
+
+    kvPutGetTest() {
+        NatsConnection conn(url);
+        JetStreamContext js = conn.jetStream();
+
+        string bucket = uniqueName("kvpg");
+        NatsKeyValueStore kv = js.createKeyValue(<NatsKVConfig>{
+            "bucket": bucket,
+            "storage": NATS_STORAGE_MEMORY,
+        });
+
+        binary val = binary("test-value");
+        int rev = kv.put("mykey", val);
+        assertTrue(rev > 0);
+
+        *hash<NatsKVEntry> entry = kv.get("mykey");
+        assertEq(True, exists entry);
+        assertEq("mykey", entry.key);
+        assertEq(val, entry.value);
+        assertEq(rev, entry.revision);
+        assertEq(NATS_KV_OP_PUT, entry.operation);
+        assertEq(bucket, entry.bucket);
+
+        js.deleteKeyValue(bucket);
+        conn.close();
+    }
+
+    kvPutStringTest() {
+        NatsConnection conn(url);
+        JetStreamContext js = conn.jetStream();
+
+        string bucket = uniqueName("kvps");
+        NatsKeyValueStore kv = js.createKeyValue(<NatsKVConfig>{
+            "bucket": bucket,
+            "storage": NATS_STORAGE_MEMORY,
+        });
+
+        int rev = kv.putString("strkey", "hello world");
+        assertTrue(rev > 0);
+
+        *hash<NatsKVEntry> entry = kv.get("strkey");
+        assertEq(True, exists entry);
+        assertEq("hello world", entry.value.toString());
+
+        js.deleteKeyValue(bucket);
+        conn.close();
+    }
+
+    kvDeleteTest() {
+        NatsConnection conn(url);
+        JetStreamContext js = conn.jetStream();
+
+        string bucket = uniqueName("kvdel");
+        NatsKeyValueStore kv = js.createKeyValue(<NatsKVConfig>{
+            "bucket": bucket,
+            "storage": NATS_STORAGE_MEMORY,
+        });
+
+        kv.putString("delkey", "to-delete");
+        kv.delete("delkey");
+
+        # After soft delete, get may return NOTHING or a deleted marker
+        *hash<NatsKVEntry> entry = kv.get("delkey");
+        if (entry) {
+            assertEq(NATS_KV_OP_DELETE, entry.operation);
+        }
+
+        js.deleteKeyValue(bucket);
+        conn.close();
+    }
+
+    kvPurgeTest() {
+        NatsConnection conn(url);
+        JetStreamContext js = conn.jetStream();
+
+        string bucket = uniqueName("kvpur");
+        NatsKeyValueStore kv = js.createKeyValue(<NatsKVConfig>{
+            "bucket": bucket,
+            "storage": NATS_STORAGE_MEMORY,
+            "history": 5,
+        });
+
+        # Put multiple revisions
+        kv.putString("purgekey", "v1");
+        kv.putString("purgekey", "v2");
+        kv.putString("purgekey", "v3");
+
+        kv.purge("purgekey");
+
+        # After purge, history should be cleared
+        *hash<NatsKVEntry> entry = kv.get("purgekey");
+        if (entry) {
+            assertEq(NATS_KV_OP_PURGE, entry.operation);
+        }
+
+        js.deleteKeyValue(bucket);
+        conn.close();
+    }
+
+    kvKeysTest() {
+        NatsConnection conn(url);
+        JetStreamContext js = conn.jetStream();
+
+        string bucket = uniqueName("kvkeys");
+        NatsKeyValueStore kv = js.createKeyValue(<NatsKVConfig>{
+            "bucket": bucket,
+            "storage": NATS_STORAGE_MEMORY,
+        });
+
+        kv.putString("key1", "val1");
+        kv.putString("key2", "val2");
+        kv.putString("key3", "val3");
+
+        list<string> keys = kv.keys();
+        assertEq(3, keys.size());
+        assertTrue(inlist("key1", keys));
+        assertTrue(inlist("key2", keys));
+        assertTrue(inlist("key3", keys));
+
+        js.deleteKeyValue(bucket);
+        conn.close();
+    }
+
+    kvHistoryTest() {
+        NatsConnection conn(url);
+        JetStreamContext js = conn.jetStream();
+
+        string bucket = uniqueName("kvhist");
+        NatsKeyValueStore kv = js.createKeyValue(<NatsKVConfig>{
+            "bucket": bucket,
+            "storage": NATS_STORAGE_MEMORY,
+            "history": 10,
+        });
+
+        kv.putString("hkey", "v1");
+        kv.putString("hkey", "v2");
+        kv.putString("hkey", "v3");
+
+        list<hash<NatsKVEntry>> hist = kv.history("hkey");
+        assertEq(3, hist.size());
+
+        # Revisions should be monotonically increasing
+        assertTrue(hist[0].revision < hist[1].revision);
+        assertTrue(hist[1].revision < hist[2].revision);
+
+        # Values should match
+        assertEq("v1", hist[0].value.toString());
+        assertEq("v2", hist[1].value.toString());
+        assertEq("v3", hist[2].value.toString());
+
+        js.deleteKeyValue(bucket);
+        conn.close();
+    }
+
+    kvCreateIfNotExistsTest() {
+        NatsConnection conn(url);
+        JetStreamContext js = conn.jetStream();
+
+        string bucket = uniqueName("kvcreate");
+        NatsKeyValueStore kv = js.createKeyValue(<NatsKVConfig>{
+            "bucket": bucket,
+            "storage": NATS_STORAGE_MEMORY,
+        });
+
+        # First create should succeed
+        int rev = kv.create("newkey", binary("first"));
+        assertTrue(rev > 0);
+
+        # Second create should fail (key exists)
+        assertThrows("NATS-KV-ERROR", sub () {
+            kv.create("newkey", binary("second"));
+        });
+
+        js.deleteKeyValue(bucket);
+        conn.close();
+    }
+
+    kvUpdateCasTest() {
+        NatsConnection conn(url);
+        JetStreamContext js = conn.jetStream();
+
+        string bucket = uniqueName("kvupd");
+        NatsKeyValueStore kv = js.createKeyValue(<NatsKVConfig>{
+            "bucket": bucket,
+            "storage": NATS_STORAGE_MEMORY,
+        });
+
+        int rev1 = kv.putString("caskey", "original");
+
+        # CAS update with correct revision should succeed
+        int rev2 = kv.update("caskey", binary("updated"), rev1);
+        assertTrue(rev2 > rev1);
+
+        # Verify update
+        *hash<NatsKVEntry> entry = kv.get("caskey");
+        assertEq("updated", entry.value.toString());
+        assertEq(rev2, entry.revision);
+
+        # CAS update with wrong revision should fail
+        assertThrows("NATS-KV-ERROR", sub () {
+            kv.update("caskey", binary("conflict"), rev1);
+        });
+
+        js.deleteKeyValue(bucket);
+        conn.close();
+    }
+
+    kvBucketNameTest() {
+        NatsConnection conn(url);
+        JetStreamContext js = conn.jetStream();
+
+        string bucket = uniqueName("kvname");
+        NatsKeyValueStore kv = js.createKeyValue(<NatsKVConfig>{
+            "bucket": bucket,
+            "storage": NATS_STORAGE_MEMORY,
+        });
+
+        assertEq(bucket, kv.bucketName());
+
+        js.deleteKeyValue(bucket);
+        conn.close();
+    }
+
+    kvDeleteBucketTest() {
+        NatsConnection conn(url);
+        JetStreamContext js = conn.jetStream();
+
+        string bucket = uniqueName("kvdelbkt");
+        js.createKeyValue(<NatsKVConfig>{
+            "bucket": bucket,
+            "storage": NATS_STORAGE_MEMORY,
+        });
+
+        js.deleteKeyValue(bucket);
+
+        # Opening deleted bucket should throw
+        assertThrows("NATS-KV-ERROR", sub () {
+            js.keyValue(bucket);
+        });
+
+        conn.close();
+    }
+
+    # --- Negative tests ---
+
+    streamNotFoundTest() {
+        NatsConnection conn(url);
+        JetStreamContext js = conn.jetStream();
+
+        assertThrows("NATS-JETSTREAM-ERROR", sub () {
+            js.getStreamInfo("NONEXISTENT_STREAM");
+        });
+
+        conn.close();
+    }
+
+    consumerNotFoundTest() {
+        NatsConnection conn(url);
+        JetStreamContext js = conn.jetStream();
+
+        string stream_name = uniqueName("CNFE");
+        js.addStream(<NatsStreamConfig>{
+            "name": stream_name,
+            "subjects": (stream_name + ".>",),
+            "storage": NATS_STORAGE_MEMORY,
+        });
+
+        assertThrows("NATS-JETSTREAM-ERROR", sub () {
+            js.getConsumerInfo(stream_name, "nonexistent-consumer");
+        });
+
+        js.deleteStream(stream_name);
+        conn.close();
+    }
+
+    kvBucketNotFoundTest() {
+        NatsConnection conn(url);
+        JetStreamContext js = conn.jetStream();
+
+        assertThrows("NATS-KV-ERROR", sub () {
+            js.keyValue("nonexistent_bucket");
+        });
+
+        conn.close();
+    }
+
+    kvKeyNotFoundTest() {
+        NatsConnection conn(url);
+        JetStreamContext js = conn.jetStream();
+
+        string bucket = uniqueName("kvnf");
+        NatsKeyValueStore kv = js.createKeyValue(<NatsKVConfig>{
+            "bucket": bucket,
+            "storage": NATS_STORAGE_MEMORY,
+        });
+
+        # Getting a non-existent key should return NOTHING
+        *hash<NatsKVEntry> entry = kv.get("nonexistent");
+        assertNothing(entry);
+
+        js.deleteKeyValue(bucket);
+        conn.close();
+    }
+
+    kvRevisionConflictTest() {
+        NatsConnection conn(url);
+        JetStreamContext js = conn.jetStream();
+
+        string bucket = uniqueName("kvrc");
+        NatsKeyValueStore kv = js.createKeyValue(<NatsKVConfig>{
+            "bucket": bucket,
+            "storage": NATS_STORAGE_MEMORY,
+        });
+
+        int rev1 = kv.putString("conflict", "v1");
+        # Update to move revision forward
+        int rev2 = kv.putString("conflict", "v2");
+
+        # Update with stale revision should fail
+        assertThrows("NATS-KV-ERROR", sub () {
+            kv.update("conflict", binary("v3"), rev1);
+        });
+
+        js.deleteKeyValue(bucket);
+        conn.close();
+    }
+}

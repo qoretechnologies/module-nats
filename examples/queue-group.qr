@@ -1,0 +1,62 @@
+#!/usr/bin/env qr
+# Example: NATS Queue Groups
+#
+# Demonstrates queue group load balancing where messages are
+# distributed across multiple subscribers in the same queue group.
+# Each message is delivered to exactly one subscriber.
+#
+# Prerequisites: NATS server running on localhost:4222
+#   docker run -p 4222:4222 nats:latest
+
+%requires NatsUtil
+
+# Connect to NATS
+NatsClient client("nats://localhost:4222");
+printf("Connected to NATS\n");
+
+# Create two queue subscribers in the "workers" group
+NatsChannelSubscription sub1 = client.channelQueueSubscribe("work.tasks", "workers");
+NatsChannelSubscription sub2 = client.channelQueueSubscribe("work.tasks", "workers");
+printf("Created 2 queue subscribers in group 'workers'\n");
+
+# Publish tasks
+int task_count = 10;
+for (int i = 0; i < task_count; ++i) {
+    client.publishString("work.tasks", sprintf("task-%d", i));
+}
+client.flush();
+printf("Published %d tasks\n", task_count);
+
+# Count messages received by each worker
+int worker1_count = 0;
+int worker2_count = 0;
+
+# Drain messages from both workers
+while (True) {
+    *hash<NatsMsgInfo> msg1 = sub1.recv(500ms);
+    if (msg1) {
+        ++worker1_count;
+        printf("  Worker 1 got: %s\n", msg1.data.toString());
+    }
+
+    *hash<NatsMsgInfo> msg2 = sub2.recv(500ms);
+    if (msg2) {
+        ++worker2_count;
+        printf("  Worker 2 got: %s\n", msg2.data.toString());
+    }
+
+    if (!msg1 && !msg2) {
+        break;
+    }
+}
+
+printf("Worker 1 processed %d tasks\n", worker1_count);
+printf("Worker 2 processed %d tasks\n", worker2_count);
+printf("Total: %d (each message delivered to exactly one worker)\n",
+    worker1_count + worker2_count);
+
+# Clean up
+sub1.close();
+sub2.close();
+client.close();
+printf("Done\n");

@@ -1,0 +1,166 @@
+/* -*- mode: c++; indent-tabs-mode: nil -*- */
+/** @file QC_NatsSubscription.cpp defines the %Qore NatsSubscription class */
+/*
+    Qore nats module
+
+    Copyright (C) 2026 Qore Technologies, s.r.o.
+
+    Permission is hereby granted, free of charge, to any person obtaining a
+    copy of this software and associated documentation files (the "Software"),
+    to deal in the Software without restriction, including without limitation
+    the rights to use, copy, modify, merge, publish, distribute, sublicense,
+    and/or sell copies of the Software, and to permit persons to whom the
+    Software is furnished to do so, subject to the following conditions:
+
+    The above copyright notice and this permission notice shall be included in
+    all copies or substantial portions of the Software.
+
+    THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+    IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+    FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+    AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+    DEALINGS IN THE SOFTWARE.
+*/
+
+#include "nats-module.h"
+#include "QC_NatsSubscription.h"
+
+//! The NatsSubscription class provides access to a NATS subscription
+/**
+    @par Example: Receiving messages
+    @code{.py}
+NatsConnection conn("nats://localhost:4222");
+NatsSubscription sub = conn.subscribe("events.>");
+while (*hash<NatsMsgInfo> msg = sub.nextMsg(5s)) {
+    printf("Subject: %s, Data: %y\n", msg.subject, msg.data);
+}
+sub.unsubscribe();
+    @endcode
+
+    @note NatsSubscription objects are created by @ref NatsConnection::subscribe()
+    or @ref NatsConnection::queueSubscribe() — not directly instantiated.
+
+    @since %nats 1.0
+*/
+qclass NatsSubscription [arg=QoreNatsSubscription* sub; ns=Qore::Nats; dom=NETWORK];
+
+//! Returns the next message from the subscription
+/** Polls with 500ms intervals to support cooperative cancellation.
+
+    @param timeout_ms timeout in milliseconds (default: 5000); -1 for infinite
+
+    @return a @ref NatsMsgInfo hash, or @ref nothing on timeout
+
+    @throw NATS-SUBSCRIBE-ERROR if the subscription is invalid or a receive error occurs
+
+    @par Example:
+    @code{.py}
+*hash<NatsMsgInfo> msg = sub.nextMsg(10s);
+if (msg) {
+    printf("Got message on %s\n", msg.subject);
+}
+    @endcode
+
+    @since %nats 1.0
+*/
+*hash<NatsMsgInfo> NatsSubscription::nextMsg(timeout timeout_ms = 5s) {
+    return sub->nextMsg(timeout_ms, xsink);
+}
+
+//! Unsubscribes from the subject
+/** No more messages will be received after this call.
+
+    @throw NATS-SUBSCRIBE-ERROR if the unsubscribe fails
+
+    @since %nats 1.0
+*/
+nothing NatsSubscription::unsubscribe() {
+    sub->unsubscribe(xsink);
+}
+
+//! Auto-unsubscribes after receiving the specified number of messages
+/** @param max the maximum number of messages to receive
+
+    @throw NATS-SUBSCRIBE-ERROR if the operation fails
+
+    @par Example:
+    @code{.py}
+sub.autoUnsubscribe(10);  # receive at most 10 messages
+    @endcode
+
+    @since %nats 1.0
+*/
+nothing NatsSubscription::autoUnsubscribe(int max) {
+    sub->autoUnsubscribe((int)max, xsink);
+}
+
+//! Drains the subscription (processes pending messages then unsubscribes)
+/** @throw NATS-SUBSCRIBE-ERROR if the drain fails
+
+    @since %nats 1.0
+*/
+nothing NatsSubscription::drain() {
+    sub->drain(xsink);
+}
+
+//! Returns True if the subscription is still valid
+/** @return True if the subscription is active
+
+    @since %nats 1.0
+*/
+bool NatsSubscription::isValid() [flags=RET_VALUE_ONLY] {
+    return sub->isValid();
+}
+
+//! Returns the number of pending messages
+/** @return the number of messages waiting to be received
+
+    @throw NATS-SUBSCRIBE-ERROR if the query fails
+
+    @since %nats 1.0
+*/
+int NatsSubscription::getPendingMsgs() {
+    return sub->getPendingMsgs(xsink);
+}
+
+//! Acknowledges the last received JetStream message
+/** @throw NATS-JETSTREAM-ERROR if there is no message to acknowledge or the ack fails
+
+    @since %nats 1.0
+*/
+nothing NatsSubscription::ack() {
+    sub->ack(xsink);
+}
+
+//! Negative-acknowledges the last received JetStream message (requests redelivery)
+/** @throw NATS-JETSTREAM-ERROR if the nak fails
+
+    @since %nats 1.0
+*/
+nothing NatsSubscription::nak() {
+    sub->nak(xsink);
+}
+
+//! Signals that processing of the last JetStream message is still in progress
+/** Resets the server's redelivery timer.
+
+    @throw NATS-JETSTREAM-ERROR if the operation fails
+
+    @since %nats 1.0
+*/
+nothing NatsSubscription::inProgress() {
+    sub->inProgress(xsink);
+}
+
+//! Terminates delivery of the last JetStream message
+/** The message will not be redelivered.
+
+    @throw NATS-JETSTREAM-ERROR if the operation fails
+
+    @since %nats 1.0
+*/
+nothing NatsSubscription::term() {
+    sub->term(xsink);
+}

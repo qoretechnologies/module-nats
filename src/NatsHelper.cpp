@@ -1,0 +1,186 @@
+/* -*- mode: c++; indent-tabs-mode: nil -*- */
+/** @file NatsHelper.cpp NATS helper function implementations */
+/*
+    Qore nats module
+
+    Copyright (C) 2026 Qore Technologies, s.r.o.
+
+    Permission is hereby granted, free of charge, to any person obtaining a
+    copy of this software and associated documentation files (the "Software"),
+    to deal in the Software without restriction, including without limitation
+    the rights to use, copy, modify, merge, publish, distribute, sublicense,
+    and/or sell copies of the Software, and to permit persons to whom the
+    Software is furnished to do so, subject to the following conditions:
+
+    The above copyright notice and this permission notice shall be included in
+    all copies or substantial portions of the Software.
+
+    THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+    IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+    FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+    AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+    DEALINGS IN THE SOFTWARE.
+*/
+
+#include "NatsHelper.h"
+
+#include <cstring>
+#include <netdb.h>
+#include <sys/socket.h>
+#include <netinet/in.h>
+#include <arpa/inet.h>
+
+void nats_error(ExceptionSink* xsink, const char* err, natsStatus s,
+        const char* fmt, ...) {
+    QoreString desc;
+    while (true) {
+        va_list args;
+        va_start(args, fmt);
+        int rc = desc.vsprintf(fmt, args);
+        va_end(args);
+        if (!rc) {
+            break;
+        }
+    }
+    desc.concat(": ");
+    desc.concat(natsStatus_GetText(s));
+    xsink->raiseException(err, desc.c_str());
+}
+
+QoreHashNode* nats_msg_to_hash(natsMsg* msg, ExceptionSink* xsink) {
+    ReferenceHolder<QoreHashNode> h(new QoreHashNode(hashdeclNatsMsgInfo, xsink), xsink);
+    if (*xsink) {
+        return nullptr;
+    }
+
+    // subject
+    const char* subject = natsMsg_GetSubject(msg);
+    if (subject) {
+        h->setKeyValue("subject", new QoreStringNode(subject), xsink);
+    }
+
+    // data as binary
+    int data_len = natsMsg_GetDataLength(msg);
+    const char* data = natsMsg_GetData(msg);
+    if (data && data_len > 0) {
+        h->setKeyValue("data", new BinaryNode(data, data_len), xsink);
+    }
+
+    // reply subject
+    const char* reply = natsMsg_GetReply(msg);
+    if (reply) {
+        h->setKeyValue("reply", new QoreStringNode(reply), xsink);
+    }
+
+    // headers
+    const char** keys = nullptr;
+    int num_keys = 0;
+    natsStatus s = natsMsgHeader_Keys(msg, &keys, &num_keys);
+    if (s == NATS_OK && keys && num_keys > 0) {
+        ReferenceHolder<QoreHashNode> headers(new QoreHashNode(stringTypeInfo, xsink), xsink);
+        for (int i = 0; i < num_keys; ++i) {
+            const char* value = nullptr;
+            if (natsMsgHeader_Get(msg, keys[i], &value) == NATS_OK && value) {
+                headers->setKeyValue(keys[i], new QoreStringNode(value), xsink);
+            }
+        }
+        free(keys);
+        h->setKeyValue("headers", headers.release(), xsink);
+    } else if (keys) {
+        free(keys);
+    }
+
+    return h.release();
+}
+
+//! Parse a NATS URL into host and port
+/** Supports nats://host:port, tls://host:port, and host:port formats
+*/
+static int parse_nats_url(const char* url, QoreString& host, int& port) {
+    const char* p = url;
+
+    // Skip scheme
+    if (strncmp(p, "nats://", 7) == 0) {
+        p += 7;
+    } else if (strncmp(p, "tls://", 6) == 0) {
+        p += 6;
+    }
+
+    // Skip userinfo (user:password@)
+    const char* at = strchr(p, '@');
+    if (at) {
+        p = at + 1;
+    }
+
+    // Parse host:port
+    const char* colon = strrchr(p, ':');
+    if (colon) {
+        host.set(p, colon - p);
+        port = atoi(colon + 1);
+    } else {
+        host.set(p);
+        port = 4222;  // default NATS port
+    }
+
+    // Remove trailing slash
+    if (host.size() > 0 && host[host.size() - 1] == '/') {
+        host.terminate(host.size() - 1);
+    }
+
+    return 0;
+}
+
+int check_nats_network_access(const char* url, ExceptionSink* xsink) {
+    QoreSandboxManagerHelper smh;
+    if (!smh) {
+        return 0;  // No sandbox manager = allow all
+    }
+    QoreSandboxManager* sm = smh.get();
+
+    QoreString host;
+    int port;
+    parse_nats_url(url, host, port);
+
+    if (host.empty()) {
+        return 0;
+    }
+
+    // Check hostname policy before DNS resolution
+    if (sm->network().checkHostname(host.c_str(), port, QSEC_NET_TCP, xsink)) {
+        return -1;
+    }
+
+    // Resolve hostname and check all addresses
+    struct addrinfo hints;
+    memset(&hints, 0, sizeof(hints));
+    hints.ai_family = AF_UNSPEC;
+    hints.ai_socktype = SOCK_STREAM;
+
+    struct addrinfo* res = nullptr;
+    int rv = getaddrinfo(host.c_str(), nullptr, &hints, &res);
+    if (rv != 0) {
+        xsink->raiseException("NATS-CONNECTION-ERROR",
+            "cannot resolve hostname '%s': %s", host.c_str(), gai_strerror(rv));
+        return -1;
+    }
+
+    bool denied = false;
+    for (struct addrinfo* p = res; p; p = p->ai_next) {
+        if (p->ai_family == AF_INET) {
+            struct sockaddr_in* addr = (struct sockaddr_in*)p->ai_addr;
+            addr->sin_port = htons(port);
+        } else if (p->ai_family == AF_INET6) {
+            struct sockaddr_in6* addr = (struct sockaddr_in6*)p->ai_addr;
+            addr->sin6_port = htons(port);
+        }
+        if (sm->checkNetworkAccess(p->ai_addr, p->ai_addrlen, xsink)) {
+            denied = true;
+            break;
+        }
+    }
+    freeaddrinfo(res);
+
+    return denied ? -1 : 0;
+}

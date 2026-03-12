@@ -1,0 +1,296 @@
+/* -*- mode: c++; indent-tabs-mode: nil -*- */
+/** @file QC_NatsConnection.cpp defines the %Qore NatsConnection class */
+/*
+    Qore nats module
+
+    Copyright (C) 2026 Qore Technologies, s.r.o.
+
+    Permission is hereby granted, free of charge, to any person obtaining a
+    copy of this software and associated documentation files (the "Software"),
+    to deal in the Software without restriction, including without limitation
+    the rights to use, copy, modify, merge, publish, distribute, sublicense,
+    and/or sell copies of the Software, and to permit persons to whom the
+    Software is furnished to do so, subject to the following conditions:
+
+    The above copyright notice and this permission notice shall be included in
+    all copies or substantial portions of the Software.
+
+    THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+    IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+    FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+    AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+    DEALINGS IN THE SOFTWARE.
+*/
+
+#include "nats-module.h"
+#include "QC_NatsConnection.h"
+#include "QC_NatsSubscription.h"
+#include "QC_JetStreamContext.h"
+
+//! The NatsConnection class provides a connection to a NATS server
+/**
+    @par Example: Connect with a URL
+    @code{.py}
+#!/usr/bin/env qore
+
+%requires nats
+
+NatsConnection conn("nats://localhost:4222");
+conn.publish("test.subject", binary("hello"));
+conn.close();
+    @endcode
+
+    @par Example: Connect with options
+    @code{.py}
+NatsConnection conn(<NatsConnectionOptions>{
+    "url": "nats://localhost:4222",
+    "name": "my-app",
+    "token": "secret-token",
+});
+    @endcode
+
+    @since %nats 1.0
+*/
+qclass NatsConnection [arg=QoreNatsConnection* conn; ns=Qore::Nats; dom=NETWORK];
+
+//! Creates a NatsConnection from a URL string
+/** @param url the NATS server URL (e.g., \c "nats://localhost:4222")
+
+    @throw NATS-CONNECTION-ERROR if the connection cannot be established
+
+    @par Example:
+    @code{.py}
+NatsConnection conn("nats://localhost:4222");
+    @endcode
+
+    @since %nats 1.0
+*/
+NatsConnection::constructor(string url) {
+    self->setPrivate(CID_NATSCONNECTION, new QoreNatsConnection(url->c_str(), xsink));
+}
+
+//! Creates a NatsConnection from a connection options hash
+/** @param options connection options (see @ref NatsConnectionOptions)
+
+    @throw NATS-CONNECTION-ERROR if the connection cannot be established
+    @throw NATS-AUTH-ERROR if authentication fails
+    @throw NATS-TLS-ERROR if TLS configuration fails
+
+    @par Example:
+    @code{.py}
+NatsConnection conn(<NatsConnectionOptions>{
+    "url": "nats://localhost:4222",
+    "username": "user",
+    "password": "pass",
+    "tls": <NatsTlsOptions>{
+        "ca_cert": "/path/to/ca.crt",
+    },
+});
+    @endcode
+
+    @since %nats 1.0
+*/
+NatsConnection::constructor(hash<NatsConnectionOptions> options) {
+    self->setPrivate(CID_NATSCONNECTION, new QoreNatsConnection(options, xsink));
+}
+
+//! Publishes a message to a subject
+/** @param subject the subject to publish to
+    @param data optional binary payload
+
+    @throw NATS-PUBLISH-ERROR if the publish fails
+
+    @par Example:
+    @code{.py}
+conn.publish("events.user.login", binary("user123"));
+    @endcode
+
+    @since %nats 1.0
+*/
+nothing NatsConnection::publish(string subject, *binary data) {
+    conn->publish(subject->c_str(),
+        data ? data->getPtr() : nullptr,
+        data ? (int)data->size() : 0,
+        xsink);
+}
+
+//! Publishes a string message to a subject
+/** @param subject the subject to publish to
+    @param data the string payload
+
+    @throw NATS-PUBLISH-ERROR if the publish fails
+
+    @par Example:
+    @code{.py}
+conn.publishString("events.log", "something happened");
+    @endcode
+
+    @since %nats 1.0
+*/
+nothing NatsConnection::publishString(string subject, string data) {
+    conn->publish(subject->c_str(), data->c_str(), (int)data->size(), xsink);
+}
+
+//! Publishes a message with headers to a subject
+/** @param subject the subject to publish to
+    @param data optional binary payload
+    @param headers optional message headers
+
+    @throw NATS-PUBLISH-ERROR if the publish fails
+
+    @par Example:
+    @code{.py}
+conn.publishMsg("orders.new", binary(data), {"Content-Type": "application/json"});
+    @endcode
+
+    @since %nats 1.0
+*/
+nothing NatsConnection::publishMsg(string subject, *binary data, *hash<string, string> headers) {
+    conn->publishMsg(subject->c_str(),
+        data ? data->getPtr() : nullptr,
+        data ? (int)data->size() : 0,
+        headers,
+        xsink);
+}
+
+//! Sends a request and waits for a reply (request/reply pattern)
+/** @param subject the subject to send the request to
+    @param data optional binary payload
+    @param timeout_ms timeout in milliseconds (default: 5000)
+
+    @return a @ref NatsMsgInfo hash with the reply message
+
+    @throw NATS-REQUEST-ERROR if the request fails
+    @throw NATS-TIMEOUT-ERROR if no reply is received within the timeout
+
+    @par Example:
+    @code{.py}
+hash<NatsMsgInfo> reply = conn.request("service.echo", binary("hello"), 5000);
+printf("Reply: %s\n", reply.data.toString());
+    @endcode
+
+    @since %nats 1.0
+*/
+hash<NatsMsgInfo> NatsConnection::request(string subject, *binary data, timeout timeout_ms = 5s) {
+    return conn->request(subject->c_str(),
+        data ? data->getPtr() : nullptr,
+        data ? (int)data->size() : 0,
+        timeout_ms,
+        xsink);
+}
+
+//! Creates a subscription on a subject
+/** @param subject the subject to subscribe to (supports wildcards \c * and \c >)
+
+    @return a new @ref NatsSubscription object
+
+    @throw NATS-SUBSCRIBE-ERROR if the subscription fails
+
+    @par Example:
+    @code{.py}
+NatsSubscription sub = conn.subscribe("events.>");
+*hash<NatsMsgInfo> msg = sub.nextMsg(5s);
+    @endcode
+
+    @since %nats 1.0
+*/
+NatsSubscription NatsConnection::subscribe(string subject) {
+    QoreNatsSubscription* sub = conn->subscribe(subject->c_str(), xsink);
+    if (!sub) {
+        return QoreValue();
+    }
+    return new QoreObject(QC_NATSSUBSCRIPTION, getProgram(), sub);
+}
+
+//! Creates a queue subscription on a subject
+/** Messages are load-balanced across subscribers in the same queue group.
+
+    @param subject the subject to subscribe to
+    @param queue the queue group name
+
+    @return a new @ref NatsSubscription object
+
+    @throw NATS-SUBSCRIBE-ERROR if the subscription fails
+
+    @par Example:
+    @code{.py}
+NatsSubscription sub = conn.queueSubscribe("tasks.>", "workers");
+    @endcode
+
+    @since %nats 1.0
+*/
+NatsSubscription NatsConnection::queueSubscribe(string subject, string queue) {
+    QoreNatsSubscription* sub = conn->queueSubscribe(subject->c_str(),
+        queue->c_str(), xsink);
+    if (!sub) {
+        return QoreValue();
+    }
+    return new QoreObject(QC_NATSSUBSCRIPTION, getProgram(), sub);
+}
+
+//! Creates a JetStream context for this connection
+/** @return a new @ref JetStreamContext object
+
+    @throw NATS-JETSTREAM-ERROR if the JetStream context cannot be created
+
+    @par Example:
+    @code{.py}
+JetStreamContext js = conn.jetStream();
+    @endcode
+
+    @since %nats 1.0
+*/
+JetStreamContext NatsConnection::jetStream() {
+    QoreNatsJetStream* js = conn->jetStream(xsink);
+    if (!js) {
+        return QoreValue();
+    }
+    return new QoreObject(QC_JETSTREAMCONTEXT, getProgram(), js);
+}
+
+//! Drains the connection (flushes pending data and gracefully closes)
+/** @throw NATS-CONNECTION-ERROR if the drain fails
+
+    @since %nats 1.0
+*/
+nothing NatsConnection::drain() {
+    conn->drain(xsink);
+}
+
+//! Closes the connection immediately
+/** @since %nats 1.0
+*/
+nothing NatsConnection::close() {
+    conn->close();
+}
+
+//! Flushes pending data to the server
+/** @param timeout_ms timeout in milliseconds (default: 5000)
+
+    @throw NATS-CONNECTION-ERROR if the flush fails or times out
+
+    @since %nats 1.0
+*/
+nothing NatsConnection::flush(timeout timeout_ms = 5s) {
+    conn->flush(timeout_ms, xsink);
+}
+
+//! Returns True if the connection is active
+/** @return True if connected, False otherwise
+
+    @since %nats 1.0
+*/
+bool NatsConnection::isConnected() [flags=RET_VALUE_ONLY] {
+    return conn->isConnected();
+}
+
+//! Returns the connection status code
+/** @return the NATS connection status code
+
+    @since %nats 1.0
+*/
+int NatsConnection::status() [flags=RET_VALUE_ONLY] {
+    return conn->status();
+}

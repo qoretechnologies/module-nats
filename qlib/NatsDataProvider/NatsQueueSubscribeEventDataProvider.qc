@@ -1,0 +1,151 @@
+# -*- mode: qore; indent-tabs-mode: nil -*-
+#! @file NatsQueueSubscribeEventDataProvider.qc NATS queue subscribe event data provider
+
+/*  NatsQueueSubscribeEventDataProvider.qc Copyright 2026 Qore Technologies, s.r.o.
+
+    Permission is hereby granted, free of charge, to any person obtaining a
+    copy of this software and associated documentation files (the "Software"),
+    to deal in the Software without restriction, including without limitation
+    the rights to use, copy, modify, merge, publish, distribute, sublicense,
+    and/or sell copies of the Software, and to permit persons to whom the
+    Software is furnished to do so, subject to the following conditions:
+
+    The above copyright notice and this permission notice shall be included in
+    all copies or substantial portions of the Software.
+
+    THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+    IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+    FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+    AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+    DEALINGS IN THE SOFTWARE.
+*/
+
+#! Contains all public definitions in the NatsDataProvider module
+public namespace NatsDataProvider {
+
+#! Queue subscribe request type
+public const NatsQueueSubscribeRequestDataType = new HashDataType("NatsQueueSubscribeRequest", {
+    "subject": {
+        "type": StringType,
+        "desc": "The subject to subscribe to",
+        "required": True,
+    },
+    "queue": {
+        "type": StringType,
+        "desc": "The queue group name",
+        "required": True,
+    },
+});
+
+#! Observable data provider for NATS queue subscriptions
+/** @since NatsDataProvider 1.0
+*/
+public class NatsQueueSubscribeEventDataProvider inherits AbstractDataProvider, DelayedObservable {
+    private {
+        NatsClient client;
+        *hash<auto> observer_request;
+        bool started = False;
+        bool stopping = False;
+        bool active = True;
+        Mutex m();
+    }
+
+    constructor(NatsClient client) {
+        self.client = client;
+    }
+
+    string getName() {
+        return "queue-subscribe";
+    }
+
+    *string getDesc() {
+        return "Observable event provider for NATS queue subscriptions";
+    }
+
+    setObserverRequest(*hash<auto> req) {
+        observer_request = req;
+    }
+
+    observersReady() {
+        {
+            AutoLock al(m);
+            if (started) {
+                throw "NATS-OBSERVABLE-ERROR", "observersReady() has already been called";
+            }
+            started = True;
+        }
+        background queueSubscribeLoop();
+    }
+
+    stopEvents() {
+        AutoLock al(m);
+        stopping = True;
+    }
+
+    bool isActive() {
+        AutoLock al(m);
+        return active;
+    }
+
+    private hash<DataProviderInfo> getStaticInfoImpl() {
+        return <DataProviderInfo>{
+            "type": "NatsQueueSubscribeEventDataProvider",
+            "supports_observable": True,
+        };
+    }
+
+    private hash<string, hash<DataProviderMessageInfo>> getEventTypesImpl() {
+        return {
+            EVENT_NATS_MESSAGE: <DataProviderMessageInfo>{
+                "desc": "A message received from the NATS queue subscription",
+                "type": NatsMessageDataType,
+            },
+            EVENT_NATS_COMPLETE: <DataProviderMessageInfo>{
+                "desc": "The queue subscription completed",
+                "type": NatsCompleteDataType,
+            },
+            EVENT_NATS_ERROR: <DataProviderMessageInfo>{
+                "desc": "An error occurred on the queue subscription",
+                "type": NatsErrorDataType,
+            },
+        };
+    }
+
+    private queueSubscribeLoop() {
+        string subject = observer_request.subject ?? ">";
+        string queue = observer_request.queue ?? "default";
+        try {
+            NatsChannelSubscription csub = client.channelQueueSubscribe(subject, queue);
+            on_exit csub.close();
+
+            foreach hash<NatsMsgInfo> msg in (csub) {
+                {
+                    AutoLock al(m);
+                    if (stopping) {
+                        break;
+                    }
+                }
+                notifyObservers(EVENT_NATS_MESSAGE, msg);
+            }
+
+            {
+                AutoLock al(m);
+                active = False;
+            }
+            notifyObservers(EVENT_NATS_COMPLETE, {});
+        } catch (hash<ExceptionInfo> ex) {
+            {
+                AutoLock al(m);
+                active = False;
+            }
+            notifyObservers(EVENT_NATS_ERROR, {
+                "err": ex.err,
+                "desc": ex.desc,
+            });
+        }
+    }
+}
+
+} # namespace NatsDataProvider

@@ -1,0 +1,400 @@
+/* -*- mode: c++; indent-tabs-mode: nil -*- */
+/** @file QC_NatsMsg.cpp defines NATS message-related hashdecls */
+/*
+    Qore nats module
+
+    Copyright (C) 2026 Qore Technologies, s.r.o.
+
+    Permission is hereby granted, free of charge, to any person obtaining a
+    copy of this software and associated documentation files (the "Software"),
+    to deal in the Software without restriction, including without limitation
+    the rights to use, copy, modify, merge, publish, distribute, sublicense,
+    and/or sell copies of the Software, and to permit persons to whom the
+    Software is furnished to do so, subject to the following conditions:
+
+    The above copyright notice and this permission notice shall be included in
+    all copies or substantial portions of the Software.
+
+    THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+    IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+    FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+    AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+    DEALINGS IN THE SOFTWARE.
+*/
+
+#include "nats-module.h"
+
+/** @defgroup nats_retention_policies NATS JetStream Retention Policies
+    These constants define JetStream stream retention policies.
+*/
+///@{
+//! Messages are retained based on limits (max messages, bytes, age)
+const NATS_RETENTION_LIMITS = 0;
+
+//! Messages are retained until acknowledged by all consumers
+const NATS_RETENTION_INTEREST = 1;
+
+//! Messages are retained until acknowledged (work queue pattern)
+const NATS_RETENTION_WORKQUEUE = 2;
+///@}
+
+/** @defgroup nats_storage_types NATS JetStream Storage Types
+    These constants define JetStream stream storage types.
+*/
+///@{
+//! Store messages on disk
+const NATS_STORAGE_FILE = 0;
+
+//! Store messages in memory
+const NATS_STORAGE_MEMORY = 1;
+///@}
+
+/** @defgroup nats_discard_policies NATS JetStream Discard Policies
+    These constants define what happens when a stream reaches its limits.
+*/
+///@{
+//! Discard old messages when the stream is full
+const NATS_DISCARD_OLD = 0;
+
+//! Reject new messages when the stream is full
+const NATS_DISCARD_NEW = 1;
+///@}
+
+/** @defgroup nats_ack_policies NATS JetStream Ack Policies
+    These constants define consumer acknowledgment policies.
+*/
+///@{
+//! No acknowledgment required
+const NATS_ACK_NONE = 0;
+
+//! All messages must be acknowledged
+const NATS_ACK_ALL = 1;
+
+//! Each message must be individually acknowledged
+const NATS_ACK_EXPLICIT = 2;
+///@}
+
+/** @defgroup nats_deliver_policies NATS JetStream Deliver Policies
+    These constants define consumer delivery policies.
+*/
+///@{
+//! Deliver all available messages
+const NATS_DELIVER_ALL = 0;
+
+//! Deliver starting with the last message
+const NATS_DELIVER_LAST = 1;
+
+//! Deliver only new messages (received after consumer creation)
+const NATS_DELIVER_NEW = 2;
+
+//! Deliver starting from a specific sequence number
+const NATS_DELIVER_BY_START_SEQUENCE = 3;
+
+//! Deliver starting from a specific time
+const NATS_DELIVER_BY_START_TIME = 4;
+
+//! Deliver the last message per subject
+const NATS_DELIVER_LAST_PER_SUBJECT = 5;
+///@}
+
+/** @defgroup nats_replay_policies NATS JetStream Replay Policies
+    These constants define consumer replay policies.
+*/
+///@{
+//! Replay messages as fast as possible
+const NATS_REPLAY_INSTANT = 0;
+
+//! Replay messages at the original delivery rate
+const NATS_REPLAY_ORIGINAL = 1;
+///@}
+
+/** @defgroup nats_kv_operations NATS Key-Value Operations
+    These constants define KV entry operation types.
+*/
+///@{
+//! A put or update operation
+const NATS_KV_OP_PUT = 0;
+
+//! A delete operation
+const NATS_KV_OP_DELETE = 1;
+
+//! A purge operation
+const NATS_KV_OP_PURGE = 2;
+///@}
+
+//! TLS options for NATS connections
+/** @since %nats 1.0
+*/
+hashdecl Qore::Nats::NatsTlsOptions {
+    //! Path to CA certificate file for server verification
+    *string ca_cert;
+
+    //! Path to client certificate file for mutual TLS
+    *string client_cert;
+
+    //! Path to client private key file for mutual TLS
+    *string client_key;
+
+    //! If True, skip server certificate verification (insecure)
+    *bool skip_verify;
+}
+
+//! Connection options for NATS
+/** @since %nats 1.0
+*/
+hashdecl Qore::Nats::NatsConnectionOptions {
+    //! NATS server URL (e.g., "nats://localhost:4222")
+    *string url;
+
+    //! Authentication token
+    *string token;
+
+    //! Username for authentication
+    *string username;
+
+    //! Password for authentication
+    *string password;
+
+    //! Path to NKey seed file for authentication
+    *string nkey_seed;
+
+    //! Path to credentials file for authentication
+    *string credentials;
+
+    //! TLS configuration
+    *hash<Qore::Nats::NatsTlsOptions> tls;
+
+    //! Connection name (for server monitoring)
+    *string name;
+
+    //! Connection timeout in milliseconds
+    *int connect_timeout_ms;
+
+    //! Wait time between reconnection attempts in milliseconds
+    *int reconnect_wait_ms;
+
+    //! Maximum number of reconnection attempts (-1 = unlimited)
+    *int max_reconnect;
+
+    //! Interval between pings in milliseconds
+    *int ping_interval;
+
+    //! Maximum number of outstanding pings before connection is considered lost
+    *int max_pings_out;
+
+    //! If True, do not randomize server list for reconnection
+    *bool no_randomize;
+}
+
+//! Information about a received NATS message
+/** @since %nats 1.0
+*/
+hashdecl Qore::Nats::NatsMsgInfo {
+    //! The subject the message was published to
+    string subject;
+
+    //! The message payload as binary data
+    *binary data;
+
+    //! The reply subject (for request/reply pattern)
+    *string reply;
+
+    //! Message headers (NATS 2.2+)
+    *hash<string, string> headers;
+}
+
+//! Configuration for a JetStream stream
+/** @since %nats 1.0
+*/
+hashdecl Qore::Nats::NatsStreamConfig {
+    //! Stream name
+    *string name;
+
+    //! List of subjects this stream listens on
+    *list<string> subjects;
+
+    //! Retention policy (one of @ref nats_retention_policies)
+    *int retention;
+
+    //! Maximum number of messages in the stream (-1 = unlimited)
+    *int max_msgs;
+
+    //! Maximum total bytes in the stream (-1 = unlimited)
+    *int max_bytes;
+
+    //! Maximum age of messages in milliseconds (0 = unlimited)
+    *int max_age;
+
+    //! Maximum size of a single message in bytes (-1 = unlimited)
+    *int max_msg_size;
+
+    //! Storage type (one of @ref nats_storage_types)
+    *int storage;
+
+    //! Number of replicas
+    *int num_replicas;
+
+    //! Discard policy (one of @ref nats_discard_policies)
+    *int discard;
+
+    //! Stream description
+    *string description;
+}
+
+//! Configuration for a JetStream consumer
+/** @since %nats 1.0
+*/
+hashdecl Qore::Nats::NatsConsumerConfig {
+    //! Durable consumer name (empty for ephemeral consumers)
+    *string durable_name;
+
+    //! Subject to deliver messages to (push-based)
+    *string deliver_subject;
+
+    //! Deliver group name for load balancing
+    *string deliver_group;
+
+    //! Acknowledgment policy (one of @ref nats_ack_policies)
+    *int ack_policy;
+
+    //! Time to wait for acknowledgment in milliseconds
+    *int ack_wait;
+
+    //! Delivery policy (one of @ref nats_deliver_policies)
+    *int deliver_policy;
+
+    //! Start sequence number (for NATS_DELIVER_BY_START_SEQUENCE)
+    *int opt_start_seq;
+
+    //! Start time (for NATS_DELIVER_BY_START_TIME)
+    *date opt_start_time;
+
+    //! Replay policy (one of @ref nats_replay_policies)
+    *int replay_policy;
+
+    //! Filter by subject
+    *string filter_subject;
+
+    //! Maximum number of delivery attempts (-1 = unlimited)
+    *int max_deliver;
+
+    //! Maximum outstanding unacknowledged messages
+    *int max_ack_pending;
+
+    //! Consumer description
+    *string description;
+}
+
+//! Information about a JetStream stream
+/** @since %nats 1.0
+*/
+hashdecl Qore::Nats::NatsStreamInfo {
+    //! Stream configuration
+    hash<Qore::Nats::NatsStreamConfig> config;
+
+    //! Number of messages in the stream
+    int messages;
+
+    //! Total bytes in the stream
+    int bytes;
+
+    //! First sequence number
+    int first_seq;
+
+    //! Last sequence number
+    int last_seq;
+
+    //! Number of consumers
+    int consumer_count;
+}
+
+//! Information about a JetStream consumer
+/** @since %nats 1.0
+*/
+hashdecl Qore::Nats::NatsConsumerInfo {
+    //! Consumer configuration
+    hash<Qore::Nats::NatsConsumerConfig> config;
+
+    //! Number of delivered messages
+    int delivered;
+
+    //! Number of messages pending acknowledgment
+    int ack_pending;
+
+    //! Number of redelivered messages
+    int redelivered;
+
+    //! Number of waiting pull requests
+    int waiting;
+
+    //! Number of pending messages
+    int num_pending;
+}
+
+//! Acknowledgment result from a JetStream publish
+/** @since %nats 1.0
+*/
+hashdecl Qore::Nats::NatsPubAck {
+    //! The stream name the message was published to
+    string stream;
+
+    //! The sequence number assigned to the message
+    int sequence;
+
+    //! True if this was a duplicate message
+    bool duplicate;
+}
+
+//! Configuration for a NATS Key-Value store bucket
+/** @since %nats 1.0
+*/
+hashdecl Qore::Nats::NatsKVConfig {
+    //! Bucket name
+    *string bucket;
+
+    //! Bucket description
+    *string description;
+
+    //! Maximum value size in bytes
+    *int max_value_size;
+
+    //! Number of historical values to keep per key
+    *int history;
+
+    //! Time-to-live for values in milliseconds (0 = unlimited)
+    *int ttl;
+
+    //! Maximum total bytes in the bucket
+    *int max_bytes;
+
+    //! Storage type (one of @ref nats_storage_types)
+    *int storage;
+
+    //! Number of replicas
+    *int num_replicas;
+}
+
+//! A key-value entry from a NATS KV store
+/** @since %nats 1.0
+*/
+hashdecl Qore::Nats::NatsKVEntry {
+    //! The bucket name
+    string bucket;
+
+    //! The key
+    string key;
+
+    //! The value as binary data
+    *binary value;
+
+    //! The revision number
+    int revision;
+
+    //! When the entry was created/updated
+    *date created;
+
+    //! The operation type (one of @ref nats_kv_operations)
+    int operation;
+}

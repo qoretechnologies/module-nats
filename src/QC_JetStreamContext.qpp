@@ -1,0 +1,268 @@
+/* -*- mode: c++; indent-tabs-mode: nil -*- */
+/** @file QC_JetStreamContext.cpp defines the %Qore JetStreamContext class */
+/*
+    Qore nats module
+
+    Copyright (C) 2026 Qore Technologies, s.r.o.
+
+    Permission is hereby granted, free of charge, to any person obtaining a
+    copy of this software and associated documentation files (the "Software"),
+    to deal in the Software without restriction, including without limitation
+    the rights to use, copy, modify, merge, publish, distribute, sublicense,
+    and/or sell copies of the Software, and to permit persons to whom the
+    Software is furnished to do so, subject to the following conditions:
+
+    The above copyright notice and this permission notice shall be included in
+    all copies or substantial portions of the Software.
+
+    THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+    IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+    FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+    AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+    DEALINGS IN THE SOFTWARE.
+*/
+
+#include "nats-module.h"
+#include "QC_JetStreamContext.h"
+#include "QC_NatsSubscription.h"
+#include "QC_NatsKeyValueStore.h"
+
+//! The JetStreamContext class provides access to NATS JetStream functionality
+/**
+    @par Example: Stream and consumer management
+    @code{.py}
+NatsConnection conn("nats://localhost:4222");
+JetStreamContext js = conn.jetStream();
+
+# Create a stream
+js.addStream(<NatsStreamConfig>{
+    "name": "ORDERS",
+    "subjects": ("orders.>",),
+});
+
+# Publish with acknowledgment
+hash<NatsPubAck> ack = js.publish("orders.new", binary("order-data"));
+printf("Published to stream %s, sequence %d\n", ack.stream, ack.sequence);
+    @endcode
+
+    @note JetStreamContext objects are created by @ref NatsConnection::jetStream()
+    — not directly instantiated.
+
+    @since %nats 1.0
+*/
+qclass JetStreamContext [arg=QoreNatsJetStream* js; ns=Qore::Nats; dom=NETWORK];
+
+//! Creates a new stream
+/** @param config stream configuration (see @ref NatsStreamConfig)
+    @return a @ref NatsStreamInfo hash with the created stream's information
+
+    @throw NATS-JETSTREAM-ERROR if stream creation fails
+
+    @since %nats 1.0
+*/
+hash<NatsStreamInfo> JetStreamContext::addStream(hash<NatsStreamConfig> config) {
+    return js->addStream(config, xsink);
+}
+
+//! Updates an existing stream
+/** @param config stream configuration with updated values
+    @return a @ref NatsStreamInfo hash with the updated stream's information
+
+    @throw NATS-JETSTREAM-ERROR if stream update fails
+
+    @since %nats 1.0
+*/
+hash<NatsStreamInfo> JetStreamContext::updateStream(hash<NatsStreamConfig> config) {
+    return js->updateStream(config, xsink);
+}
+
+//! Deletes a stream
+/** @param name the stream name to delete
+
+    @throw NATS-JETSTREAM-ERROR if stream deletion fails
+
+    @since %nats 1.0
+*/
+nothing JetStreamContext::deleteStream(string name) {
+    js->deleteStream(name->c_str(), xsink);
+}
+
+//! Gets information about a stream
+/** @param name the stream name
+    @return a @ref NatsStreamInfo hash
+
+    @throw NATS-JETSTREAM-ERROR if the query fails
+
+    @since %nats 1.0
+*/
+hash<NatsStreamInfo> JetStreamContext::getStreamInfo(string name) {
+    return js->getStreamInfo(name->c_str(), xsink);
+}
+
+//! Purges all messages from a stream
+/** @param name the stream name to purge
+
+    @throw NATS-JETSTREAM-ERROR if the purge fails
+
+    @since %nats 1.0
+*/
+nothing JetStreamContext::purgeStream(string name) {
+    js->purgeStream(name->c_str(), xsink);
+}
+
+//! Creates a consumer on a stream
+/** @param stream the stream name
+    @param config consumer configuration (see @ref NatsConsumerConfig)
+    @return a @ref NatsConsumerInfo hash
+
+    @throw NATS-JETSTREAM-ERROR if consumer creation fails
+
+    @since %nats 1.0
+*/
+hash<NatsConsumerInfo> JetStreamContext::addConsumer(string stream, hash<NatsConsumerConfig> config) {
+    return js->addConsumer(stream->c_str(), config, xsink);
+}
+
+//! Deletes a consumer from a stream
+/** @param stream the stream name
+    @param consumer the consumer name
+
+    @throw NATS-JETSTREAM-ERROR if consumer deletion fails
+
+    @since %nats 1.0
+*/
+nothing JetStreamContext::deleteConsumer(string stream, string consumer) {
+    js->deleteConsumer(stream->c_str(), consumer->c_str(), xsink);
+}
+
+//! Gets information about a consumer
+/** @param stream the stream name
+    @param consumer the consumer name
+    @return a @ref NatsConsumerInfo hash
+
+    @throw NATS-JETSTREAM-ERROR if the query fails
+
+    @since %nats 1.0
+*/
+hash<NatsConsumerInfo> JetStreamContext::getConsumerInfo(string stream, string consumer) {
+    return js->getConsumerInfo(stream->c_str(), consumer->c_str(), xsink);
+}
+
+//! Publishes a message to a JetStream subject with acknowledgment
+/** @param subject the subject to publish to
+    @param data optional binary payload
+    @return a @ref NatsPubAck hash with the publish acknowledgment
+
+    @throw NATS-JETSTREAM-ERROR if the publish fails
+
+    @par Example:
+    @code{.py}
+hash<NatsPubAck> ack = js.publish("orders.new", binary("order-data"));
+    @endcode
+
+    @since %nats 1.0
+*/
+hash<NatsPubAck> JetStreamContext::publish(string subject, *binary data) {
+    return js->publish(subject->c_str(),
+        data ? data->getPtr() : nullptr,
+        data ? (int)data->size() : 0,
+        xsink);
+}
+
+//! Creates a push subscription on a JetStream subject
+/** @param subject the subject to subscribe to
+    @return a new @ref NatsSubscription object
+
+    @throw NATS-JETSTREAM-ERROR if the subscription fails
+
+    @since %nats 1.0
+*/
+NatsSubscription JetStreamContext::subscribe(string subject) {
+    QoreNatsSubscription* sub = js->subscribe(subject->c_str(), xsink);
+    if (!sub) {
+        return QoreValue();
+    }
+    return new QoreObject(QC_NATSSUBSCRIPTION, getProgram(), sub);
+}
+
+//! Creates a pull subscription on a JetStream subject
+/** @param subject the subject to subscribe to
+    @param durable the durable consumer name
+    @return a new @ref NatsSubscription object
+
+    @throw NATS-JETSTREAM-ERROR if the subscription fails
+
+    @par Example:
+    @code{.py}
+NatsSubscription sub = js.pullSubscribe("orders.>", "order-processor");
+*hash<NatsMsgInfo> msg = sub.nextMsg(5s);
+if (msg) {
+    # process message
+    sub.ack();
+}
+    @endcode
+
+    @since %nats 1.0
+*/
+NatsSubscription JetStreamContext::pullSubscribe(string subject, string durable) {
+    QoreNatsSubscription* sub = js->pullSubscribe(subject->c_str(),
+        durable->c_str(), xsink);
+    if (!sub) {
+        return QoreValue();
+    }
+    return new QoreObject(QC_NATSSUBSCRIPTION, getProgram(), sub);
+}
+
+//! Opens an existing Key-Value store bucket
+/** @param bucket the bucket name
+    @return a new @ref NatsKeyValueStore object
+
+    @throw NATS-KV-ERROR if the bucket cannot be opened
+
+    @since %nats 1.0
+*/
+NatsKeyValueStore JetStreamContext::keyValue(string bucket) {
+    QoreNatsKVStore* kv = js->keyValue(bucket->c_str(), xsink);
+    if (!kv) {
+        return QoreValue();
+    }
+    return new QoreObject(QC_NATSKEYVALUESTORE, getProgram(), kv);
+}
+
+//! Creates a new Key-Value store bucket
+/** @param config KV bucket configuration (see @ref NatsKVConfig)
+    @return a new @ref NatsKeyValueStore object
+
+    @throw NATS-KV-ERROR if the bucket cannot be created
+
+    @par Example:
+    @code{.py}
+NatsKeyValueStore kv = js.createKeyValue(<NatsKVConfig>{
+    "bucket": "config",
+    "history": 5,
+    "ttl": 3600000,
+});
+    @endcode
+
+    @since %nats 1.0
+*/
+NatsKeyValueStore JetStreamContext::createKeyValue(hash<NatsKVConfig> config) {
+    QoreNatsKVStore* kv = js->createKeyValue(config, xsink);
+    if (!kv) {
+        return QoreValue();
+    }
+    return new QoreObject(QC_NATSKEYVALUESTORE, getProgram(), kv);
+}
+
+//! Deletes a Key-Value store bucket
+/** @param bucket the bucket name to delete
+
+    @throw NATS-KV-ERROR if the bucket cannot be deleted
+
+    @since %nats 1.0
+*/
+nothing JetStreamContext::deleteKeyValue(string bucket) {
+    js->deleteKeyValue(bucket->c_str(), xsink);
+}

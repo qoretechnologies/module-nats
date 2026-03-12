@@ -1,0 +1,97 @@
+/* -*- mode: c++; indent-tabs-mode: nil -*- */
+/** @file nats-module.cpp nats module implementation */
+/*
+    Qore nats module
+
+    Copyright (C) 2026 Qore Technologies, s.r.o.
+
+    Permission is hereby granted, free of charge, to any person obtaining a
+    copy of this software and associated documentation files (the "Software"),
+    to deal in the Software without restriction, including without limitation
+    the rights to use, copy, modify, merge, publish, distribute, sublicense,
+    and/or sell copies of the Software, and to permit persons to whom the
+    Software is furnished to do so, subject to the following conditions:
+
+    The above copyright notice and this permission notice shall be included in
+    all copies or substantial portions of the Software.
+
+    THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+    IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+    FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+    AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+    DEALINGS IN THE SOFTWARE.
+*/
+
+#include "nats-module.h"
+#include "QC_NatsConnection.h"
+#include "QC_NatsSubscription.h"
+#include "QC_JetStreamContext.h"
+#include "QC_NatsKeyValueStore.h"
+
+static void nats_module_init(QoreModuleInitContext& ctx, ExceptionSink& xsink);
+static void nats_module_ns_init(QoreNamespace* rns, QoreNamespace* qns, ExceptionSink& xsink);
+static void nats_module_delete();
+
+extern "C" DLLEXPORT void nats_qore_module_desc(QoreModuleInfo& mod_info) {
+    mod_info.name = "nats";
+    mod_info.version = "1.0.0";
+    mod_info.desc = "Qore NATS messaging module";
+    mod_info.author = "Qore Technologies, s.r.o.";
+    mod_info.url = "https://github.com/qoretechnologies/module-nats";
+    mod_info.api_major = QORE_MODULE_API_MAJOR;
+    mod_info.api_minor = QORE_MODULE_API_MINOR;
+    mod_info.init = nats_module_init;
+    mod_info.ns_init = nats_module_ns_init;
+    mod_info.del = nats_module_delete;
+    mod_info.license = QL_MIT;
+    mod_info.license_str = "MIT";
+}
+
+// Global hashdecl pointers
+const TypedHashDecl* hashdeclNatsTlsOptions = nullptr;
+const TypedHashDecl* hashdeclNatsConnectionOptions = nullptr;
+const TypedHashDecl* hashdeclNatsMsgInfo = nullptr;
+const TypedHashDecl* hashdeclNatsStreamConfig = nullptr;
+const TypedHashDecl* hashdeclNatsConsumerConfig = nullptr;
+const TypedHashDecl* hashdeclNatsStreamInfo = nullptr;
+const TypedHashDecl* hashdeclNatsConsumerInfo = nullptr;
+const TypedHashDecl* hashdeclNatsPubAck = nullptr;
+const TypedHashDecl* hashdeclNatsKVConfig = nullptr;
+const TypedHashDecl* hashdeclNatsKVEntry = nullptr;
+
+QoreNamespace NatsNs("Qore::Nats");
+
+static void nats_module_init(QoreModuleInitContext& ctx, ExceptionSink& xsink) {
+    // Initialize Phase 2 hashdecls (Core NATS)
+    hashdeclNatsTlsOptions = init_hashdecl_NatsTlsOptions(NatsNs);
+    hashdeclNatsConnectionOptions = init_hashdecl_NatsConnectionOptions(NatsNs);
+    hashdeclNatsMsgInfo = init_hashdecl_NatsMsgInfo(NatsNs);
+
+    // Initialize Phase 2 classes (Core NATS)
+    NatsNs.addSystemClass(initNatsConnectionClass(NatsNs));
+    NatsNs.addSystemClass(initNatsSubscriptionClass(NatsNs));
+
+    // Initialize Phase 3 hashdecls (JetStream)
+    hashdeclNatsStreamConfig = init_hashdecl_NatsStreamConfig(NatsNs);
+    hashdeclNatsConsumerConfig = init_hashdecl_NatsConsumerConfig(NatsNs);
+    hashdeclNatsStreamInfo = init_hashdecl_NatsStreamInfo(NatsNs);
+    hashdeclNatsConsumerInfo = init_hashdecl_NatsConsumerInfo(NatsNs);
+    hashdeclNatsPubAck = init_hashdecl_NatsPubAck(NatsNs);
+    hashdeclNatsKVConfig = init_hashdecl_NatsKVConfig(NatsNs);
+    hashdeclNatsKVEntry = init_hashdecl_NatsKVEntry(NatsNs);
+
+    // Initialize Phase 3 classes (JetStream)
+    NatsNs.addSystemClass(initJetStreamContextClass(NatsNs));
+    NatsNs.addSystemClass(initNatsKeyValueStoreClass(NatsNs));
+}
+
+static void nats_module_ns_init(QoreNamespace* rns, QoreNamespace* qns, ExceptionSink& xsink) {
+    qns->addNamespace(NatsNs.copy());
+}
+
+static void nats_module_delete() {
+    // nats.c library cleanup
+    nats_Close();
+}

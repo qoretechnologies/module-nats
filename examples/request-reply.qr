@@ -1,0 +1,47 @@
+#!/usr/bin/env qr
+# Example: NATS Request/Reply
+#
+# Demonstrates the request/reply pattern where a client sends a
+# request and waits for a response from a service.
+#
+# Prerequisites: NATS server running on localhost:4222
+#   docker run -p 4222:4222 nats:latest
+
+%requires NatsUtil
+
+# Connect to NATS
+NatsClient client("nats://localhost:4222");
+printf("Connected to NATS\n");
+
+# Set up a responder using channel-based subscription
+NatsChannelSubscription sub = client.channelSubscribe("service.echo");
+printf("Responder listening on service.echo\n");
+
+# Run the responder in the background
+Counter ready(1);
+background sub () {
+    ready.dec();
+    foreach hash<NatsMsgInfo> msg in (sub) {
+        if (msg.reply) {
+            string response = "Echo: " + msg.data.toString();
+            client.publishString(msg.reply, response);
+            printf("  Responder sent: %s\n", response);
+        }
+    }
+}();
+
+# Wait for the background thread to start
+ready.waitForZero();
+
+# Send requests and receive replies
+for (int i = 0; i < 3; ++i) {
+    string payload = sprintf("Hello #%d", i + 1);
+    printf("Sending request: %s\n", payload);
+    string reply = client.requestString("service.echo", payload, 5s);
+    printf("Got reply: %s\n", reply);
+}
+
+# Clean up
+sub.close();
+client.close();
+printf("Done\n");

@@ -1,0 +1,41 @@
+#!/usr/bin/env qr
+# Example: NATS Publish/Subscribe
+#
+# Demonstrates basic publish/subscribe messaging using NatsClient
+# and NatsChannelSubscription for channel-based async iteration.
+#
+# Prerequisites: NATS server running on localhost:4222
+#   docker run -p 4222:4222 nats:latest
+
+%requires NatsUtil
+
+# Connect to NATS
+NatsClient client("nats://localhost:4222");
+printf("Connected to NATS\n");
+
+# Subscribe using channel-based async subscription
+# The ">" wildcard matches all tokens from this point
+NatsChannelSubscription sub = client.channelSubscribe("events.>");
+printf("Subscribed to events.>\n");
+
+# Publish messages to different subjects
+client.publishString("events.log", "Hello NATS!");
+client.publishString("events.user.login", "user123 logged in");
+client.publishString("events.order.created", "order-456 created");
+printf("Published 3 messages\n");
+
+# Receive messages
+for (int i = 0; i < 3; ++i) {
+    *hash<NatsMsgInfo> msg = sub.recv(5s);
+    if (msg) {
+        printf("Received on %s: %s\n", msg.subject, msg.data.toString());
+    } else {
+        printf("Timeout waiting for message\n");
+        break;
+    }
+}
+
+# Clean up
+sub.close();
+client.close();
+printf("Done\n");

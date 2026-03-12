@@ -1,0 +1,130 @@
+# -*- mode: qore; indent-tabs-mode: nil -*-
+#! @file NatsDataProvider.qm Qore NATS data provider module
+
+/*  NatsDataProvider.qm Copyright 2026 Qore Technologies, s.r.o.
+
+    Permission is hereby granted, free of charge, to any person obtaining a
+    copy of this software and associated documentation files (the "Software"),
+    to deal in the Software without restriction, including without limitation
+    the rights to use, copy, modify, merge, publish, distribute, sublicense,
+    and/or sell copies of the Software, and to permit persons to whom the
+    Software is furnished to do so, subject to the following conditions:
+
+    The above copyright notice and this permission notice shall be included in
+    all copies or substantial portions of the Software.
+
+    THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+    IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+    FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+    AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+    DEALINGS IN THE SOFTWARE.
+*/
+
+%modern
+%allow-weak-references
+
+%requires(reexport) DataProvider
+%requires(reexport) ConnectionProvider
+%requires nats
+%requires NatsUtil
+
+module NatsDataProvider {
+    version = "1.0";
+    desc = "User module providing a data provider API for NATS messaging";
+    author = "Qore Technologies, s.r.o.";
+    url = "https://github.com/qoretechnologies/module-nats";
+    license = "MIT";
+    init = sub () {
+        # Register data provider factory
+        DataProvider::registerFactory(new NatsDataProviderFactory());
+
+        # Register connection schemes
+        ConnectionSchemeCache::registerScheme("nats", NatsConnection::ConnectionScheme);
+        ConnectionSchemeCache::registerScheme("tls", NatsTlsConnection::ConnectionScheme);
+
+        # Register app in action catalog
+        DataProviderActionCatalog::registerApp(<DataProviderAppInfo>{
+            "name": NatsDataProvider::AppName,
+            "display_name": "NATS Server",
+            "short_desc": "NATS messaging server",
+            "desc": "Connect to NATS messaging servers for publish/subscribe, "
+                "request/reply, and queue group messaging patterns",
+            "scheme": "nats",
+            "groups": (DataProvider::AppGroup::ApiIntegration,),
+            "logo": NatsLogo,
+            "logo_mime_type": MimeTypeSvg,
+            "logo_file_name": "nats-logo.svg",
+        });
+
+        # Register publish action
+        DataProviderActionCatalog::registerAction(<DataProviderActionInfo>{
+            "app": NatsDataProvider::AppName,
+            "path": "/publish",
+            "action": "publish",
+            "display_name": "Publish Message",
+            "short_desc": "Publish a message to a NATS subject",
+            "desc": "Publishes a message to the specified NATS subject",
+            "action_code": DPAT_API,
+        });
+
+        # Register request action
+        DataProviderActionCatalog::registerAction(<DataProviderActionInfo>{
+            "app": NatsDataProvider::AppName,
+            "path": "/request",
+            "action": "request",
+            "display_name": "Request/Reply",
+            "short_desc": "Send a request and wait for a reply",
+            "desc": "Sends a request to a NATS subject and waits for a reply",
+            "action_code": DPAT_API,
+        });
+    };
+}
+
+/** @mainpage NatsDataProvider Module
+
+    @tableofcontents
+
+    @section natsdataproviderintro NatsDataProvider Module Introduction
+
+    The %NatsDataProvider module integrates NATS messaging into Qore's data provider
+    framework, enabling publish/subscribe, request/reply, and queue group messaging
+    through a uniform API.
+
+    Key capabilities:
+    - <b>Publish</b>: send messages to subjects
+    - <b>Request/Reply</b>: synchronous request/reply pattern
+    - <b>Subscribe</b>: observable event-based message delivery
+    - <b>Queue Subscribe</b>: load-balanced message delivery across consumers
+
+    @subsection natsdataprovider_hierarchy Provider Hierarchy
+
+    @verbatim
+<root>
+  ├── publish          (NatsPublishDataProvider — DPAT_API)
+  ├── request          (NatsRequestDataProvider — DPAT_API)
+  ├── subscribe        (NatsSubscribeEventDataProvider — DPAT_EVENT)
+  └── queue-subscribe  (NatsQueueSubscribeEventDataProvider — DPAT_EVENT)
+    @endverbatim
+
+    @section natsdataprovider_connections Connection Schemes
+
+    The module registers two connection URL schemes:
+    - \c nats://host:port — plaintext NATS
+    - \c tls://host:port — TLS-encrypted NATS
+
+    @section natsdataprovider_relnotes Release Notes
+
+    @subsection natsdataprovider_v1_0 NatsDataProvider v1.0
+    - initial release
+*/
+
+#! Contains all public definitions in the NatsDataProvider module
+public namespace NatsDataProvider {
+    #! Application name for the data provider action catalog
+    public const AppName = "NATS";
+
+    #! NATS logo in SVG format for the action catalog
+    public const NatsLogo = File::readTextFile(get_script_dir() + "/nats-logo.svg");
+}

@@ -1,0 +1,64 @@
+#!/usr/bin/env qr
+# Example: NATS JetStream Publish and Subscribe
+#
+# Demonstrates JetStream persistent messaging with stream creation,
+# publish with acknowledgment, and push/pull subscribe with message
+# acknowledgment.
+#
+# Prerequisites: NATS server with JetStream enabled
+#   docker run -p 4222:4222 nats:latest -js
+
+%requires nats
+%requires NatsUtil
+
+# Connect to NATS and get JetStream context
+NatsClient client("nats://localhost:4222");
+JetStreamContext js = client.getConnection().jetStream();
+printf("Connected to NATS JetStream\n");
+
+string stream_name = "ORDERS";
+
+# Create a stream
+hash<NatsStreamInfo> stream_info = js.addStream(<NatsStreamConfig>{
+    "name": stream_name,
+    "subjects": ("orders.>",),
+    "retention": NATS_RETENTION_LIMITS,
+    "storage": NATS_STORAGE_FILE,
+});
+printf("Created stream %s\n", stream_name);
+
+# Publish messages with acknowledgment
+for (int i = 0; i < 5; ++i) {
+    string data = sprintf("order-%d", i + 1);
+    hash<NatsPubAck> ack = js.publish("orders.new", binary(data));
+    printf("Published '%s' to stream %s, seq %d\n", data, ack.stream, ack.sequence);
+}
+
+# Push subscribe and receive messages
+printf("\n--- Push Subscribe ---\n");
+NatsSubscription sub = js.subscribe("orders.>");
+for (int i = 0; i < 5; ++i) {
+    *hash<NatsMsgInfo> msg = sub.nextMsg(5s);
+    if (msg) {
+        printf("Received on %s: %s\n", msg.subject, msg.data.toString());
+        sub.ack();
+    } else {
+        printf("Timeout\n");
+        break;
+    }
+}
+sub.unsubscribe();
+
+# Get stream info
+stream_info = js.getStreamInfo(stream_name);
+printf("\nStream %s: %d messages, %d bytes\n",
+    stream_name, stream_info.messages, stream_info.bytes);
+
+# Purge and delete stream
+js.purgeStream(stream_name);
+printf("Purged stream %s\n", stream_name);
+js.deleteStream(stream_name);
+printf("Deleted stream %s\n", stream_name);
+
+client.close();
+printf("Done\n");
