@@ -127,7 +127,12 @@ int QoreNatsConnection::configureOptions(const QoreHashNode* options, ExceptionS
     // NKey seed file
     v = options->getKeyValue("nkey_seed");
     if (v.getType() == NT_STRING) {
-        s = natsOptions_SetNKeyFromSeed(opts, v.get<const QoreStringNode>()->c_str());
+        QoreValue nkey_pub = options->getKeyValue("nkey_pub");
+        s = natsOptions_SetNKeyFromSeed(opts,
+            nkey_pub.getType() == NT_STRING
+                ? nkey_pub.get<const QoreStringNode>()->c_str()
+                : nullptr,
+            v.get<const QoreStringNode>()->c_str());
         if (s != NATS_OK) {
             nats_error(xsink, "NATS-AUTH-ERROR", s, "failed to set NKey seed");
             return -1;

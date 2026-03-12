@@ -79,7 +79,7 @@ QoreHashNode* nats_msg_to_hash(natsMsg* msg, ExceptionSink* xsink) {
     int num_keys = 0;
     natsStatus s = natsMsgHeader_Keys(msg, &keys, &num_keys);
     if (s == NATS_OK && keys && num_keys > 0) {
-        ReferenceHolder<QoreHashNode> headers(new QoreHashNode(stringTypeInfo, xsink), xsink);
+        ReferenceHolder<QoreHashNode> headers(new QoreHashNode(stringTypeInfo), xsink);
         for (int i = 0; i < num_keys; ++i) {
             const char* value = nullptr;
             if (natsMsgHeader_Get(msg, keys[i], &value) == NATS_OK && value) {
@@ -148,7 +148,10 @@ int check_nats_network_access(const char* url, ExceptionSink* xsink) {
     }
 
     // Check hostname policy before DNS resolution
-    if (sm->network().checkHostname(host.c_str(), port, QSEC_NET_TCP, xsink)) {
+    if (sm->network().checkHostname(host.c_str(), port, QSEC_NET_TCP)) {
+        xsink->raiseException("NATS-CONNECTION-ERROR",
+            "access to host '%s:%d' is not allowed by the network security policy",
+            host.c_str(), port);
         return -1;
     }
 
@@ -175,7 +178,7 @@ int check_nats_network_access(const char* url, ExceptionSink* xsink) {
             struct sockaddr_in6* addr = (struct sockaddr_in6*)p->ai_addr;
             addr->sin6_port = htons(port);
         }
-        if (sm->checkNetworkAccess(p->ai_addr, p->ai_addrlen, xsink)) {
+        if (sm->checkNetworkAccess(p->ai_addr, p->ai_addrlen, QSEC_NET_TCP, xsink)) {
             denied = true;
             break;
         }
