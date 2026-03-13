@@ -30,7 +30,7 @@ NATS_C_VERSION=v3.10.0
 git clone --depth 1 --branch ${NATS_C_VERSION} https://github.com/nats-io/nats.c.git /tmp/nats-c
 mkdir -p /tmp/nats-c/build
 cd /tmp/nats-c/build
-cmake .. -DCMAKE_INSTALL_PREFIX=${INSTALL_PREFIX} -DNATS_BUILD_STREAMING=OFF
+cmake .. -DCMAKE_INSTALL_PREFIX=${INSTALL_PREFIX} -DNATS_BUILD_STREAMING=OFF -DBUILD_TESTING=OFF
 make -j${MAKE_JOBS}
 make install
 
