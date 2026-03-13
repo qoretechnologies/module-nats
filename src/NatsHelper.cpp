@@ -49,6 +49,26 @@ void nats_error(ExceptionSink* xsink, const char* err, natsStatus s,
     xsink->raiseException(err, desc.c_str());
 }
 
+void nats_js_error(ExceptionSink* xsink, const char* err, natsStatus s,
+        jsErrCode jerr, const char* fmt, ...) {
+    QoreString desc;
+    while (true) {
+        va_list args;
+        va_start(args, fmt);
+        int rc = desc.vsprintf(fmt, args);
+        va_end(args);
+        if (!rc) {
+            break;
+        }
+    }
+    desc.concat(": ");
+    desc.concat(natsStatus_GetText(s));
+    if (jerr != 0) {
+        desc.sprintf(" (JetStream error code: %d)", (int)jerr);
+    }
+    xsink->raiseException(err, desc.c_str());
+}
+
 QoreHashNode* nats_msg_to_hash(natsMsg* msg, ExceptionSink* xsink) {
     ReferenceHolder<QoreHashNode> h(new QoreHashNode(hashdeclNatsMsgInfo, xsink), xsink);
     if (*xsink) {
@@ -65,7 +85,9 @@ QoreHashNode* nats_msg_to_hash(natsMsg* msg, ExceptionSink* xsink) {
     int data_len = natsMsg_GetDataLength(msg);
     const char* data = natsMsg_GetData(msg);
     if (data && data_len > 0) {
-        h->setKeyValue("data", new BinaryNode(data, data_len), xsink);
+        BinaryNode* bin = new BinaryNode();
+        bin->append(data, data_len);
+        h->setKeyValue("data", bin, xsink);
     }
 
     // reply subject

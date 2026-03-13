@@ -133,6 +133,75 @@ sub2.close();
 client.close();
 ```
 
+### Callback-Based Subscriptions
+
+```qore
+#!/usr/bin/env qr
+
+%requires NatsUtil
+
+NatsClient client("nats://localhost:4222");
+
+# Subscribe with a callback — messages are delivered in a background thread
+NatsChannelSubscription sub = client.subscribe("events.>", sub (hash<NatsMsgInfo> msg) {
+    printf("Got %s: %s\n", msg.subject, msg.data.toString());
+});
+
+# Do other work while messages are processed in the background
+sleep(10s);
+
+sub.close();
+client.close();
+```
+
+### Error Handling
+
+NATS operations raise exceptions on failure. Exception codes follow the pattern `NATS-<CATEGORY>-ERROR`:
+
+| Exception | Description |
+|---|---|
+| `NATS-CONNECTION-ERROR` | Connection or configuration failures |
+| `NATS-PUBLISH-ERROR` | Publish failures |
+| `NATS-SUBSCRIBE-ERROR` | Subscription failures |
+| `NATS-REQUEST-ERROR` | Request/reply failures |
+| `NATS-TIMEOUT-ERROR` | Operation timeouts |
+| `NATS-JETSTREAM-ERROR` | JetStream failures (includes JetStream error code) |
+| `NATS-KV-ERROR` | Key-Value store failures |
+| `NATS-AUTH-ERROR` | Authentication failures |
+| `NATS-TLS-ERROR` | TLS/SSL failures |
+
+```qore
+#!/usr/bin/env qr
+
+%requires NatsUtil
+
+try {
+    NatsClient client("nats://invalid-host:4222");
+} catch (hash<ExceptionInfo> ex) {
+    if (ex.err == "NATS-CONNECTION-ERROR") {
+        printf("Failed to connect: %s\n", ex.desc);
+    }
+}
+
+NatsClient client("nats://localhost:4222");
+try {
+    string reply = client.requestString("service.echo", "hello", 500ms);
+} catch (hash<ExceptionInfo> ex) {
+    if (ex.err == "NATS-TIMEOUT-ERROR") {
+        printf("Request timed out: %s\n", ex.desc);
+    }
+}
+```
+
+### NatsConnection vs NatsClient
+
+The module provides two levels of API:
+
+- **NatsConnection** (binary module): Low-level connection with binary publish/subscribe and direct JetStream/KV access. Use when you need direct control or binary data.
+- **NatsClient** (NatsUtil module): High-level client with string operations, channel-based async subscriptions, and callback subscriptions. Use for most applications.
+
+`NatsClient.getConnection()` returns the underlying `NatsConnection` for accessing JetStream and KV APIs.
+
 ### JetStream Publish / Subscribe
 
 ```qore

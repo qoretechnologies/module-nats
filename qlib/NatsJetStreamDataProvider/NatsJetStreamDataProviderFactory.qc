@@ -28,8 +28,11 @@ public namespace NatsJetStreamDataProvider {
 #! Factory for creating NATS JetStream data providers
 /** @since NatsJetStreamDataProvider 1.0
 */
-public class NatsJetStreamDataProviderFactory inherits AbstractDataProviderFactory {
-    public {
+public class NatsJetStreamDataProviderFactory inherits DataProvider::AbstractDataProviderFactory {
+    private {
+        #! Data provider type info
+        static Class cls = new Class("NatsJetStreamDataProvider");
+
         #! Factory info
         const FactoryInfo = <DataProviderFactoryInfo>{
             "name": "natsjetstream",
@@ -39,24 +42,23 @@ public class NatsJetStreamDataProviderFactory inherits AbstractDataProviderFacto
         };
     }
 
-    #! Returns the factory name
-    string getName() {
-        return FactoryInfo.name;
-    }
-
-    #! Returns factory info
-    hash<DataProviderFactoryInfo> getInfoImpl() {
+    #! Returns static factory information without \a provider_info
+    /** @return static factory information without \a provider_info which is provided by @ref getProviderInfo()
+    */
+    private hash<DataProviderFactoryInfo> getInfoImpl() {
         return FactoryInfo;
     }
 
-    #! Returns the class for the data provider
-    private Class getClassImpl() {
-        return Class::forName("NatsJetStreamDataProvider::NatsJetStreamDataProvider");
+    #! Returns static provider information
+    /** @note the \c name and \c children attributes are not returned as they are dynamic attributes
+    */
+    private hash<DataProviderInfo> getProviderInfoImpl() {
+        return NatsJetStreamDataProvider::ProviderInfo;
     }
 
-    #! Returns the data provider from the given constructor options
-    private AbstractDataProvider createImpl(hash<auto> options, *hash<auto> child_create_options) {
-        return new NatsJetStreamDataProvider(options);
+    #! Returns the class for the data provider object
+    private Class getClassImpl() {
+        return cls;
     }
 }
 

@@ -69,6 +69,29 @@ if (msg) {
     return sub->nextMsg(timeout_ms, xsink);
 }
 
+//! Fetches messages from a pull subscription
+/** @param batch the maximum number of messages to fetch
+    @param timeout_ms the timeout for the fetch operation (default: 5 seconds)
+
+    @return a list of @ref NatsMsgInfo hashes (may be empty on timeout)
+
+    @throw NATS-SUBSCRIBE-ERROR if the fetch fails
+
+    @par Example:
+    @code{.py}
+list<hash<NatsMsgInfo>> msgs = nsub.fetch(10, 5s);
+foreach hash<NatsMsgInfo> msg in (msgs) {
+    printf("Got: %s\n", msg.subject);
+    nsub.ack();
+}
+    @endcode
+
+    @since %nats 1.0
+*/
+list<hash<NatsMsgInfo>> NatsSubscription::fetch(int batch = 1, timeout timeout_ms = 5s) {
+    return sub->fetch((int)batch, timeout_ms, xsink);
+}
+
 //! Unsubscribes from the subject
 /** No more messages will be received after this call.
 
@@ -103,6 +126,26 @@ nothing NatsSubscription::autoUnsubscribe(int max) {
 */
 nothing NatsSubscription::drain() {
     sub->drain(xsink);
+}
+
+//! Waits for drain to complete
+/** Blocks until the drain operation started by @ref drain() has completed
+    or the timeout expires.
+
+    @param timeout_ms maximum time to wait (default: 30 seconds)
+
+    @throw NATS-SUBSCRIBE-ERROR if the wait fails or times out
+
+    @par Example:
+    @code{.py}
+nsub.drain();
+nsub.waitForDrainCompletion(10s);
+    @endcode
+
+    @since %nats 1.0
+*/
+nothing NatsSubscription::waitForDrainCompletion(timeout timeout_ms = 30s) {
+    sub->waitForDrainCompletion(timeout_ms, xsink);
 }
 
 //! Returns True if the subscription is still valid

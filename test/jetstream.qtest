@@ -406,13 +406,13 @@ public class JetStreamTest inherits QUnit::Test {
         js.publish(subject, binary("push-msg"));
 
         # Push subscribe
-        NatsSubscription sub = js.subscribe(subject);
-        *hash<NatsMsgInfo> msg = sub.nextMsg(5s);
+        NatsSubscription nsub = js.subscribe(subject);
+        *hash<NatsMsgInfo> msg = nsub.nextMsg(5s);
         assertEq(True, exists msg);
         assertEq(binary("push-msg"), msg.data);
 
-        sub.ack();
-        sub.unsubscribe();
+        nsub.ack();
+        nsub.unsubscribe();
         js.deleteStream(stream_name);
         conn.close();
     }
@@ -434,13 +434,13 @@ public class JetStreamTest inherits QUnit::Test {
 
         # Pull subscribe with durable
         string durable = "pull-consumer";
-        NatsSubscription sub = js.pullSubscribe(subject, durable);
-        *hash<NatsMsgInfo> msg = sub.nextMsg(5s);
-        assertEq(True, exists msg);
-        assertEq(binary("pull-msg"), msg.data);
+        NatsSubscription nsub = js.pullSubscribe(subject, durable);
+        list<hash<NatsMsgInfo>> msgs = nsub.fetch(1, 5s);
+        assertEq(1, msgs.size());
+        assertEq(binary("pull-msg"), msgs[0].data);
 
-        sub.ack();
-        sub.unsubscribe();
+        nsub.ack();
+        nsub.unsubscribe();
         js.deleteStream(stream_name);
         conn.close();
     }
@@ -459,14 +459,14 @@ public class JetStreamTest inherits QUnit::Test {
 
         js.publish(subject, binary("ack-test"));
 
-        NatsSubscription sub = js.pullSubscribe(subject, "ack-consumer");
-        *hash<NatsMsgInfo> msg = sub.nextMsg(5s);
-        assertEq(True, exists msg);
+        NatsSubscription nsub = js.pullSubscribe(subject, "ack-consumer");
+        list<hash<NatsMsgInfo>> msgs = nsub.fetch(1, 5s);
+        assertEq(1, msgs.size());
 
         # Ack should succeed
-        sub.ack();
+        nsub.ack();
 
-        sub.unsubscribe();
+        nsub.unsubscribe();
         js.deleteStream(stream_name);
         conn.close();
     }
@@ -485,20 +485,20 @@ public class JetStreamTest inherits QUnit::Test {
 
         js.publish(subject, binary("nak-test"));
 
-        NatsSubscription sub = js.pullSubscribe(subject, "nak-consumer");
-        *hash<NatsMsgInfo> msg = sub.nextMsg(5s);
-        assertEq(True, exists msg);
+        NatsSubscription nsub = js.pullSubscribe(subject, "nak-consumer");
+        list<hash<NatsMsgInfo>> msgs = nsub.fetch(1, 5s);
+        assertEq(1, msgs.size());
 
         # Nak should trigger redelivery
-        sub.nak();
+        nsub.nak();
 
         # Message should be redelivered
-        *hash<NatsMsgInfo> msg2 = sub.nextMsg(5s);
-        assertEq(True, exists msg2);
-        assertEq(binary("nak-test"), msg2.data);
+        list<hash<NatsMsgInfo>> msgs2 = nsub.fetch(1, 5s);
+        assertEq(1, msgs2.size());
+        assertEq(binary("nak-test"), msgs2[0].data);
 
-        sub.ack();
-        sub.unsubscribe();
+        nsub.ack();
+        nsub.unsubscribe();
         js.deleteStream(stream_name);
         conn.close();
     }
@@ -517,17 +517,17 @@ public class JetStreamTest inherits QUnit::Test {
 
         js.publish(subject, binary("inprogress-test"));
 
-        NatsSubscription sub = js.pullSubscribe(subject, "inprogress-consumer");
-        *hash<NatsMsgInfo> msg = sub.nextMsg(5s);
-        assertEq(True, exists msg);
+        NatsSubscription nsub = js.pullSubscribe(subject, "inprogress-consumer");
+        list<hash<NatsMsgInfo>> msgs = nsub.fetch(1, 5s);
+        assertEq(1, msgs.size());
 
         # Signal in-progress should succeed (resets ack wait timer)
-        sub.inProgress();
+        nsub.inProgress();
 
         # Then ack
-        sub.ack();
+        nsub.ack();
 
-        sub.unsubscribe();
+        nsub.unsubscribe();
         js.deleteStream(stream_name);
         conn.close();
     }
@@ -546,18 +546,18 @@ public class JetStreamTest inherits QUnit::Test {
 
         js.publish(subject, binary("term-test"));
 
-        NatsSubscription sub = js.pullSubscribe(subject, "term-consumer");
-        *hash<NatsMsgInfo> msg = sub.nextMsg(5s);
-        assertEq(True, exists msg);
+        NatsSubscription nsub = js.pullSubscribe(subject, "term-consumer");
+        list<hash<NatsMsgInfo>> msgs = nsub.fetch(1, 5s);
+        assertEq(1, msgs.size());
 
         # Term should stop redelivery
-        sub.term();
+        nsub.term();
 
         # Message should not be redelivered
-        *hash<NatsMsgInfo> msg2 = sub.nextMsg(2s);
-        assertNothing(msg2);
+        list<hash<NatsMsgInfo>> msgs2 = nsub.fetch(1, 2s);
+        assertEq(0, msgs2.size());
 
-        sub.unsubscribe();
+        nsub.unsubscribe();
         js.deleteStream(stream_name);
         conn.close();
     }
@@ -587,17 +587,17 @@ public class JetStreamTest inherits QUnit::Test {
             "ack_policy": NATS_ACK_EXPLICIT,
         });
 
-        NatsSubscription sub = js.pullSubscribe(subject, "deliver-all");
+        NatsSubscription nsub = js.pullSubscribe(subject, "deliver-all");
 
         # Should receive all 3 messages
         for (int i = 0; i < 3; ++i) {
-            *hash<NatsMsgInfo> msg = sub.nextMsg(5s);
-            assertEq(True, exists msg);
-            assertEq(binary(string(i)), msg.data);
-            sub.ack();
+            list<hash<NatsMsgInfo>> msgs = nsub.fetch(1, 5s);
+            assertEq(1, msgs.size());
+            assertEq(binary(string(i)), msgs[0].data);
+            nsub.ack();
         }
 
-        sub.unsubscribe();
+        nsub.unsubscribe();
         js.deleteStream(stream_name);
         conn.close();
     }
@@ -625,15 +625,15 @@ public class JetStreamTest inherits QUnit::Test {
             "ack_policy": NATS_ACK_EXPLICIT,
         });
 
-        NatsSubscription sub = js.pullSubscribe(subject, "deliver-last");
+        NatsSubscription nsub = js.pullSubscribe(subject, "deliver-last");
 
         # Should receive only the last message
-        *hash<NatsMsgInfo> msg = sub.nextMsg(5s);
-        assertEq(True, exists msg);
-        assertEq(binary("2"), msg.data);
-        sub.ack();
+        list<hash<NatsMsgInfo>> msgs = nsub.fetch(1, 5s);
+        assertEq(1, msgs.size());
+        assertEq(binary("2"), msgs[0].data);
+        nsub.ack();
 
-        sub.unsubscribe();
+        nsub.unsubscribe();
         js.deleteStream(stream_name);
         conn.close();
     }
@@ -659,22 +659,22 @@ public class JetStreamTest inherits QUnit::Test {
             "ack_policy": NATS_ACK_EXPLICIT,
         });
 
-        NatsSubscription sub = js.pullSubscribe(subject, "deliver-new");
+        NatsSubscription nsub = js.pullSubscribe(subject, "deliver-new");
 
         # Old message should not be delivered
-        *hash<NatsMsgInfo> msg_old = sub.nextMsg(1s);
-        assertNothing(msg_old);
+        list<hash<NatsMsgInfo>> msgs_old = nsub.fetch(1, 1s);
+        assertEq(0, msgs_old.size());
 
         # Publish new message
         js.publish(subject, binary("new"));
 
         # New message should be delivered
-        *hash<NatsMsgInfo> msg_new = sub.nextMsg(5s);
-        assertEq(True, exists msg_new);
-        assertEq(binary("new"), msg_new.data);
-        sub.ack();
+        list<hash<NatsMsgInfo>> msgs_new = nsub.fetch(1, 5s);
+        assertEq(1, msgs_new.size());
+        assertEq(binary("new"), msgs_new[0].data);
+        nsub.ack();
 
-        sub.unsubscribe();
+        nsub.unsubscribe();
         js.deleteStream(stream_name);
         conn.close();
     }
@@ -809,11 +809,11 @@ public class JetStreamTest inherits QUnit::Test {
         kv.putString("key2", "val2");
         kv.putString("key3", "val3");
 
-        list<string> keys = kv.keys();
-        assertEq(3, keys.size());
-        assertTrue(inlist("key1", keys));
-        assertTrue(inlist("key2", keys));
-        assertTrue(inlist("key3", keys));
+        list<string> key_list = kv.keys();
+        assertEq(3, key_list.size());
+        assertTrue(inlist("key1", key_list));
+        assertTrue(inlist("key2", key_list));
+        assertTrue(inlist("key3", key_list));
 
         js.deleteKeyValue(bucket);
         conn.close();

@@ -41,8 +41,8 @@ module NatsDataProvider {
         DataProvider::registerFactory(new NatsDataProviderFactory());
 
         # Register connection schemes
-        ConnectionSchemeCache::registerScheme("nats", NatsConnection::ConnectionScheme);
-        ConnectionSchemeCache::registerScheme("tls", NatsTlsConnection::ConnectionScheme);
+        ConnectionSchemeCache::registerScheme("nats", NatsConnectionProvider::ConnectionScheme);
+        ConnectionSchemeCache::registerScheme("tls", NatsTlsConnectionProvider::ConnectionScheme);
 
         # Register app in action catalog
         DataProviderActionCatalog::registerApp(<DataProviderAppInfo>{

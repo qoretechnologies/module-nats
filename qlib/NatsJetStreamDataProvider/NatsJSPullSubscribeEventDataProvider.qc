@@ -60,6 +60,9 @@ public class NatsJSPullSubscribeEventDataProvider inherits AbstractDataProvider,
         #! Request data for the subscription
         *hash<auto> observer_request;
 
+        #! The channel subscription (created in observersReady for deterministic startup)
+        NatsChannelSubscription csub;
+
         #! Flag: stream started
         bool started = False;
 
@@ -94,16 +97,25 @@ public class NatsJSPullSubscribeEventDataProvider inherits AbstractDataProvider,
         {
             AutoLock al(m);
             if (started) {
-                throw "NATS-OBSERVABLE-ERROR", "observersReady() has already been called";
+                throw "NATS-OBSERVABLE-ERROR", "observersReady() has already been called; "
+                    "create a new provider instance for a new subscription";
             }
             started = True;
         }
+        # Create subscription synchronously so it's active before this method returns
+        string subject = observer_request.subject ?? ">";
+        string durable = observer_request.durable;
+        NatsSubscription nsub = js.pullSubscribe(subject, durable);
+        csub = new NatsChannelSubscription(nsub);
         background pullSubscribeLoop();
     }
 
     stopEvents() {
-        AutoLock al(m);
-        stopping = True;
+        {
+            AutoLock al(m);
+            stopping = True;
+        }
+        csub.close();
     }
 
     bool isActive() {
@@ -136,14 +148,9 @@ public class NatsJSPullSubscribeEventDataProvider inherits AbstractDataProvider,
     }
 
     private pullSubscribeLoop() {
-        string subject = observer_request.subject ?? ">";
-        string durable = observer_request.durable;
+        @debug("NatsJSPullSubscribeEventDataProvider::pullSubscribeLoop() started");
         try {
-            NatsSubscription sub = js.pullSubscribe(subject, durable);
-            NatsChannelSubscription csub(sub);
-            on_exit csub.close();
-
-            foreach hash<NatsMsgInfo> msg in (csub) {
+            foreach hash<NatsMsgInfo> msg in (csub.iterator()) {
                 {
                     AutoLock al(m);
                     if (stopping) {

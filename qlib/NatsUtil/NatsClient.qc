@@ -35,8 +35,8 @@ public namespace Nats {
 NatsClient client("nats://localhost:4222");
 client.publishString("events.log", "hello world");
 
-NatsChannelSubscription sub = client.channelSubscribe("events.>", 100);
-foreach hash<NatsMsgInfo> msg in (sub) {
+NatsChannelSubscription nsub = client.channelSubscribe("events.>", 100);
+foreach hash<NatsMsgInfo> msg in (nsub) {
     printf("Got: %s\n", msg.subject);
 }
     @endcode
@@ -120,8 +120,8 @@ public class NatsClient {
         @return a NatsChannelSubscription for iteration
     */
     NatsChannelSubscription channelSubscribe(string subject, int buffer_size = 100) {
-        NatsSubscription sub = conn.subscribe(subject);
-        return new NatsChannelSubscription(sub, buffer_size);
+        NatsSubscription nsub = conn.subscribe(subject);
+        return new NatsChannelSubscription(nsub, buffer_size);
     }
 
     #! Creates a channel-based queue subscription
@@ -132,8 +132,8 @@ public class NatsClient {
     */
     NatsChannelSubscription channelQueueSubscribe(string subject, string queue,
             int buffer_size = 100) {
-        NatsSubscription sub = conn.queueSubscribe(subject, queue);
-        return new NatsChannelSubscription(sub, buffer_size);
+        NatsSubscription nsub = conn.queueSubscribe(subject, queue);
+        return new NatsChannelSubscription(nsub, buffer_size);
     }
 
     #! Creates a callback-based subscription
@@ -179,8 +179,18 @@ public class NatsClient {
 
     #! Background loop for callback-based subscriptions
     private callbackLoop(NatsChannelSubscription csub, code<nothing(hash<NatsMsgInfo>)> callback) {
-        foreach hash<NatsMsgInfo> msg in (csub) {
-            callback(msg);
+        try {
+            foreach hash<NatsMsgInfo> msg in (csub.iterator()) {
+                try {
+                    callback(msg);
+                } catch (hash<ExceptionInfo> ex) {
+                    @debug("NatsClient::callbackLoop() callback error: %s: %s",
+                        ex.err, ex.desc);
+                }
+            }
+        } catch (hash<ExceptionInfo> ex) {
+            @debug("NatsClient::callbackLoop() iteration error: %s: %s",
+                ex.err, ex.desc);
         }
     }
 }

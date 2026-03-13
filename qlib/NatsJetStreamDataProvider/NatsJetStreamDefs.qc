@@ -33,6 +33,66 @@ public namespace NatsJetStreamDataProvider {
     #! Event ID for a JetStream error
     public const EVENT_JS_ERROR = "jetstream-error";
 
+    #! JetStream retention policy
+    public enum NatsJSRetentionPolicy {
+        #! Messages are retained based on limits (max_msgs, max_bytes, max_age)
+        JS_RETENTION_LIMITS = 0,
+        #! Messages are removed when all known consumers have acknowledged
+        JS_RETENTION_INTEREST = 1,
+        #! Messages are removed when any consumer acknowledges (work queue pattern)
+        JS_RETENTION_WORKQUEUE = 2,
+    }
+
+    #! JetStream storage type
+    public enum NatsJSStorageType {
+        #! Store messages on disk
+        JS_STORAGE_FILE = 0,
+        #! Store messages in memory
+        JS_STORAGE_MEMORY = 1,
+    }
+
+    #! JetStream discard policy
+    public enum NatsJSDiscardPolicy {
+        #! Discard old messages when limits are reached
+        JS_DISCARD_OLD = 0,
+        #! Reject new messages when limits are reached
+        JS_DISCARD_NEW = 1,
+    }
+
+    #! JetStream acknowledgment policy
+    public enum NatsJSAckPolicy {
+        #! No acknowledgment required
+        JS_ACK_NONE = 0,
+        #! Acknowledge all prior messages
+        JS_ACK_ALL = 1,
+        #! Each message must be individually acknowledged
+        JS_ACK_EXPLICIT = 2,
+    }
+
+    #! JetStream deliver policy
+    public enum NatsJSDeliverPolicy {
+        #! Deliver all messages
+        JS_DELIVER_ALL = 0,
+        #! Deliver starting with the last message
+        JS_DELIVER_LAST = 1,
+        #! Deliver only new messages
+        JS_DELIVER_NEW = 2,
+        #! Deliver starting at a specific sequence
+        JS_DELIVER_BY_START_SEQUENCE = 3,
+        #! Deliver starting at a specific time
+        JS_DELIVER_BY_START_TIME = 4,
+        #! Deliver the last message per subject
+        JS_DELIVER_LAST_PER_SUBJECT = 5,
+    }
+
+    #! JetStream replay policy
+    public enum NatsJSReplayPolicy {
+        #! Replay messages as fast as possible
+        JS_REPLAY_INSTANT = 0,
+        #! Replay messages at the original rate
+        JS_REPLAY_ORIGINAL = 1,
+    }
+
     #! Stream configuration request data type (for create/update)
     public const NatsJSStreamConfigDataType = new HashDataType("NatsJSStreamConfig", {
         "name": {
@@ -46,7 +106,7 @@ public namespace NatsJetStreamDataProvider {
         },
         "retention": {
             "type": IntOrNothingType,
-            "desc": "Retention policy (0=limits, 1=interest, 2=workqueue)",
+            "desc": "Retention policy (see NatsJSRetentionPolicy enum)",
         },
         "max_msgs": {
             "type": IntOrNothingType,
@@ -58,7 +118,7 @@ public namespace NatsJetStreamDataProvider {
         },
         "max_age": {
             "type": IntOrNothingType,
-            "desc": "Maximum message age in nanoseconds",
+            "desc": "Maximum message age in milliseconds (0 = unlimited)",
         },
         "max_msg_size": {
             "type": IntOrNothingType,
@@ -66,7 +126,7 @@ public namespace NatsJetStreamDataProvider {
         },
         "storage": {
             "type": IntOrNothingType,
-            "desc": "Storage type (0=file, 1=memory)",
+            "desc": "Storage type (see NatsJSStorageType enum)",
         },
         "num_replicas": {
             "type": IntOrNothingType,
@@ -74,7 +134,7 @@ public namespace NatsJetStreamDataProvider {
         },
         "discard": {
             "type": IntOrNothingType,
-            "desc": "Discard policy (0=old, 1=new)",
+            "desc": "Discard policy (see NatsJSDiscardPolicy enum)",
         },
         "description": {
             "type": StringOrNothingType,
@@ -103,15 +163,15 @@ public namespace NatsJetStreamDataProvider {
         },
         "ack_policy": {
             "type": IntOrNothingType,
-            "desc": "Ack policy (0=none, 1=all, 2=explicit)",
+            "desc": "Ack policy (see NatsJSAckPolicy enum)",
         },
         "ack_wait": {
             "type": IntOrNothingType,
-            "desc": "Ack wait in nanoseconds",
+            "desc": "Ack wait in milliseconds",
         },
         "deliver_policy": {
             "type": IntOrNothingType,
-            "desc": "Deliver policy",
+            "desc": "Deliver policy (see NatsJSDeliverPolicy enum)",
         },
         "filter_subject": {
             "type": StringOrNothingType,
@@ -262,7 +322,7 @@ public namespace NatsJetStreamDataProvider {
         },
         "operation": {
             "type": IntOrNothingType,
-            "desc": "Operation type",
+            "desc": "Operation type (NATS_KV_OP_PUT = 1, NATS_KV_OP_DELETE = 2, NATS_KV_OP_PURGE = 3)",
         },
     });
 }

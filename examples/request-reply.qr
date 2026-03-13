@@ -14,14 +14,14 @@ NatsClient client("nats://localhost:4222");
 printf("Connected to NATS\n");
 
 # Set up a responder using channel-based subscription
-NatsChannelSubscription sub = client.channelSubscribe("service.echo");
+NatsChannelSubscription nsub = client.channelSubscribe("service.echo");
 printf("Responder listening on service.echo\n");
 
 # Run the responder in the background
 Counter ready(1);
 background sub () {
     ready.dec();
-    foreach hash<NatsMsgInfo> msg in (sub) {
+    foreach hash<NatsMsgInfo> msg in (nsub.iterator()) {
         if (msg.reply) {
             string response = "Echo: " + msg.data.toString();
             client.publishString(msg.reply, response);
@@ -42,6 +42,6 @@ for (int i = 0; i < 3; ++i) {
 }
 
 # Clean up
-sub.close();
+nsub.close();
 client.close();
 printf("Done\n");

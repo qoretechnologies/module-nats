@@ -26,9 +26,11 @@
 public namespace NatsDataProvider {
 
 #! Connection class for plain NATS connections (nats://)
-/** @since NatsDataProvider 1.0
+/** supports the options from @ref NatsDataProvider::ConstructorOptions
+
+    @since NatsDataProvider 1.0
 */
-public class NatsConnection inherits ConnectionProvider::AbstractConnectionWithInfo {
+public class NatsConnectionProvider inherits ConnectionProvider::AbstractConnectionWithInfo {
     public {
         #! Connection scheme info
         const ConnectionScheme = <ConnectionSchemeInfo>{
@@ -36,7 +38,7 @@ public class NatsConnection inherits ConnectionProvider::AbstractConnectionWithI
             "short_desc": "A connection to a NATS server",
             "desc": "A connection to a NATS messaging server supporting "
                 "publish/subscribe, request/reply, and queue group messaging",
-            "cls": Class::forName("NatsDataProvider::NatsConnection"),
+            "cls": Class::forName("NatsDataProvider::NatsConnectionProvider"),
             "schemes": {
                 "nats": True,
             },
@@ -68,41 +70,67 @@ public class NatsConnection inherits ConnectionProvider::AbstractConnectionWithI
         };
     }
 
-    #! Creates the NatsConnection object
-    constructor(string name, string description, string url, hash<auto> attributes = {},
-            hash<auto> options = {})
-            : AbstractConnectionWithInfo(name, description, url, attributes, options) {
+    #! Creates the NatsConnectionProvider object
+    constructor(string name, string desc, string url, hash<auto> attr = {},
+            hash<auto> options = {}, *LoggerInterface logger)
+            : AbstractConnectionWithInfo(name, desc, url, attr, options, logger) {
     }
 
-    #! Creates the NatsConnection object from a config hash
+    #! Creates the NatsConnectionProvider object from a config hash
+    /** @param config with the following keys:
+        - name (required string): the connection name
+        - display_name (optional string): the display name
+        - short_desc (optional string): a short description in plain text
+        - desc (optional string): a long description with markdown formatting
+        - url (required string): the connection URL
+        - opts (optional hash): connection options
+        - logger (optional LoggerInterface object): logger for the connection
+        @param attr optional connection attributes
+        - monitor (optional bool): should the connection be monitored? Default: True
+        - enabled (optional bool): is the connection enabled? Default: True
+        - locked (optional bool): is the connection locked? Default: False
+        - debug_data (optional bool): debug data? Default: False
+        - tags (optional hash): tags for the connection; no default value
+
+        @throw CONNECTION-OPTION-ERROR missing or invalid connection option or attribute
+    */
     constructor(hash<auto> config, *hash<auto> attr) : AbstractConnectionWithInfo(config, attr) {
     }
 
-    #! Returns a NatsDataProvider for this connection
-    DataProvider::AbstractDataProvider getDataProvider() {
-        hash<auto> dp_opts({
-            "url": url,
-        });
-        if (self.opts.token) {
-            dp_opts.token = self.opts.token;
-        }
-        if (self.opts.username) {
-            dp_opts.username = self.opts.username;
-        }
-        if (self.opts.password) {
-            dp_opts.password = self.opts.password;
-        }
-        return new NatsDataProvider(dp_opts);
-    }
-
-    #! Returns "nats"
+    #! Returns the string type name for the connection object
     string getType() {
         return "nats";
+    }
+
+    #! Returns @ref True, as this connection class returns a data provider with the @ref getDataProvider() method
+    bool hasDataProvider() {
+        return True;
+    }
+
+    #! Returns the data provider application name this connection serves
+    *string getAppName() {
+        return NatsDataProvider::AppName;
+    }
+
+    #! Returns a NatsDataProvider for this connection
+    AbstractDataProvider getDataProvider(*hash<auto> constructor_options) {
+        return new NatsDataProvider(orig_opts + {"url": url} + constructor_options);
     }
 
     #! Returns the ConnectionSchemeInfo
     private hash<ConnectionSchemeInfo> getConnectionSchemeInfoImpl() {
         return ConnectionScheme;
+    }
+
+    #! Returns a hash of data provider constructor option info, if applicable
+    private *hash<string, hash<DataProviderOptionInfo>> getDataProviderConstructorOptionsImpl() {
+        return NatsDataProvider::ConstructorOptions;
+    }
+
+    #! Override to set child data provider capabilities once per child class
+    private setChildCapabilities() {
+        children_can_support_apis = True;
+        children_can_support_observers = True;
     }
 
     #! Returns the underlying connection object
@@ -132,32 +160,35 @@ public class NatsConnection inherits ConnectionProvider::AbstractConnectionWithI
 #! Connection class for TLS NATS connections (tls://)
 /** @since NatsDataProvider 1.0
 */
-public class NatsTlsConnection inherits NatsConnection {
+public class NatsTlsConnectionProvider inherits NatsConnectionProvider {
     public {
         #! Connection scheme info for TLS
         const ConnectionScheme = <ConnectionSchemeInfo>{
             "display_name": "NATS TLS Connection",
             "short_desc": "A TLS-encrypted connection to a NATS server",
             "desc": "A TLS-encrypted connection to a NATS messaging server",
-            "cls": Class::forName("NatsDataProvider::NatsTlsConnection"),
+            "cls": Class::forName("NatsDataProvider::NatsTlsConnectionProvider"),
             "schemes": {
                 "tls": True,
             },
             "base_scheme_map": {
                 "tls": "tls",
             },
-            "options": NatsConnection::ConnectionScheme.options,
+            "options": NatsConnectionProvider::ConnectionScheme.options,
         };
     }
 
-    constructor(string name, string description, string url, hash<auto> attributes = {},
-            hash<auto> options = {})
-            : NatsConnection(name, description, url, attributes, options) {
+    #! Creates the NatsTlsConnectionProvider object
+    constructor(string name, string desc, string url, hash<auto> attr = {},
+            hash<auto> options = {}, *LoggerInterface logger)
+            : NatsConnectionProvider(name, desc, url, attr, options, logger) {
     }
 
-    constructor(hash<auto> config, *hash<auto> attr) : NatsConnection(config, attr) {
+    #! Creates the NatsTlsConnectionProvider object from a config hash
+    constructor(hash<auto> config, *hash<auto> attr) : NatsConnectionProvider(config, attr) {
     }
 
+    #! Returns the string type name for the connection object
     string getType() {
         return "tls";
     }

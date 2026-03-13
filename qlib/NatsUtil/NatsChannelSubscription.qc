@@ -36,15 +36,15 @@ public namespace Nats {
     @par Example: Iterate messages
     @code{.py}
 NatsClient client("nats://localhost:4222");
-NatsChannelSubscription sub = client.channelSubscribe("orders.>", 100);
-foreach hash<NatsMsgInfo> msg in (sub) {
+NatsChannelSubscription nsub = client.channelSubscribe("orders.>", 100);
+foreach hash<NatsMsgInfo> msg in (nsub.iterator()) {
     process(msg);
 }
     @endcode
 
     @par Example: Receive with timeout
     @code{.py}
-*hash<NatsMsgInfo> msg = sub.recv(5s);
+*hash<NatsMsgInfo> msg = nsub.recv(5s);
     @endcode
 
     @par Example: Multiplexing
@@ -60,7 +60,7 @@ auto result = channel_select(
 public class NatsChannelSubscription {
     private {
         #! The underlying NATS subscription
-        NatsSubscription sub;
+        NatsSubscription nsub;
 
         #! The message channel
         Channel chan;
@@ -76,11 +76,11 @@ public class NatsChannelSubscription {
     }
 
     #! Creates a channel subscription
-    /** @param sub the underlying NatsSubscription
+    /** @param nsub the underlying NatsSubscription
         @param buffer_size the channel buffer size (default: 100)
     */
-    constructor(NatsSubscription sub, int buffer_size = 100) {
-        self.sub = sub;
+    constructor(NatsSubscription nsub, int buffer_size = 100) {
+        self.nsub = nsub;
         self.chan = new Channel(buffer_size);
         self.started = True;
         background self.bgLoop();
@@ -104,9 +104,9 @@ public class NatsChannelSubscription {
     */
     *hash<NatsMsgInfo> recv(timeout timeout = 5s) {
         try {
-            return chan.get(timeout);
+            return chan.recv(timeout);
         } catch (hash<ExceptionInfo> ex) {
-            if (ex.err == "CHANNEL-CLOSED-ERROR" || ex.err == "CHANNEL-TIMEOUT-ERROR") {
+            if (ex.err == "CHANNEL-CLOSED" || ex.err == "CHANNEL-TIMEOUT") {
                 return NOTHING;
             }
             rethrow;
@@ -129,8 +129,16 @@ public class NatsChannelSubscription {
             }
             stopping = True;
         }
-        sub.unsubscribe();
-        chan.close();
+        try {
+            nsub.unsubscribe();
+        } catch (hash<ExceptionInfo> ex) {
+            # Ignore errors if connection is already closed
+        }
+        try {
+            chan.close();
+        } catch () {
+            # Channel may already be closed
+        }
     }
 
     #! Drains the subscription (processes pending messages then closes)
@@ -142,7 +150,7 @@ public class NatsChannelSubscription {
             }
             stopping = True;
         }
-        sub.drain();
+        nsub.drain();
         # Channel will be closed by the background thread when it exits
     }
 
@@ -154,7 +162,9 @@ public class NatsChannelSubscription {
 
     #! Background thread that reads messages and sends to the channel
     private bgLoop() {
+        @debug("NatsChannelSubscription::bgLoop() started");
         on_exit {
+            @debug("NatsChannelSubscription::bgLoop() exiting");
             try {
                 chan.close();
             } catch () {
@@ -171,12 +181,12 @@ public class NatsChannelSubscription {
             }
 
             try {
-                *hash<NatsMsgInfo> msg = sub.nextMsg(500ms);
+                *hash<NatsMsgInfo> msg = nsub.nextMsg(500ms);
                 if (msg) {
                     try {
                         chan.send(msg);
                     } catch (hash<ExceptionInfo> ex) {
-                        if (ex.err == "CHANNEL-CLOSED-ERROR") {
+                        if (ex.err == "CHANNEL-CLOSED") {
                             break;
                         }
                         rethrow;
@@ -187,7 +197,10 @@ public class NatsChannelSubscription {
                     # Subscription has been unsubscribed or is invalid
                     break;
                 }
-                rethrow;
+                # Log unexpected errors and exit the loop gracefully
+                @debug("NatsChannelSubscription::bgLoop() unexpected error: %s: %s",
+                    ex.err, ex.desc);
+                break;
             }
         }
     }

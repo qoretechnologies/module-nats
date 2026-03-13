@@ -55,6 +55,9 @@ public class NatsJSSubscribeEventDataProvider inherits AbstractDataProvider, Del
         #! Request data for the subscription
         *hash<auto> observer_request;
 
+        #! The channel subscription (created in observersReady for deterministic startup)
+        NatsChannelSubscription csub;
+
         #! Flag: stream started
         bool started = False;
 
@@ -89,16 +92,24 @@ public class NatsJSSubscribeEventDataProvider inherits AbstractDataProvider, Del
         {
             AutoLock al(m);
             if (started) {
-                throw "NATS-OBSERVABLE-ERROR", "observersReady() has already been called";
+                throw "NATS-OBSERVABLE-ERROR", "observersReady() has already been called; "
+                    "create a new provider instance for a new subscription";
             }
             started = True;
         }
+        # Create subscription synchronously so it's active before this method returns
+        string subject = observer_request.subject ?? ">";
+        NatsSubscription nsub = js.subscribe(subject);
+        csub = new NatsChannelSubscription(nsub);
         background subscribeLoop();
     }
 
     stopEvents() {
-        AutoLock al(m);
-        stopping = True;
+        {
+            AutoLock al(m);
+            stopping = True;
+        }
+        csub.close();
     }
 
     bool isActive() {
@@ -131,13 +142,9 @@ public class NatsJSSubscribeEventDataProvider inherits AbstractDataProvider, Del
     }
 
     private subscribeLoop() {
-        string subject = observer_request.subject ?? ">";
+        @debug("NatsJSSubscribeEventDataProvider::subscribeLoop() started");
         try {
-            NatsSubscription sub = js.subscribe(subject);
-            NatsChannelSubscription csub(sub);
-            on_exit csub.close();
-
-            foreach hash<NatsMsgInfo> msg in (csub) {
+            foreach hash<NatsMsgInfo> msg in (csub.iterator()) {
                 {
                     AutoLock al(m);
                     if (stopping) {

@@ -115,13 +115,13 @@ const NATS_REPLAY_ORIGINAL = 1;
 */
 ///@{
 //! A put or update operation
-const NATS_KV_OP_PUT = 0;
+const NATS_KV_OP_PUT = 1;
 
 //! A delete operation
-const NATS_KV_OP_DELETE = 1;
+const NATS_KV_OP_DELETE = 2;
 
 //! A purge operation
-const NATS_KV_OP_PURGE = 2;
+const NATS_KV_OP_PURGE = 3;
 ///@}
 
 //! TLS options for NATS connections

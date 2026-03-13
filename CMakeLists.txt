@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.5.0)
+cmake_minimum_required(VERSION 3.11.0)
 
 project(qore-nats-module)
 
@@ -24,14 +24,37 @@ endif()
 
 find_package(Qore 2.0 REQUIRED)
 
-# Find nats.c library
+# Find nats.c library — if not installed, fetch and build from source
 find_path(NATS_INCLUDE_DIR nats/nats.h)
 find_library(NATS_LIBRARY NAMES nats)
 if(NOT NATS_INCLUDE_DIR OR NOT NATS_LIBRARY)
-    message(FATAL_ERROR "nats.c library not found. Install libnats or set NATS_INCLUDE_DIR and NATS_LIBRARY.")
+    message(STATUS "nats.c not found locally — fetching v3.10.0 from GitHub")
+    include(FetchContent)
+    set(NATS_BUILD_STREAMING OFF CACHE BOOL "" FORCE)
+    set(NATS_BUILD_EXAMPLES OFF CACHE BOOL "" FORCE)
+    set(BUILD_TESTING OFF CACHE BOOL "" FORCE)
+    # Build static only to avoid target name conflict with our "nats" module
+    set(NATS_BUILD_LIB_SHARED OFF CACHE BOOL "" FORCE)
+    set(NATS_BUILD_LIB_STATIC ON CACHE BOOL "" FORCE)
+    # Static lib must be built with -fPIC since it's linked into our shared module
+    set(CMAKE_POSITION_INDEPENDENT_CODE ON)
+    FetchContent_Declare(
+        nats_c
+        GIT_REPOSITORY https://github.com/nats-io/nats.c.git
+        GIT_TAG        v3.10.0
+        GIT_SHALLOW    TRUE
+    )
+    FetchContent_MakeAvailable(nats_c)
+    # nats.c source puts headers in src/nats.h, but installed layout is nats/nats.h.
+    # Create a symlink so #include <nats/nats.h> works from the source tree.
+    file(MAKE_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/nats_include")
+    file(CREATE_LINK "${nats_c_SOURCE_DIR}/src" "${CMAKE_CURRENT_BINARY_DIR}/nats_include/nats" SYMBOLIC)
+    set(NATS_INCLUDE_DIR "${CMAKE_CURRENT_BINARY_DIR}/nats_include")
+    set(NATS_LIBRARY nats_static)
+else()
+    message(STATUS "Found nats.c: ${NATS_LIBRARY}")
+    message(STATUS "nats.c include dir: ${NATS_INCLUDE_DIR}")
 endif()
-message(STATUS "Found nats.c: ${NATS_LIBRARY}")
-message(STATUS "nats.c include dir: ${NATS_INCLUDE_DIR}")
 
 # Check for C++17
 include(CheckCXXCompilerFlag)

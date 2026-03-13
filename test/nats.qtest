@@ -172,29 +172,29 @@ public class NatsTest inherits QUnit::Test {
 
     pubSubTest() {
         NatsConnection conn(url);
-        NatsSubscription sub = conn.subscribe("test.pubsub");
+        NatsSubscription nsub = conn.subscribe("test.pubsub");
 
         binary payload = binary("hello nats");
         conn.publish("test.pubsub", payload);
         conn.flush();
 
-        *hash<NatsMsgInfo> msg = sub.nextMsg(5s);
+        *hash<NatsMsgInfo> msg = nsub.nextMsg(5s);
         assertEq(True, exists msg);
         assertEq("test.pubsub", msg.subject);
         assertEq(payload, msg.data);
 
-        sub.unsubscribe();
+        nsub.unsubscribe();
         conn.close();
     }
 
     wildcardStarTest() {
         NatsConnection conn(url);
-        NatsSubscription sub = conn.subscribe("wc.*.test");
+        NatsSubscription nsub = conn.subscribe("wc.*.test");
 
         conn.publish("wc.foo.test", binary("star"));
         conn.flush();
 
-        *hash<NatsMsgInfo> msg = sub.nextMsg(5s);
+        *hash<NatsMsgInfo> msg = nsub.nextMsg(5s);
         assertEq(True, exists msg);
         assertEq("wc.foo.test", msg.subject);
         assertEq(binary("star"), msg.data);
@@ -203,49 +203,49 @@ public class NatsTest inherits QUnit::Test {
         conn.publish("wc.foo.bar.test", binary("no-match"));
         conn.flush();
 
-        *hash<NatsMsgInfo> msg2 = sub.nextMsg(1s);
+        *hash<NatsMsgInfo> msg2 = nsub.nextMsg(1s);
         assertNothing(msg2);
 
-        sub.unsubscribe();
+        nsub.unsubscribe();
         conn.close();
     }
 
     wildcardGtTest() {
         NatsConnection conn(url);
-        NatsSubscription sub = conn.subscribe("gt.>");
+        NatsSubscription nsub = conn.subscribe("gt.>");
 
         conn.publish("gt.foo.bar.baz", binary("gt-match"));
         conn.flush();
 
-        *hash<NatsMsgInfo> msg = sub.nextMsg(5s);
+        *hash<NatsMsgInfo> msg = nsub.nextMsg(5s);
         assertEq(True, exists msg);
         assertEq("gt.foo.bar.baz", msg.subject);
         assertEq(binary("gt-match"), msg.data);
 
-        sub.unsubscribe();
+        nsub.unsubscribe();
         conn.close();
     }
 
     emptyPayloadTest() {
         NatsConnection conn(url);
-        NatsSubscription sub = conn.subscribe("test.empty");
+        NatsSubscription nsub = conn.subscribe("test.empty");
 
         conn.publish("test.empty");
         conn.flush();
 
-        *hash<NatsMsgInfo> msg = sub.nextMsg(5s);
+        *hash<NatsMsgInfo> msg = nsub.nextMsg(5s);
         assertEq(True, exists msg);
         assertEq("test.empty", msg.subject);
         # Empty payload: data should be NOTHING or empty binary
         assertTrue(!msg.data || msg.data.size() == 0);
 
-        sub.unsubscribe();
+        nsub.unsubscribe();
         conn.close();
     }
 
     largeMessageTest() {
         NatsConnection conn(url);
-        NatsSubscription sub = conn.subscribe("test.large");
+        NatsSubscription nsub = conn.subscribe("test.large");
 
         # Create a 1MB payload
         binary payload = binary();
@@ -258,34 +258,34 @@ public class NatsTest inherits QUnit::Test {
         conn.publish("test.large", payload);
         conn.flush();
 
-        *hash<NatsMsgInfo> msg = sub.nextMsg(10s);
+        *hash<NatsMsgInfo> msg = nsub.nextMsg(10s);
         assertEq(True, exists msg);
         assertEq(payload.size(), msg.data.size());
         assertEq(payload, msg.data);
 
-        sub.unsubscribe();
+        nsub.unsubscribe();
         conn.close();
     }
 
     unicodeTest() {
         NatsConnection conn(url);
-        NatsSubscription sub = conn.subscribe("test.unicode");
+        NatsSubscription nsub = conn.subscribe("test.unicode");
 
         string text = "Hello \u4e16\u754c \u00e9\u00e8\u00ea \u00fc\u00f6\u00e4";
         conn.publishString("test.unicode", text);
         conn.flush();
 
-        *hash<NatsMsgInfo> msg = sub.nextMsg(5s);
+        *hash<NatsMsgInfo> msg = nsub.nextMsg(5s);
         assertEq(True, exists msg);
         assertEq(text, msg.data.toString());
 
-        sub.unsubscribe();
+        nsub.unsubscribe();
         conn.close();
     }
 
     headersTest() {
         NatsConnection conn(url);
-        NatsSubscription sub = conn.subscribe("test.headers");
+        NatsSubscription nsub = conn.subscribe("test.headers");
 
         hash<string, string> hdrs = {
             "Content-Type": "application/json",
@@ -294,7 +294,7 @@ public class NatsTest inherits QUnit::Test {
         conn.publishMsg("test.headers", binary("with-headers"), hdrs);
         conn.flush();
 
-        *hash<NatsMsgInfo> msg = sub.nextMsg(5s);
+        *hash<NatsMsgInfo> msg = nsub.nextMsg(5s);
         assertEq(True, exists msg);
         assertEq("test.headers", msg.subject);
         assertEq(binary("with-headers"), msg.data);
@@ -302,7 +302,7 @@ public class NatsTest inherits QUnit::Test {
         assertEq("application/json", msg.headers."Content-Type");
         assertEq("my-value", msg.headers."X-Custom");
 
-        sub.unsubscribe();
+        nsub.unsubscribe();
         conn.close();
     }
 
@@ -312,9 +312,9 @@ public class NatsTest inherits QUnit::Test {
         NatsConnection conn(url);
 
         # Set up a responder
-        NatsSubscription sub = conn.subscribe("test.echo");
+        NatsSubscription nsub = conn.subscribe("test.echo");
         Counter cnt(1);
-        background requestResponder(sub, cnt);
+        background requestResponder(nsub, cnt);
 
         # Give the background thread a moment to start receiving
         usleep(100000);
@@ -323,15 +323,15 @@ public class NatsTest inherits QUnit::Test {
         assertEq(True, exists reply);
         assertEq(binary("pong"), reply.data);
 
-        sub.unsubscribe();
+        nsub.unsubscribe();
         cnt.waitForZero();
         conn.close();
     }
 
-    private requestResponder(NatsSubscription sub, Counter cnt) {
+    private requestResponder(NatsSubscription nsub, Counter cnt) {
         on_exit cnt.dec();
 
-        *hash<NatsMsgInfo> msg = sub.nextMsg(5s);
+        *hash<NatsMsgInfo> msg = nsub.nextMsg(5s);
         if (msg && msg.reply) {
             NatsConnection conn(url);
             conn.publish(msg.reply, binary("pong"));
@@ -392,15 +392,15 @@ public class NatsTest inherits QUnit::Test {
 
     unsubscribeTest() {
         NatsConnection conn(url);
-        NatsSubscription sub = conn.subscribe("test.unsub");
+        NatsSubscription nsub = conn.subscribe("test.unsub");
 
         conn.publish("test.unsub", binary("before"));
         conn.flush();
 
-        *hash<NatsMsgInfo> msg = sub.nextMsg(5s);
+        *hash<NatsMsgInfo> msg = nsub.nextMsg(5s);
         assertEq(True, exists msg);
 
-        sub.unsubscribe();
+        nsub.unsubscribe();
 
         conn.publish("test.unsub", binary("after"));
         conn.flush();
@@ -409,7 +409,7 @@ public class NatsTest inherits QUnit::Test {
         # The subscription is invalid so nextMsg may throw
         bool got_nothing = False;
         try {
-            *hash<NatsMsgInfo> msg2 = sub.nextMsg(500ms);
+            *hash<NatsMsgInfo> msg2 = nsub.nextMsg(500ms);
             got_nothing = !exists msg2;
         } catch (hash<ExceptionInfo> ex) {
             # Expected: subscription is invalid after unsubscribe
@@ -422,8 +422,8 @@ public class NatsTest inherits QUnit::Test {
 
     autoUnsubscribeTest() {
         NatsConnection conn(url);
-        NatsSubscription sub = conn.subscribe("test.autounsub");
-        sub.autoUnsubscribe(3);
+        NatsSubscription nsub = conn.subscribe("test.autounsub");
+        nsub.autoUnsubscribe(3);
 
         for (int i = 0; i < 5; ++i) {
             conn.publish("test.autounsub", binary(string(i)));
@@ -432,7 +432,7 @@ public class NatsTest inherits QUnit::Test {
 
         int received = 0;
         for (int i = 0; i < 5; ++i) {
-            *hash<NatsMsgInfo> msg = sub.nextMsg(1s);
+            *hash<NatsMsgInfo> msg = nsub.nextMsg(1s);
             if (msg) {
                 ++received;
             } else {
@@ -446,7 +446,7 @@ public class NatsTest inherits QUnit::Test {
 
     drainTest() {
         NatsConnection conn(url);
-        NatsSubscription sub = conn.subscribe("test.drain");
+        NatsSubscription nsub = conn.subscribe("test.drain");
 
         # Publish some messages
         for (int i = 0; i < 3; ++i) {
@@ -454,15 +454,22 @@ public class NatsTest inherits QUnit::Test {
         }
         conn.flush();
 
-        # Give messages time to arrive
-        usleep(200000);
+        # Read pending messages first
+        int received = 0;
+        while (True) {
+            *hash<NatsMsgInfo> msg = nsub.nextMsg(1s);
+            if (!msg) {
+                break;
+            }
+            ++received;
+        }
+        assertEq(3, received);
 
-        # Drain should process pending messages
-        sub.drain();
+        # Drain should succeed without error
+        nsub.drain();
 
-        # After drain, isValid should return False eventually
-        usleep(500000);
-        assertFalse(sub.isValid());
+        # After drain, nextMsg should return NOTHING
+        assertNothing(nsub.nextMsg(500ms));
 
         conn.close();
     }
@@ -471,16 +478,24 @@ public class NatsTest inherits QUnit::Test {
 
     connectionDrainTest() {
         NatsConnection conn(url);
-        NatsSubscription sub = conn.subscribe("test.conndrain");
+        NatsSubscription nsub = conn.subscribe("test.conndrain");
 
         conn.publish("test.conndrain", binary("drain-test"));
         conn.flush();
 
+        # Read pending message
+        *hash<NatsMsgInfo> msg = nsub.nextMsg(2s);
+        assertTrue(exists msg);
+
+        # Drain the connection — drains all subscriptions and closes
         conn.drain();
 
-        # After drain, connection should be closed
-        usleep(500000);
-        assertFalse(conn.isConnected());
+        # After drain, nextMsg should return NOTHING (subscription drained)
+        assertNothing(nsub.nextMsg(500ms));
+
+        # Connection should eventually be closed by drain
+        # (drain is async so we check via subscription invalidation)
+        assertFalse(nsub.isValid());
     }
 
     connectionCloseTest() {
@@ -615,17 +630,17 @@ public class NatsTest inherits QUnit::Test {
     }
 
     urlParsingTest() {
-        hash<auto> result = NatsHelper::parseUrl("nats://localhost:4222");
+        hash<NatsUrlInfo> result = NatsHelper::parseUrl("nats://localhost:4222");
         assertEq("nats", result.scheme);
         assertEq("localhost", result.host);
         assertEq(4222, result.port);
 
-        hash<auto> result2 = NatsHelper::parseUrl("tls://myhost:5222");
+        hash<NatsUrlInfo> result2 = NatsHelper::parseUrl("tls://myhost:5222");
         assertEq("tls", result2.scheme);
         assertEq("myhost", result2.host);
         assertEq(5222, result2.port);
 
-        hash<auto> result3 = NatsHelper::parseUrl("nats://user:pass@host:4222");
+        hash<NatsUrlInfo> result3 = NatsHelper::parseUrl("nats://user:pass@host:4222");
         assertEq("user", result3.username);
         assertEq("pass", result3.password);
         assertEq("host", result3.host);

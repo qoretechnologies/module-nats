@@ -46,6 +46,10 @@ public class NatsQueueSubscribeEventDataProvider inherits AbstractDataProvider, 
     private {
         NatsClient client;
         *hash<auto> observer_request;
+
+        #! The channel subscription (created in observersReady for deterministic startup)
+        NatsChannelSubscription csub;
+
         bool started = False;
         bool stopping = False;
         bool active = True;
@@ -72,16 +76,26 @@ public class NatsQueueSubscribeEventDataProvider inherits AbstractDataProvider, 
         {
             AutoLock al(m);
             if (started) {
-                throw "NATS-OBSERVABLE-ERROR", "observersReady() has already been called";
+                throw "NATS-OBSERVABLE-ERROR", "observersReady() has already been called; "
+                    "create a new provider instance for a new subscription";
             }
             started = True;
         }
+        # Create subscription synchronously so it's active before this method returns
+        string subject = observer_request.subject ?? ">";
+        string queue = observer_request.queue ?? "default";
+        csub = client.channelQueueSubscribe(subject, queue);
+        # Flush to ensure SUBSCRIBE reaches the server before this method returns
+        client.flush();
         background queueSubscribeLoop();
     }
 
     stopEvents() {
-        AutoLock al(m);
-        stopping = True;
+        {
+            AutoLock al(m);
+            stopping = True;
+        }
+        csub.close();
     }
 
     bool isActive() {
@@ -114,13 +128,9 @@ public class NatsQueueSubscribeEventDataProvider inherits AbstractDataProvider, 
     }
 
     private queueSubscribeLoop() {
-        string subject = observer_request.subject ?? ">";
-        string queue = observer_request.queue ?? "default";
+        @debug("NatsQueueSubscribeEventDataProvider::queueSubscribeLoop() started");
         try {
-            NatsChannelSubscription csub = client.channelQueueSubscribe(subject, queue);
-            on_exit csub.close();
-
-            foreach hash<NatsMsgInfo> msg in (csub) {
+            foreach hash<NatsMsgInfo> msg in (csub.iterator()) {
                 {
                     AutoLock al(m);
                     if (stopping) {

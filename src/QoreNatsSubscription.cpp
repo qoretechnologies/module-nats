@@ -90,6 +90,11 @@ QoreHashNode* QoreNatsSubscription::nextMsg(int64 timeout_ms, ExceptionSink* xsi
             continue;
         }
 
+        if (s == NATS_MAX_DELIVERED_MSGS || s == NATS_INVALID_SUBSCRIPTION) {
+            // Auto-unsubscribe limit reached or subscription drained/closed - not an error
+            return nullptr;
+        }
+
         // Real error
         nats_error(xsink, "NATS-SUBSCRIBE-ERROR", s, "failed to get next message");
         return nullptr;
@@ -130,6 +135,60 @@ int QoreNatsSubscription::drain(ExceptionSink* xsink) {
     natsStatus s = natsSubscription_Drain(sub);
     if (s != NATS_OK) {
         nats_error(xsink, "NATS-SUBSCRIBE-ERROR", s, "failed to drain subscription");
+        return -1;
+    }
+    return 0;
+}
+
+QoreListNode* QoreNatsSubscription::fetch(int batch, int64 timeout_ms, ExceptionSink* xsink) {
+    if (!sub) {
+        xsink->raiseException("NATS-SUBSCRIBE-ERROR", "subscription is not valid");
+        return nullptr;
+    }
+
+    natsMsgList list{};
+    jsErrCode jerr{};
+    natsStatus s = natsSubscription_Fetch(&list, sub, batch, timeout_ms, &jerr);
+    if (s == NATS_TIMEOUT) {
+        // Timeout — return empty list
+        return new QoreListNode(hashdeclNatsMsgInfo->getTypeInfo(true));
+    }
+    if (s != NATS_OK) {
+        nats_error(xsink, "NATS-SUBSCRIBE-ERROR", s, "failed to fetch messages");
+        return nullptr;
+    }
+
+    ReferenceHolder<QoreListNode> result(new QoreListNode(hashdeclNatsMsgInfo->getTypeInfo(true)), xsink);
+    for (int i = 0; i < list.Count; ++i) {
+        // Store last msg for ack
+        if (lastMsg) {
+            natsMsg_Destroy(lastMsg);
+        }
+        lastMsg = list.Msgs[i];
+        // natsMsg_Destroy will be called on lastMsg later; don't let natsMsgList_Destroy touch it
+        list.Msgs[i] = nullptr;
+
+        QoreHashNode* h = nats_msg_to_hash(lastMsg, xsink);
+        if (*xsink) {
+            natsMsgList_Destroy(&list);
+            return nullptr;
+        }
+        result->push(h, xsink);
+    }
+    natsMsgList_Destroy(&list);
+
+    return result.release();
+}
+
+int QoreNatsSubscription::waitForDrainCompletion(int64 timeout_ms, ExceptionSink* xsink) {
+    if (!sub) {
+        xsink->raiseException("NATS-SUBSCRIBE-ERROR", "subscription is not valid");
+        return -1;
+    }
+    natsStatus s = natsSubscription_WaitForDrainCompletion(sub, timeout_ms);
+    if (s != NATS_OK) {
+        nats_error(xsink, "NATS-SUBSCRIBE-ERROR", s,
+            "failed waiting for drain completion");
         return -1;
     }
     return 0;

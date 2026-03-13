@@ -28,8 +28,11 @@ public namespace NatsDataProvider {
 #! Factory for creating NATS data providers
 /** @since NatsDataProvider 1.0
 */
-public class NatsDataProviderFactory inherits AbstractDataProviderFactory {
-    public {
+public class NatsDataProviderFactory inherits DataProvider::AbstractDataProviderFactory {
+    private {
+        #! Data provider type info
+        static Class cls = new Class("NatsDataProvider");
+
         #! Factory info
         const FactoryInfo = <DataProviderFactoryInfo>{
             "name": "nats",
@@ -39,24 +42,23 @@ public class NatsDataProviderFactory inherits AbstractDataProviderFactory {
         };
     }
 
-    #! Returns the factory name
-    string getName() {
-        return FactoryInfo.name;
-    }
-
-    #! Returns factory info
-    hash<DataProviderFactoryInfo> getInfoImpl() {
+    #! Returns static factory information without \a provider_info
+    /** @return static factory information without \a provider_info which is provided by @ref getProviderInfo()
+    */
+    private hash<DataProviderFactoryInfo> getInfoImpl() {
         return FactoryInfo;
     }
 
-    #! Returns the class for the data provider
-    private Class getClassImpl() {
-        return Class::forName("NatsDataProvider::NatsDataProvider");
+    #! Returns static provider information
+    /** @note the \c name and \c children attributes are not returned as they are dynamic attributes
+    */
+    private hash<DataProviderInfo> getProviderInfoImpl() {
+        return NatsDataProvider::ProviderInfo;
     }
 
-    #! Returns the data provider from the given constructor options
-    private AbstractDataProvider createImpl(hash<auto> options, *hash<auto> child_create_options) {
-        return new NatsDataProvider(options);
+    #! Returns the class for the data provider object
+    private Class getClassImpl() {
+        return cls;
     }
 }
 

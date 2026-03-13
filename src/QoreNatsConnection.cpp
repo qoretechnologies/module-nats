@@ -338,6 +338,11 @@ QoreHashNode* QoreNatsConnection::request(const char* subject, const void* data,
             "request to subject '%s' timed out after %lld ms", subject, timeout_ms);
         return nullptr;
     }
+    if (s == NATS_NO_RESPONDERS) {
+        xsink->raiseException("NATS-TIMEOUT-ERROR",
+            "request to subject '%s': no responders available", subject);
+        return nullptr;
+    }
     if (s != NATS_OK) {
         nats_error(xsink, "NATS-REQUEST-ERROR", s,
             "request to subject '%s' failed", subject);
@@ -387,7 +392,12 @@ QoreNatsJetStream* QoreNatsConnection::jetStream(ExceptionSink* xsink) {
         xsink->raiseException("NATS-JETSTREAM-ERROR", "not connected");
         return nullptr;
     }
-    return new QoreNatsJetStream(conn, xsink);
+    QoreNatsJetStream* rv = new QoreNatsJetStream(conn, xsink);
+    if (*xsink) {
+        rv->deref(xsink);
+        return nullptr;
+    }
+    return rv;
 }
 
 int QoreNatsConnection::drain(ExceptionSink* xsink) {

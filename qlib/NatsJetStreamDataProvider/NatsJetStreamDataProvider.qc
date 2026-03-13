@@ -84,16 +84,13 @@ public class NatsJetStreamDataProvider inherits AbstractDataProvider {
 
         #! The JetStream context
         JetStreamContext js;
-
-        #! Constructor options
-        hash<auto> opts;
     }
 
     #! Creates the NATS JetStream data provider
     /** @param options constructor options
     */
-    constructor(hash<auto> options) {
-        opts = options;
+    constructor(*hash<auto> options) {
+        checkOptions("CONSTRUCTOR-OPTION-ERROR", ConstructorOptions, options);
         hash<NatsConnectionOptions> conn_opts(<NatsConnectionOptions>{
             "url": options.url,
         });

@@ -59,8 +59,14 @@ public:
     //! Drain the subscription
     DLLLOCAL int drain(ExceptionSink* xsink);
 
+    //! Wait for drain completion
+    DLLLOCAL int waitForDrainCompletion(int64 timeout_ms, ExceptionSink* xsink);
+
     //! Check if valid
     DLLLOCAL bool isValid() const;
+
+    //! Fetch messages from a pull subscription
+    DLLLOCAL QoreListNode* fetch(int batch, int64 timeout_ms, ExceptionSink* xsink);
 
     //! Get pending message count
     DLLLOCAL int64 getPendingMsgs(ExceptionSink* xsink) const;

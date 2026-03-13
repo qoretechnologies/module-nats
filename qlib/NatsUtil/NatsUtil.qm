@@ -80,14 +80,14 @@ public namespace Nats {
 %requires NatsUtil
 
 NatsClient client("nats://localhost:4222");
-NatsChannelSubscription sub = client.channelSubscribe("orders.>", 100);
+NatsChannelSubscription nsub = client.channelSubscribe("orders.>", 100);
 
 # Iterate messages until subscription closes
-foreach hash<NatsMsgInfo> msg in (sub) {
+foreach hash<NatsMsgInfo> msg in (nsub.iterator()) {
     printf("Order: %s\n", msg.subject);
     process(msg);
 }
-# Loop ends cleanly when sub.close() / drain() is called
+# Loop ends cleanly when nsub.close() / drain() is called
     @endcode
 
     @subsection natsutil_channel_multiplex Multiplexing

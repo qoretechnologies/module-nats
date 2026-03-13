@@ -15,7 +15,7 @@ printf("Connected to NATS\n");
 
 # Subscribe using channel-based async subscription
 # The ">" wildcard matches all tokens from this point
-NatsChannelSubscription sub = client.channelSubscribe("events.>");
+NatsChannelSubscription nsub = client.channelSubscribe("events.>");
 printf("Subscribed to events.>\n");
 
 # Publish messages to different subjects
@@ -26,7 +26,7 @@ printf("Published 3 messages\n");
 
 # Receive messages
 for (int i = 0; i < 3; ++i) {
-    *hash<NatsMsgInfo> msg = sub.recv(5s);
+    *hash<NatsMsgInfo> msg = nsub.recv(5s);
     if (msg) {
         printf("Received on %s: %s\n", msg.subject, msg.data.toString());
     } else {
@@ -36,6 +36,6 @@ for (int i = 0; i < 3; ++i) {
 }
 
 # Clean up
-sub.close();
+nsub.close();
 client.close();
 printf("Done\n");

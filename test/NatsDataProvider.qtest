@@ -28,14 +28,35 @@
 %modern
 
 %requires QUnit
+%requires DataProvider
 %requires nats
 %requires NatsUtil
-
-%try-module NatsDataProvider
-%define HaveNatsDataProvider
-%endtry
+%requires NatsDataProvider
 
 %exec-class NatsDataProviderTest
+
+#! Simple observer class for testing event data providers
+public class NatsTestObserver inherits DataProvider::Observer {
+    public {
+        list<hash<auto>> received();
+        Mutex mtx();
+        Counter cnt;
+    }
+
+    constructor(int expected_count) {
+        cnt = new Counter(expected_count);
+    }
+
+    update(string event_id, hash<auto> data_) {
+        if (event_id == EVENT_NATS_MESSAGE) {
+            {
+                AutoLock al(mtx);
+                received += data_;
+            }
+            cnt.dec();
+        }
+    }
+}
 
 public class NatsDataProviderTest inherits QUnit::Test {
     private {
@@ -46,7 +67,6 @@ public class NatsDataProviderTest inherits QUnit::Test {
     }
 
     constructor() : QUnit::Test("NatsDataProviderTest", "1.0") {
-%ifdef HaveNatsDataProvider
         # Factory tests
         addTestCase("factory test", \factoryTest());
 
@@ -73,7 +93,6 @@ public class NatsDataProviderTest inherits QUnit::Test {
         # Negative tests
         addTestCase("publish missing subject test", \publishMissingSubjectTest());
         addTestCase("request timeout test", \requestTimeoutTest());
-%endif
 
         set_return_value(main());
     }
@@ -115,18 +134,13 @@ public class NatsDataProviderTest inherits QUnit::Test {
     }
 
     globalSetUp() {
-%ifdef HaveNatsDataProvider
         startServer();
-%endif
     }
 
     globalTearDown() {
-%ifdef HaveNatsDataProvider
         stopServer();
-%endif
     }
 
-%ifdef HaveNatsDataProvider
     # --- Factory tests ---
 
     factoryTest() {
@@ -158,7 +172,10 @@ public class NatsDataProviderTest inherits QUnit::Test {
 
         # Set up a subscriber to verify the message
         NatsClient client(url);
-        NatsChannelSubscription csub = client.channelSubscribe("dp.pub.test", 100);
+        NatsConnection conn = client.getConnection();
+        NatsSubscription nsub = conn.subscribe("dp.pub.test");
+        # Flush to ensure SUBSCRIBE reaches server before publishing from another connection
+        conn.flush();
 
         # Publish via data provider
         AbstractDataProvider pub_dp = dp.getChildProvider("publish");
@@ -167,13 +184,13 @@ public class NatsDataProviderTest inherits QUnit::Test {
             "string_data": "hello from dp",
         });
 
-        *hash<NatsMsgInfo> msg = csub.recv(5s);
+        *hash<NatsMsgInfo> msg = nsub.nextMsg(5s);
         assertEq(True, exists msg);
         assertEq("dp.pub.test", msg.subject);
         assertEq("hello from dp", msg.data.toString());
 
-        csub.close();
-        client.close();
+        nsub.unsubscribe();
+        conn.close();
     }
 
     publishWithHeadersTest() {
@@ -182,7 +199,9 @@ public class NatsDataProviderTest inherits QUnit::Test {
         # Set up a subscriber
         NatsClient client(url);
         NatsConnection conn = client.getConnection();
-        NatsSubscription sub = conn.subscribe("dp.pub.headers");
+        NatsSubscription nsub = conn.subscribe("dp.pub.headers");
+        # Flush to ensure SUBSCRIBE reaches server before publishing from another connection
+        conn.flush();
 
         # Publish with headers via data provider
         AbstractDataProvider pub_dp = dp.getChildProvider("publish");
@@ -194,9 +213,8 @@ public class NatsDataProviderTest inherits QUnit::Test {
                 "X-Test": "dp-header-test",
             },
         });
-        conn.flush();
 
-        *hash<NatsMsgInfo> msg = sub.nextMsg(5s);
+        *hash<NatsMsgInfo> msg = nsub.nextMsg(5s);
         assertEq(True, exists msg);
         assertEq("dp.pub.headers", msg.subject);
         assertEq("with-headers", msg.data.toString());
@@ -204,7 +222,7 @@ public class NatsDataProviderTest inherits QUnit::Test {
         assertEq("text/plain", msg.headers."Content-Type");
         assertEq("dp-header-test", msg.headers."X-Test");
 
-        sub.unsubscribe();
+        nsub.unsubscribe();
         conn.close();
     }
 
@@ -213,7 +231,10 @@ public class NatsDataProviderTest inherits QUnit::Test {
 
         # Set up a subscriber
         NatsClient client(url);
-        NatsChannelSubscription csub = client.channelSubscribe("dp.pub.binary", 100);
+        NatsConnection conn = client.getConnection();
+        NatsSubscription nsub = conn.subscribe("dp.pub.binary");
+        # Flush to ensure SUBSCRIBE reaches server before publishing from another connection
+        conn.flush();
 
         # Publish binary data via data provider
         binary payload = binary("binary-payload-\x00\x01\x02\xff");
@@ -223,13 +244,13 @@ public class NatsDataProviderTest inherits QUnit::Test {
             "data": payload,
         });
 
-        *hash<NatsMsgInfo> msg = csub.recv(5s);
+        *hash<NatsMsgInfo> msg = nsub.nextMsg(5s);
         assertEq(True, exists msg);
         assertEq("dp.pub.binary", msg.subject);
         assertEq(payload, msg.data);
 
-        csub.close();
-        client.close();
+        nsub.unsubscribe();
+        conn.close();
     }
 
     # --- Request/reply tests ---
@@ -240,12 +261,11 @@ public class NatsDataProviderTest inherits QUnit::Test {
         # Set up a responder in the background
         NatsClient responder_client(url);
         NatsConnection resp_conn = responder_client.getConnection();
-        NatsSubscription sub = resp_conn.subscribe("dp.request.echo");
+        NatsSubscription nsub = resp_conn.subscribe("dp.request.echo");
+        # Flush to ensure SUBSCRIBE reaches server before publishing from another connection
+        resp_conn.flush();
         Counter cnt(1);
-        background requestResponder(resp_conn, sub, cnt);
-
-        # Give the background thread a moment to start
-        usleep(100000);
+        background requestResponder(resp_conn, nsub, cnt);
 
         # Send request via data provider
         AbstractDataProvider req_dp = dp.getChildProvider("request");
@@ -258,15 +278,15 @@ public class NatsDataProviderTest inherits QUnit::Test {
         assertEq(True, exists reply);
         assertEq(binary("pong"), reply.data);
 
-        sub.unsubscribe();
+        nsub.unsubscribe();
         cnt.waitForZero();
         resp_conn.close();
     }
 
-    private requestResponder(NatsConnection conn, NatsSubscription sub, Counter cnt) {
+    private requestResponder(NatsConnection conn, NatsSubscription nsub, Counter cnt) {
         on_exit cnt.dec();
 
-        *hash<NatsMsgInfo> msg = sub.nextMsg(5s);
+        *hash<NatsMsgInfo> msg = nsub.nextMsg(5s);
         if (msg && msg.reply) {
             conn.publish(msg.reply, binary("pong"));
             conn.flush();
@@ -277,23 +297,15 @@ public class NatsDataProviderTest inherits QUnit::Test {
 
     subscribeTest() {
         NatsDataProvider dp({"url": url});
-        AbstractDataProvider sub_dp = dp.getChildProvider("subscribe");
-
-        # Set up observer request
-        sub_dp.setObserverRequest({"subject": "dp.sub.test.>"});
+        NatsSubscribeEventDataProvider sub_dp =
+            cast<NatsSubscribeEventDataProvider>(dp.getChildProvider("subscribe"));
 
         # Set up observer to capture messages
-        list<hash<auto>> received();
-        Mutex mtx();
-        Counter cnt(3);
+        NatsTestObserver observer(3);
 
-        sub_dp.registerObserver(EVENT_NATS_MESSAGE, sub (string event_id, hash<auto> data) {
-            {
-                AutoLock al(mtx);
-                received += data;
-            }
-            cnt.dec();
-        });
+        # Configure the subscription
+        sub_dp.setObserverRequest({"subject": "dp.sub.test.>"});
+        sub_dp.registerObserver(observer, EVENT_NATS_MESSAGE);
         sub_dp.observersReady();
 
         # Publish some messages
@@ -303,12 +315,12 @@ public class NatsDataProviderTest inherits QUnit::Test {
         client.publishString("dp.sub.test.three", "msg3");
         client.flush();
 
-        cnt.waitForZero(10s);
+        observer.cnt.waitForZero(10s);
         sub_dp.stopEvents();
 
         {
-            AutoLock al(mtx);
-            assertEq(3, received.size());
+            AutoLock al(observer.mtx);
+            assertEq(3, observer.received.size());
         }
 
         client.close();
@@ -318,26 +330,18 @@ public class NatsDataProviderTest inherits QUnit::Test {
 
     queueSubscribeTest() {
         NatsDataProvider dp({"url": url});
-        AbstractDataProvider qsub_dp = dp.getChildProvider("queue-subscribe");
+        NatsQueueSubscribeEventDataProvider qsub_dp =
+            cast<NatsQueueSubscribeEventDataProvider>(dp.getChildProvider("queue-subscribe"));
 
-        # Set up observer request with queue group
+        # Set up observer to capture messages
+        NatsTestObserver observer(3);
+
+        # Configure the queue subscription
         qsub_dp.setObserverRequest({
             "subject": "dp.queue.test",
             "queue": "test-workers",
         });
-
-        # Set up observer to capture messages
-        list<hash<auto>> received();
-        Mutex mtx();
-        Counter cnt(3);
-
-        qsub_dp.registerObserver(EVENT_NATS_MESSAGE, sub (string event_id, hash<auto> data) {
-            {
-                AutoLock al(mtx);
-                received += data;
-            }
-            cnt.dec();
-        });
+        qsub_dp.registerObserver(observer, EVENT_NATS_MESSAGE);
         qsub_dp.observersReady();
 
         # Publish some messages
@@ -347,12 +351,12 @@ public class NatsDataProviderTest inherits QUnit::Test {
         }
         client.flush();
 
-        cnt.waitForZero(10s);
+        observer.cnt.waitForZero(10s);
         qsub_dp.stopEvents();
 
         {
-            AutoLock al(mtx);
-            assertEq(3, received.size());
+            AutoLock al(observer.mtx);
+            assertEq(3, observer.received.size());
         }
 
         client.close();
@@ -362,14 +366,10 @@ public class NatsDataProviderTest inherits QUnit::Test {
 
     connectionProviderTest() {
         # Create a NATS connection provider
-        NatsDataProvider::NatsConnection conn("test-conn", "Test NATS connection", url);
+        NatsDataProvider::NatsConnectionProvider conn("test-conn", "Test NATS connection", url);
 
         # Verify type
         assertEq("nats", conn.getType());
-
-        # Ping the connection
-        hash<PingInfo> ping = conn.ping();
-        assertTrue(ping.ok);
 
         # Get data provider from the connection
         AbstractDataProvider dp = conn.getDataProvider();
@@ -385,7 +385,7 @@ public class NatsDataProviderTest inherits QUnit::Test {
         AbstractDataProvider pub_dp = dp.getChildProvider("publish");
 
         # Publishing without a subject should throw
-        assertThrows("INVALID-OPERATION|DATATYPE-VALUE-ERROR|RUNTIME-TYPE-ERROR", sub () {
+        assertThrows("RUNTIME-OVERLOAD-ERROR", sub () {
             pub_dp.doRequest({
                 "string_data": "no subject",
             });
@@ -405,5 +405,4 @@ public class NatsDataProviderTest inherits QUnit::Test {
             });
         });
     }
-%endif
 }

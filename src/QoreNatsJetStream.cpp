@@ -68,6 +68,11 @@ int QoreNatsJetStream::configureStreamConfig(jsStreamConfig* cfg,
         cfg->SubjectsLen = (int)subjects->size();
         // Allocate array of const char*
         const char** subj_arr = (const char**)malloc(sizeof(const char*) * cfg->SubjectsLen);
+        if (!subj_arr) {
+            xsink->raiseException("NATS-JETSTREAM-ERROR", "memory allocation failed for %d subjects",
+                cfg->SubjectsLen);
+            return -1;
+        }
         for (int i = 0; i < cfg->SubjectsLen; ++i) {
             QoreValue sv = subjects->retrieveEntry(i);
             if (sv.getType() == NT_STRING) {
@@ -184,7 +189,7 @@ QoreHashNode* QoreNatsJetStream::addStream(const QoreHashNode* config,
     }
 
     jsStreamInfo* info = nullptr;
-    jsErrCode jerr = 0;
+    jsErrCode jerr{};
     natsStatus s = js_AddStream(&info, js, &cfg, nullptr, &jerr);
 
     if (cfg.Subjects) {
@@ -192,7 +197,7 @@ QoreHashNode* QoreNatsJetStream::addStream(const QoreHashNode* config,
     }
 
     if (s != NATS_OK) {
-        nats_error(xsink, "NATS-JETSTREAM-ERROR", s, "failed to add stream");
+        nats_js_error(xsink, "NATS-JETSTREAM-ERROR", s, jerr, "failed to add stream");
         return nullptr;
     }
 
@@ -218,7 +223,7 @@ QoreHashNode* QoreNatsJetStream::updateStream(const QoreHashNode* config,
     }
 
     jsStreamInfo* info = nullptr;
-    jsErrCode jerr = 0;
+    jsErrCode jerr{};
     natsStatus s = js_UpdateStream(&info, js, &cfg, nullptr, &jerr);
 
     if (cfg.Subjects) {
@@ -226,7 +231,7 @@ QoreHashNode* QoreNatsJetStream::updateStream(const QoreHashNode* config,
     }
 
     if (s != NATS_OK) {
-        nats_error(xsink, "NATS-JETSTREAM-ERROR", s, "failed to update stream");
+        nats_js_error(xsink, "NATS-JETSTREAM-ERROR", s, jerr, "failed to update stream");
         return nullptr;
     }
 
@@ -241,10 +246,10 @@ int QoreNatsJetStream::deleteStream(const char* name, ExceptionSink* xsink) {
         return -1;
     }
 
-    jsErrCode jerr = 0;
+    jsErrCode jerr{};
     natsStatus s = js_DeleteStream(js, name, nullptr, &jerr);
     if (s != NATS_OK) {
-        nats_error(xsink, "NATS-JETSTREAM-ERROR", s,
+        nats_js_error(xsink, "NATS-JETSTREAM-ERROR", s, jerr,
             "failed to delete stream '%s'", name);
         return -1;
     }
@@ -258,10 +263,10 @@ QoreHashNode* QoreNatsJetStream::getStreamInfo(const char* name, ExceptionSink* 
     }
 
     jsStreamInfo* info = nullptr;
-    jsErrCode jerr = 0;
+    jsErrCode jerr{};
     natsStatus s = js_GetStreamInfo(&info, js, name, nullptr, &jerr);
     if (s != NATS_OK) {
-        nats_error(xsink, "NATS-JETSTREAM-ERROR", s,
+        nats_js_error(xsink, "NATS-JETSTREAM-ERROR", s, jerr,
             "failed to get stream info for '%s'", name);
         return nullptr;
     }
@@ -277,10 +282,10 @@ int QoreNatsJetStream::purgeStream(const char* name, ExceptionSink* xsink) {
         return -1;
     }
 
-    jsErrCode jerr = 0;
+    jsErrCode jerr{};
     natsStatus s = js_PurgeStream(js, name, nullptr, &jerr);
     if (s != NATS_OK) {
-        nats_error(xsink, "NATS-JETSTREAM-ERROR", s,
+        nats_js_error(xsink, "NATS-JETSTREAM-ERROR", s, jerr,
             "failed to purge stream '%s'", name);
         return -1;
     }
@@ -415,10 +420,10 @@ QoreHashNode* QoreNatsJetStream::addConsumer(const char* stream,
     }
 
     jsConsumerInfo* info = nullptr;
-    jsErrCode jerr = 0;
+    jsErrCode jerr{};
     natsStatus s = js_AddConsumer(&info, js, stream, &cfg, nullptr, &jerr);
     if (s != NATS_OK) {
-        nats_error(xsink, "NATS-JETSTREAM-ERROR", s,
+        nats_js_error(xsink, "NATS-JETSTREAM-ERROR", s, jerr,
             "failed to add consumer to stream '%s'", stream);
         return nullptr;
     }
@@ -435,10 +440,10 @@ int QoreNatsJetStream::deleteConsumer(const char* stream, const char* consumer,
         return -1;
     }
 
-    jsErrCode jerr = 0;
+    jsErrCode jerr{};
     natsStatus s = js_DeleteConsumer(js, stream, consumer, nullptr, &jerr);
     if (s != NATS_OK) {
-        nats_error(xsink, "NATS-JETSTREAM-ERROR", s,
+        nats_js_error(xsink, "NATS-JETSTREAM-ERROR", s, jerr,
             "failed to delete consumer '%s' from stream '%s'", consumer, stream);
         return -1;
     }
@@ -453,10 +458,10 @@ QoreHashNode* QoreNatsJetStream::getConsumerInfo(const char* stream,
     }
 
     jsConsumerInfo* info = nullptr;
-    jsErrCode jerr = 0;
+    jsErrCode jerr{};
     natsStatus s = js_GetConsumerInfo(&info, js, stream, consumer, nullptr, &jerr);
     if (s != NATS_OK) {
-        nats_error(xsink, "NATS-JETSTREAM-ERROR", s,
+        nats_js_error(xsink, "NATS-JETSTREAM-ERROR", s, jerr,
             "failed to get consumer info for '%s' on stream '%s'", consumer, stream);
         return nullptr;
     }
@@ -474,10 +479,10 @@ QoreHashNode* QoreNatsJetStream::publish(const char* subject, const void* data,
     }
 
     jsPubAck* pa = nullptr;
-    jsErrCode jerr = 0;
+    jsErrCode jerr{};
     natsStatus s = js_Publish(&pa, js, subject, data, data_len, nullptr, &jerr);
     if (s != NATS_OK) {
-        nats_error(xsink, "NATS-JETSTREAM-ERROR", s,
+        nats_js_error(xsink, "NATS-JETSTREAM-ERROR", s, jerr,
             "failed to publish to subject '%s'", subject);
         return nullptr;
     }
@@ -501,10 +506,10 @@ QoreNatsSubscription* QoreNatsJetStream::subscribe(const char* subject,
     }
 
     natsSubscription* sub = nullptr;
-    jsErrCode jerr = 0;
-    natsStatus s = js_Subscribe(&sub, js, subject, nullptr, nullptr, nullptr, nullptr, &jerr);
+    jsErrCode jerr{};
+    natsStatus s = js_SubscribeSync(&sub, js, subject, nullptr, nullptr, &jerr);
     if (s != NATS_OK) {
-        nats_error(xsink, "NATS-JETSTREAM-ERROR", s,
+        nats_js_error(xsink, "NATS-JETSTREAM-ERROR", s, jerr,
             "failed to subscribe to JetStream subject '%s'", subject);
         return nullptr;
     }
@@ -519,10 +524,10 @@ QoreNatsSubscription* QoreNatsJetStream::pullSubscribe(const char* subject,
     }
 
     natsSubscription* sub = nullptr;
-    jsErrCode jerr = 0;
+    jsErrCode jerr{};
     natsStatus s = js_PullSubscribe(&sub, js, subject, durable, nullptr, nullptr, &jerr);
     if (s != NATS_OK) {
-        nats_error(xsink, "NATS-JETSTREAM-ERROR", s,
+        nats_js_error(xsink, "NATS-JETSTREAM-ERROR", s, jerr,
             "failed to pull subscribe to JetStream subject '%s' durable '%s'",
             subject, durable);
         return nullptr;
@@ -537,7 +542,6 @@ QoreNatsKVStore* QoreNatsJetStream::keyValue(const char* bucket, ExceptionSink* 
     }
 
     kvStore* kv = nullptr;
-    jsErrCode jerr = 0;
     natsStatus s = js_KeyValue(&kv, js, bucket);
     if (s != NATS_OK) {
         nats_error(xsink, "NATS-KV-ERROR", s,

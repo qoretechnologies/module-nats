@@ -79,16 +79,13 @@ public class NatsDataProvider inherits AbstractDataProvider {
     private {
         #! The NATS client
         NatsClient client;
-
-        #! Constructor options
-        hash<auto> opts;
     }
 
     #! Creates the NATS data provider
     /** @param options constructor options
     */
-    constructor(hash<auto> options) {
-        opts = options;
+    constructor(*hash<auto> options) {
+        checkOptions("CONSTRUCTOR-OPTION-ERROR", ConstructorOptions, options);
         hash<NatsConnectionOptions> conn_opts(<NatsConnectionOptions>{
             "url": options.url,
         });

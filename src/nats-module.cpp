@@ -34,6 +34,9 @@ static void nats_module_init(QoreModuleInitContext& ctx, ExceptionSink& xsink);
 static void nats_module_ns_init(QoreNamespace* rns, QoreNamespace* qns, ExceptionSink& xsink);
 static void nats_module_delete();
 
+// Defined in generated QC_NatsMsg.cpp
+DLLLOCAL void init_NatsMsg_constants(QoreNamespace& ns);
+
 extern "C" DLLEXPORT void nats_qore_module_desc(QoreModuleInfo& mod_info) {
     mod_info.name = "nats";
     mod_info.version = "1.0.0";
@@ -64,16 +67,15 @@ const TypedHashDecl* hashdeclNatsKVEntry = nullptr;
 QoreNamespace NatsNs("Qore::Nats");
 
 static void nats_module_init(QoreModuleInitContext& ctx, ExceptionSink& xsink) {
+    // Initialize constants
+    init_NatsMsg_constants(NatsNs);
+
     // Initialize Phase 2 hashdecls (Core NATS)
     hashdeclNatsTlsOptions = init_hashdecl_NatsTlsOptions(NatsNs);
     hashdeclNatsConnectionOptions = init_hashdecl_NatsConnectionOptions(NatsNs);
     hashdeclNatsMsgInfo = init_hashdecl_NatsMsgInfo(NatsNs);
 
-    // Initialize Phase 2 classes (Core NATS)
-    NatsNs.addSystemClass(initNatsConnectionClass(NatsNs));
-    NatsNs.addSystemClass(initNatsSubscriptionClass(NatsNs));
-
-    // Initialize Phase 3 hashdecls (JetStream)
+    // Initialize Phase 3 hashdecls (JetStream) - must be before classes that reference them
     hashdeclNatsStreamConfig = init_hashdecl_NatsStreamConfig(NatsNs);
     hashdeclNatsConsumerConfig = init_hashdecl_NatsConsumerConfig(NatsNs);
     hashdeclNatsStreamInfo = init_hashdecl_NatsStreamInfo(NatsNs);
@@ -82,9 +84,15 @@ static void nats_module_init(QoreModuleInitContext& ctx, ExceptionSink& xsink) {
     hashdeclNatsKVConfig = init_hashdecl_NatsKVConfig(NatsNs);
     hashdeclNatsKVEntry = init_hashdecl_NatsKVEntry(NatsNs);
 
-    // Initialize Phase 3 classes (JetStream)
-    NatsNs.addSystemClass(initJetStreamContextClass(NatsNs));
+    // Initialize classes in dependency order:
+    // NatsSubscription has no class deps
+    NatsNs.addSystemClass(initNatsSubscriptionClass(NatsNs));
+    // NatsKeyValueStore has no class deps
     NatsNs.addSystemClass(initNatsKeyValueStoreClass(NatsNs));
+    // JetStreamContext depends on NatsSubscription, NatsKeyValueStore
+    NatsNs.addSystemClass(initJetStreamContextClass(NatsNs));
+    // NatsConnection depends on NatsSubscription, JetStreamContext
+    NatsNs.addSystemClass(initNatsConnectionClass(NatsNs));
 }
 
 static void nats_module_ns_init(QoreNamespace* rns, QoreNamespace* qns, ExceptionSink& xsink) {

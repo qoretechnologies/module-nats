@@ -140,6 +140,109 @@ NatsChannelSubscription sub1 = client.channelSubscribe("orders.*");
 NatsChannelSubscription sub2 = client.channelSubscribe("events.>");
     @endcode
 
+    @subsection natscallbacksub Callback-Based Subscriptions
+
+    For simple message processing, use callback-based subscriptions that run in a
+    background thread:
+
+    @code{.py}
+%requires NatsUtil
+
+NatsClient client("nats://localhost:4222");
+
+# Subscribe with a callback — messages are delivered in a background thread
+NatsChannelSubscription sub = client.subscribe("events.>", sub (hash<NatsMsgInfo> msg) {
+    printf("Got %s: %s\n", msg.subject, msg.data.toString());
+});
+
+# Do other work while messages are processed in the background
+sleep(10s);
+
+sub.close();
+client.close();
+    @endcode
+
+    @subsection natserrorhandling Error Handling
+
+    NATS operations raise exceptions on failure. Exception codes follow the pattern
+    \c NATS-<CATEGORY>-ERROR:
+
+    |!Exception|!Description
+    |\c NATS-CONNECTION-ERROR|Connection or configuration failures
+    |\c NATS-PUBLISH-ERROR|Publish failures
+    |\c NATS-SUBSCRIBE-ERROR|Subscription failures
+    |\c NATS-REQUEST-ERROR|Request/reply failures
+    |\c NATS-TIMEOUT-ERROR|Operation timeouts (request, nextMsg)
+    |\c NATS-JETSTREAM-ERROR|JetStream operation failures (includes JetStream error code)
+    |\c NATS-KV-ERROR|Key-Value store failures
+    |\c NATS-AUTH-ERROR|Authentication failures
+    |\c NATS-TLS-ERROR|TLS/SSL failures
+
+    @code{.py}
+%requires NatsUtil
+
+try {
+    NatsClient client("nats://invalid-host:4222");
+} catch (hash<ExceptionInfo> ex) {
+    if (ex.err == "NATS-CONNECTION-ERROR") {
+        printf("Failed to connect: %s\n", ex.desc);
+    }
+}
+
+NatsClient client("nats://localhost:4222");
+try {
+    # Request with a short timeout
+    string reply = client.requestString("service.echo", "hello", 500ms);
+} catch (hash<ExceptionInfo> ex) {
+    if (ex.err == "NATS-TIMEOUT-ERROR") {
+        printf("Request timed out: %s\n", ex.desc);
+    }
+}
+
+JetStreamContext js = client.getConnection().jetStream();
+try {
+    # Try to get info on a non-existent stream
+    js.getStreamInfo("NONEXISTENT");
+} catch (hash<ExceptionInfo> ex) {
+    if (ex.err == "NATS-JETSTREAM-ERROR") {
+        printf("JetStream error: %s\n", ex.desc);
+    }
+}
+    @endcode
+
+    @subsection natsconnvsclient NatsConnection vs NatsClient
+
+    The module provides two levels of API:
+
+    - @ref Qore::Nats::NatsConnection "NatsConnection" (binary module): Low-level connection
+      providing binary publish/subscribe, request/reply, and access to JetStream and KV
+      contexts. Use this when you need direct control or when working with binary data.
+    - @ref Nats::NatsClient "NatsClient" (NatsUtil module): High-level client wrapping
+      \c NatsConnection with convenience methods for string operations, channel-based
+      async subscriptions, and callback-based subscriptions. Use this for most applications.
+
+    @code{.py}
+# Low-level: binary publish + sync poll
+NatsConnection conn("nats://localhost:4222");
+conn.publish("events.log", binary("hello"));
+NatsSubscription sub = conn.subscribe("events.>");
+*hash<NatsMsgInfo> msg = sub.nextMsg(5s);
+sub.unsubscribe();
+conn.close();
+
+# High-level: string publish + async channel subscription
+NatsClient client("nats://localhost:4222");
+client.publishString("events.log", "hello");
+NatsChannelSubscription csub = client.channelSubscribe("events.>");
+foreach hash<NatsMsgInfo> msg in (csub) {
+    process(msg);
+}
+client.close();
+    @endcode
+
+    @note \c NatsClient.getConnection() returns the underlying @ref Qore::Nats::NatsConnection
+    for accessing JetStream and KV store APIs.
+
     @section natsjetstream JetStream
 
     JetStream provides persistent messaging with at-least-once and exactly-once delivery
@@ -464,9 +567,9 @@ qdp 'natsjetstream{url=nats://localhost:4222}/kv/get' dor bucket=config,key=app.
     @subsection natskvoperations Key-Value Operations
 
     |!Constant|!Value|!Description
-    |@ref Qore::Nats::NATS_KV_OP_PUT|0|Put or update operation
-    |@ref Qore::Nats::NATS_KV_OP_DELETE|1|Delete operation
-    |@ref Qore::Nats::NATS_KV_OP_PURGE|2|Purge operation
+    |@ref Qore::Nats::NATS_KV_OP_PUT|1|Put or update operation
+    |@ref Qore::Nats::NATS_KV_OP_DELETE|2|Delete operation
+    |@ref Qore::Nats::NATS_KV_OP_PURGE|3|Purge operation
 
     @section natsrelnotes Release Notes
 

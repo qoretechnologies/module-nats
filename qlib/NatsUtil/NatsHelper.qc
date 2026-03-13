@@ -25,6 +25,20 @@
 #! Contains all public definitions in the NatsUtil module
 public namespace Nats {
 
+#! Parsed NATS URL components
+public hashdecl NatsUrlInfo {
+    #! URL scheme ("nats" or "tls")
+    string scheme = "nats";
+    #! Server hostname
+    string host = "localhost";
+    #! Server port
+    int port = 4222;
+    #! Optional username for authentication
+    *string username;
+    #! Optional password for authentication
+    *string password;
+}
+
 #! NATS helper utility class
 /** Provides static methods for subject validation and URL parsing.
 
@@ -72,16 +86,12 @@ public class NatsHelper {
 
     #! Parses a NATS URL into components
     /** @param url the NATS URL
-        @return a hash with keys: scheme, host, port, username, password
+        @return a hash<NatsUrlInfo> with parsed URL components
 
         Supports nats://, tls://, and bare host:port formats.
     */
-    static hash<auto> parseUrl(string url) {
-        hash<auto> result = {
-            "scheme": "nats",
-            "host": "localhost",
-            "port": 4222,
-        };
+    static hash<NatsUrlInfo> parseUrl(string url) {
+        hash<NatsUrlInfo> result();
 
         string remaining = url;
 

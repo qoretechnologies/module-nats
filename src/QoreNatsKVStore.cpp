@@ -37,6 +37,11 @@ QoreNatsKVStore::~QoreNatsKVStore() {
 }
 
 QoreHashNode* QoreNatsKVStore::entryToHash(kvEntry* entry, ExceptionSink* xsink) {
+    if (!entry) {
+        xsink->raiseException("NATS-KV-ERROR", "internal error: null KV entry");
+        return nullptr;
+    }
+
     ReferenceHolder<QoreHashNode> h(new QoreHashNode(hashdeclNatsKVEntry, xsink), xsink);
     if (*xsink) {
         return nullptr;
@@ -256,5 +261,5 @@ const char* QoreNatsKVStore::bucketName() const {
     if (!kv) {
         return "";
     }
-    return kvStore_BucketName(kv);
+    return kvStore_Bucket(kv);
 }

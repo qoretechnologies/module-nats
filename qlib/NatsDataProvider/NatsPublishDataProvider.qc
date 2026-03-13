@@ -83,6 +83,7 @@ public class NatsPublishDataProvider inherits AbstractDataProvider {
         } else {
             client.publish(req.subject, req.data);
         }
+        client.flush();
     }
 
     private hash<DataProviderInfo> getStaticInfoImpl() {

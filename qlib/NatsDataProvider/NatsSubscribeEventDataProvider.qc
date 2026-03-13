@@ -52,6 +52,9 @@ public class NatsSubscribeEventDataProvider inherits AbstractDataProvider, Delay
         #! Request data for the subscription
         *hash<auto> observer_request;
 
+        #! The channel subscription (created in observersReady for deterministic startup)
+        NatsChannelSubscription csub;
+
         #! Flag: stream started
         bool started = False;
 
@@ -85,16 +88,25 @@ public class NatsSubscribeEventDataProvider inherits AbstractDataProvider, Delay
         {
             AutoLock al(m);
             if (started) {
-                throw "NATS-OBSERVABLE-ERROR", "observersReady() has already been called";
+                throw "NATS-OBSERVABLE-ERROR", "observersReady() has already been called; "
+                    "create a new provider instance for a new subscription";
             }
             started = True;
         }
+        # Create subscription synchronously so it's active before this method returns
+        string subject = observer_request.subject ?? ">";
+        csub = client.channelSubscribe(subject);
+        # Flush to ensure SUBSCRIBE reaches the server before this method returns
+        client.flush();
         background subscribeLoop();
     }
 
     stopEvents() {
-        AutoLock al(m);
-        stopping = True;
+        {
+            AutoLock al(m);
+            stopping = True;
+        }
+        csub.close();
     }
 
     bool isActive() {
@@ -127,12 +139,9 @@ public class NatsSubscribeEventDataProvider inherits AbstractDataProvider, Delay
     }
 
     private subscribeLoop() {
-        string subject = observer_request.subject ?? ">";
+        @debug("NatsSubscribeEventDataProvider::subscribeLoop() started");
         try {
-            NatsChannelSubscription csub = client.channelSubscribe(subject);
-            on_exit csub.close();
-
-            foreach hash<NatsMsgInfo> msg in (csub) {
+            foreach hash<NatsMsgInfo> msg in (csub.iterator()) {
                 {
                     AutoLock al(m);
                     if (stopping) {

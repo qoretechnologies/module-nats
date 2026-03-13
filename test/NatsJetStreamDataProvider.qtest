@@ -28,12 +28,10 @@
 %modern
 
 %requires QUnit
+%requires DataProvider
 %requires nats
 %requires NatsUtil
-
-%try-module NatsJetStreamDataProvider
-%define HaveNatsJetStreamDataProvider
-%endtry
+%requires NatsJetStreamDataProvider
 
 %exec-class NatsJetStreamDataProviderTest
 
@@ -46,7 +44,6 @@ public class NatsJetStreamDataProviderTest inherits QUnit::Test {
     }
 
     constructor() : QUnit::Test("NatsJetStreamDataProviderTest", "1.0") {
-%ifdef HaveNatsJetStreamDataProvider
         # Factory tests
         addTestCase("factory test", \factoryTest());
 
@@ -80,7 +77,6 @@ public class NatsJetStreamDataProviderTest inherits QUnit::Test {
         # Negative tests
         addTestCase("stream info not found test", \streamInfoNotFoundTest());
         addTestCase("kv get not found test", \kvGetNotFoundTest());
-%endif
 
         set_return_value(main());
     }
@@ -123,15 +119,11 @@ public class NatsJetStreamDataProviderTest inherits QUnit::Test {
     }
 
     globalSetUp() {
-%ifdef HaveNatsJetStreamDataProvider
         startServer();
-%endif
     }
 
     globalTearDown() {
-%ifdef HaveNatsJetStreamDataProvider
         stopServer();
-%endif
     }
 
     # Helper to create a unique name
@@ -139,7 +131,6 @@ public class NatsJetStreamDataProviderTest inherits QUnit::Test {
         return sprintf("%s_%d_%d", prefix, port, rand() % 100000);
     }
 
-%ifdef HaveNatsJetStreamDataProvider
     # --- Factory tests ---
 
     factoryTest() {
@@ -688,5 +679,4 @@ public class NatsJetStreamDataProviderTest inherits QUnit::Test {
         js.deleteKeyValue(bucket);
         client.close();
     }
-%endif
 }
