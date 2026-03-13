@@ -29,6 +29,11 @@ public namespace NatsJetStreamDataProvider {
 /** @since NatsJetStreamDataProvider 1.0
 */
 public class NatsJSStreamCreateDataProvider inherits AbstractDataProvider {
+    public {
+        static NatsJSStreamConfigDataType RequestType();
+        static NatsJSStreamInfoDataType ResponseType();
+    }
+
     private {
         JetStreamContext js;
     }

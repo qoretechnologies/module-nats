@@ -178,6 +178,9 @@ QoreHashNode* QoreNatsJetStream::addStream(const QoreHashNode* config,
         xsink->raiseException("NATS-JETSTREAM-ERROR", "JetStream context is not valid");
         return nullptr;
     }
+    if (qore_check_cancel(xsink)) {
+        return nullptr;
+    }
 
     jsStreamConfig cfg;
     configureStreamConfig(&cfg, config, xsink);
@@ -210,6 +213,9 @@ QoreHashNode* QoreNatsJetStream::updateStream(const QoreHashNode* config,
         ExceptionSink* xsink) {
     if (!js) {
         xsink->raiseException("NATS-JETSTREAM-ERROR", "JetStream context is not valid");
+        return nullptr;
+    }
+    if (qore_check_cancel(xsink)) {
         return nullptr;
     }
 
@@ -245,6 +251,9 @@ int QoreNatsJetStream::deleteStream(const char* name, ExceptionSink* xsink) {
         xsink->raiseException("NATS-JETSTREAM-ERROR", "JetStream context is not valid");
         return -1;
     }
+    if (qore_check_cancel(xsink)) {
+        return -1;
+    }
 
     jsErrCode jerr{};
     natsStatus s = js_DeleteStream(js, name, nullptr, &jerr);
@@ -259,6 +268,9 @@ int QoreNatsJetStream::deleteStream(const char* name, ExceptionSink* xsink) {
 QoreHashNode* QoreNatsJetStream::getStreamInfo(const char* name, ExceptionSink* xsink) {
     if (!js) {
         xsink->raiseException("NATS-JETSTREAM-ERROR", "JetStream context is not valid");
+        return nullptr;
+    }
+    if (qore_check_cancel(xsink)) {
         return nullptr;
     }
 
@@ -279,6 +291,9 @@ QoreHashNode* QoreNatsJetStream::getStreamInfo(const char* name, ExceptionSink* 
 int QoreNatsJetStream::purgeStream(const char* name, ExceptionSink* xsink) {
     if (!js) {
         xsink->raiseException("NATS-JETSTREAM-ERROR", "JetStream context is not valid");
+        return -1;
+    }
+    if (qore_check_cancel(xsink)) {
         return -1;
     }
 
@@ -412,6 +427,9 @@ QoreHashNode* QoreNatsJetStream::addConsumer(const char* stream,
         xsink->raiseException("NATS-JETSTREAM-ERROR", "JetStream context is not valid");
         return nullptr;
     }
+    if (qore_check_cancel(xsink)) {
+        return nullptr;
+    }
 
     jsConsumerConfig cfg;
     configureConsumerConfig(&cfg, config, xsink);
@@ -439,6 +457,9 @@ int QoreNatsJetStream::deleteConsumer(const char* stream, const char* consumer,
         xsink->raiseException("NATS-JETSTREAM-ERROR", "JetStream context is not valid");
         return -1;
     }
+    if (qore_check_cancel(xsink)) {
+        return -1;
+    }
 
     jsErrCode jerr{};
     natsStatus s = js_DeleteConsumer(js, stream, consumer, nullptr, &jerr);
@@ -454,6 +475,9 @@ QoreHashNode* QoreNatsJetStream::getConsumerInfo(const char* stream,
         const char* consumer, ExceptionSink* xsink) {
     if (!js) {
         xsink->raiseException("NATS-JETSTREAM-ERROR", "JetStream context is not valid");
+        return nullptr;
+    }
+    if (qore_check_cancel(xsink)) {
         return nullptr;
     }
 
@@ -475,6 +499,9 @@ QoreHashNode* QoreNatsJetStream::publish(const char* subject, const void* data,
         int data_len, ExceptionSink* xsink) {
     if (!js) {
         xsink->raiseException("NATS-JETSTREAM-ERROR", "JetStream context is not valid");
+        return nullptr;
+    }
+    if (qore_check_cancel(xsink)) {
         return nullptr;
     }
 
@@ -504,6 +531,9 @@ QoreNatsSubscription* QoreNatsJetStream::subscribe(const char* subject,
         xsink->raiseException("NATS-JETSTREAM-ERROR", "JetStream context is not valid");
         return nullptr;
     }
+    if (qore_check_cancel(xsink)) {
+        return nullptr;
+    }
 
     natsSubscription* sub = nullptr;
     jsErrCode jerr{};
@@ -520,6 +550,9 @@ QoreNatsSubscription* QoreNatsJetStream::pullSubscribe(const char* subject,
         const char* durable, ExceptionSink* xsink) {
     if (!js) {
         xsink->raiseException("NATS-JETSTREAM-ERROR", "JetStream context is not valid");
+        return nullptr;
+    }
+    if (qore_check_cancel(xsink)) {
         return nullptr;
     }
 
@@ -540,6 +573,9 @@ QoreNatsKVStore* QoreNatsJetStream::keyValue(const char* bucket, ExceptionSink* 
         xsink->raiseException("NATS-KV-ERROR", "JetStream context is not valid");
         return nullptr;
     }
+    if (qore_check_cancel(xsink)) {
+        return nullptr;
+    }
 
     kvStore* kv = nullptr;
     natsStatus s = js_KeyValue(&kv, js, bucket);
@@ -555,6 +591,9 @@ QoreNatsKVStore* QoreNatsJetStream::createKeyValue(const QoreHashNode* config,
         ExceptionSink* xsink) {
     if (!js) {
         xsink->raiseException("NATS-KV-ERROR", "JetStream context is not valid");
+        return nullptr;
+    }
+    if (qore_check_cancel(xsink)) {
         return nullptr;
     }
 
@@ -613,6 +652,9 @@ QoreNatsKVStore* QoreNatsJetStream::createKeyValue(const QoreHashNode* config,
 int QoreNatsJetStream::deleteKeyValue(const char* bucket, ExceptionSink* xsink) {
     if (!js) {
         xsink->raiseException("NATS-KV-ERROR", "JetStream context is not valid");
+        return -1;
+    }
+    if (qore_check_cancel(xsink)) {
         return -1;
     }
 

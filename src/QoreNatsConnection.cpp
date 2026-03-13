@@ -127,6 +127,9 @@ int QoreNatsConnection::configureOptions(const QoreHashNode* options, ExceptionS
     // NKey seed file
     v = options->getKeyValue("nkey_seed");
     if (v.getType() == NT_STRING) {
+        if (check_nats_file_access(v.get<const QoreStringNode>()->c_str(), xsink)) {
+            return -1;
+        }
         QoreValue nkey_pub = options->getKeyValue("nkey_pub");
         s = natsOptions_SetNKeyFromSeed(opts,
             nkey_pub.getType() == NT_STRING
@@ -142,6 +145,9 @@ int QoreNatsConnection::configureOptions(const QoreHashNode* options, ExceptionS
     // Credentials file
     v = options->getKeyValue("credentials");
     if (v.getType() == NT_STRING) {
+        if (check_nats_file_access(v.get<const QoreStringNode>()->c_str(), xsink)) {
+            return -1;
+        }
         s = natsOptions_SetUserCredentialsFromFiles(opts,
             v.get<const QoreStringNode>()->c_str(), nullptr);
         if (s != NATS_OK) {
@@ -233,6 +239,9 @@ int QoreNatsConnection::configureOptions(const QoreHashNode* options, ExceptionS
 
         QoreValue ca = tls->getKeyValue("ca_cert");
         if (ca.getType() == NT_STRING) {
+            if (check_nats_file_access(ca.get<const QoreStringNode>()->c_str(), xsink)) {
+                return -1;
+            }
             s = natsOptions_LoadCATrustedCertificates(opts,
                 ca.get<const QoreStringNode>()->c_str());
             if (s != NATS_OK) {
@@ -244,6 +253,12 @@ int QoreNatsConnection::configureOptions(const QoreHashNode* options, ExceptionS
         QoreValue cert = tls->getKeyValue("client_cert");
         QoreValue key = tls->getKeyValue("client_key");
         if (cert.getType() == NT_STRING && key.getType() == NT_STRING) {
+            if (check_nats_file_access(cert.get<const QoreStringNode>()->c_str(), xsink)) {
+                return -1;
+            }
+            if (check_nats_file_access(key.get<const QoreStringNode>()->c_str(), xsink)) {
+                return -1;
+            }
             s = natsOptions_LoadCertificatesChain(opts,
                 cert.get<const QoreStringNode>()->c_str(),
                 key.get<const QoreStringNode>()->c_str());
@@ -274,6 +289,9 @@ int QoreNatsConnection::publish(const char* subject, const void* data, int data_
         xsink->raiseException("NATS-PUBLISH-ERROR", "not connected");
         return -1;
     }
+    if (qore_check_cancel(xsink)) {
+        return -1;
+    }
     natsStatus s = natsConnection_Publish(conn, subject, data, data_len);
     if (s != NATS_OK) {
         nats_error(xsink, "NATS-PUBLISH-ERROR", s,
@@ -287,6 +305,9 @@ int QoreNatsConnection::publishMsg(const char* subject, const void* data, int da
         const QoreHashNode* headers, ExceptionSink* xsink) {
     if (!conn) {
         xsink->raiseException("NATS-PUBLISH-ERROR", "not connected");
+        return -1;
+    }
+    if (qore_check_cancel(xsink)) {
         return -1;
     }
 
@@ -330,27 +351,50 @@ QoreHashNode* QoreNatsConnection::request(const char* subject, const void* data,
         return nullptr;
     }
 
-    natsMsg* reply = nullptr;
-    natsStatus s = natsConnection_Request(&reply, conn, subject,
-        data, data_len, timeout_ms);
-    if (s == NATS_TIMEOUT) {
-        xsink->raiseException("NATS-TIMEOUT-ERROR",
-            "request to subject '%s' timed out after %lld ms", subject, timeout_ms);
+    if (qore_check_cancel(xsink)) {
         return nullptr;
     }
-    if (s == NATS_NO_RESPONDERS) {
-        xsink->raiseException("NATS-TIMEOUT-ERROR",
-            "request to subject '%s': no responders available", subject);
-        return nullptr;
-    }
-    if (s != NATS_OK) {
+
+    int64 remaining_ms = timeout_ms;
+
+    while (true) {
+        if (qore_check_cancel(xsink)) {
+            return nullptr;
+        }
+
+        int64 effective_timeout = (remaining_ms > QORE_IO_POLL_INTERVAL_MS)
+            ? QORE_IO_POLL_INTERVAL_MS : remaining_ms;
+
+        natsMsg* reply = nullptr;
+        natsStatus s = natsConnection_Request(&reply, conn, subject,
+            data, data_len, effective_timeout);
+
+        if (s == NATS_OK) {
+            NatsMsgHolder holder(reply);
+            return nats_msg_to_hash(reply, xsink);
+        }
+
+        if (s == NATS_NO_RESPONDERS) {
+            xsink->raiseException("NATS-TIMEOUT-ERROR",
+                "request to subject '%s': no responders available", subject);
+            return nullptr;
+        }
+
+        if (s == NATS_TIMEOUT) {
+            remaining_ms -= effective_timeout;
+            if (remaining_ms <= 0) {
+                xsink->raiseException("NATS-TIMEOUT-ERROR",
+                    "request to subject '%s' timed out after %lld ms",
+                    subject, timeout_ms);
+                return nullptr;
+            }
+            continue;
+        }
+
         nats_error(xsink, "NATS-REQUEST-ERROR", s,
             "request to subject '%s' failed", subject);
         return nullptr;
     }
-
-    NatsMsgHolder holder(reply);
-    return nats_msg_to_hash(reply, xsink);
 }
 
 QoreNatsSubscription* QoreNatsConnection::subscribe(const char* subject,
@@ -405,6 +449,9 @@ int QoreNatsConnection::drain(ExceptionSink* xsink) {
         xsink->raiseException("NATS-CONNECTION-ERROR", "not connected");
         return -1;
     }
+    if (qore_check_cancel(xsink)) {
+        return -1;
+    }
     natsStatus s = natsConnection_Drain(conn);
     if (s != NATS_OK) {
         nats_error(xsink, "NATS-CONNECTION-ERROR", s, "failed to drain connection");
@@ -424,12 +471,39 @@ int QoreNatsConnection::flush(int64 timeout_ms, ExceptionSink* xsink) {
         xsink->raiseException("NATS-CONNECTION-ERROR", "not connected");
         return -1;
     }
-    natsStatus s = natsConnection_FlushTimeout(conn, timeout_ms);
-    if (s != NATS_OK) {
+
+    if (qore_check_cancel(xsink)) {
+        return -1;
+    }
+
+    int64 remaining_ms = timeout_ms;
+
+    while (true) {
+        if (qore_check_cancel(xsink)) {
+            return -1;
+        }
+
+        int64 effective_timeout = (remaining_ms > QORE_IO_POLL_INTERVAL_MS)
+            ? QORE_IO_POLL_INTERVAL_MS : remaining_ms;
+
+        natsStatus s = natsConnection_FlushTimeout(conn, effective_timeout);
+        if (s == NATS_OK) {
+            return 0;
+        }
+
+        if (s == NATS_TIMEOUT) {
+            remaining_ms -= effective_timeout;
+            if (remaining_ms <= 0) {
+                nats_error(xsink, "NATS-CONNECTION-ERROR", s,
+                    "failed to flush connection");
+                return -1;
+            }
+            continue;
+        }
+
         nats_error(xsink, "NATS-CONNECTION-ERROR", s, "failed to flush connection");
         return -1;
     }
-    return 0;
 }
 
 bool QoreNatsConnection::isConnected() const {

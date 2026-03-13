@@ -26,13 +26,25 @@
 public namespace NatsJetStreamDataProvider {
 
 #! Subscribe request type for JetStream push subscriptions
-public const NatsJSSubscribeRequestDataType = new HashDataType("NatsJSSubscribeRequest", {
-    "subject": {
-        "type": StringType,
-        "desc": "The JetStream subject to subscribe to",
-        "required": True,
-    },
-});
+public class NatsJSSubscribeRequestDataType inherits HashDataType {
+    public {
+        const Fields = {
+            "subject": {
+                "type": StringType,
+                "display_name": "Subject",
+                "short_desc": "JetStream subject to subscribe to",
+                "desc": "The JetStream subject to subscribe to",
+                "required": True,
+                "example_value": "orders.>",
+            },
+        };
+    }
+    constructor() : HashDataType("NatsJSSubscribeRequest") {
+        addQoreFields(Fields);
+    }
+}
+
+public const NatsJSSubscribeRequestDataType = new NatsJSSubscribeRequestDataType();
 
 #! Observable data provider for JetStream push subscriptions
 /** Uses NatsChannelSubscription internally for message delivery.

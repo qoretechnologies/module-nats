@@ -26,13 +26,26 @@
 public namespace NatsDataProvider {
 
 #! Subscribe request type
-public const NatsSubscribeRequestDataType = new HashDataType("NatsSubscribeRequest", {
-    "subject": {
-        "type": StringType,
-        "desc": "The subject to subscribe to (supports wildcards * and >)",
-        "required": True,
-    },
-});
+public class NatsSubscribeRequestDataType inherits HashDataType {
+    public {
+        const Fields = {
+            "subject": {
+                "type": StringType,
+                "display_name": "Subject",
+                "short_desc": "NATS subject to subscribe to",
+                "desc": "The NATS subject to subscribe to (supports wildcards `*` and `>`)",
+                "required": True,
+                "example_value": "events.>",
+            },
+        };
+    }
+    constructor() : HashDataType("NatsSubscribeRequest") {
+        addQoreFields(Fields);
+    }
+}
+
+#! Singleton subscribe request type instance
+public const NatsSubscribeRequestDataType = new NatsSubscribeRequestDataType();
 
 #! Observable data provider for NATS subscriptions
 /** Uses NatsChannelSubscription internally for message delivery.

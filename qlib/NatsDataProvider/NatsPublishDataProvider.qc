@@ -26,30 +26,54 @@
 public namespace NatsDataProvider {
 
 #! Publish request type
-public const NatsPublishRequestDataType = new HashDataType("NatsPublishRequest", {
-    "subject": {
-        "type": StringType,
-        "desc": "The subject to publish to",
-        "required": True,
-    },
-    "data": {
-        "type": DataOrNothingType,
-        "desc": "The binary message payload",
-    },
-    "string_data": {
-        "type": StringOrNothingType,
-        "desc": "The string message payload (alternative to data)",
-    },
-    "headers": {
-        "type": AutoHashOrNothingType,
-        "desc": "Optional message headers",
-    },
-});
+public class NatsPublishRequestDataType inherits HashDataType {
+    public {
+        const Fields = {
+            "subject": {
+                "type": StringType,
+                "display_name": "Subject",
+                "short_desc": "NATS subject to publish to",
+                "desc": "The NATS subject to publish the message to",
+                "required": True,
+                "example_value": "events.user.login",
+            },
+            "data": {
+                "type": DataOrNothingType,
+                "display_name": "Binary Data",
+                "short_desc": "Binary message payload",
+                "desc": "The binary message payload; use either `data` or `string_data`",
+            },
+            "string_data": {
+                "type": StringOrNothingType,
+                "display_name": "String Data",
+                "short_desc": "String message payload",
+                "desc": "The string message payload (alternative to `data`)",
+                "example_value": "Hello, World!",
+            },
+            "headers": {
+                "type": AutoHashOrNothingType,
+                "display_name": "Headers",
+                "short_desc": "Optional message headers",
+                "desc": "Optional message headers as key-value pairs",
+            },
+        };
+    }
+    constructor() : HashDataType("NatsPublishRequest") {
+        addQoreFields(Fields);
+    }
+}
+
+#! Singleton publish request type instance
+public const NatsPublishRequestDataType = new NatsPublishRequestDataType();
 
 #! NATS publish data provider
 /** @since NatsDataProvider 1.0
 */
 public class NatsPublishDataProvider inherits AbstractDataProvider {
+    public {
+        static NatsPublishRequestDataType RequestType();
+    }
+
     private {
         NatsClient client;
     }
@@ -75,6 +99,9 @@ public class NatsPublishDataProvider inherits AbstractDataProvider {
     }
 
     private auto doRequestImpl(auto req, *hash<auto> request_options) {
+        if (!req.subject) {
+            throw "INVALID-REQUEST", "missing required field 'subject'";
+        }
         if (req.headers) {
             client.publishMsg(req.subject, req.data ?? binary(req.string_data ?? ""),
                 req.headers);

@@ -133,9 +133,26 @@ public class NatsConnectionProvider inherits ConnectionProvider::AbstractConnect
         children_can_support_observers = True;
     }
 
+    #! Returns NATS connection options including auth from connection options
+    private hash<NatsConnectionOptions> getNatsConnectionOptions() {
+        hash<NatsConnectionOptions> conn_opts(<NatsConnectionOptions>{
+            "url": url,
+        });
+        if (orig_opts.token) {
+            conn_opts.token = orig_opts.token;
+        }
+        if (orig_opts.username) {
+            conn_opts.username = orig_opts.username;
+        }
+        if (orig_opts.password) {
+            conn_opts.password = orig_opts.password;
+        }
+        return conn_opts;
+    }
+
     #! Returns the underlying connection object
     private Qore::Nats::NatsConnection getImpl(bool connect = True, *hash<auto> rtopts) {
-        return new Qore::Nats::NatsConnection(url);
+        return new Qore::Nats::NatsConnection(getNatsConnectionOptions());
     }
 
     #! Returns a ping hash for the connection
@@ -143,7 +160,7 @@ public class NatsConnectionProvider inherits ConnectionProvider::AbstractConnect
         hash<PingInfo> rv;
         date start = now_us();
         try {
-            Qore::Nats::NatsConnection conn(url);
+            Qore::Nats::NatsConnection conn(getNatsConnectionOptions());
             on_exit conn.close();
             rv.ok = True;
             rv.time = now_us() - start;
@@ -169,10 +186,10 @@ public class NatsTlsConnectionProvider inherits NatsConnectionProvider {
             "desc": "A TLS-encrypted connection to a NATS messaging server",
             "cls": Class::forName("NatsDataProvider::NatsTlsConnectionProvider"),
             "schemes": {
-                "tls": True,
+                "natss": True,
             },
             "base_scheme_map": {
-                "tls": "tls",
+                "tls": "natss",
             },
             "options": NatsConnectionProvider::ConnectionScheme.options,
         };
@@ -190,7 +207,7 @@ public class NatsTlsConnectionProvider inherits NatsConnectionProvider {
 
     #! Returns the string type name for the connection object
     string getType() {
-        return "tls";
+        return "natss";
     }
 
     private hash<ConnectionSchemeInfo> getConnectionSchemeInfoImpl() {

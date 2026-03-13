@@ -26,23 +26,43 @@
 public namespace NatsJetStreamDataProvider {
 
 #! KV get request type
-public const NatsJSKVGetRequestDataType = new HashDataType("NatsJSKVGetRequest", {
-    "bucket": {
-        "type": StringType,
-        "desc": "KV bucket name",
-        "required": True,
-    },
-    "key": {
-        "type": StringType,
-        "desc": "Key name",
-        "required": True,
-    },
-});
+public class NatsJSKVGetRequestDataType inherits HashDataType {
+    public {
+        const Fields = {
+            "bucket": {
+                "type": StringType,
+                "display_name": "Bucket",
+                "short_desc": "KV bucket name",
+                "desc": "KV bucket name",
+                "required": True,
+                "example_value": "config",
+            },
+            "key": {
+                "type": StringType,
+                "display_name": "Key",
+                "short_desc": "Key name",
+                "desc": "Key name",
+                "required": True,
+                "example_value": "app.setting",
+            },
+        };
+    }
+    constructor() : HashDataType("NatsJSKVGetRequest") {
+        addQoreFields(Fields);
+    }
+}
+
+public const NatsJSKVGetRequestDataType = new NatsJSKVGetRequestDataType();
 
 #! JetStream KV get data provider
 /** @since NatsJetStreamDataProvider 1.0
 */
 public class NatsJSKVGetDataProvider inherits AbstractDataProvider {
+    public {
+        static NatsJSKVGetRequestDataType RequestType();
+        static NatsJSKVEntryDataType ResponseType();
+    }
+
     private {
         JetStreamContext js;
     }

@@ -26,18 +26,34 @@
 public namespace NatsJetStreamDataProvider {
 
 #! Request type for stream delete
-public const NatsJSStreamDeleteRequestDataType = new HashDataType("NatsJSStreamDeleteRequest", {
-    "name": {
-        "type": StringType,
-        "desc": "Stream name to delete",
-        "required": True,
-    },
-});
+public class NatsJSStreamDeleteRequestDataType inherits HashDataType {
+    public {
+        const Fields = {
+            "name": {
+                "type": StringType,
+                "display_name": "Stream Name",
+                "short_desc": "Stream name to delete",
+                "desc": "Stream name to delete",
+                "required": True,
+                "example_value": "ORDERS",
+            },
+        };
+    }
+    constructor() : HashDataType("NatsJSStreamDeleteRequest") {
+        addQoreFields(Fields);
+    }
+}
+
+public const NatsJSStreamDeleteRequestDataType = new NatsJSStreamDeleteRequestDataType();
 
 #! JetStream stream delete data provider
 /** @since NatsJetStreamDataProvider 1.0
 */
 public class NatsJSStreamDeleteDataProvider inherits AbstractDataProvider {
+    public {
+        static NatsJSStreamDeleteRequestDataType RequestType();
+    }
+
     private {
         JetStreamContext js;
     }

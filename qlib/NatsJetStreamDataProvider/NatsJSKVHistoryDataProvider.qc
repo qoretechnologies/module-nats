@@ -26,31 +26,62 @@
 public namespace NatsJetStreamDataProvider {
 
 #! KV history request type
-public const NatsJSKVHistoryRequestDataType = new HashDataType("NatsJSKVHistoryRequest", {
-    "bucket": {
-        "type": StringType,
-        "desc": "KV bucket name",
-        "required": True,
-    },
-    "key": {
-        "type": StringType,
-        "desc": "Key name",
-        "required": True,
-    },
-});
+public class NatsJSKVHistoryRequestDataType inherits HashDataType {
+    public {
+        const Fields = {
+            "bucket": {
+                "type": StringType,
+                "display_name": "Bucket",
+                "short_desc": "KV bucket name",
+                "desc": "KV bucket name",
+                "required": True,
+                "example_value": "config",
+            },
+            "key": {
+                "type": StringType,
+                "display_name": "Key",
+                "short_desc": "Key name",
+                "desc": "Key name",
+                "required": True,
+                "example_value": "app.setting",
+            },
+        };
+    }
+    constructor() : HashDataType("NatsJSKVHistoryRequest") {
+        addQoreFields(Fields);
+    }
+}
+
+public const NatsJSKVHistoryRequestDataType = new NatsJSKVHistoryRequestDataType();
 
 #! KV history response type
-public const NatsJSKVHistoryResponseDataType = new HashDataType("NatsJSKVHistoryResponse", {
-    "entries": {
-        "type": SoftListType,
-        "desc": "List of KV entry revisions",
-    },
-});
+public class NatsJSKVHistoryResponseDataType inherits HashDataType {
+    public {
+        const Fields = {
+            "entries": {
+                "type": SoftListType,
+                "display_name": "Entries",
+                "short_desc": "List of KV entry revisions",
+                "desc": "List of KV entry revisions",
+            },
+        };
+    }
+    constructor() : HashDataType("NatsJSKVHistoryResponse") {
+        addQoreFields(Fields);
+    }
+}
+
+public const NatsJSKVHistoryResponseDataType = new NatsJSKVHistoryResponseDataType();
 
 #! JetStream KV history data provider
 /** @since NatsJetStreamDataProvider 1.0
 */
 public class NatsJSKVHistoryDataProvider inherits AbstractDataProvider {
+    public {
+        static NatsJSKVHistoryRequestDataType RequestType();
+        static NatsJSKVHistoryResponseDataType ResponseType();
+    }
+
     private {
         JetStreamContext js;
     }

@@ -26,23 +26,43 @@
 public namespace NatsJetStreamDataProvider {
 
 #! Consumer info request type
-public const NatsJSConsumerInfoRequestDataType = new HashDataType("NatsJSConsumerInfoRequest", {
-    "stream": {
-        "type": StringType,
-        "desc": "Stream name",
-        "required": True,
-    },
-    "consumer": {
-        "type": StringType,
-        "desc": "Consumer name",
-        "required": True,
-    },
-});
+public class NatsJSConsumerInfoRequestDataType inherits HashDataType {
+    public {
+        const Fields = {
+            "stream": {
+                "type": StringType,
+                "display_name": "Stream Name",
+                "short_desc": "Stream name",
+                "desc": "Stream name",
+                "required": True,
+                "example_value": "ORDERS",
+            },
+            "consumer": {
+                "type": StringType,
+                "display_name": "Consumer Name",
+                "short_desc": "Consumer name",
+                "desc": "Consumer name",
+                "required": True,
+                "example_value": "order-processor",
+            },
+        };
+    }
+    constructor() : HashDataType("NatsJSConsumerInfoRequest") {
+        addQoreFields(Fields);
+    }
+}
+
+public const NatsJSConsumerInfoRequestDataType = new NatsJSConsumerInfoRequestDataType();
 
 #! JetStream consumer info data provider
 /** @since NatsJetStreamDataProvider 1.0
 */
 public class NatsJSConsumerInfoDataProvider inherits AbstractDataProvider {
+    public {
+        static NatsJSConsumerInfoRequestDataType RequestType();
+        static NatsJSConsumerInfoDataType ResponseType();
+    }
+
     private {
         JetStreamContext js;
     }

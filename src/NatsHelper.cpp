@@ -209,3 +209,16 @@ int check_nats_network_access(const char* url, ExceptionSink* xsink) {
 
     return denied ? -1 : 0;
 }
+
+int check_nats_file_access(const char* path, ExceptionSink* xsink) {
+    QoreSandboxManagerHelper smh;
+    if (!smh) {
+        return 0;  // No sandbox manager = allow all
+    }
+
+    if (smh->checkFilesystemAccess(path, QSEC_READ, xsink)) {
+        return -1;  // Access denied, exception already raised
+    }
+
+    return 0;
+}

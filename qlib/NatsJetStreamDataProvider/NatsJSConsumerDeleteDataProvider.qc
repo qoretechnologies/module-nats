@@ -26,23 +26,42 @@
 public namespace NatsJetStreamDataProvider {
 
 #! Consumer delete request type
-public const NatsJSConsumerDeleteRequestDataType = new HashDataType("NatsJSConsumerDeleteRequest", {
-    "stream": {
-        "type": StringType,
-        "desc": "Stream name",
-        "required": True,
-    },
-    "consumer": {
-        "type": StringType,
-        "desc": "Consumer name to delete",
-        "required": True,
-    },
-});
+public class NatsJSConsumerDeleteRequestDataType inherits HashDataType {
+    public {
+        const Fields = {
+            "stream": {
+                "type": StringType,
+                "display_name": "Stream Name",
+                "short_desc": "Stream name",
+                "desc": "Stream name",
+                "required": True,
+                "example_value": "ORDERS",
+            },
+            "consumer": {
+                "type": StringType,
+                "display_name": "Consumer Name",
+                "short_desc": "Consumer name to delete",
+                "desc": "Consumer name to delete",
+                "required": True,
+                "example_value": "order-processor",
+            },
+        };
+    }
+    constructor() : HashDataType("NatsJSConsumerDeleteRequest") {
+        addQoreFields(Fields);
+    }
+}
+
+public const NatsJSConsumerDeleteRequestDataType = new NatsJSConsumerDeleteRequestDataType();
 
 #! JetStream consumer delete data provider
 /** @since NatsJetStreamDataProvider 1.0
 */
 public class NatsJSConsumerDeleteDataProvider inherits AbstractDataProvider {
+    public {
+        static NatsJSConsumerDeleteRequestDataType RequestType();
+    }
+
     private {
         JetStreamContext js;
     }

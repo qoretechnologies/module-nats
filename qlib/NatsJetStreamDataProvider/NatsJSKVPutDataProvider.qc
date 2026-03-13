@@ -26,39 +26,75 @@
 public namespace NatsJetStreamDataProvider {
 
 #! KV put request type
-public const NatsJSKVPutRequestDataType = new HashDataType("NatsJSKVPutRequest", {
-    "bucket": {
-        "type": StringType,
-        "desc": "KV bucket name",
-        "required": True,
-    },
-    "key": {
-        "type": StringType,
-        "desc": "Key name",
-        "required": True,
-    },
-    "data": {
-        "type": DataOrNothingType,
-        "desc": "Binary value",
-    },
-    "string_data": {
-        "type": StringOrNothingType,
-        "desc": "String value (alternative to data)",
-    },
-});
+public class NatsJSKVPutRequestDataType inherits HashDataType {
+    public {
+        const Fields = {
+            "bucket": {
+                "type": StringType,
+                "display_name": "Bucket",
+                "short_desc": "KV bucket name",
+                "desc": "KV bucket name",
+                "required": True,
+                "example_value": "config",
+            },
+            "key": {
+                "type": StringType,
+                "display_name": "Key",
+                "short_desc": "Key name",
+                "desc": "Key name",
+                "required": True,
+                "example_value": "app.setting",
+            },
+            "data": {
+                "type": DataOrNothingType,
+                "display_name": "Binary Data",
+                "short_desc": "Binary value",
+                "desc": "Binary value",
+            },
+            "string_data": {
+                "type": StringOrNothingType,
+                "display_name": "String Data",
+                "short_desc": "String value (alternative to data)",
+                "desc": "String value (alternative to data)",
+                "example_value": "value1",
+            },
+        };
+    }
+    constructor() : HashDataType("NatsJSKVPutRequest") {
+        addQoreFields(Fields);
+    }
+}
+
+public const NatsJSKVPutRequestDataType = new NatsJSKVPutRequestDataType();
 
 #! KV put response type
-public const NatsJSKVPutResponseDataType = new HashDataType("NatsJSKVPutResponse", {
-    "revision": {
-        "type": IntType,
-        "desc": "The revision number of the put value",
-    },
-});
+public class NatsJSKVPutResponseDataType inherits HashDataType {
+    public {
+        const Fields = {
+            "revision": {
+                "type": IntType,
+                "display_name": "Revision",
+                "short_desc": "The revision number of the put value",
+                "desc": "The revision number of the put value",
+            },
+        };
+    }
+    constructor() : HashDataType("NatsJSKVPutResponse") {
+        addQoreFields(Fields);
+    }
+}
+
+public const NatsJSKVPutResponseDataType = new NatsJSKVPutResponseDataType();
 
 #! JetStream KV put data provider
 /** @since NatsJetStreamDataProvider 1.0
 */
 public class NatsJSKVPutDataProvider inherits AbstractDataProvider {
+    public {
+        static NatsJSKVPutRequestDataType RequestType();
+        static NatsJSKVPutResponseDataType ResponseType();
+    }
+
     private {
         JetStreamContext js;
     }

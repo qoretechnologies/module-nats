@@ -26,30 +26,56 @@
 public namespace NatsDataProvider {
 
 #! Request/reply request type
-public const NatsRequestRequestDataType = new HashDataType("NatsRequestRequest", {
-    "subject": {
-        "type": StringType,
-        "desc": "The subject to send the request to",
-        "required": True,
-    },
-    "data": {
-        "type": DataOrNothingType,
-        "desc": "The binary request payload",
-    },
-    "string_data": {
-        "type": StringOrNothingType,
-        "desc": "The string request payload (alternative to data)",
-    },
-    "timeout_ms": {
-        "type": IntOrNothingType,
-        "desc": "Timeout in milliseconds (default: 5000)",
-    },
-});
+public class NatsRequestRequestDataType inherits HashDataType {
+    public {
+        const Fields = {
+            "subject": {
+                "type": StringType,
+                "display_name": "Subject",
+                "short_desc": "NATS subject to send the request to",
+                "desc": "The NATS subject to send the request to",
+                "required": True,
+                "example_value": "api.users.get",
+            },
+            "data": {
+                "type": DataOrNothingType,
+                "display_name": "Binary Data",
+                "short_desc": "Binary request payload",
+                "desc": "The binary request payload; use either `data` or `string_data`",
+            },
+            "string_data": {
+                "type": StringOrNothingType,
+                "display_name": "String Data",
+                "short_desc": "String request payload",
+                "desc": "The string request payload (alternative to `data`)",
+                "example_value": "{\"id\": 123}",
+            },
+            "timeout_ms": {
+                "type": IntOrNothingType,
+                "display_name": "Timeout (ms)",
+                "short_desc": "Request timeout in milliseconds",
+                "desc": "Timeout in milliseconds for the request/reply operation (default: `5000`)",
+                "example_value": 5000,
+            },
+        };
+    }
+    constructor() : HashDataType("NatsRequestRequest") {
+        addQoreFields(Fields);
+    }
+}
+
+#! Singleton request type instance
+public const NatsRequestRequestDataType = new NatsRequestRequestDataType();
 
 #! NATS request/reply data provider
 /** @since NatsDataProvider 1.0
 */
 public class NatsRequestDataProvider inherits AbstractDataProvider {
+    public {
+        static NatsRequestRequestDataType RequestType();
+        static NatsMessageDataType ResponseType();
+    }
+
     private {
         NatsClient client;
     }
@@ -75,6 +101,9 @@ public class NatsRequestDataProvider inherits AbstractDataProvider {
     }
 
     private auto doRequestImpl(auto req, *hash<auto> request_options) {
+        if (!req.subject) {
+            throw "INVALID-REQUEST", "missing required field 'subject'";
+        }
         binary payload;
         if (req.data) {
             payload = req.data;

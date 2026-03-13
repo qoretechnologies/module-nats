@@ -26,18 +26,34 @@
 public namespace NatsDataProvider {
 
 #! Queue subscribe request type
-public const NatsQueueSubscribeRequestDataType = new HashDataType("NatsQueueSubscribeRequest", {
-    "subject": {
-        "type": StringType,
-        "desc": "The subject to subscribe to",
-        "required": True,
-    },
-    "queue": {
-        "type": StringType,
-        "desc": "The queue group name",
-        "required": True,
-    },
-});
+public class NatsQueueSubscribeRequestDataType inherits HashDataType {
+    public {
+        const Fields = {
+            "subject": {
+                "type": StringType,
+                "display_name": "Subject",
+                "short_desc": "NATS subject to subscribe to",
+                "desc": "The NATS subject to subscribe to",
+                "required": True,
+                "example_value": "tasks.process",
+            },
+            "queue": {
+                "type": StringType,
+                "display_name": "Queue Group",
+                "short_desc": "Queue group name for load balancing",
+                "desc": "The queue group name for load-balanced message delivery",
+                "required": True,
+                "example_value": "workers",
+            },
+        };
+    }
+    constructor() : HashDataType("NatsQueueSubscribeRequest") {
+        addQoreFields(Fields);
+    }
+}
+
+#! Singleton queue subscribe request type instance
+public const NatsQueueSubscribeRequestDataType = new NatsQueueSubscribeRequestDataType();
 
 #! Observable data provider for NATS queue subscriptions
 /** @since NatsDataProvider 1.0

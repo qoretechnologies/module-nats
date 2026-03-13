@@ -30,9 +30,6 @@
 #include "nats-module.h"
 #include "NatsHelper.h"
 
-//! Polling interval for interruptible I/O (500ms)
-#define NATS_IO_POLL_INTERVAL_MS 500
-
 //! C++ wrapper for natsSubscription
 class QoreNatsSubscription : public AbstractPrivateData {
 public:

@@ -26,18 +26,34 @@
 public namespace NatsJetStreamDataProvider {
 
 #! Request type for stream purge
-public const NatsJSStreamPurgeRequestDataType = new HashDataType("NatsJSStreamPurgeRequest", {
-    "name": {
-        "type": StringType,
-        "desc": "Stream name to purge",
-        "required": True,
-    },
-});
+public class NatsJSStreamPurgeRequestDataType inherits HashDataType {
+    public {
+        const Fields = {
+            "name": {
+                "type": StringType,
+                "display_name": "Stream Name",
+                "short_desc": "Stream name to purge",
+                "desc": "Stream name to purge",
+                "required": True,
+                "example_value": "ORDERS",
+            },
+        };
+    }
+    constructor() : HashDataType("NatsJSStreamPurgeRequest") {
+        addQoreFields(Fields);
+    }
+}
+
+public const NatsJSStreamPurgeRequestDataType = new NatsJSStreamPurgeRequestDataType();
 
 #! JetStream stream purge data provider
 /** @since NatsJetStreamDataProvider 1.0
 */
 public class NatsJSStreamPurgeDataProvider inherits AbstractDataProvider {
+    public {
+        static NatsJSStreamPurgeRequestDataType RequestType();
+    }
+
     private {
         JetStreamContext js;
     }

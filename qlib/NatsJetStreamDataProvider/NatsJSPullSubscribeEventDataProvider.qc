@@ -26,18 +26,33 @@
 public namespace NatsJetStreamDataProvider {
 
 #! Pull subscribe request type for JetStream pull subscriptions
-public const NatsJSPullSubscribeRequestDataType = new HashDataType("NatsJSPullSubscribeRequest", {
-    "subject": {
-        "type": StringType,
-        "desc": "The JetStream subject to subscribe to",
-        "required": True,
-    },
-    "durable": {
-        "type": StringType,
-        "desc": "Durable consumer name for pull subscription",
-        "required": True,
-    },
-});
+public class NatsJSPullSubscribeRequestDataType inherits HashDataType {
+    public {
+        const Fields = {
+            "subject": {
+                "type": StringType,
+                "display_name": "Subject",
+                "short_desc": "JetStream subject to subscribe to",
+                "desc": "The JetStream subject to subscribe to",
+                "required": True,
+                "example_value": "orders.>",
+            },
+            "durable": {
+                "type": StringType,
+                "display_name": "Durable Name",
+                "short_desc": "Durable consumer name for pull subscription",
+                "desc": "Durable consumer name for pull subscription",
+                "required": True,
+                "example_value": "order-processor",
+            },
+        };
+    }
+    constructor() : HashDataType("NatsJSPullSubscribeRequest") {
+        addQoreFields(Fields);
+    }
+}
+
+public const NatsJSPullSubscribeRequestDataType = new NatsJSPullSubscribeRequestDataType();
 
 #! Observable data provider for JetStream pull subscriptions
 /** Uses NatsChannelSubscription internally for message delivery.

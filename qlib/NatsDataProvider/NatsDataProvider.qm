@@ -42,7 +42,7 @@ module NatsDataProvider {
 
         # Register connection schemes
         ConnectionSchemeCache::registerScheme("nats", NatsConnectionProvider::ConnectionScheme);
-        ConnectionSchemeCache::registerScheme("tls", NatsTlsConnectionProvider::ConnectionScheme);
+        ConnectionSchemeCache::registerScheme("natss", NatsTlsConnectionProvider::ConnectionScheme);
 
         # Register app in action catalog
         DataProviderActionCatalog::registerApp(<DataProviderAppInfo>{
@@ -52,7 +52,7 @@ module NatsDataProvider {
             "desc": "Connect to NATS messaging servers for publish/subscribe, "
                 "request/reply, and queue group messaging patterns",
             "scheme": "nats",
-            "groups": (DataProvider::AppGroup::ApiIntegration,),
+            "groups": (DataProvider::AppGroup::Messaging, DataProvider::AppGroup::ApiIntegration,),
             "logo": NatsLogo,
             "logo_mime_type": MimeTypeSvg,
             "logo_file_name": "nats-logo.svg",
@@ -67,6 +67,16 @@ module NatsDataProvider {
             "short_desc": "Publish a message to a NATS subject",
             "desc": "Publishes a message to the specified NATS subject",
             "action_code": DPAT_API,
+            "groups": "Messaging",
+            "options": DataProviderActionCatalog::getActionOptionFromFields(
+                NatsPublishRequestDataType::Fields{"subject",}, {
+                    "preselected": True,
+                    "required": True,
+                },
+            ) + DataProviderActionCatalog::getActionOptionFromFields(
+                NatsPublishRequestDataType::Fields - ("subject",),
+            ),
+            "output_type": AbstractDataProviderTypeMap."nothing",
         });
 
         # Register request action
@@ -78,6 +88,46 @@ module NatsDataProvider {
             "short_desc": "Send a request and wait for a reply",
             "desc": "Sends a request to a NATS subject and waits for a reply",
             "action_code": DPAT_API,
+            "groups": "Messaging",
+            "options": DataProviderActionCatalog::getActionOptionFromFields(
+                NatsRequestRequestDataType::Fields{"subject",}, {
+                    "preselected": True,
+                    "required": True,
+                },
+            ) + DataProviderActionCatalog::getActionOptionFromFields(
+                NatsRequestRequestDataType::Fields - ("subject",),
+            ),
+            "output_type": NatsRequestDataProvider::ResponseType,
+        });
+
+        # Register subscribe event
+        DataProviderActionCatalog::registerAction(<DataProviderActionInfo>{
+            "app": NatsDataProvider::AppName,
+            "path": "/subscribe",
+            "action": "subscribe",
+            "display_name": "Subscribe to Messages",
+            "short_desc": "Subscribe to messages on a NATS subject",
+            "desc": "Subscribe to messages on a NATS subject with observable event-based "
+                "delivery",
+            "action_code": DPAT_EVENT,
+            "action_val": EVENT_NATS_MESSAGE,
+            "groups": "Messaging",
+            "output_type": NatsMessageDataType,
+        });
+
+        # Register queue subscribe event
+        DataProviderActionCatalog::registerAction(<DataProviderActionInfo>{
+            "app": NatsDataProvider::AppName,
+            "path": "/queue-subscribe",
+            "action": "queue-subscribe",
+            "display_name": "Queue Subscribe",
+            "short_desc": "Subscribe with a queue group for load-balanced delivery",
+            "desc": "Subscribe to messages on a NATS subject with a queue group for "
+                "load-balanced delivery across consumers",
+            "action_code": DPAT_EVENT,
+            "action_val": EVENT_NATS_MESSAGE,
+            "groups": "Messaging",
+            "output_type": NatsMessageDataType,
         });
     };
 }
@@ -112,7 +162,7 @@ module NatsDataProvider {
 
     The module registers two connection URL schemes:
     - \c nats://host:port — plaintext NATS
-    - \c tls://host:port — TLS-encrypted NATS
+    - \c natss://host:port — TLS-encrypted NATS
 
     @section natsdataprovider_relnotes Release Notes
 

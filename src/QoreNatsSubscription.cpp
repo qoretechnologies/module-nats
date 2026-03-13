@@ -60,8 +60,8 @@ QoreHashNode* QoreNatsSubscription::nextMsg(int64 timeout_ms, ExceptionSink* xsi
             return nullptr;
         }
 
-        int64 effective_timeout = infinite ? NATS_IO_POLL_INTERVAL_MS :
-            (remaining_ms > NATS_IO_POLL_INTERVAL_MS ? NATS_IO_POLL_INTERVAL_MS : remaining_ms);
+        int64 effective_timeout = infinite ? QORE_IO_POLL_INTERVAL_MS :
+            (remaining_ms > QORE_IO_POLL_INTERVAL_MS ? QORE_IO_POLL_INTERVAL_MS : remaining_ms);
 
         natsMsg* msg = nullptr;
         natsStatus s = natsSubscription_NextMsg(&msg, sub, effective_timeout);
@@ -146,38 +146,56 @@ QoreListNode* QoreNatsSubscription::fetch(int batch, int64 timeout_ms, Exception
         return nullptr;
     }
 
-    natsMsgList list{};
-    jsErrCode jerr{};
-    natsStatus s = natsSubscription_Fetch(&list, sub, batch, timeout_ms, &jerr);
-    if (s == NATS_TIMEOUT) {
-        // Timeout — return empty list
-        return new QoreListNode(hashdeclNatsMsgInfo->getTypeInfo(true));
-    }
-    if (s != NATS_OK) {
-        nats_error(xsink, "NATS-SUBSCRIBE-ERROR", s, "failed to fetch messages");
+    if (qore_check_cancel(xsink)) {
         return nullptr;
     }
 
-    ReferenceHolder<QoreListNode> result(new QoreListNode(hashdeclNatsMsgInfo->getTypeInfo(true)), xsink);
-    for (int i = 0; i < list.Count; ++i) {
-        // Store last msg for ack
-        if (lastMsg) {
-            natsMsg_Destroy(lastMsg);
-        }
-        lastMsg = list.Msgs[i];
-        // natsMsg_Destroy will be called on lastMsg later; don't let natsMsgList_Destroy touch it
-        list.Msgs[i] = nullptr;
+    int64 remaining_ms = timeout_ms;
 
-        QoreHashNode* h = nats_msg_to_hash(lastMsg, xsink);
-        if (*xsink) {
-            natsMsgList_Destroy(&list);
+    while (true) {
+        if (qore_check_cancel(xsink)) {
             return nullptr;
         }
-        result->push(h, xsink);
-    }
-    natsMsgList_Destroy(&list);
 
-    return result.release();
+        int64 effective_timeout = (remaining_ms > QORE_IO_POLL_INTERVAL_MS)
+            ? QORE_IO_POLL_INTERVAL_MS : remaining_ms;
+
+        natsMsgList list{};
+        jsErrCode jerr{};
+        natsStatus s = natsSubscription_Fetch(&list, sub, batch, effective_timeout, &jerr);
+
+        if (s == NATS_OK) {
+            ReferenceHolder<QoreListNode> result(
+                new QoreListNode(hashdeclNatsMsgInfo->getTypeInfo(true)), xsink);
+            for (int i = 0; i < list.Count; ++i) {
+                if (lastMsg) {
+                    natsMsg_Destroy(lastMsg);
+                }
+                lastMsg = list.Msgs[i];
+                list.Msgs[i] = nullptr;
+
+                QoreHashNode* h = nats_msg_to_hash(lastMsg, xsink);
+                if (*xsink) {
+                    natsMsgList_Destroy(&list);
+                    return nullptr;
+                }
+                result->push(h, xsink);
+            }
+            natsMsgList_Destroy(&list);
+            return result.release();
+        }
+
+        if (s == NATS_TIMEOUT) {
+            remaining_ms -= effective_timeout;
+            if (remaining_ms <= 0) {
+                return new QoreListNode(hashdeclNatsMsgInfo->getTypeInfo(true));
+            }
+            continue;
+        }
+
+        nats_error(xsink, "NATS-SUBSCRIBE-ERROR", s, "failed to fetch messages");
+        return nullptr;
+    }
 }
 
 int QoreNatsSubscription::waitForDrainCompletion(int64 timeout_ms, ExceptionSink* xsink) {
@@ -185,13 +203,40 @@ int QoreNatsSubscription::waitForDrainCompletion(int64 timeout_ms, ExceptionSink
         xsink->raiseException("NATS-SUBSCRIBE-ERROR", "subscription is not valid");
         return -1;
     }
-    natsStatus s = natsSubscription_WaitForDrainCompletion(sub, timeout_ms);
-    if (s != NATS_OK) {
+
+    if (qore_check_cancel(xsink)) {
+        return -1;
+    }
+
+    int64 remaining_ms = timeout_ms;
+
+    while (true) {
+        if (qore_check_cancel(xsink)) {
+            return -1;
+        }
+
+        int64 effective_timeout = (remaining_ms > QORE_IO_POLL_INTERVAL_MS)
+            ? QORE_IO_POLL_INTERVAL_MS : remaining_ms;
+
+        natsStatus s = natsSubscription_WaitForDrainCompletion(sub, effective_timeout);
+        if (s == NATS_OK) {
+            return 0;
+        }
+
+        if (s == NATS_TIMEOUT) {
+            remaining_ms -= effective_timeout;
+            if (remaining_ms <= 0) {
+                nats_error(xsink, "NATS-SUBSCRIBE-ERROR", s,
+                    "failed waiting for drain completion");
+                return -1;
+            }
+            continue;
+        }
+
         nats_error(xsink, "NATS-SUBSCRIBE-ERROR", s,
             "failed waiting for drain completion");
         return -1;
     }
-    return 0;
 }
 
 bool QoreNatsSubscription::isValid() const {

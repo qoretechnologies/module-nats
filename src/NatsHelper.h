@@ -64,6 +64,13 @@ DLLLOCAL QoreHashNode* nats_msg_to_hash(natsMsg* msg, ExceptionSink* xsink);
 */
 DLLLOCAL int check_nats_network_access(const char* url, ExceptionSink* xsink);
 
+//! Check sandbox filesystem access for a file path
+/** @param path the file path to check
+    @param xsink the exception sink
+    @return 0 on success (or no sandbox active), -1 if access was denied
+*/
+DLLLOCAL int check_nats_file_access(const char* path, ExceptionSink* xsink);
+
 //! RAII helper for natsMsg destruction
 class NatsMsgHolder {
 public:

@@ -26,26 +26,48 @@
 public namespace NatsJetStreamDataProvider {
 
 #! JetStream publish request type
-public const NatsJSPublishRequestDataType = new HashDataType("NatsJSPublishRequest", {
-    "subject": {
-        "type": StringType,
-        "desc": "Subject to publish to",
-        "required": True,
-    },
-    "data": {
-        "type": DataOrNothingType,
-        "desc": "Binary message payload",
-    },
-    "string_data": {
-        "type": StringOrNothingType,
-        "desc": "String message payload (alternative to data)",
-    },
-});
+public class NatsJSPublishRequestDataType inherits HashDataType {
+    public {
+        const Fields = {
+            "subject": {
+                "type": StringType,
+                "display_name": "Subject",
+                "short_desc": "Subject to publish to",
+                "desc": "Subject to publish to",
+                "required": True,
+                "example_value": "orders.created",
+            },
+            "data": {
+                "type": DataOrNothingType,
+                "display_name": "Binary Data",
+                "short_desc": "Binary message payload",
+                "desc": "Binary message payload",
+            },
+            "string_data": {
+                "type": StringOrNothingType,
+                "display_name": "String Data",
+                "short_desc": "String message payload (alternative to data)",
+                "desc": "String message payload (alternative to data)",
+                "example_value": "Hello, World!",
+            },
+        };
+    }
+    constructor() : HashDataType("NatsJSPublishRequest") {
+        addQoreFields(Fields);
+    }
+}
+
+public const NatsJSPublishRequestDataType = new NatsJSPublishRequestDataType();
 
 #! JetStream publish data provider
 /** @since NatsJetStreamDataProvider 1.0
 */
 public class NatsJSPublishDataProvider inherits AbstractDataProvider {
+    public {
+        static NatsJSPublishRequestDataType RequestType();
+        static NatsJSPubAckDataType ResponseType();
+    }
+
     private {
         JetStreamContext js;
     }
@@ -71,6 +93,9 @@ public class NatsJSPublishDataProvider inherits AbstractDataProvider {
     }
 
     private auto doRequestImpl(auto req, *hash<auto> request_options) {
+        if (!req.subject) {
+            throw "INVALID-REQUEST", "missing required field 'subject'";
+        }
         binary payload;
         if (req.data) {
             payload = req.data;

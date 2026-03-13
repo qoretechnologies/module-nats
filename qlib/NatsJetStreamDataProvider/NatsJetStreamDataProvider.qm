@@ -48,7 +48,7 @@ module NatsJetStreamDataProvider {
             "desc": "NATS JetStream provides persistent messaging with stream management, "
                 "consumer management, and key-value store capabilities",
             "scheme": "nats",
-            "groups": (DataProvider::AppGroup::ApiIntegration,),
+            "groups": (DataProvider::AppGroup::Messaging, DataProvider::AppGroup::ApiIntegration,),
             "logo": NatsJetStreamLogo,
             "logo_mime_type": MimeTypeSvg,
             "logo_file_name": "nats-logo.svg",
@@ -63,6 +63,20 @@ module NatsJetStreamDataProvider {
             "short_desc": "Create a JetStream stream",
             "desc": "Creates a new JetStream stream with the given configuration",
             "action_code": DPAT_API,
+            "groups": "Streams",
+            "options": DataProviderActionCatalog::getActionOptionFromFields(
+                NatsJSStreamConfigDataType::Fields{"name",}, {
+                    "preselected": True,
+                    "required": True,
+                },
+            ) + DataProviderActionCatalog::getActionOptionFromFields(
+                NatsJSStreamConfigDataType::Fields{"subjects",}, {
+                    "preselected": True,
+                },
+            ) + DataProviderActionCatalog::getActionOptionFromFields(
+                NatsJSStreamConfigDataType::Fields - ("name", "subjects"),
+            ),
+            "output_type": NatsJSStreamCreateDataProvider::ResponseType,
         });
         DataProviderActionCatalog::registerAction(<DataProviderActionInfo>{
             "app": NatsJetStreamDataProvider::AppName,
@@ -72,6 +86,14 @@ module NatsJetStreamDataProvider {
             "short_desc": "Delete a JetStream stream",
             "desc": "Deletes a JetStream stream",
             "action_code": DPAT_API,
+            "groups": "Streams",
+            "options": DataProviderActionCatalog::getActionOptionFromFields(
+                NatsJSStreamDeleteRequestDataType::Fields, {
+                    "preselected": True,
+                    "required": True,
+                },
+            ),
+            "output_type": AbstractDataProviderTypeMap."nothing",
         });
         DataProviderActionCatalog::registerAction(<DataProviderActionInfo>{
             "app": NatsJetStreamDataProvider::AppName,
@@ -81,6 +103,14 @@ module NatsJetStreamDataProvider {
             "short_desc": "Get JetStream stream information",
             "desc": "Gets information about a JetStream stream",
             "action_code": DPAT_API,
+            "groups": "Streams",
+            "options": DataProviderActionCatalog::getActionOptionFromFields(
+                NatsJSStreamInfoRequestDataType::Fields, {
+                    "preselected": True,
+                    "required": True,
+                },
+            ),
+            "output_type": NatsJSStreamInfoDataProvider::ResponseType,
         });
         DataProviderActionCatalog::registerAction(<DataProviderActionInfo>{
             "app": NatsJetStreamDataProvider::AppName,
@@ -90,6 +120,14 @@ module NatsJetStreamDataProvider {
             "short_desc": "Purge all messages from a stream",
             "desc": "Purges all messages from a JetStream stream",
             "action_code": DPAT_API,
+            "groups": "Streams",
+            "options": DataProviderActionCatalog::getActionOptionFromFields(
+                NatsJSStreamPurgeRequestDataType::Fields, {
+                    "preselected": True,
+                    "required": True,
+                },
+            ),
+            "output_type": AbstractDataProviderTypeMap."nothing",
         });
 
         # Register actions for consumers
@@ -101,6 +139,21 @@ module NatsJetStreamDataProvider {
             "short_desc": "Create a JetStream consumer",
             "desc": "Creates a new consumer on a JetStream stream",
             "action_code": DPAT_API,
+            "groups": "Consumers",
+            "options": DataProviderActionCatalog::getActionOptionFromFields(
+                NatsJSConsumerConfigDataType::Fields{"stream",}, {
+                    "preselected": True,
+                    "required": True,
+                },
+            ) + DataProviderActionCatalog::getActionOptionFromFields(
+                NatsJSConsumerConfigDataType::Fields{"durable_name", "ack_policy"}, {
+                    "preselected": True,
+                },
+            ) + DataProviderActionCatalog::getActionOptionFromFields(
+                NatsJSConsumerConfigDataType::Fields
+                    - ("stream", "durable_name", "ack_policy"),
+            ),
+            "output_type": NatsJSConsumerCreateDataProvider::ResponseType,
         });
         DataProviderActionCatalog::registerAction(<DataProviderActionInfo>{
             "app": NatsJetStreamDataProvider::AppName,
@@ -110,6 +163,14 @@ module NatsJetStreamDataProvider {
             "short_desc": "Delete a JetStream consumer",
             "desc": "Deletes a consumer from a JetStream stream",
             "action_code": DPAT_API,
+            "groups": "Consumers",
+            "options": DataProviderActionCatalog::getActionOptionFromFields(
+                NatsJSConsumerDeleteRequestDataType::Fields, {
+                    "preselected": True,
+                    "required": True,
+                },
+            ),
+            "output_type": AbstractDataProviderTypeMap."nothing",
         });
         DataProviderActionCatalog::registerAction(<DataProviderActionInfo>{
             "app": NatsJetStreamDataProvider::AppName,
@@ -119,6 +180,14 @@ module NatsJetStreamDataProvider {
             "short_desc": "Get JetStream consumer information",
             "desc": "Gets information about a JetStream consumer",
             "action_code": DPAT_API,
+            "groups": "Consumers",
+            "options": DataProviderActionCatalog::getActionOptionFromFields(
+                NatsJSConsumerInfoRequestDataType::Fields, {
+                    "preselected": True,
+                    "required": True,
+                },
+            ),
+            "output_type": NatsJSConsumerInfoDataProvider::ResponseType,
         });
 
         # Register publish action
@@ -128,8 +197,19 @@ module NatsJetStreamDataProvider {
             "action": "js-publish",
             "display_name": "JetStream Publish",
             "short_desc": "Publish with JetStream acknowledgment",
-            "desc": "Publishes a message to a JetStream subject and returns the publish acknowledgment",
+            "desc": "Publishes a message to a JetStream subject and returns the publish "
+                "acknowledgment",
             "action_code": DPAT_API,
+            "groups": "Messaging",
+            "options": DataProviderActionCatalog::getActionOptionFromFields(
+                NatsJSPublishRequestDataType::Fields{"subject",}, {
+                    "preselected": True,
+                    "required": True,
+                },
+            ) + DataProviderActionCatalog::getActionOptionFromFields(
+                NatsJSPublishRequestDataType::Fields - ("subject",),
+            ),
+            "output_type": NatsJSPublishDataProvider::ResponseType,
         });
 
         # Register KV actions
@@ -141,6 +221,16 @@ module NatsJetStreamDataProvider {
             "short_desc": "Put a value in a KV bucket",
             "desc": "Puts a value for a key in a NATS JetStream Key-Value store",
             "action_code": DPAT_API,
+            "groups": "Key-Value",
+            "options": DataProviderActionCatalog::getActionOptionFromFields(
+                NatsJSKVPutRequestDataType::Fields{"bucket", "key"}, {
+                    "preselected": True,
+                    "required": True,
+                },
+            ) + DataProviderActionCatalog::getActionOptionFromFields(
+                NatsJSKVPutRequestDataType::Fields - ("bucket", "key"),
+            ),
+            "output_type": NatsJSKVPutDataProvider::ResponseType,
         });
         DataProviderActionCatalog::registerAction(<DataProviderActionInfo>{
             "app": NatsJetStreamDataProvider::AppName,
@@ -150,6 +240,14 @@ module NatsJetStreamDataProvider {
             "short_desc": "Get a value from a KV bucket",
             "desc": "Gets a value for a key from a NATS JetStream Key-Value store",
             "action_code": DPAT_API,
+            "groups": "Key-Value",
+            "options": DataProviderActionCatalog::getActionOptionFromFields(
+                NatsJSKVGetRequestDataType::Fields, {
+                    "preselected": True,
+                    "required": True,
+                },
+            ),
+            "output_type": NatsJSKVGetDataProvider::ResponseType,
         });
         DataProviderActionCatalog::registerAction(<DataProviderActionInfo>{
             "app": NatsJetStreamDataProvider::AppName,
@@ -159,6 +257,14 @@ module NatsJetStreamDataProvider {
             "short_desc": "Delete a key from a KV bucket",
             "desc": "Deletes a key from a NATS JetStream Key-Value store",
             "action_code": DPAT_API,
+            "groups": "Key-Value",
+            "options": DataProviderActionCatalog::getActionOptionFromFields(
+                NatsJSKVDeleteRequestDataType::Fields, {
+                    "preselected": True,
+                    "required": True,
+                },
+            ),
+            "output_type": AbstractDataProviderTypeMap."nothing",
         });
         DataProviderActionCatalog::registerAction(<DataProviderActionInfo>{
             "app": NatsJetStreamDataProvider::AppName,
@@ -168,6 +274,14 @@ module NatsJetStreamDataProvider {
             "short_desc": "List keys in a KV bucket",
             "desc": "Lists all keys in a NATS JetStream Key-Value store bucket",
             "action_code": DPAT_API,
+            "groups": "Key-Value",
+            "options": DataProviderActionCatalog::getActionOptionFromFields(
+                NatsJSKVKeysRequestDataType::Fields, {
+                    "preselected": True,
+                    "required": True,
+                },
+            ),
+            "output_type": NatsJSKVKeysDataProvider::ResponseType,
         });
         DataProviderActionCatalog::registerAction(<DataProviderActionInfo>{
             "app": NatsJetStreamDataProvider::AppName,
@@ -175,8 +289,44 @@ module NatsJetStreamDataProvider {
             "action": "kv-history",
             "display_name": "KV History",
             "short_desc": "Get revision history for a KV key",
-            "desc": "Gets the revision history for a key in a NATS JetStream Key-Value store",
+            "desc": "Gets the revision history for a key in a NATS JetStream Key-Value "
+                "store",
             "action_code": DPAT_API,
+            "groups": "Key-Value",
+            "options": DataProviderActionCatalog::getActionOptionFromFields(
+                NatsJSKVHistoryRequestDataType::Fields, {
+                    "preselected": True,
+                    "required": True,
+                },
+            ),
+            "output_type": NatsJSKVHistoryDataProvider::ResponseType,
+        });
+
+        # Register subscribe events
+        DataProviderActionCatalog::registerAction(<DataProviderActionInfo>{
+            "app": NatsJetStreamDataProvider::AppName,
+            "path": "/subscribe",
+            "action": "subscribe",
+            "display_name": "JetStream Subscribe",
+            "short_desc": "Subscribe to JetStream messages",
+            "desc": "Subscribe to JetStream messages with push-based delivery",
+            "action_code": DPAT_EVENT,
+            "action_val": EVENT_JS_MESSAGE,
+            "groups": "Messaging",
+            "output_type": NatsJSMessageDataType,
+        });
+        DataProviderActionCatalog::registerAction(<DataProviderActionInfo>{
+            "app": NatsJetStreamDataProvider::AppName,
+            "path": "/pull-subscribe",
+            "action": "pull-subscribe",
+            "display_name": "JetStream Pull Subscribe",
+            "short_desc": "Pull subscribe to JetStream messages",
+            "desc": "Subscribe to JetStream messages with pull-based delivery using a "
+                "durable consumer",
+            "action_code": DPAT_EVENT,
+            "action_val": EVENT_JS_MESSAGE,
+            "groups": "Messaging",
+            "output_type": NatsJSMessageDataType,
         });
     };
 }

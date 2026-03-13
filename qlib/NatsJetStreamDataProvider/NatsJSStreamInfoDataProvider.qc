@@ -26,18 +26,35 @@
 public namespace NatsJetStreamDataProvider {
 
 #! Request type for stream info
-public const NatsJSStreamInfoRequestDataType = new HashDataType("NatsJSStreamInfoRequest", {
-    "name": {
-        "type": StringType,
-        "desc": "Stream name",
-        "required": True,
-    },
-});
+public class NatsJSStreamInfoRequestDataType inherits HashDataType {
+    public {
+        const Fields = {
+            "name": {
+                "type": StringType,
+                "display_name": "Stream Name",
+                "short_desc": "Stream name to get info for",
+                "desc": "Stream name",
+                "required": True,
+                "example_value": "ORDERS",
+            },
+        };
+    }
+    constructor() : HashDataType("NatsJSStreamInfoRequest") {
+        addQoreFields(Fields);
+    }
+}
+
+public const NatsJSStreamInfoRequestDataType = new NatsJSStreamInfoRequestDataType();
 
 #! JetStream stream info data provider
 /** @since NatsJetStreamDataProvider 1.0
 */
 public class NatsJSStreamInfoDataProvider inherits AbstractDataProvider {
+    public {
+        static NatsJSStreamInfoRequestDataType RequestType();
+        static NatsJSStreamInfoDataType ResponseType();
+    }
+
     private {
         JetStreamContext js;
     }

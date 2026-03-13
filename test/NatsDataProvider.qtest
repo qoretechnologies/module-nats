@@ -385,7 +385,7 @@ public class NatsDataProviderTest inherits QUnit::Test {
         AbstractDataProvider pub_dp = dp.getChildProvider("publish");
 
         # Publishing without a subject should throw
-        assertThrows("RUNTIME-OVERLOAD-ERROR", sub () {
+        assertThrows("INVALID-REQUEST", sub () {
             pub_dp.doRequest({
                 "string_data": "no subject",
             });

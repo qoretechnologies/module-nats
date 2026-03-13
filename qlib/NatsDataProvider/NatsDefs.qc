@@ -34,36 +34,68 @@ public namespace NatsDataProvider {
     public const EVENT_NATS_COMPLETE = "nats-complete";
 
     #! NATS message event data type
-    public const NatsMessageDataType = new HashDataType("NatsMessageEvent", {
-        "subject": {
-            "type": StringType,
-            "desc": "The subject the message was published to",
-        },
-        "data": {
-            "type": DataOrNothingType,
-            "desc": "The message payload",
-        },
-        "reply": {
-            "type": StringOrNothingType,
-            "desc": "The reply subject",
-        },
-        "headers": {
-            "type": AutoHashOrNothingType,
-            "desc": "Message headers",
-        },
-    });
+    public class NatsMessageDataType inherits HashDataType {
+        public {
+            const Fields = {
+                "subject": {
+                    "type": StringType,
+                    "display_name": "Subject",
+                    "short_desc": "The subject the message was published to",
+                    "desc": "The subject the message was published to",
+                },
+                "data": {
+                    "type": DataOrNothingType,
+                    "display_name": "Data",
+                    "short_desc": "The message payload",
+                    "desc": "The binary message payload",
+                },
+                "reply": {
+                    "type": StringOrNothingType,
+                    "display_name": "Reply Subject",
+                    "short_desc": "The reply subject",
+                    "desc": "The reply subject, if this is a request message",
+                },
+                "headers": {
+                    "type": AutoHashOrNothingType,
+                    "display_name": "Headers",
+                    "short_desc": "Message headers",
+                    "desc": "Optional message headers as key-value pairs",
+                },
+            };
+        }
+        constructor() : HashDataType("NatsMessageEvent") {
+            addQoreFields(Fields);
+        }
+    }
+
+    #! Singleton NATS message event data type instance
+    public const NatsMessageDataType = new NatsMessageDataType();
 
     #! NATS error event data type
-    public const NatsErrorDataType = new HashDataType("NatsErrorEvent", {
-        "err": {
-            "type": StringType,
-            "desc": "The error code",
-        },
-        "desc": {
-            "type": StringType,
-            "desc": "The error description",
-        },
-    });
+    public class NatsErrorDataType inherits HashDataType {
+        public {
+            const Fields = {
+                "err": {
+                    "type": StringType,
+                    "display_name": "Error Code",
+                    "short_desc": "The error code",
+                    "desc": "The error code",
+                },
+                "desc": {
+                    "type": StringType,
+                    "display_name": "Description",
+                    "short_desc": "The error description",
+                    "desc": "The error description",
+                },
+            };
+        }
+        constructor() : HashDataType("NatsErrorEvent") {
+            addQoreFields(Fields);
+        }
+    }
+
+    #! Singleton NATS error event data type instance
+    public const NatsErrorDataType = new NatsErrorDataType();
 
     #! NATS complete event data type
     public const NatsCompleteDataType = new HashDataType("NatsCompleteEvent");

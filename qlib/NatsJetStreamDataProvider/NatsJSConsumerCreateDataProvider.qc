@@ -29,6 +29,11 @@ public namespace NatsJetStreamDataProvider {
 /** @since NatsJetStreamDataProvider 1.0
 */
 public class NatsJSConsumerCreateDataProvider inherits AbstractDataProvider {
+    public {
+        static NatsJSConsumerConfigDataType RequestType();
+        static NatsJSConsumerInfoDataType ResponseType();
+    }
+
     private {
         JetStreamContext js;
     }
@@ -61,6 +66,7 @@ public class NatsJSConsumerCreateDataProvider inherits AbstractDataProvider {
             "ack_policy": req.ack_policy,
             "ack_wait": req.ack_wait,
             "deliver_policy": req.deliver_policy,
+            "replay_policy": req.replay_policy,
             "filter_subject": req.filter_subject,
             "max_deliver": req.max_deliver,
             "max_ack_pending": req.max_ack_pending,

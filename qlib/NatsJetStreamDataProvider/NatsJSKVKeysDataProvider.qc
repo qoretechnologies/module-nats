@@ -26,26 +26,54 @@
 public namespace NatsJetStreamDataProvider {
 
 #! KV keys request type
-public const NatsJSKVKeysRequestDataType = new HashDataType("NatsJSKVKeysRequest", {
-    "bucket": {
-        "type": StringType,
-        "desc": "KV bucket name",
-        "required": True,
-    },
-});
+public class NatsJSKVKeysRequestDataType inherits HashDataType {
+    public {
+        const Fields = {
+            "bucket": {
+                "type": StringType,
+                "display_name": "Bucket",
+                "short_desc": "KV bucket name",
+                "desc": "KV bucket name",
+                "required": True,
+                "example_value": "config",
+            },
+        };
+    }
+    constructor() : HashDataType("NatsJSKVKeysRequest") {
+        addQoreFields(Fields);
+    }
+}
+
+public const NatsJSKVKeysRequestDataType = new NatsJSKVKeysRequestDataType();
 
 #! KV keys response type
-public const NatsJSKVKeysResponseDataType = new HashDataType("NatsJSKVKeysResponse", {
-    "keys": {
-        "type": SoftListType,
-        "desc": "List of key names in the bucket",
-    },
-});
+public class NatsJSKVKeysResponseDataType inherits HashDataType {
+    public {
+        const Fields = {
+            "keys": {
+                "type": SoftListType,
+                "display_name": "Keys",
+                "short_desc": "List of key names in the bucket",
+                "desc": "List of key names in the bucket",
+            },
+        };
+    }
+    constructor() : HashDataType("NatsJSKVKeysResponse") {
+        addQoreFields(Fields);
+    }
+}
+
+public const NatsJSKVKeysResponseDataType = new NatsJSKVKeysResponseDataType();
 
 #! JetStream KV keys data provider
 /** @since NatsJetStreamDataProvider 1.0
 */
 public class NatsJSKVKeysDataProvider inherits AbstractDataProvider {
+    public {
+        static NatsJSKVKeysRequestDataType RequestType();
+        static NatsJSKVKeysResponseDataType ResponseType();
+    }
+
     private {
         JetStreamContext js;
     }

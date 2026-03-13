@@ -86,6 +86,9 @@ int64 QoreNatsKVStore::put(const char* key, const void* data, int data_len,
         xsink->raiseException("NATS-KV-ERROR", "KV store is not valid");
         return -1;
     }
+    if (qore_check_cancel(xsink)) {
+        return -1;
+    }
 
     uint64_t rev = 0;
     natsStatus s = kvStore_Put(&rev, kv, key, data, data_len);
@@ -101,6 +104,9 @@ int64 QoreNatsKVStore::putString(const char* key, const char* data,
         ExceptionSink* xsink) {
     if (!kv) {
         xsink->raiseException("NATS-KV-ERROR", "KV store is not valid");
+        return -1;
+    }
+    if (qore_check_cancel(xsink)) {
         return -1;
     }
 
@@ -120,6 +126,9 @@ int64 QoreNatsKVStore::create(const char* key, const void* data, int data_len,
         xsink->raiseException("NATS-KV-ERROR", "KV store is not valid");
         return -1;
     }
+    if (qore_check_cancel(xsink)) {
+        return -1;
+    }
 
     uint64_t rev = 0;
     natsStatus s = kvStore_Create(&rev, kv, key, data, data_len);
@@ -137,6 +146,9 @@ int64 QoreNatsKVStore::update(const char* key, const void* data, int data_len,
         xsink->raiseException("NATS-KV-ERROR", "KV store is not valid");
         return -1;
     }
+    if (qore_check_cancel(xsink)) {
+        return -1;
+    }
 
     uint64_t rev = 0;
     natsStatus s = kvStore_Update(&rev, kv, key, data, data_len, revision);
@@ -152,6 +164,9 @@ int64 QoreNatsKVStore::update(const char* key, const void* data, int data_len,
 QoreHashNode* QoreNatsKVStore::get(const char* key, ExceptionSink* xsink) {
     if (!kv) {
         xsink->raiseException("NATS-KV-ERROR", "KV store is not valid");
+        return nullptr;
+    }
+    if (qore_check_cancel(xsink)) {
         return nullptr;
     }
 
@@ -176,6 +191,9 @@ int QoreNatsKVStore::del(const char* key, ExceptionSink* xsink) {
         xsink->raiseException("NATS-KV-ERROR", "KV store is not valid");
         return -1;
     }
+    if (qore_check_cancel(xsink)) {
+        return -1;
+    }
 
     natsStatus s = kvStore_Delete(kv, key);
     if (s != NATS_OK) {
@@ -191,6 +209,9 @@ int QoreNatsKVStore::purge(const char* key, ExceptionSink* xsink) {
         xsink->raiseException("NATS-KV-ERROR", "KV store is not valid");
         return -1;
     }
+    if (qore_check_cancel(xsink)) {
+        return -1;
+    }
 
     natsStatus s = kvStore_Purge(kv, key, nullptr);
     if (s != NATS_OK) {
@@ -204,6 +225,9 @@ int QoreNatsKVStore::purge(const char* key, ExceptionSink* xsink) {
 QoreListNode* QoreNatsKVStore::keys(ExceptionSink* xsink) {
     if (!kv) {
         xsink->raiseException("NATS-KV-ERROR", "KV store is not valid");
+        return nullptr;
+    }
+    if (qore_check_cancel(xsink)) {
         return nullptr;
     }
 
@@ -229,6 +253,9 @@ QoreListNode* QoreNatsKVStore::keys(ExceptionSink* xsink) {
 QoreListNode* QoreNatsKVStore::history(const char* key, ExceptionSink* xsink) {
     if (!kv) {
         xsink->raiseException("NATS-KV-ERROR", "KV store is not valid");
+        return nullptr;
+    }
+    if (qore_check_cancel(xsink)) {
         return nullptr;
     }
 

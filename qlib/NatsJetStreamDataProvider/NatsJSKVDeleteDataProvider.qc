@@ -26,23 +26,42 @@
 public namespace NatsJetStreamDataProvider {
 
 #! KV delete request type
-public const NatsJSKVDeleteRequestDataType = new HashDataType("NatsJSKVDeleteRequest", {
-    "bucket": {
-        "type": StringType,
-        "desc": "KV bucket name",
-        "required": True,
-    },
-    "key": {
-        "type": StringType,
-        "desc": "Key name to delete",
-        "required": True,
-    },
-});
+public class NatsJSKVDeleteRequestDataType inherits HashDataType {
+    public {
+        const Fields = {
+            "bucket": {
+                "type": StringType,
+                "display_name": "Bucket",
+                "short_desc": "KV bucket name",
+                "desc": "KV bucket name",
+                "required": True,
+                "example_value": "config",
+            },
+            "key": {
+                "type": StringType,
+                "display_name": "Key",
+                "short_desc": "Key name to delete",
+                "desc": "Key name to delete",
+                "required": True,
+                "example_value": "app.setting",
+            },
+        };
+    }
+    constructor() : HashDataType("NatsJSKVDeleteRequest") {
+        addQoreFields(Fields);
+    }
+}
+
+public const NatsJSKVDeleteRequestDataType = new NatsJSKVDeleteRequestDataType();
 
 #! JetStream KV delete data provider
 /** @since NatsJetStreamDataProvider 1.0
 */
 public class NatsJSKVDeleteDataProvider inherits AbstractDataProvider {
+    public {
+        static NatsJSKVDeleteRequestDataType RequestType();
+    }
+
     private {
         JetStreamContext js;
     }
