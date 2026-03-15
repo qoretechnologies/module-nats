@@ -1012,7 +1012,7 @@ public class JetStreamTest inherits QUnit::Test {
 
         int rev1 = kv.putString("conflict", "v1");
         # Update to move revision forward
-        int rev2 = kv.putString("conflict", "v2");
+        kv.putString("conflict", "v2");
 
         # Update with stale revision should fail
         assertThrows("NATS-KV-ERROR", sub () {
