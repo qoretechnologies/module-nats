@@ -1,0 +1,411 @@
+#!/usr/bin/env qore
+# -*- mode: qore; indent-tabs-mode: nil -*-
+
+/*
+    Copyright (C) 2026 Qore Technologies, s.r.o., all rights reserved
+
+    Permission is hereby granted, free of charge, to any person obtaining a
+    copy of this software and associated documentation files (the "Software"),
+    to deal in the Software without restriction, including without limitation
+    the rights to use, copy, modify, merge, publish, distribute, sublicense,
+    and/or sell copies of the Software, and to permit persons to whom the
+    Software is furnished to do so, subject to the following conditions:
+
+    The above copyright notice and this permission notice shall be included in
+    all copies or substantial portions of the Software.
+
+    THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+    IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+    FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+    AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+    DEALINGS IN THE SOFTWARE.
+
+    NATS cross-client interoperability test suite
+
+    Uses the official nats CLI (https://github.com/nats-io/natscli) as a
+    known-good reference client to verify wire-protocol compatibility of the
+    Qore NATS module.  Every test exercises a cross-client path: one side is
+    the Qore module, the other is the nats CLI.
+*/
+
+%modern
+
+%requires QUnit
+%requires nats
+%requires NatsUtil
+
+%exec-class NatsInteropTest
+
+public class NatsInteropTest inherits QUnit::Test {
+    private {
+        int port;
+        string url;
+        *int nats_pid;
+        string pid_file;
+    }
+
+    constructor() : QUnit::Test("NatsInteropTest", "1.0") {
+        # Verify the nats CLI is available before registering tests
+        try {
+            backquote("nats --version 2>/dev/null");
+        } catch (hash<ExceptionInfo> ex) {
+            printf("SKIP: nats CLI not found, skipping interop tests\n");
+            set_return_value(0);
+            return;
+        }
+
+        # --- Core NATS interop ---
+        addTestCase("cli pub qore sub", \cliPubQoreSubTest());
+        addTestCase("qore pub cli sub", \qorePubCliSubTest());
+        addTestCase("cli request qore reply", \cliRequestQoreReplyTest());
+        addTestCase("qore request cli reply", \qoreRequestCliReplyTest());
+        addTestCase("cli pub with headers qore sub", \cliHeadersQoreSubTest());
+        addTestCase("qore pub with headers cli sub", \qoreHeadersCliSubTest());
+
+        # --- JetStream interop ---
+        addTestCase("qore js pub cli consume", \qoreJsPubCliConsumeTest());
+        addTestCase("cli pub qore js consume", \cliPubQoreJsConsumeTest());
+
+        # --- KV store interop ---
+        addTestCase("qore kv put cli get", \qoreKvPutCliGetTest());
+        addTestCase("cli kv put qore get", \cliKvPutQoreGetTest());
+
+        set_return_value(main());
+    }
+
+    private startServer() {
+        port = 10000 + (rand() % 50000);
+        pid_file = sprintf("/tmp/nats-interop-test-%d.pid", port);
+        string cmd = sprintf("nats-server -p %d -a 127.0.0.1 --pid %s -js &", port, pid_file);
+        system(cmd);
+        # Wait for pid file
+        for (int i = 0; i < 50; ++i) {
+            if (is_file(pid_file)) {
+                nats_pid = trim(ReadOnlyFile::readTextFile(pid_file)).toInt();
+                break;
+            }
+            usleep(100000);
+        }
+        if (!nats_pid) {
+            throw "NATS-TEST-ERROR", sprintf("nats-server failed to start on port %d", port);
+        }
+        url = sprintf("nats://127.0.0.1:%d", port);
+    }
+
+    private stopServer() {
+        if (nats_pid) {
+            kill(nats_pid, SIGTERM);
+            # Wait for process to exit — portable check via kill(pid, 0)
+            for (int i = 0; i < 50; ++i) {
+                try {
+                    kill(nats_pid, 0);
+                } catch () {
+                    break;
+                }
+                usleep(100000);
+            }
+            nats_pid = NOTHING;
+        }
+        if (is_file(pid_file)) {
+            unlink(pid_file);
+        }
+    }
+
+    globalSetUp() {
+        startServer();
+    }
+
+    globalTearDown() {
+        stopServer();
+    }
+
+    private string natsCmd(string args) {
+        return sprintf("nats %s -s %s", args, url);
+    }
+
+    private string uniqueName(string prefix) {
+        return sprintf("%s_%d_%d", prefix, port, rand() % 100000);
+    }
+
+    # ----------------------------------------------------------------
+    # Core NATS: nats CLI publishes, Qore subscribes
+    # ----------------------------------------------------------------
+    cliPubQoreSubTest() {
+        NatsConnection conn(url);
+        NatsSubscription nsub = conn.subscribe("interop.cli-to-qore");
+        conn.flush();
+
+        # CLI publishes
+        system(natsCmd("pub interop.cli-to-qore 'hello from nats cli'"));
+
+        *hash<NatsMsgInfo> msg = nsub.nextMsg(5s);
+        assertEq(True, exists msg);
+        assertEq("interop.cli-to-qore", msg.subject);
+        assertEq("hello from nats cli", msg.data.toString());
+
+        nsub.unsubscribe();
+        conn.close();
+    }
+
+    # ----------------------------------------------------------------
+    # Core NATS: Qore publishes, nats CLI subscribes (--raw --count=1)
+    # ----------------------------------------------------------------
+    qorePubCliSubTest() {
+        string output;
+        Counter cnt(1);
+
+        # Start CLI subscriber in a background thread
+        background cliSubHelper("interop.qore-to-cli", \output, cnt);
+
+        # Give the CLI subscriber time to connect
+        usleep(500000);
+
+        # Qore publishes
+        NatsConnection conn(url);
+        conn.publishString("interop.qore-to-cli", "hello from qore");
+        conn.flush();
+        conn.close();
+
+        cnt.waitForZero(10s);
+        assertEq("hello from qore", trim(output));
+    }
+
+    private cliSubHelper(string subject, reference<string> output, Counter cnt) {
+        on_exit cnt.dec();
+        output = backquote(natsCmd(sprintf("sub %s --count=1 --raw --timeout=10s 2>/dev/null", subject)));
+    }
+
+    # ----------------------------------------------------------------
+    # Core NATS: nats CLI sends request, Qore replies
+    # ----------------------------------------------------------------
+    cliRequestQoreReplyTest() {
+        # Set up Qore responder
+        NatsConnection conn(url);
+        NatsSubscription nsub = conn.subscribe("interop.cli-request");
+        conn.flush();
+
+        Counter responder_cnt(1);
+        background qoreResponder(conn, nsub, responder_cnt, "pong-from-qore");
+
+        # CLI sends request
+        string output = backquote(natsCmd("request interop.cli-request 'ping' --raw --timeout=5s")
+            + " 2>/dev/null");
+
+        assertEq("pong-from-qore", trim(output));
+
+        nsub.unsubscribe();
+        responder_cnt.waitForZero(5s);
+        conn.close();
+    }
+
+    private qoreResponder(NatsConnection conn, NatsSubscription nsub, Counter cnt, string reply_body) {
+        on_exit cnt.dec();
+        *hash<NatsMsgInfo> msg = nsub.nextMsg(10s);
+        if (msg && msg.reply) {
+            conn.publish(msg.reply, binary(reply_body));
+            conn.flush();
+        }
+    }
+
+    # ----------------------------------------------------------------
+    # Core NATS: Qore sends request, nats CLI replies
+    # ----------------------------------------------------------------
+    qoreRequestCliReplyTest() {
+        Counter cli_cnt(1);
+
+        # Start CLI responder in background
+        background cliReplyHelper("interop.qore-request", "pong-from-cli", cli_cnt);
+
+        # Give CLI responder time to subscribe
+        usleep(500000);
+
+        # Qore sends request
+        NatsConnection conn(url);
+        hash<NatsMsgInfo> reply = conn.request("interop.qore-request", binary("ping"), 5s);
+        assertEq("pong-from-cli", reply.data.toString());
+
+        conn.close();
+        cli_cnt.waitForZero(10s);
+    }
+
+    private cliReplyHelper(string subject, string reply_body, Counter cnt) {
+        on_exit cnt.dec();
+        system(natsCmd(sprintf("reply %s '%s' --count=1 2>/dev/null", subject, reply_body)));
+    }
+
+    # ----------------------------------------------------------------
+    # Headers: nats CLI publishes with headers, Qore reads them
+    # ----------------------------------------------------------------
+    cliHeadersQoreSubTest() {
+        NatsConnection conn(url);
+        NatsSubscription nsub = conn.subscribe("interop.cli-headers");
+        conn.flush();
+
+        # CLI publishes with headers
+        system(natsCmd("pub interop.cli-headers 'header-payload'"
+            + " -H 'X-Interop:from-cli' -H 'Content-Type:application/json'"));
+
+        *hash<NatsMsgInfo> msg = nsub.nextMsg(5s);
+        assertEq(True, exists msg);
+        assertEq("header-payload", msg.data.toString());
+        assertEq(True, exists msg.headers);
+        assertEq("from-cli", msg.headers."X-Interop");
+        assertEq("application/json", msg.headers."Content-Type");
+
+        nsub.unsubscribe();
+        conn.close();
+    }
+
+    # ----------------------------------------------------------------
+    # Headers: Qore publishes with headers, nats CLI reads them
+    # We verify the CLI receives the message (exit code 0) with the
+    # expected body via --raw
+    # ----------------------------------------------------------------
+    qoreHeadersCliSubTest() {
+        string output;
+        Counter cnt(1);
+
+        # Start CLI subscriber
+        background cliSubHelper("interop.qore-headers", \output, cnt);
+        usleep(500000);
+
+        # Qore publishes with headers
+        NatsConnection conn(url);
+        conn.publishMsg("interop.qore-headers", binary("qore-header-msg"), {
+            "X-Source": "qore-module",
+            "Content-Type": "text/plain",
+        });
+        conn.flush();
+        conn.close();
+
+        cnt.waitForZero(10s);
+        # --raw gives just the body; headers are part of the NATS protocol but
+        # not shown in raw mode, so we verify the body arrived intact
+        assertEq("qore-header-msg", trim(output));
+    }
+
+    # ----------------------------------------------------------------
+    # JetStream: Qore publishes to stream, nats CLI reads
+    # ----------------------------------------------------------------
+    qoreJsPubCliConsumeTest() {
+        NatsConnection conn(url);
+        JetStreamContext js = conn.jetStream();
+
+        string stream_name = uniqueName("INTJS");
+        string subject = stream_name + ".data";
+
+        js.addStream(<NatsStreamConfig>{
+            "name": stream_name,
+            "subjects": (stream_name + ".>",),
+            "storage": NATS_STORAGE_MEMORY,
+        });
+
+        # Qore publishes via JetStream
+        js.publish(subject, binary("js-from-qore"));
+
+        # CLI reads via stream get (sequence 1)
+        string output = backquote(natsCmd(sprintf("stream get %s 1", stream_name))
+            + " 2>/dev/null");
+
+        # Output contains the message body in the last line(s)
+        assertTrue(output.find("js-from-qore") >= 0,
+            "nats CLI should see the message published by Qore via JetStream");
+
+        js.deleteStream(stream_name);
+        conn.close();
+    }
+
+    # ----------------------------------------------------------------
+    # JetStream: nats CLI publishes, Qore consumes via JetStream
+    # ----------------------------------------------------------------
+    cliPubQoreJsConsumeTest() {
+        NatsConnection conn(url);
+        JetStreamContext js = conn.jetStream();
+
+        string stream_name = uniqueName("INTCL");
+        string subject = stream_name + ".data";
+
+        js.addStream(<NatsStreamConfig>{
+            "name": stream_name,
+            "subjects": (stream_name + ".>",),
+            "storage": NATS_STORAGE_MEMORY,
+        });
+
+        # CLI publishes to the stream subject
+        system(natsCmd(sprintf("pub %s 'js-from-cli'", subject)));
+
+        # Give the server a moment to persist
+        usleep(200000);
+
+        # Verify message count in stream
+        hash<NatsStreamInfo> info = js.getStreamInfo(stream_name);
+        assertEq(1, info.messages);
+
+        # Qore consumes via pull subscriber
+        string durable = "interop-consumer";
+        NatsSubscription nsub = js.pullSubscribe(subject, durable);
+        list<hash<NatsMsgInfo>> msgs = nsub.fetch(1, 5s);
+        assertEq(1, msgs.size());
+        assertEq("js-from-cli", msgs[0].data.toString());
+
+        nsub.ack();
+        nsub.unsubscribe();
+        js.deleteStream(stream_name);
+        conn.close();
+    }
+
+    # ----------------------------------------------------------------
+    # KV: Qore puts, nats CLI gets
+    # ----------------------------------------------------------------
+    qoreKvPutCliGetTest() {
+        NatsConnection conn(url);
+        JetStreamContext js = conn.jetStream();
+
+        string bucket = uniqueName("intkv");
+        NatsKeyValueStore kv = js.createKeyValue(<NatsKVConfig>{
+            "bucket": bucket,
+            "storage": NATS_STORAGE_MEMORY,
+        });
+
+        # Qore puts a value
+        kv.putString("interop-key", "value-from-qore");
+
+        # CLI reads
+        string output = backquote(natsCmd(sprintf("kv get %s interop-key --raw", bucket))
+            + " 2>/dev/null");
+        assertEq("value-from-qore", trim(output));
+
+        js.deleteKeyValue(bucket);
+        conn.close();
+    }
+
+    # ----------------------------------------------------------------
+    # KV: nats CLI puts, Qore gets
+    # ----------------------------------------------------------------
+    cliKvPutQoreGetTest() {
+        NatsConnection conn(url);
+        JetStreamContext js = conn.jetStream();
+
+        string bucket = uniqueName("intkvr");
+        js.createKeyValue(<NatsKVConfig>{
+            "bucket": bucket,
+            "storage": NATS_STORAGE_MEMORY,
+        });
+
+        # CLI puts a value
+        system(natsCmd(sprintf("kv put %s cli-key 'value-from-cli'", bucket)));
+
+        # Qore reads
+        NatsKeyValueStore kv = js.keyValue(bucket);
+        *hash<NatsKVEntry> entry = kv.get("cli-key");
+        assertEq(True, exists entry);
+        assertEq("cli-key", entry.key);
+        assertEq("value-from-cli", entry.value.toString());
+        assertEq(NATS_KV_OP_PUT, entry.operation);
+
+        js.deleteKeyValue(bucket);
+        conn.close();
+    }
+}
