@@ -47,6 +47,15 @@ curl -sL "https://github.com/nats-io/nats-server/releases/download/${NATS_SERVER
 cp /tmp/nats-server-${NATS_SERVER_VERSION}-linux-${NATS_ARCH}/nats-server /usr/local/bin/
 chmod +x /usr/local/bin/nats-server
 
+# install nats CLI for interoperability tests
+which unzip || apt-get install -y -qq unzip
+NATS_CLI_VERSION=0.3.1
+curl -sL "https://github.com/nats-io/natscli/releases/download/v${NATS_CLI_VERSION}/nats-${NATS_CLI_VERSION}-linux-${NATS_ARCH}.zip" \
+    -o /tmp/nats-cli.zip
+unzip -o /tmp/nats-cli.zip -d /tmp
+cp /tmp/nats-${NATS_CLI_VERSION}-linux-${NATS_ARCH}/nats /usr/local/bin/
+chmod +x /usr/local/bin/nats
+
 # build module and install
 echo && echo "-- building module --"
 mkdir -p ${MODULE_SRC_DIR}/build
