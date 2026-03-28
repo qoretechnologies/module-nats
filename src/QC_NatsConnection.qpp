@@ -294,3 +294,171 @@ bool NatsConnection::isConnected() [flags=RET_VALUE_ONLY] {
 int NatsConnection::status() [flags=RET_VALUE_ONLY] {
     return conn->status();
 }
+
+//! Returns the URL of the currently connected server
+/** @return the connected server URL
+
+    @throw NATS-CONNECTION-ERROR if not connected
+
+    @since %nats 1.0
+*/
+string NatsConnection::getConnectedUrl() [flags=RET_VALUE_ONLY] {
+    return conn->getConnectedUrl(xsink);
+}
+
+//! Returns the server ID of the connected server
+/** @return the server ID, or @ref nothing if unavailable
+
+    @throw NATS-CONNECTION-ERROR if not connected
+
+    @since %nats 1.0
+*/
+*string NatsConnection::getServerId() [flags=RET_VALUE_ONLY] {
+    return conn->getServerId(xsink);
+}
+
+//! Returns the client ID assigned by the server
+/** @return the client ID
+
+    @throw NATS-CONNECTION-ERROR if not connected
+
+    @since %nats 1.0
+*/
+int NatsConnection::getClientId() [flags=RET_VALUE_ONLY] {
+    return conn->getClientId(xsink);
+}
+
+//! Returns the client IP address as seen by the server
+/** @return the client IP, or @ref nothing if unavailable
+
+    @throw NATS-CONNECTION-ERROR if not connected
+
+    @since %nats 1.0
+*/
+*string NatsConnection::getClientIp() [flags=RET_VALUE_ONLY] {
+    return conn->getClientIp(xsink);
+}
+
+//! Returns the round-trip time to the server in milliseconds
+/** @return the RTT in milliseconds, or @ref nothing if unavailable
+
+    @throw NATS-CONNECTION-ERROR if not connected
+
+    @since %nats 1.0
+*/
+*int NatsConnection::getRtt() [flags=RET_VALUE_ONLY] {
+    return conn->getRtt(xsink);
+}
+
+//! Returns the maximum payload size allowed by the server
+/** @return the maximum payload size in bytes
+
+    @throw NATS-CONNECTION-ERROR if not connected
+
+    @since %nats 1.0
+*/
+int NatsConnection::getMaxPayload() [flags=RET_VALUE_ONLY] {
+    return conn->getMaxPayload(xsink);
+}
+
+//! Returns True if the server supports message headers
+/** @return True if headers are supported
+
+    @throw NATS-CONNECTION-ERROR if not connected
+
+    @since %nats 1.0
+*/
+bool NatsConnection::hasHeaderSupport() [flags=RET_VALUE_ONLY] {
+    return conn->hasHeaderSupport(xsink);
+}
+
+//! Returns the local IP address and port used for the connection
+/** @return a hash with \c ip (string) and \c port (int) keys
+
+    @throw NATS-CONNECTION-ERROR if not connected or the information is unavailable
+
+    @since %nats 1.0
+*/
+hash<auto> NatsConnection::getLocalIpAndPort() [flags=RET_VALUE_ONLY] {
+    return conn->getLocalIpAndPort(xsink);
+}
+
+//! Returns True if the connection is in the process of reconnecting
+/** @return True if reconnecting
+
+    @since %nats 1.0
+*/
+bool NatsConnection::isReconnecting() [flags=RET_VALUE_ONLY] {
+    return conn->isReconnecting();
+}
+
+//! Returns True if the connection is in drain mode
+/** @return True if draining
+
+    @since %nats 1.0
+*/
+bool NatsConnection::isDraining() [flags=RET_VALUE_ONLY] {
+    return conn->isDraining();
+}
+
+//! Returns the number of bytes buffered for write
+/** @return the number of buffered bytes
+
+    @since %nats 1.0
+*/
+int NatsConnection::buffered() [flags=RET_VALUE_ONLY] {
+    return conn->buffered();
+}
+
+//! Returns connection statistics
+/** @return a @ref NatsConnectionStats hash with message and byte counts
+
+    @throw NATS-CONNECTION-ERROR if not connected
+
+    @since %nats 1.0
+*/
+hash<NatsConnectionStats> NatsConnection::getStats() [flags=RET_VALUE_ONLY] {
+    return conn->getStats(xsink);
+}
+
+//! Returns the list of known server URLs
+/** @return a list of server URL strings
+
+    @throw NATS-CONNECTION-ERROR if not connected
+
+    @since %nats 1.0
+*/
+list<string> NatsConnection::getServers() [flags=RET_VALUE_ONLY] {
+    return conn->getServers(xsink);
+}
+
+//! Returns the list of discovered server URLs from cluster gossip
+/** @return a list of discovered server URL strings
+
+    @throw NATS-CONNECTION-ERROR if not connected
+
+    @since %nats 1.0
+*/
+list<string> NatsConnection::getDiscoveredServers() [flags=RET_VALUE_ONLY] {
+    return conn->getDiscoveredServers(xsink);
+}
+
+//! Forces the connection to reconnect to another server
+/** @throw NATS-CONNECTION-ERROR if the reconnect fails
+
+    @since %nats 1.0
+*/
+nothing NatsConnection::reconnect() {
+    conn->reconnect(xsink);
+}
+
+//! Returns comprehensive connection information
+/** @return a @ref NatsConnectionInfo hash with all connection details
+
+    @throw NATS-CONNECTION-ERROR if not connected
+
+    @since %nats 1.0
+*/
+hash<NatsConnectionInfo> NatsConnection::getConnectionInfo() [flags=RET_VALUE_ONLY] {
+    return conn->getConnectionInfo(xsink);
+}

@@ -63,6 +63,8 @@ const TypedHashDecl* hashdeclNatsConsumerInfo = nullptr;
 const TypedHashDecl* hashdeclNatsPubAck = nullptr;
 const TypedHashDecl* hashdeclNatsKVConfig = nullptr;
 const TypedHashDecl* hashdeclNatsKVEntry = nullptr;
+const TypedHashDecl* hashdeclNatsConnectionStats = nullptr;
+const TypedHashDecl* hashdeclNatsConnectionInfo = nullptr;
 
 QoreNamespace NatsNs("Qore::Nats");
 
@@ -83,6 +85,10 @@ static void nats_module_init(QoreModuleInitContext& ctx, ExceptionSink& xsink) {
     hashdeclNatsPubAck = init_hashdecl_NatsPubAck(NatsNs);
     hashdeclNatsKVConfig = init_hashdecl_NatsKVConfig(NatsNs);
     hashdeclNatsKVEntry = init_hashdecl_NatsKVEntry(NatsNs);
+
+    // Initialize Phase 4 hashdecls (Connection introspection)
+    hashdeclNatsConnectionStats = init_hashdecl_NatsConnectionStats(NatsNs);
+    hashdeclNatsConnectionInfo = init_hashdecl_NatsConnectionInfo(NatsNs);
 
     // Initialize classes in dependency order:
     // NatsSubscription has no class deps

@@ -139,6 +139,18 @@ hashdecl Qore::Nats::NatsTlsOptions {
 
     //! If True, skip server certificate verification (insecure)
     *bool skip_verify;
+
+    //! TLS cipher list for TLSv1.2 and below (OpenSSL format)
+    *string ciphers;
+
+    //! TLS cipher suites for TLSv1.3 (OpenSSL format)
+    *string cipher_suites;
+
+    //! Expected hostname in the server certificate
+    *string expected_hostname;
+
+    //! If True, perform TLS handshake before NATS INFO protocol exchange
+    *bool tls_handshake_first;
 }
 
 //! Connection options for NATS
@@ -186,6 +198,48 @@ hashdecl Qore::Nats::NatsConnectionOptions {
 
     //! If True, do not randomize server list for reconnection
     *bool no_randomize;
+
+    //! List of NATS server URLs for cluster connections
+    *list<string> servers;
+
+    //! If True, the server will not echo messages back to the connection that published them
+    *bool no_echo;
+
+    //! If True, flush pending data after every publish (low-latency mode)
+    *bool send_asap;
+
+    //! If True, allow automatic reconnection (default: True)
+    *bool allow_reconnect;
+
+    //! Reconnect jitter in milliseconds for non-TLS connections
+    *int reconnect_jitter_ms;
+
+    //! Reconnect jitter in milliseconds for TLS connections
+    *int reconnect_jitter_tls_ms;
+
+    //! Size of the backing buffer used during reconnect (bytes)
+    *int reconnect_buf_size;
+
+    //! Maximum number of pending messages per subscription
+    *int max_pending_msgs;
+
+    //! Maximum number of pending bytes per subscription
+    *int max_pending_bytes;
+
+    //! If True, pending requests will fail immediately on disconnect
+    *bool fail_requests_on_disconnect;
+
+    //! IP resolution order: 0 = any, 4 = IPv4 only, 6 = IPv6 only, 46 = prefer IPv4, 64 = prefer IPv6
+    *int ip_resolution_order;
+
+    //! Write deadline in milliseconds (0 = no deadline)
+    *int write_deadline_ms;
+
+    //! If True, disable the "no responders" feature
+    *bool disable_no_responders;
+
+    //! Custom prefix for inbox subjects (default: "_INBOX")
+    *string custom_inbox_prefix;
 }
 
 //! Information about a received NATS message
@@ -397,4 +451,74 @@ hashdecl Qore::Nats::NatsKVEntry {
 
     //! The operation type (one of @ref nats_kv_operations)
     int operation;
+}
+
+//! Connection statistics
+/** @since %nats 1.0
+*/
+hashdecl Qore::Nats::NatsConnectionStats {
+    //! Number of messages received
+    int in_msgs;
+
+    //! Number of bytes received
+    int in_bytes;
+
+    //! Number of messages sent
+    int out_msgs;
+
+    //! Number of bytes sent
+    int out_bytes;
+
+    //! Number of reconnections
+    int reconnects;
+}
+
+//! Connection information
+/** @since %nats 1.0
+*/
+hashdecl Qore::Nats::NatsConnectionInfo {
+    //! The URL of the server currently connected to
+    *string connected_url;
+
+    //! The server ID of the connected server
+    *string server_id;
+
+    //! The client ID assigned by the server
+    int client_id;
+
+    //! The client IP address as seen by the server
+    *string client_ip;
+
+    //! Round-trip time to the server in milliseconds
+    *int rtt_ms;
+
+    //! Maximum payload size allowed by the server
+    int max_payload;
+
+    //! True if the server supports message headers
+    bool has_header_support;
+
+    //! The local IP address used for the connection
+    *string local_ip;
+
+    //! The local port used for the connection
+    *int local_port;
+
+    //! True if the connection is in the process of reconnecting
+    bool is_reconnecting;
+
+    //! True if the connection is in drain mode
+    bool is_draining;
+
+    //! Number of bytes buffered for write
+    int buffered;
+
+    //! List of known server URLs
+    *list<string> servers;
+
+    //! List of discovered server URLs (from cluster gossip)
+    *list<string> discovered_servers;
+
+    //! Connection statistics
+    hash<Qore::Nats::NatsConnectionStats> stats;
 }

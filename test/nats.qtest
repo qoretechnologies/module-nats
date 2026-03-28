@@ -83,6 +83,12 @@ public class NatsTest inherits QUnit::Test {
         addTestCase("subject validation test", \subjectValidationTest());
         addTestCase("url parsing test", \urlParsingTest());
 
+        # Connection introspection tests
+        addTestCase("connection introspection test", \connectionIntrospectionTest());
+        addTestCase("connection stats test", \connectionStatsTest());
+        addTestCase("connection info test", \connectionInfoTest());
+        addTestCase("connection options extended test", \connectionOptionsExtendedTest());
+
         # Negative tests
         addTestCase("publish on closed connection test", \publishClosedTest());
         addTestCase("invalid subject test", \invalidSubjectTest());
@@ -669,5 +675,109 @@ public class NatsTest inherits QUnit::Test {
         # Second close should not crash or throw
         conn.close();
         assertFalse(conn.isConnected());
+    }
+
+    connectionIntrospectionTest() {
+        NatsConnection conn(url);
+
+        # getConnectedUrl
+        string connected_url = conn.getConnectedUrl();
+        assertRegex("127\\.0\\.0\\.1", connected_url);
+
+        # getMaxPayload
+        int max_payload = conn.getMaxPayload();
+        assertTrue(max_payload > 0);
+
+        # hasHeaderSupport
+        bool headers = conn.hasHeaderSupport();
+        assertTrue(headers);
+
+        # isReconnecting
+        assertFalse(conn.isReconnecting());
+
+        # isDraining
+        assertFalse(conn.isDraining());
+
+        # buffered
+        int buf = conn.buffered();
+        assertTrue(buf >= 0);
+
+        # getServers
+        list<string> servers = conn.getServers();
+        assertTrue(servers.size() >= 1);
+
+        # getLocalIpAndPort
+        auto local = conn.getLocalIpAndPort();
+        assertTrue(local.hasKey("ip"));
+        assertTrue(local.hasKey("port"));
+        assertTrue(local.port > 0);
+
+        # getClientId
+        int cid = conn.getClientId();
+        assertTrue(cid > 0);
+
+        conn.close();
+    }
+
+    connectionStatsTest() {
+        NatsConnection conn(url);
+
+        # Publish some messages
+        for (int i = 0; i < 5; ++i) {
+            conn.publish("test.stats.subject", binary("msg" + string(i)));
+        }
+        conn.flush(2s);
+
+        hash<NatsConnectionStats> stats = conn.getStats();
+        assertTrue(stats.out_msgs >= 5);
+        assertTrue(stats.out_bytes > 0);
+
+        conn.close();
+    }
+
+    connectionInfoTest() {
+        NatsConnection conn(url);
+
+        hash<NatsConnectionInfo> info = conn.getConnectionInfo();
+        assertRegex("127\\.0\\.0\\.1", info.connected_url);
+        assertTrue(info.max_payload > 0);
+        assertTrue(info.has_header_support);
+        assertFalse(info.is_reconnecting);
+        assertFalse(info.is_draining);
+        assertTrue(info.buffered >= 0);
+        assertTrue(info.stats.out_msgs >= 0);
+
+        conn.close();
+    }
+
+    connectionOptionsExtendedTest() {
+        # Test connection with extended options
+        NatsConnection conn(cast<hash<NatsConnectionOptions>>({
+            "url": url,
+            "send_asap": True,
+            "custom_inbox_prefix": "_TEST_INBOX",
+        }));
+        assertTrue(conn.isConnected());
+
+        # Verify pub/sub works with custom inbox prefix and send_asap
+        NatsSubscription nsub = conn.subscribe("test.opts.ext");
+        conn.publish("test.opts.ext", binary("extended-opts"));
+        *hash<NatsMsgInfo> msg = nsub.nextMsg(5s);
+        assertEq("test.opts.ext", msg.subject);
+        assertEq("extended-opts", msg.data.toString());
+
+        # Test no_echo: publisher should not see its own messages
+        NatsConnection conn2(cast<hash<NatsConnectionOptions>>({
+            "url": url,
+            "no_echo": True,
+        }));
+        NatsSubscription nsub2 = conn2.subscribe("test.opts.noecho");
+        conn2.publish("test.opts.noecho", binary("echo-test"));
+        *hash<NatsMsgInfo> echo_msg = nsub2.nextMsg(1s);
+        # With no_echo, should not receive own message
+        assertNothing(echo_msg);
+
+        conn.close();
+        conn2.close();
     }
 }

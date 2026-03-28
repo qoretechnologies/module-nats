@@ -226,6 +226,173 @@ int QoreNatsConnection::configureOptions(const QoreHashNode* options, ExceptionS
         }
     }
 
+    // Multiple server URLs
+    v = options->getKeyValue("servers");
+    if (v.getType() == NT_LIST) {
+        const QoreListNode* servers = v.get<const QoreListNode>();
+        int count = (int)servers->size();
+        if (count > 0) {
+            const char** srv_arr = (const char**)malloc(sizeof(const char*) * count);
+            if (!srv_arr) {
+                xsink->raiseException("NATS-CONNECTION-ERROR",
+                    "memory allocation failed for %d servers", count);
+                return -1;
+            }
+            for (int i = 0; i < count; ++i) {
+                QoreValue sv = servers->retrieveEntry(i);
+                srv_arr[i] = sv.getType() == NT_STRING
+                    ? sv.get<const QoreStringNode>()->c_str() : "";
+            }
+            // Sandbox check each server URL
+            for (int i = 0; i < count; ++i) {
+                if (srv_arr[i][0] && check_nats_network_access(srv_arr[i], xsink)) {
+                    free(srv_arr);
+                    return -1;
+                }
+            }
+            s = natsOptions_SetServers(opts, srv_arr, count);
+            free(srv_arr);
+            if (s != NATS_OK) {
+                nats_error(xsink, "NATS-CONNECTION-ERROR", s, "failed to set servers");
+                return -1;
+            }
+        }
+    }
+
+    // No echo
+    v = options->getKeyValue("no_echo");
+    if (v.getType() == NT_BOOLEAN) {
+        s = natsOptions_SetNoEcho(opts, v.getAsBool());
+        if (s != NATS_OK) {
+            nats_error(xsink, "NATS-CONNECTION-ERROR", s, "failed to set no echo");
+            return -1;
+        }
+    }
+
+    // Send as soon as possible (low-latency mode)
+    v = options->getKeyValue("send_asap");
+    if (v.getType() == NT_BOOLEAN) {
+        s = natsOptions_SetSendAsap(opts, v.getAsBool());
+        if (s != NATS_OK) {
+            nats_error(xsink, "NATS-CONNECTION-ERROR", s, "failed to set send asap");
+            return -1;
+        }
+    }
+
+    // Allow reconnect
+    v = options->getKeyValue("allow_reconnect");
+    if (v.getType() == NT_BOOLEAN) {
+        s = natsOptions_SetAllowReconnect(opts, v.getAsBool());
+        if (s != NATS_OK) {
+            nats_error(xsink, "NATS-CONNECTION-ERROR", s, "failed to set allow reconnect");
+            return -1;
+        }
+    }
+
+    // Reconnect jitter
+    {
+        QoreValue jitter = options->getKeyValue("reconnect_jitter_ms");
+        QoreValue jitterTls = options->getKeyValue("reconnect_jitter_tls_ms");
+        if (jitter.getType() == NT_INT || jitterTls.getType() == NT_INT) {
+            s = natsOptions_SetReconnectJitter(opts,
+                jitter.getType() == NT_INT ? jitter.getAsBigInt() : 0,
+                jitterTls.getType() == NT_INT ? jitterTls.getAsBigInt() : 0);
+            if (s != NATS_OK) {
+                nats_error(xsink, "NATS-CONNECTION-ERROR", s,
+                    "failed to set reconnect jitter");
+                return -1;
+            }
+        }
+    }
+
+    // Reconnect buffer size
+    v = options->getKeyValue("reconnect_buf_size");
+    if (v.getType() == NT_INT) {
+        s = natsOptions_SetReconnectBufSize(opts, (int)v.getAsBigInt());
+        if (s != NATS_OK) {
+            nats_error(xsink, "NATS-CONNECTION-ERROR", s,
+                "failed to set reconnect buffer size");
+            return -1;
+        }
+    }
+
+    // Max pending messages
+    v = options->getKeyValue("max_pending_msgs");
+    if (v.getType() == NT_INT) {
+        s = natsOptions_SetMaxPendingMsgs(opts, (int)v.getAsBigInt());
+        if (s != NATS_OK) {
+            nats_error(xsink, "NATS-CONNECTION-ERROR", s,
+                "failed to set max pending messages");
+            return -1;
+        }
+    }
+
+    // Max pending bytes
+    v = options->getKeyValue("max_pending_bytes");
+    if (v.getType() == NT_INT) {
+        s = natsOptions_SetMaxPendingBytes(opts, v.getAsBigInt());
+        if (s != NATS_OK) {
+            nats_error(xsink, "NATS-CONNECTION-ERROR", s,
+                "failed to set max pending bytes");
+            return -1;
+        }
+    }
+
+    // Fail requests on disconnect
+    v = options->getKeyValue("fail_requests_on_disconnect");
+    if (v.getType() == NT_BOOLEAN) {
+        s = natsOptions_SetFailRequestsOnDisconnect(opts, v.getAsBool());
+        if (s != NATS_OK) {
+            nats_error(xsink, "NATS-CONNECTION-ERROR", s,
+                "failed to set fail requests on disconnect");
+            return -1;
+        }
+    }
+
+    // IP resolution order
+    v = options->getKeyValue("ip_resolution_order");
+    if (v.getType() == NT_INT) {
+        s = natsOptions_IPResolutionOrder(opts, (int)v.getAsBigInt());
+        if (s != NATS_OK) {
+            nats_error(xsink, "NATS-CONNECTION-ERROR", s,
+                "failed to set IP resolution order");
+            return -1;
+        }
+    }
+
+    // Write deadline
+    v = options->getKeyValue("write_deadline_ms");
+    if (v.getType() == NT_INT) {
+        s = natsOptions_SetWriteDeadline(opts, v.getAsBigInt());
+        if (s != NATS_OK) {
+            nats_error(xsink, "NATS-CONNECTION-ERROR", s,
+                "failed to set write deadline");
+            return -1;
+        }
+    }
+
+    // Disable no responders
+    v = options->getKeyValue("disable_no_responders");
+    if (v.getType() == NT_BOOLEAN) {
+        s = natsOptions_DisableNoResponders(opts, v.getAsBool());
+        if (s != NATS_OK) {
+            nats_error(xsink, "NATS-CONNECTION-ERROR", s,
+                "failed to disable no responders");
+            return -1;
+        }
+    }
+
+    // Custom inbox prefix
+    v = options->getKeyValue("custom_inbox_prefix");
+    if (v.getType() == NT_STRING) {
+        s = natsOptions_SetCustomInboxPrefix(opts, v.get<const QoreStringNode>()->c_str());
+        if (s != NATS_OK) {
+            nats_error(xsink, "NATS-CONNECTION-ERROR", s,
+                "failed to set custom inbox prefix");
+            return -1;
+        }
+    }
+
     // TLS options
     v = options->getKeyValue("tls");
     if (v.getType() == NT_HASH) {
@@ -275,6 +442,49 @@ int QoreNatsConnection::configureOptions(const QoreHashNode* options, ExceptionS
             if (s != NATS_OK) {
                 nats_error(xsink, "NATS-TLS-ERROR", s,
                     "failed to set skip server verification");
+                return -1;
+            }
+        }
+
+        // TLS cipher list (TLSv1.2 and below)
+        QoreValue ciphers = tls->getKeyValue("ciphers");
+        if (ciphers.getType() == NT_STRING) {
+            s = natsOptions_SetCiphers(opts, ciphers.get<const QoreStringNode>()->c_str());
+            if (s != NATS_OK) {
+                nats_error(xsink, "NATS-TLS-ERROR", s, "failed to set TLS ciphers");
+                return -1;
+            }
+        }
+
+        // TLS cipher suites (TLSv1.3)
+        QoreValue suites = tls->getKeyValue("cipher_suites");
+        if (suites.getType() == NT_STRING) {
+            s = natsOptions_SetCipherSuites(opts, suites.get<const QoreStringNode>()->c_str());
+            if (s != NATS_OK) {
+                nats_error(xsink, "NATS-TLS-ERROR", s, "failed to set TLS cipher suites");
+                return -1;
+            }
+        }
+
+        // Expected hostname in server certificate
+        QoreValue hostname = tls->getKeyValue("expected_hostname");
+        if (hostname.getType() == NT_STRING) {
+            s = natsOptions_SetExpectedHostname(opts,
+                hostname.get<const QoreStringNode>()->c_str());
+            if (s != NATS_OK) {
+                nats_error(xsink, "NATS-TLS-ERROR", s,
+                    "failed to set expected hostname");
+                return -1;
+            }
+        }
+
+        // TLS handshake first
+        QoreValue hsfirst = tls->getKeyValue("tls_handshake_first");
+        if (hsfirst.getType() == NT_BOOLEAN && hsfirst.getAsBool()) {
+            s = natsOptions_TLSHandshakeFirst(opts);
+            if (s != NATS_OK) {
+                nats_error(xsink, "NATS-TLS-ERROR", s,
+                    "failed to set TLS handshake first");
                 return -1;
             }
         }
@@ -518,4 +728,442 @@ int QoreNatsConnection::status() const {
         return NATS_CONN_STATUS_CLOSED;
     }
     return natsConnection_Status(conn);
+}
+
+QoreStringNode* QoreNatsConnection::getConnectedUrl(ExceptionSink* xsink) {
+    if (!conn) {
+        xsink->raiseException("NATS-CONNECTION-ERROR", "not connected");
+        return nullptr;
+    }
+    char buf[512];
+    natsStatus s = natsConnection_GetConnectedUrl(conn, buf, sizeof(buf));
+    if (s != NATS_OK) {
+        nats_error(xsink, "NATS-CONNECTION-ERROR", s, "failed to get connected URL");
+        return nullptr;
+    }
+    return new QoreStringNode(buf);
+}
+
+QoreStringNode* QoreNatsConnection::getServerId(ExceptionSink* xsink) {
+    if (!conn) {
+        xsink->raiseException("NATS-CONNECTION-ERROR", "not connected");
+        return nullptr;
+    }
+    char buf[256];
+    natsStatus s = natsConnection_GetConnectedServerId(conn, buf, sizeof(buf));
+    if (s != NATS_OK) {
+        return nullptr;
+    }
+    return new QoreStringNode(buf);
+}
+
+int64 QoreNatsConnection::getClientId(ExceptionSink* xsink) {
+    if (!conn) {
+        xsink->raiseException("NATS-CONNECTION-ERROR", "not connected");
+        return -1;
+    }
+    uint64_t cid = 0;
+    natsStatus s = natsConnection_GetClientID(conn, &cid);
+    if (s != NATS_OK) {
+        nats_error(xsink, "NATS-CONNECTION-ERROR", s, "failed to get client ID");
+        return -1;
+    }
+    return (int64)cid;
+}
+
+QoreStringNode* QoreNatsConnection::getClientIp(ExceptionSink* xsink) {
+    if (!conn) {
+        xsink->raiseException("NATS-CONNECTION-ERROR", "not connected");
+        return nullptr;
+    }
+    char* ip = nullptr;
+    natsStatus s = natsConnection_GetClientIP(conn, &ip);
+    if (s != NATS_OK || !ip) {
+        return nullptr;
+    }
+    QoreStringNode* rv = new QoreStringNode(ip);
+    free(ip);
+    return rv;
+}
+
+QoreValue QoreNatsConnection::getRtt(ExceptionSink* xsink) {
+    if (!conn) {
+        xsink->raiseException("NATS-CONNECTION-ERROR", "not connected");
+        return QoreValue();
+    }
+    int64_t rtt_ns = 0;
+    natsStatus s = natsConnection_GetRTT(conn, &rtt_ns);
+    if (s != NATS_OK) {
+        return QoreValue();
+    }
+    return QoreValue(rtt_ns / 1000000LL);
+}
+
+int64 QoreNatsConnection::getMaxPayload(ExceptionSink* xsink) {
+    if (!conn) {
+        xsink->raiseException("NATS-CONNECTION-ERROR", "not connected");
+        return -1;
+    }
+    return (int64)natsConnection_GetMaxPayload(conn);
+}
+
+bool QoreNatsConnection::hasHeaderSupport(ExceptionSink* xsink) {
+    if (!conn) {
+        xsink->raiseException("NATS-CONNECTION-ERROR", "not connected");
+        return false;
+    }
+    return natsConnection_HasHeaderSupport(conn) == NATS_OK;
+}
+
+QoreHashNode* QoreNatsConnection::getLocalIpAndPort(ExceptionSink* xsink) {
+    if (!conn) {
+        xsink->raiseException("NATS-CONNECTION-ERROR", "not connected");
+        return nullptr;
+    }
+    char* ip = nullptr;
+    int port = 0;
+    natsStatus s = natsConnection_GetLocalIPAndPort(conn, &ip, &port);
+    if (s != NATS_OK) {
+        nats_error(xsink, "NATS-CONNECTION-ERROR", s,
+            "failed to get local IP and port");
+        return nullptr;
+    }
+    ReferenceHolder<QoreHashNode> h(new QoreHashNode(autoTypeInfo), xsink);
+    if (ip) {
+        h->setKeyValue("ip", new QoreStringNode(ip), xsink);
+        free(ip);
+        if (*xsink) {
+            return nullptr;
+        }
+    }
+    if (!*xsink) {
+        h->setKeyValue("port", (int64)port, xsink);
+    }
+    if (*xsink) {
+        return nullptr;
+    }
+    return h.release();
+}
+
+bool QoreNatsConnection::isReconnecting() const {
+    if (!conn) {
+        return false;
+    }
+    return natsConnection_IsReconnecting(conn);
+}
+
+bool QoreNatsConnection::isDraining() const {
+    if (!conn) {
+        return false;
+    }
+    return natsConnection_IsDraining(conn);
+}
+
+int QoreNatsConnection::buffered() const {
+    if (!conn) {
+        return 0;
+    }
+    return natsConnection_Buffered(conn);
+}
+
+QoreHashNode* QoreNatsConnection::getStats(ExceptionSink* xsink) {
+    if (!conn) {
+        xsink->raiseException("NATS-CONNECTION-ERROR", "not connected");
+        return nullptr;
+    }
+    if (qore_check_cancel(xsink)) {
+        return nullptr;
+    }
+    natsStatistics* stats = nullptr;
+    natsStatus s = natsStatistics_Create(&stats);
+    if (s != NATS_OK) {
+        nats_error(xsink, "NATS-CONNECTION-ERROR", s, "failed to create statistics");
+        return nullptr;
+    }
+
+    s = natsConnection_GetStats(conn, stats);
+    if (s != NATS_OK) {
+        natsStatistics_Destroy(stats);
+        nats_error(xsink, "NATS-CONNECTION-ERROR", s, "failed to get statistics");
+        return nullptr;
+    }
+
+    uint64_t inMsgs = 0, inBytes = 0, outMsgs = 0, outBytes = 0, reconnects = 0;
+    s = natsStatistics_GetCounts(stats, &inMsgs, &inBytes, &outMsgs, &outBytes, &reconnects);
+    natsStatistics_Destroy(stats);
+    if (s != NATS_OK) {
+        nats_error(xsink, "NATS-CONNECTION-ERROR", s, "failed to get statistics counts");
+        return nullptr;
+    }
+
+    ReferenceHolder<QoreHashNode> h(new QoreHashNode(hashdeclNatsConnectionStats, xsink), xsink);
+    if (*xsink) {
+        return nullptr;
+    }
+    h->setKeyValue("in_msgs", (int64)inMsgs, xsink);
+    if (!*xsink) {
+        h->setKeyValue("in_bytes", (int64)inBytes, xsink);
+    }
+    if (!*xsink) {
+        h->setKeyValue("out_msgs", (int64)outMsgs, xsink);
+    }
+    if (!*xsink) {
+        h->setKeyValue("out_bytes", (int64)outBytes, xsink);
+    }
+    if (!*xsink) {
+        h->setKeyValue("reconnects", (int64)reconnects, xsink);
+    }
+    if (*xsink) {
+        return nullptr;
+    }
+    return h.release();
+}
+
+static QoreListNode* nats_server_list_to_qore(char** servers, int count, ExceptionSink* xsink) {
+    ReferenceHolder<QoreListNode> list(new QoreListNode(stringTypeInfo), xsink);
+    for (int i = 0; i < count; ++i) {
+        list->push(new QoreStringNode(servers[i]), xsink);
+        free(servers[i]);
+        if (*xsink) {
+            // Free remaining strings
+            for (int j = i + 1; j < count; ++j) {
+                free(servers[j]);
+            }
+            free(servers);
+            return nullptr;
+        }
+    }
+    free(servers);
+    return list.release();
+}
+
+QoreListNode* QoreNatsConnection::getServers(ExceptionSink* xsink) {
+    if (!conn) {
+        xsink->raiseException("NATS-CONNECTION-ERROR", "not connected");
+        return nullptr;
+    }
+    if (qore_check_cancel(xsink)) {
+        return nullptr;
+    }
+    char** servers = nullptr;
+    int count = 0;
+    natsStatus s = natsConnection_GetServers(conn, &servers, &count);
+    if (s != NATS_OK) {
+        nats_error(xsink, "NATS-CONNECTION-ERROR", s, "failed to get servers");
+        return nullptr;
+    }
+    if (!servers || count == 0) {
+        if (servers) {
+            free(servers);
+        }
+        return new QoreListNode(stringTypeInfo);
+    }
+    return nats_server_list_to_qore(servers, count, xsink);
+}
+
+QoreListNode* QoreNatsConnection::getDiscoveredServers(ExceptionSink* xsink) {
+    if (!conn) {
+        xsink->raiseException("NATS-CONNECTION-ERROR", "not connected");
+        return nullptr;
+    }
+    if (qore_check_cancel(xsink)) {
+        return nullptr;
+    }
+    char** servers = nullptr;
+    int count = 0;
+    natsStatus s = natsConnection_GetDiscoveredServers(conn, &servers, &count);
+    if (s != NATS_OK) {
+        nats_error(xsink, "NATS-CONNECTION-ERROR", s, "failed to get discovered servers");
+        return nullptr;
+    }
+    if (!servers || count == 0) {
+        if (servers) {
+            free(servers);
+        }
+        return new QoreListNode(stringTypeInfo);
+    }
+    return nats_server_list_to_qore(servers, count, xsink);
+}
+
+int QoreNatsConnection::reconnect(ExceptionSink* xsink) {
+    if (!conn) {
+        xsink->raiseException("NATS-CONNECTION-ERROR", "not connected");
+        return -1;
+    }
+    if (qore_check_cancel(xsink)) {
+        return -1;
+    }
+    natsStatus s = natsConnection_Reconnect(conn);
+    if (s != NATS_OK) {
+        nats_error(xsink, "NATS-CONNECTION-ERROR", s, "failed to reconnect");
+        return -1;
+    }
+    return 0;
+}
+
+QoreHashNode* QoreNatsConnection::getConnectionInfo(ExceptionSink* xsink) {
+    if (!conn) {
+        xsink->raiseException("NATS-CONNECTION-ERROR", "not connected");
+        return nullptr;
+    }
+    if (qore_check_cancel(xsink)) {
+        return nullptr;
+    }
+
+    ReferenceHolder<QoreHashNode> h(new QoreHashNode(hashdeclNatsConnectionInfo, xsink), xsink);
+    if (*xsink) {
+        return nullptr;
+    }
+
+    // connected_url
+    char url_buf[512];
+    if (natsConnection_GetConnectedUrl(conn, url_buf, sizeof(url_buf)) == NATS_OK) {
+        h->setKeyValue("connected_url", new QoreStringNode(url_buf), xsink);
+        if (*xsink) {
+            return nullptr;
+        }
+    }
+
+    // server_id
+    char id_buf[256];
+    if (natsConnection_GetConnectedServerId(conn, id_buf, sizeof(id_buf)) == NATS_OK) {
+        h->setKeyValue("server_id", new QoreStringNode(id_buf), xsink);
+        if (*xsink) {
+            return nullptr;
+        }
+    }
+
+    // client_id
+    uint64_t cid = 0;
+    if (natsConnection_GetClientID(conn, &cid) == NATS_OK) {
+        h->setKeyValue("client_id", (int64)cid, xsink);
+        if (*xsink) {
+            return nullptr;
+        }
+    }
+
+    // client_ip
+    {
+        char* ip = nullptr;
+        if (natsConnection_GetClientIP(conn, &ip) == NATS_OK && ip) {
+            h->setKeyValue("client_ip", new QoreStringNode(ip), xsink);
+            free(ip);
+            if (*xsink) {
+                return nullptr;
+            }
+        }
+    }
+
+    // rtt_ms
+    {
+        int64_t rtt_ns = 0;
+        if (natsConnection_GetRTT(conn, &rtt_ns) == NATS_OK) {
+            h->setKeyValue("rtt_ms", (int64)(rtt_ns / 1000000LL), xsink);
+            if (*xsink) {
+                return nullptr;
+            }
+        }
+    }
+
+    // max_payload
+    if (!*xsink) {
+        h->setKeyValue("max_payload", (int64)natsConnection_GetMaxPayload(conn), xsink);
+    }
+
+    // has_header_support
+    if (!*xsink) {
+        h->setKeyValue("has_header_support",
+            natsConnection_HasHeaderSupport(conn) == NATS_OK, xsink);
+    }
+
+    // local_ip + local_port
+    {
+        char* lip = nullptr;
+        int lport = 0;
+        if (natsConnection_GetLocalIPAndPort(conn, &lip, &lport) == NATS_OK) {
+            if (lip) {
+                h->setKeyValue("local_ip", new QoreStringNode(lip), xsink);
+                free(lip);
+                if (*xsink) {
+                    return nullptr;
+                }
+            }
+            if (!*xsink) {
+                h->setKeyValue("local_port", (int64)lport, xsink);
+            }
+        }
+    }
+
+    // is_reconnecting
+    if (!*xsink) {
+        h->setKeyValue("is_reconnecting", natsConnection_IsReconnecting(conn), xsink);
+    }
+
+    // is_draining
+    if (!*xsink) {
+        h->setKeyValue("is_draining", natsConnection_IsDraining(conn), xsink);
+    }
+
+    // buffered
+    if (!*xsink) {
+        h->setKeyValue("buffered", (int64)natsConnection_Buffered(conn), xsink);
+    }
+
+    if (*xsink) {
+        return nullptr;
+    }
+
+    // servers
+    {
+        char** srvs = nullptr;
+        int cnt = 0;
+        if (natsConnection_GetServers(conn, &srvs, &cnt) == NATS_OK && srvs) {
+            if (cnt > 0) {
+                QoreListNode* srv_list = nats_server_list_to_qore(srvs, cnt, xsink);
+                if (*xsink) {
+                    return nullptr;
+                }
+                h->setKeyValue("servers", srv_list, xsink);
+                if (*xsink) {
+                    return nullptr;
+                }
+            } else {
+                free(srvs);
+            }
+        }
+    }
+
+    // discovered_servers
+    {
+        char** dsrvs = nullptr;
+        int dcnt = 0;
+        if (natsConnection_GetDiscoveredServers(conn, &dsrvs, &dcnt) == NATS_OK && dsrvs) {
+            if (dcnt > 0) {
+                QoreListNode* dsrv_list = nats_server_list_to_qore(dsrvs, dcnt, xsink);
+                if (*xsink) {
+                    return nullptr;
+                }
+                h->setKeyValue("discovered_servers", dsrv_list, xsink);
+                if (*xsink) {
+                    return nullptr;
+                }
+            } else {
+                free(dsrvs);
+            }
+        }
+    }
+
+    // stats
+    {
+        QoreHashNode* stats = getStats(xsink);
+        if (*xsink) {
+            return nullptr;
+        }
+        h->setKeyValue("stats", stats, xsink);
+        if (*xsink) {
+            return nullptr;
+        }
+    }
+
+    return h.release();
 }

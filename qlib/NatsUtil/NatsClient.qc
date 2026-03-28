@@ -152,6 +152,20 @@ public class NatsClient {
         return csub;
     }
 
+    #! Returns connection statistics
+    /** @return a @ref NatsConnectionStats hash with message and byte counts
+    */
+    hash<NatsConnectionStats> getStats() {
+        return conn.getStats();
+    }
+
+    #! Returns comprehensive connection information
+    /** @return a @ref NatsConnectionInfo hash with all connection details
+    */
+    hash<NatsConnectionInfo> getConnectionInfo() {
+        return conn.getConnectionInfo();
+    }
+
     #! Returns True if the connection is active
     bool isConnected() {
         return conn.isConnected();

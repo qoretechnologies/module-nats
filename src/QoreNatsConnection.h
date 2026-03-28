@@ -79,6 +79,54 @@ public:
     //! Get connection status
     DLLLOCAL int status() const;
 
+    //! Get the URL of the currently connected server
+    DLLLOCAL QoreStringNode* getConnectedUrl(ExceptionSink* xsink);
+
+    //! Get the server ID
+    DLLLOCAL QoreStringNode* getServerId(ExceptionSink* xsink);
+
+    //! Get the client ID assigned by the server
+    DLLLOCAL int64 getClientId(ExceptionSink* xsink);
+
+    //! Get the client IP as seen by the server
+    DLLLOCAL QoreStringNode* getClientIp(ExceptionSink* xsink);
+
+    //! Get round-trip time to the server in milliseconds
+    DLLLOCAL QoreValue getRtt(ExceptionSink* xsink);
+
+    //! Get maximum payload size allowed by the server
+    DLLLOCAL int64 getMaxPayload(ExceptionSink* xsink);
+
+    //! Check if the server supports message headers
+    DLLLOCAL bool hasHeaderSupport(ExceptionSink* xsink);
+
+    //! Get the local IP and port used for the connection
+    DLLLOCAL QoreHashNode* getLocalIpAndPort(ExceptionSink* xsink);
+
+    //! Check if the connection is reconnecting
+    DLLLOCAL bool isReconnecting() const;
+
+    //! Check if the connection is draining
+    DLLLOCAL bool isDraining() const;
+
+    //! Get the number of bytes buffered for write
+    DLLLOCAL int buffered() const;
+
+    //! Get connection statistics
+    DLLLOCAL QoreHashNode* getStats(ExceptionSink* xsink);
+
+    //! Get list of known server URLs
+    DLLLOCAL QoreListNode* getServers(ExceptionSink* xsink);
+
+    //! Get list of discovered server URLs
+    DLLLOCAL QoreListNode* getDiscoveredServers(ExceptionSink* xsink);
+
+    //! Force reconnect to another server
+    DLLLOCAL int reconnect(ExceptionSink* xsink);
+
+    //! Get comprehensive connection info
+    DLLLOCAL QoreHashNode* getConnectionInfo(ExceptionSink* xsink);
+
     //! Get the raw natsConnection pointer
     DLLLOCAL natsConnection* getConnection() const { return conn; }
 
