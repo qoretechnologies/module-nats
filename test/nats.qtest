@@ -92,6 +92,9 @@ public class NatsTest inherits QUnit::Test {
         # Subscription stats tests
         addTestCase("subscription stats test", \subscriptionStatsTest());
 
+        # Connection callback tests
+        addTestCase("connection closed callback test", \closedCallbackTest());
+
         # Negative tests
         addTestCase("publish on closed connection test", \publishClosedTest());
         addTestCase("invalid subject test", \invalidSubjectTest());
@@ -701,6 +704,29 @@ public class NatsTest inherits QUnit::Test {
 
         nsub.unsubscribe();
         conn.close();
+    }
+
+    # --- Connection callback tests ---
+
+    closedCallbackTest() {
+        Sequence seq();
+
+        NatsConnection conn(cast<hash<NatsConnectionOptions>>({
+            "url": url,
+            "on_closed": sub () { seq.next(); },
+        }));
+        assertTrue(conn.isConnected());
+
+        # Close triggers on_closed callback from nats.c thread
+        conn.close();
+
+        # Give the callback thread time to run
+        int count = 0;
+        while (seq.getCurrent() == 0 && count < 50) {
+            usleep(100000);  # 100ms
+            ++count;
+        }
+        assertTrue(seq.getCurrent() > 0);
     }
 
     # --- Negative tests ---

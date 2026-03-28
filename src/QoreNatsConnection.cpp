@@ -52,7 +52,8 @@ QoreNatsConnection::QoreNatsConnection(const char* url, ExceptionSink* xsink) {
     }
 }
 
-QoreNatsConnection::QoreNatsConnection(const QoreHashNode* options, ExceptionSink* xsink) {
+QoreNatsConnection::QoreNatsConnection(const QoreHashNode* options, QoreProgram* pgm,
+        ExceptionSink* xsink) {
     natsStatus s = natsOptions_Create(&opts);
     if (s != NATS_OK) {
         nats_error(xsink, "NATS-CONNECTION-ERROR", s, "failed to create NATS options");
@@ -60,6 +61,11 @@ QoreNatsConnection::QoreNatsConnection(const QoreHashNode* options, ExceptionSin
     }
 
     if (configureOptions(options, xsink)) {
+        return;
+    }
+
+    // Setup callbacks (must be done before connect, requires QoreProgram)
+    if (setupCallbacks(options, pgm, xsink)) {
         return;
     }
 
@@ -85,6 +91,12 @@ QoreNatsConnection::~QoreNatsConnection() {
     if (opts) {
         natsOptions_Destroy(opts);
         opts = nullptr;
+    }
+    if (cb_ctx) {
+        ExceptionSink xsink;
+        cb_ctx->cleanup(&xsink);
+        delete cb_ctx;
+        cb_ctx = nullptr;
     }
 }
 
@@ -491,6 +503,173 @@ int QoreNatsConnection::configureOptions(const QoreHashNode* options, ExceptionS
     }
 
     return 0;
+}
+
+// Helper to extract a ResolvedCallReferenceNode from a hash value
+static ResolvedCallReferenceNode* extract_callback(const QoreHashNode* opts,
+        const char* key) {
+    QoreValue v = opts->getKeyValue(key);
+    if (v.getType() == NT_FUNCREF || v.getType() == NT_RUNTIME_CLOSURE) {
+        return dynamic_cast<ResolvedCallReferenceNode*>(v.getInternalNode());
+    }
+    return nullptr;
+}
+
+int QoreNatsConnection::setupCallbacks(const QoreHashNode* options, QoreProgram* pgm,
+        ExceptionSink* xsink) {
+    // Check if any callbacks are provided
+    ResolvedCallReferenceNode* disc = extract_callback(options, "on_disconnect");
+    ResolvedCallReferenceNode* recon = extract_callback(options, "on_reconnect");
+    ResolvedCallReferenceNode* closed = extract_callback(options, "on_closed");
+    ResolvedCallReferenceNode* err = extract_callback(options, "on_error");
+    ResolvedCallReferenceNode* lame = extract_callback(options, "on_lame_duck");
+    ResolvedCallReferenceNode* discovered = extract_callback(options, "on_discovered_servers");
+
+    if (!disc && !recon && !closed && !err && !lame && !discovered) {
+        return 0;  // No callbacks
+    }
+
+    // Create callback context
+    cb_ctx = new NatsCallbackContext();
+    cb_ctx->pgm = pgm;
+    if (cb_ctx->pgm) {
+        cb_ctx->pgm->ref();
+    }
+
+    natsStatus s;
+
+    if (disc) {
+        cb_ctx->on_disconnect = disc->refRefSelf();
+        s = natsOptions_SetDisconnectedCB(opts, disconnectHandler, cb_ctx);
+        if (s != NATS_OK) {
+            nats_error(xsink, "NATS-CONNECTION-ERROR", s,
+                "failed to set disconnect callback");
+            return -1;
+        }
+    }
+
+    if (recon) {
+        cb_ctx->on_reconnect = recon->refRefSelf();
+        s = natsOptions_SetReconnectedCB(opts, reconnectHandler, cb_ctx);
+        if (s != NATS_OK) {
+            nats_error(xsink, "NATS-CONNECTION-ERROR", s,
+                "failed to set reconnect callback");
+            return -1;
+        }
+    }
+
+    if (closed) {
+        cb_ctx->on_closed = closed->refRefSelf();
+        s = natsOptions_SetClosedCB(opts, closedHandler, cb_ctx);
+        if (s != NATS_OK) {
+            nats_error(xsink, "NATS-CONNECTION-ERROR", s,
+                "failed to set closed callback");
+            return -1;
+        }
+    }
+
+    if (err) {
+        cb_ctx->on_error = err->refRefSelf();
+        s = natsOptions_SetErrorHandler(opts, errorHandler, cb_ctx);
+        if (s != NATS_OK) {
+            nats_error(xsink, "NATS-CONNECTION-ERROR", s,
+                "failed to set error handler");
+            return -1;
+        }
+    }
+
+    if (lame) {
+        cb_ctx->on_lame_duck = lame->refRefSelf();
+        s = natsOptions_SetLameDuckModeCB(opts, lameDuckHandler, cb_ctx);
+        if (s != NATS_OK) {
+            nats_error(xsink, "NATS-CONNECTION-ERROR", s,
+                "failed to set lame duck callback");
+            return -1;
+        }
+    }
+
+    if (discovered) {
+        cb_ctx->on_discovered_servers = discovered->refRefSelf();
+        s = natsOptions_SetDiscoveredServersCB(opts, discoveredServersHandler, cb_ctx);
+        if (s != NATS_OK) {
+            nats_error(xsink, "NATS-CONNECTION-ERROR", s,
+                "failed to set discovered servers callback");
+            return -1;
+        }
+    }
+
+    return 0;
+}
+
+void QoreNatsConnection::execCallback(ResolvedCallReferenceNode* cb,
+        QoreProgram* pgm, QoreListNode* args) {
+    if (!cb || !pgm) {
+        return;
+    }
+    // Register this (nats.c) thread with the Qore runtime
+    QoreForeignThreadHelper fth;
+
+    ExceptionSink xsink;
+    QoreExternalProgramContextHelper pch(&xsink, pgm);
+    if (!xsink) {
+        if (args) {
+            cb->execValue(args, &xsink).discard(&xsink);
+        } else {
+            ReferenceHolder<QoreListNode> empty_args(new QoreListNode(autoTypeInfo), &xsink);
+            cb->execValue(*empty_args, &xsink).discard(&xsink);
+        }
+    }
+    // Exceptions from callbacks cannot be propagated - just clear them
+    if (xsink) {
+        xsink.clear();
+    }
+}
+
+void QoreNatsConnection::disconnectHandler(natsConnection* nc, void* closure) {
+    NatsCallbackContext* ctx = static_cast<NatsCallbackContext*>(closure);
+    execCallback(ctx->on_disconnect, ctx->pgm);
+}
+
+void QoreNatsConnection::reconnectHandler(natsConnection* nc, void* closure) {
+    NatsCallbackContext* ctx = static_cast<NatsCallbackContext*>(closure);
+    execCallback(ctx->on_reconnect, ctx->pgm);
+}
+
+void QoreNatsConnection::closedHandler(natsConnection* nc, void* closure) {
+    NatsCallbackContext* ctx = static_cast<NatsCallbackContext*>(closure);
+    execCallback(ctx->on_closed, ctx->pgm);
+}
+
+void QoreNatsConnection::errorHandler(natsConnection* nc, natsSubscription* sub,
+        natsStatus err, void* closure) {
+    NatsCallbackContext* ctx = static_cast<NatsCallbackContext*>(closure);
+    if (!ctx->on_error || !ctx->pgm) {
+        return;
+    }
+    QoreForeignThreadHelper fth;
+
+    ExceptionSink xsink;
+    QoreExternalProgramContextHelper pch(&xsink, ctx->pgm);
+    if (!xsink) {
+        ReferenceHolder<QoreListNode> args(new QoreListNode(autoTypeInfo), &xsink);
+        args->push(new QoreStringNode(natsStatus_GetText(err)), &xsink);
+        if (!xsink) {
+            ctx->on_error->execValue(*args, &xsink).discard(&xsink);
+        }
+    }
+    if (xsink) {
+        xsink.clear();
+    }
+}
+
+void QoreNatsConnection::lameDuckHandler(natsConnection* nc, void* closure) {
+    NatsCallbackContext* ctx = static_cast<NatsCallbackContext*>(closure);
+    execCallback(ctx->on_lame_duck, ctx->pgm);
+}
+
+void QoreNatsConnection::discoveredServersHandler(natsConnection* nc, void* closure) {
+    NatsCallbackContext* ctx = static_cast<NatsCallbackContext*>(closure);
+    execCallback(ctx->on_discovered_servers, ctx->pgm);
 }
 
 int QoreNatsConnection::publish(const char* subject, const void* data, int data_len,

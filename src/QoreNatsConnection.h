@@ -30,6 +30,27 @@
 #include "nats-module.h"
 #include "NatsHelper.h"
 
+//! Callback context for bridging nats.c callbacks to Qore closures
+struct NatsCallbackContext {
+    ResolvedCallReferenceNode* on_disconnect = nullptr;
+    ResolvedCallReferenceNode* on_reconnect = nullptr;
+    ResolvedCallReferenceNode* on_closed = nullptr;
+    ResolvedCallReferenceNode* on_error = nullptr;
+    ResolvedCallReferenceNode* on_lame_duck = nullptr;
+    ResolvedCallReferenceNode* on_discovered_servers = nullptr;
+    QoreProgram* pgm = nullptr;
+
+    DLLLOCAL void cleanup(ExceptionSink* xsink) {
+        if (on_disconnect) { on_disconnect->deref(xsink); on_disconnect = nullptr; }
+        if (on_reconnect) { on_reconnect->deref(xsink); on_reconnect = nullptr; }
+        if (on_closed) { on_closed->deref(xsink); on_closed = nullptr; }
+        if (on_error) { on_error->deref(xsink); on_error = nullptr; }
+        if (on_lame_duck) { on_lame_duck->deref(xsink); on_lame_duck = nullptr; }
+        if (on_discovered_servers) { on_discovered_servers->deref(xsink); on_discovered_servers = nullptr; }
+        if (pgm) { pgm->deref(xsink); pgm = nullptr; }
+    }
+};
+
 //! C++ wrapper for natsConnection + natsOptions
 class QoreNatsConnection : public AbstractPrivateData {
 public:
@@ -37,7 +58,8 @@ public:
     DLLLOCAL QoreNatsConnection(const char* url, ExceptionSink* xsink);
 
     //! Constructor with options hash
-    DLLLOCAL QoreNatsConnection(const QoreHashNode* opts, ExceptionSink* xsink);
+    DLLLOCAL QoreNatsConnection(const QoreHashNode* opts, QoreProgram* pgm,
+        ExceptionSink* xsink);
 
     //! Destructor
     DLLLOCAL virtual ~QoreNatsConnection();
@@ -133,9 +155,27 @@ public:
 private:
     natsConnection* conn = nullptr;
     natsOptions* opts = nullptr;
+    NatsCallbackContext* cb_ctx = nullptr;
 
     //! Configure options from a hash
     DLLLOCAL int configureOptions(const QoreHashNode* options, ExceptionSink* xsink);
+
+    //! Setup callbacks from options hash
+    DLLLOCAL int setupCallbacks(const QoreHashNode* options, QoreProgram* pgm,
+        ExceptionSink* xsink);
+
+    //! Static C callback handlers
+    static void disconnectHandler(natsConnection* nc, void* closure);
+    static void reconnectHandler(natsConnection* nc, void* closure);
+    static void closedHandler(natsConnection* nc, void* closure);
+    static void errorHandler(natsConnection* nc, natsSubscription* sub,
+        natsStatus err, void* closure);
+    static void lameDuckHandler(natsConnection* nc, void* closure);
+    static void discoveredServersHandler(natsConnection* nc, void* closure);
+
+    //! Helper to execute a callback from a C thread
+    static void execCallback(ResolvedCallReferenceNode* cb, QoreProgram* pgm,
+        QoreListNode* args = nullptr);
 
     // non-copyable
     QoreNatsConnection(const QoreNatsConnection&) = delete;

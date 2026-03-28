@@ -240,6 +240,24 @@ hashdecl Qore::Nats::NatsConnectionOptions {
 
     //! Custom prefix for inbox subjects (default: "_INBOX")
     *string custom_inbox_prefix;
+
+    //! Callback fired when the connection is disconnected
+    *code on_disconnect;
+
+    //! Callback fired when the connection is reconnected
+    *code on_reconnect;
+
+    //! Callback fired when the connection is permanently closed
+    *code on_closed;
+
+    //! Callback fired on async errors; receives a string error message argument
+    *code on_error;
+
+    //! Callback fired when the server enters lame duck mode
+    *code on_lame_duck;
+
+    //! Callback fired when new servers are discovered in the cluster
+    *code on_discovered_servers;
 }
 
 //! Information about a received NATS message

@@ -93,7 +93,7 @@ NatsConnection conn(<NatsConnectionOptions>{
     @since %nats 1.0
 */
 NatsConnection::constructor(hash<NatsConnectionOptions> options) {
-    self->setPrivate(CID_NATSCONNECTION, new QoreNatsConnection(options, xsink));
+    self->setPrivate(CID_NATSCONNECTION, new QoreNatsConnection(options, getProgram(), xsink));
 }
 
 //! Publishes a message to a subject
