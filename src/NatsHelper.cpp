@@ -79,6 +79,9 @@ QoreHashNode* nats_msg_to_hash(natsMsg* msg, ExceptionSink* xsink) {
     const char* subject = natsMsg_GetSubject(msg);
     if (subject) {
         h->setKeyValue("subject", new QoreStringNode(subject), xsink);
+        if (*xsink) {
+            return nullptr;
+        }
     }
 
     // data as binary
@@ -88,12 +91,18 @@ QoreHashNode* nats_msg_to_hash(natsMsg* msg, ExceptionSink* xsink) {
         BinaryNode* bin = new BinaryNode();
         bin->append(data, data_len);
         h->setKeyValue("data", bin, xsink);
+        if (*xsink) {
+            return nullptr;
+        }
     }
 
     // reply subject
     const char* reply = natsMsg_GetReply(msg);
     if (reply) {
         h->setKeyValue("reply", new QoreStringNode(reply), xsink);
+        if (*xsink) {
+            return nullptr;
+        }
     }
 
     // headers
@@ -106,10 +115,17 @@ QoreHashNode* nats_msg_to_hash(natsMsg* msg, ExceptionSink* xsink) {
             const char* value = nullptr;
             if (natsMsgHeader_Get(msg, keys[i], &value) == NATS_OK && value) {
                 headers->setKeyValue(keys[i], new QoreStringNode(value), xsink);
+                if (*xsink) {
+                    free(keys);
+                    return nullptr;
+                }
             }
         }
         free(keys);
         h->setKeyValue("headers", headers.release(), xsink);
+        if (*xsink) {
+            return nullptr;
+        }
     } else if (keys) {
         free(keys);
     }

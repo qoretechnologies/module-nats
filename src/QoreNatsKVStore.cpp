@@ -50,11 +50,17 @@ QoreHashNode* QoreNatsKVStore::entryToHash(kvEntry* entry, ExceptionSink* xsink)
     const char* bucket = kvEntry_Bucket(entry);
     if (bucket) {
         h->setKeyValue("bucket", new QoreStringNode(bucket), xsink);
+        if (*xsink) {
+            return nullptr;
+        }
     }
 
     const char* key = kvEntry_Key(entry);
     if (key) {
         h->setKeyValue("key", new QoreStringNode(key), xsink);
+        if (*xsink) {
+            return nullptr;
+        }
     }
 
     const void* val = kvEntry_Value(entry);
@@ -63,9 +69,15 @@ QoreHashNode* QoreNatsKVStore::entryToHash(kvEntry* entry, ExceptionSink* xsink)
         SimpleRefHolder<BinaryNode> bin(new BinaryNode);
         bin->append(val, val_len);
         h->setKeyValue("value", bin.release(), xsink);
+        if (*xsink) {
+            return nullptr;
+        }
     }
 
     h->setKeyValue("revision", (int64)kvEntry_Revision(entry), xsink);
+    if (*xsink) {
+        return nullptr;
+    }
 
     // Created timestamp (nanoseconds since epoch -> Qore date)
     int64 created_ns = kvEntry_Created(entry);
@@ -73,9 +85,15 @@ QoreHashNode* QoreNatsKVStore::entryToHash(kvEntry* entry, ExceptionSink* xsink)
         int64 created_us = created_ns / 1000;
         h->setKeyValue("created", DateTimeNode::makeAbsolute(
             currentTZ(), created_us / 1000000, (int)(created_us % 1000000)), xsink);
+        if (*xsink) {
+            return nullptr;
+        }
     }
 
     h->setKeyValue("operation", (int64)kvEntry_Operation(entry), xsink);
+    if (*xsink) {
+        return nullptr;
+    }
 
     return h.release();
 }
@@ -244,6 +262,10 @@ QoreListNode* QoreNatsKVStore::keys(ExceptionSink* xsink) {
     ReferenceHolder<QoreListNode> list(new QoreListNode(stringTypeInfo), xsink);
     for (int i = 0; i < kl.Count; ++i) {
         list->push(new QoreStringNode(kl.Keys[i]), xsink);
+        if (*xsink) {
+            kvKeysList_Destroy(&kl);
+            return nullptr;
+        }
     }
     kvKeysList_Destroy(&kl);
 

@@ -136,38 +136,79 @@ QoreHashNode* QoreNatsJetStream::streamInfoToHash(jsStreamInfo* info,
 
     // Config sub-hash
     ReferenceHolder<QoreHashNode> cfg(new QoreHashNode(hashdeclNatsStreamConfig, xsink), xsink);
+    if (*xsink) {
+        return nullptr;
+    }
     if (info->Config) {
         if (info->Config->Name) {
             cfg->setKeyValue("name", new QoreStringNode(info->Config->Name), xsink);
         }
-        if (info->Config->Description) {
+        if (!*xsink && info->Config->Description) {
             cfg->setKeyValue("description", new QoreStringNode(info->Config->Description), xsink);
         }
-        cfg->setKeyValue("retention", (int64)info->Config->Retention, xsink);
-        cfg->setKeyValue("max_msgs", (int64)info->Config->MaxMsgs, xsink);
-        cfg->setKeyValue("max_bytes", (int64)info->Config->MaxBytes, xsink);
-        cfg->setKeyValue("max_age", (int64)(info->Config->MaxAge / 1000000LL), xsink);
-        cfg->setKeyValue("max_msg_size", (int64)info->Config->MaxMsgSize, xsink);
-        cfg->setKeyValue("storage", (int64)info->Config->Storage, xsink);
-        cfg->setKeyValue("num_replicas", (int64)info->Config->Replicas, xsink);
-        cfg->setKeyValue("discard", (int64)info->Config->Discard, xsink);
+        if (!*xsink) {
+            cfg->setKeyValue("retention", (int64)info->Config->Retention, xsink);
+        }
+        if (!*xsink) {
+            cfg->setKeyValue("max_msgs", (int64)info->Config->MaxMsgs, xsink);
+        }
+        if (!*xsink) {
+            cfg->setKeyValue("max_bytes", (int64)info->Config->MaxBytes, xsink);
+        }
+        if (!*xsink) {
+            cfg->setKeyValue("max_age", (int64)(info->Config->MaxAge / 1000000LL), xsink);
+        }
+        if (!*xsink) {
+            cfg->setKeyValue("max_msg_size", (int64)info->Config->MaxMsgSize, xsink);
+        }
+        if (!*xsink) {
+            cfg->setKeyValue("storage", (int64)info->Config->Storage, xsink);
+        }
+        if (!*xsink) {
+            cfg->setKeyValue("num_replicas", (int64)info->Config->Replicas, xsink);
+        }
+        if (!*xsink) {
+            cfg->setKeyValue("discard", (int64)info->Config->Discard, xsink);
+        }
+        if (*xsink) {
+            return nullptr;
+        }
 
         // Subjects
         if (info->Config->SubjectsLen > 0 && info->Config->Subjects) {
             ReferenceHolder<QoreListNode> subjects(new QoreListNode(stringTypeInfo), xsink);
             for (int i = 0; i < info->Config->SubjectsLen; ++i) {
                 subjects->push(new QoreStringNode(info->Config->Subjects[i]), xsink);
+                if (*xsink) {
+                    return nullptr;
+                }
             }
             cfg->setKeyValue("subjects", subjects.release(), xsink);
         }
     }
+    if (*xsink) {
+        return nullptr;
+    }
     h->setKeyValue("config", cfg.release(), xsink);
 
-    h->setKeyValue("messages", (int64)info->State.Msgs, xsink);
-    h->setKeyValue("bytes", (int64)info->State.Bytes, xsink);
-    h->setKeyValue("first_seq", (int64)info->State.FirstSeq, xsink);
-    h->setKeyValue("last_seq", (int64)info->State.LastSeq, xsink);
-    h->setKeyValue("consumer_count", (int64)info->State.Consumers, xsink);
+    if (!*xsink) {
+        h->setKeyValue("messages", (int64)info->State.Msgs, xsink);
+    }
+    if (!*xsink) {
+        h->setKeyValue("bytes", (int64)info->State.Bytes, xsink);
+    }
+    if (!*xsink) {
+        h->setKeyValue("first_seq", (int64)info->State.FirstSeq, xsink);
+    }
+    if (!*xsink) {
+        h->setKeyValue("last_seq", (int64)info->State.LastSeq, xsink);
+    }
+    if (!*xsink) {
+        h->setKeyValue("consumer_count", (int64)info->State.Consumers, xsink);
+    }
+    if (*xsink) {
+        return nullptr;
+    }
 
     return h.release();
 }
@@ -383,40 +424,71 @@ QoreHashNode* QoreNatsJetStream::consumerInfoToHash(jsConsumerInfo* info,
 
     // Config sub-hash
     ReferenceHolder<QoreHashNode> cfg(new QoreHashNode(hashdeclNatsConsumerConfig, xsink), xsink);
+    if (*xsink) {
+        return nullptr;
+    }
     if (info->Config) {
         if (info->Config->Durable) {
             cfg->setKeyValue("durable_name", new QoreStringNode(info->Config->Durable), xsink);
         }
-        if (info->Config->DeliverSubject) {
+        if (!*xsink && info->Config->DeliverSubject) {
             cfg->setKeyValue("deliver_subject",
                 new QoreStringNode(info->Config->DeliverSubject), xsink);
         }
-        if (info->Config->DeliverGroup) {
+        if (!*xsink && info->Config->DeliverGroup) {
             cfg->setKeyValue("deliver_group",
                 new QoreStringNode(info->Config->DeliverGroup), xsink);
         }
-        if (info->Config->Description) {
+        if (!*xsink && info->Config->Description) {
             cfg->setKeyValue("description",
                 new QoreStringNode(info->Config->Description), xsink);
         }
-        cfg->setKeyValue("ack_policy", (int64)info->Config->AckPolicy, xsink);
-        cfg->setKeyValue("ack_wait", (int64)(info->Config->AckWait / 1000000LL), xsink);
-        cfg->setKeyValue("deliver_policy", (int64)info->Config->DeliverPolicy, xsink);
-        cfg->setKeyValue("replay_policy", (int64)info->Config->ReplayPolicy, xsink);
-        if (info->Config->FilterSubject) {
+        if (!*xsink) {
+            cfg->setKeyValue("ack_policy", (int64)info->Config->AckPolicy, xsink);
+        }
+        if (!*xsink) {
+            cfg->setKeyValue("ack_wait", (int64)(info->Config->AckWait / 1000000LL), xsink);
+        }
+        if (!*xsink) {
+            cfg->setKeyValue("deliver_policy", (int64)info->Config->DeliverPolicy, xsink);
+        }
+        if (!*xsink) {
+            cfg->setKeyValue("replay_policy", (int64)info->Config->ReplayPolicy, xsink);
+        }
+        if (!*xsink && info->Config->FilterSubject) {
             cfg->setKeyValue("filter_subject",
                 new QoreStringNode(info->Config->FilterSubject), xsink);
         }
-        cfg->setKeyValue("max_deliver", (int64)info->Config->MaxDeliver, xsink);
-        cfg->setKeyValue("max_ack_pending", (int64)info->Config->MaxAckPending, xsink);
+        if (!*xsink) {
+            cfg->setKeyValue("max_deliver", (int64)info->Config->MaxDeliver, xsink);
+        }
+        if (!*xsink) {
+            cfg->setKeyValue("max_ack_pending", (int64)info->Config->MaxAckPending, xsink);
+        }
+        if (*xsink) {
+            return nullptr;
+        }
     }
     h->setKeyValue("config", cfg.release(), xsink);
 
-    h->setKeyValue("delivered", (int64)info->Delivered.Consumer, xsink);
-    h->setKeyValue("ack_pending", (int64)info->AckFloor.Consumer, xsink);
-    h->setKeyValue("num_pending", (int64)info->NumPending, xsink);
-    h->setKeyValue("redelivered", (int64)info->NumRedelivered, xsink);
-    h->setKeyValue("waiting", (int64)info->NumWaiting, xsink);
+    if (!*xsink) {
+        h->setKeyValue("delivered", (int64)info->Delivered.Consumer, xsink);
+    }
+    if (!*xsink) {
+        h->setKeyValue("ack_pending", (int64)info->AckFloor.Consumer, xsink);
+    }
+    if (!*xsink) {
+        h->setKeyValue("num_pending", (int64)info->NumPending, xsink);
+    }
+    if (!*xsink) {
+        h->setKeyValue("redelivered", (int64)info->NumRedelivered, xsink);
+    }
+    if (!*xsink) {
+        h->setKeyValue("waiting", (int64)info->NumWaiting, xsink);
+    }
+    if (*xsink) {
+        return nullptr;
+    }
 
     return h.release();
 }
