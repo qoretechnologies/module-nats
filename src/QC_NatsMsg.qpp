@@ -710,3 +710,23 @@ hashdecl Qore::Nats::NatsJSAccountInfo {
     //! Account limits
     hash<Qore::Nats::NatsJSAccountLimits> limits;
 }
+
+//! JetStream subscription options
+/** @since %nats 1.0
+*/
+hashdecl Qore::Nats::NatsJSSubOptions {
+    //! Bind to a specific stream name
+    *string stream;
+
+    //! Bind to an existing consumer by name
+    *string consumer;
+
+    //! Queue group name
+    *string queue;
+
+    //! If True, use manual acknowledgment mode
+    *bool manual_ack;
+
+    //! If True, create an ordered consumer (FIFO, no redelivery)
+    *bool ordered;
+}

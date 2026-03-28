@@ -1046,6 +1046,370 @@ QoreHashNode* QoreNatsJetStream::getAccountInfo(ExceptionSink* xsink) {
     return h.release();
 }
 
+QoreListNode* QoreNatsJetStream::listStreams(ExceptionSink* xsink) {
+    if (!js) {
+        xsink->raiseException("NATS-JETSTREAM-ERROR", "JetStream context is not valid");
+        return nullptr;
+    }
+    if (qore_check_cancel(xsink)) {
+        return nullptr;
+    }
+
+    jsStreamInfoList* list = nullptr;
+    jsErrCode jerr{};
+    natsStatus s = js_Streams(&list, js, nullptr, &jerr);
+    if (s != NATS_OK) {
+        nats_js_error(xsink, "NATS-JETSTREAM-ERROR", s, jerr, "failed to list streams");
+        return nullptr;
+    }
+
+    ReferenceHolder<QoreListNode> rv(new QoreListNode(autoHashTypeInfo), xsink);
+    for (int i = 0; i < list->Count; ++i) {
+        QoreHashNode* h = streamInfoToHash(list->List[i], xsink);
+        if (*xsink) {
+            jsStreamInfoList_Destroy(list);
+            return nullptr;
+        }
+        rv->push(h, xsink);
+        if (*xsink) {
+            jsStreamInfoList_Destroy(list);
+            return nullptr;
+        }
+    }
+    jsStreamInfoList_Destroy(list);
+    return rv.release();
+}
+
+QoreListNode* QoreNatsJetStream::listStreamNames(ExceptionSink* xsink) {
+    if (!js) {
+        xsink->raiseException("NATS-JETSTREAM-ERROR", "JetStream context is not valid");
+        return nullptr;
+    }
+    if (qore_check_cancel(xsink)) {
+        return nullptr;
+    }
+
+    jsStreamNamesList* list = nullptr;
+    jsErrCode jerr{};
+    natsStatus s = js_StreamNames(&list, js, nullptr, &jerr);
+    if (s != NATS_OK) {
+        nats_js_error(xsink, "NATS-JETSTREAM-ERROR", s, jerr, "failed to list stream names");
+        return nullptr;
+    }
+
+    ReferenceHolder<QoreListNode> rv(new QoreListNode(stringTypeInfo), xsink);
+    for (int i = 0; i < list->Count; ++i) {
+        rv->push(new QoreStringNode(list->List[i]), xsink);
+        if (*xsink) {
+            jsStreamNamesList_Destroy(list);
+            return nullptr;
+        }
+    }
+    jsStreamNamesList_Destroy(list);
+    return rv.release();
+}
+
+QoreListNode* QoreNatsJetStream::listConsumers(const char* stream, ExceptionSink* xsink) {
+    if (!js) {
+        xsink->raiseException("NATS-JETSTREAM-ERROR", "JetStream context is not valid");
+        return nullptr;
+    }
+    if (qore_check_cancel(xsink)) {
+        return nullptr;
+    }
+
+    jsConsumerInfoList* list = nullptr;
+    jsErrCode jerr{};
+    natsStatus s = js_Consumers(&list, js, stream, nullptr, &jerr);
+    if (s != NATS_OK) {
+        nats_js_error(xsink, "NATS-JETSTREAM-ERROR", s, jerr,
+            "failed to list consumers for stream '%s'", stream);
+        return nullptr;
+    }
+
+    ReferenceHolder<QoreListNode> rv(new QoreListNode(autoHashTypeInfo), xsink);
+    for (int i = 0; i < list->Count; ++i) {
+        QoreHashNode* h = consumerInfoToHash(list->List[i], xsink);
+        if (*xsink) {
+            jsConsumerInfoList_Destroy(list);
+            return nullptr;
+        }
+        rv->push(h, xsink);
+        if (*xsink) {
+            jsConsumerInfoList_Destroy(list);
+            return nullptr;
+        }
+    }
+    jsConsumerInfoList_Destroy(list);
+    return rv.release();
+}
+
+QoreListNode* QoreNatsJetStream::listConsumerNames(const char* stream, ExceptionSink* xsink) {
+    if (!js) {
+        xsink->raiseException("NATS-JETSTREAM-ERROR", "JetStream context is not valid");
+        return nullptr;
+    }
+    if (qore_check_cancel(xsink)) {
+        return nullptr;
+    }
+
+    jsConsumerNamesList* list = nullptr;
+    jsErrCode jerr{};
+    natsStatus s = js_ConsumerNames(&list, js, stream, nullptr, &jerr);
+    if (s != NATS_OK) {
+        nats_js_error(xsink, "NATS-JETSTREAM-ERROR", s, jerr,
+            "failed to list consumer names for stream '%s'", stream);
+        return nullptr;
+    }
+
+    ReferenceHolder<QoreListNode> rv(new QoreListNode(stringTypeInfo), xsink);
+    for (int i = 0; i < list->Count; ++i) {
+        rv->push(new QoreStringNode(list->List[i]), xsink);
+        if (*xsink) {
+            jsConsumerNamesList_Destroy(list);
+            return nullptr;
+        }
+    }
+    jsConsumerNamesList_Destroy(list);
+    return rv.release();
+}
+
+QoreHashNode* QoreNatsJetStream::updateConsumer(const char* stream,
+        const QoreHashNode* config, ExceptionSink* xsink) {
+    if (!js) {
+        xsink->raiseException("NATS-JETSTREAM-ERROR", "JetStream context is not valid");
+        return nullptr;
+    }
+    if (qore_check_cancel(xsink)) {
+        return nullptr;
+    }
+
+    jsConsumerConfig cfg;
+    configureConsumerConfig(&cfg, config, xsink);
+    if (*xsink) {
+        if (cfg.BackOff) {
+            free(cfg.BackOff);
+        }
+        if (cfg.FilterSubjects) {
+            free((void*)cfg.FilterSubjects);
+        }
+        return nullptr;
+    }
+
+    jsConsumerInfo* info = nullptr;
+    jsErrCode jerr{};
+    natsStatus s = js_UpdateConsumer(&info, js, stream, &cfg, nullptr, &jerr);
+
+    if (cfg.BackOff) {
+        free(cfg.BackOff);
+    }
+    if (cfg.FilterSubjects) {
+        free((void*)cfg.FilterSubjects);
+    }
+
+    if (s != NATS_OK) {
+        nats_js_error(xsink, "NATS-JETSTREAM-ERROR", s, jerr,
+            "failed to update consumer on stream '%s'", stream);
+        return nullptr;
+    }
+
+    QoreHashNode* rv = consumerInfoToHash(info, xsink);
+    jsConsumerInfo_Destroy(info);
+    return rv;
+}
+
+QoreHashNode* QoreNatsJetStream::getMsg(const char* stream, uint64_t seq,
+        ExceptionSink* xsink) {
+    if (!js) {
+        xsink->raiseException("NATS-JETSTREAM-ERROR", "JetStream context is not valid");
+        return nullptr;
+    }
+    if (qore_check_cancel(xsink)) {
+        return nullptr;
+    }
+
+    natsMsg* msg = nullptr;
+    jsErrCode jerr{};
+    natsStatus s = js_GetMsg(&msg, js, stream, seq, nullptr, &jerr);
+    if (s == NATS_NOT_FOUND) {
+        return nullptr;
+    }
+    if (s != NATS_OK) {
+        nats_js_error(xsink, "NATS-JETSTREAM-ERROR", s, jerr,
+            "failed to get message %llu from stream '%s'",
+            (unsigned long long)seq, stream);
+        return nullptr;
+    }
+
+    QoreHashNode* rv = nats_msg_to_hash(msg, xsink);
+    natsMsg_Destroy(msg);
+    return rv;
+}
+
+QoreHashNode* QoreNatsJetStream::getLastMsg(const char* stream, const char* subject,
+        ExceptionSink* xsink) {
+    if (!js) {
+        xsink->raiseException("NATS-JETSTREAM-ERROR", "JetStream context is not valid");
+        return nullptr;
+    }
+    if (qore_check_cancel(xsink)) {
+        return nullptr;
+    }
+
+    natsMsg* msg = nullptr;
+    jsErrCode jerr{};
+    natsStatus s = js_GetLastMsg(&msg, js, stream, subject, nullptr, &jerr);
+    if (s == NATS_NOT_FOUND) {
+        return nullptr;
+    }
+    if (s != NATS_OK) {
+        nats_js_error(xsink, "NATS-JETSTREAM-ERROR", s, jerr,
+            "failed to get last message for subject '%s' from stream '%s'",
+            subject, stream);
+        return nullptr;
+    }
+
+    QoreHashNode* rv = nats_msg_to_hash(msg, xsink);
+    natsMsg_Destroy(msg);
+    return rv;
+}
+
+int QoreNatsJetStream::deleteMsg(const char* stream, uint64_t seq,
+        ExceptionSink* xsink) {
+    if (!js) {
+        xsink->raiseException("NATS-JETSTREAM-ERROR", "JetStream context is not valid");
+        return -1;
+    }
+    if (qore_check_cancel(xsink)) {
+        return -1;
+    }
+
+    jsErrCode jerr{};
+    natsStatus s = js_DeleteMsg(js, stream, seq, nullptr, &jerr);
+    if (s != NATS_OK) {
+        nats_js_error(xsink, "NATS-JETSTREAM-ERROR", s, jerr,
+            "failed to delete message %llu from stream '%s'",
+            (unsigned long long)seq, stream);
+        return -1;
+    }
+    return 0;
+}
+
+int QoreNatsJetStream::eraseMsg(const char* stream, uint64_t seq,
+        ExceptionSink* xsink) {
+    if (!js) {
+        xsink->raiseException("NATS-JETSTREAM-ERROR", "JetStream context is not valid");
+        return -1;
+    }
+    if (qore_check_cancel(xsink)) {
+        return -1;
+    }
+
+    jsErrCode jerr{};
+    natsStatus s = js_EraseMsg(js, stream, seq, nullptr, &jerr);
+    if (s != NATS_OK) {
+        nats_js_error(xsink, "NATS-JETSTREAM-ERROR", s, jerr,
+            "failed to erase message %llu from stream '%s'",
+            (unsigned long long)seq, stream);
+        return -1;
+    }
+    return 0;
+}
+
+QoreNatsSubscription* QoreNatsJetStream::subscribeWithOptions(const char* subject,
+        const QoreHashNode* opts, ExceptionSink* xsink) {
+    if (!js) {
+        xsink->raiseException("NATS-JETSTREAM-ERROR", "JetStream context is not valid");
+        return nullptr;
+    }
+    if (qore_check_cancel(xsink)) {
+        return nullptr;
+    }
+
+    jsSubOptions subOpts;
+    jsSubOptions_Init(&subOpts);
+
+    if (opts) {
+        QoreValue v = opts->getKeyValue("stream");
+        if (v.getType() == NT_STRING) {
+            subOpts.Stream = v.get<const QoreStringNode>()->c_str();
+        }
+
+        v = opts->getKeyValue("consumer");
+        if (v.getType() == NT_STRING) {
+            subOpts.Consumer = v.get<const QoreStringNode>()->c_str();
+        }
+
+        v = opts->getKeyValue("queue");
+        if (v.getType() == NT_STRING) {
+            subOpts.Queue = v.get<const QoreStringNode>()->c_str();
+        }
+
+        v = opts->getKeyValue("manual_ack");
+        if (v.getType() == NT_BOOLEAN) {
+            subOpts.ManualAck = v.getAsBool();
+        }
+
+        v = opts->getKeyValue("ordered");
+        if (v.getType() == NT_BOOLEAN) {
+            subOpts.Ordered = v.getAsBool();
+        }
+    }
+
+    natsSubscription* sub = nullptr;
+    jsErrCode jerr{};
+    natsStatus s = js_SubscribeSync(&sub, js, subject, nullptr, &subOpts, &jerr);
+    if (s != NATS_OK) {
+        nats_js_error(xsink, "NATS-JETSTREAM-ERROR", s, jerr,
+            "failed to subscribe to subject '%s' with options", subject);
+        return nullptr;
+    }
+    return new QoreNatsSubscription(sub);
+}
+
+QoreNatsSubscription* QoreNatsJetStream::pullSubscribeWithOptions(const char* subject,
+        const char* durable, const QoreHashNode* opts, ExceptionSink* xsink) {
+    if (!js) {
+        xsink->raiseException("NATS-JETSTREAM-ERROR", "JetStream context is not valid");
+        return nullptr;
+    }
+    if (qore_check_cancel(xsink)) {
+        return nullptr;
+    }
+
+    jsSubOptions subOpts;
+    jsSubOptions_Init(&subOpts);
+    subOpts.Config.Durable = durable;
+
+    if (opts) {
+        QoreValue v = opts->getKeyValue("stream");
+        if (v.getType() == NT_STRING) {
+            subOpts.Stream = v.get<const QoreStringNode>()->c_str();
+        }
+
+        v = opts->getKeyValue("manual_ack");
+        if (v.getType() == NT_BOOLEAN) {
+            subOpts.ManualAck = v.getAsBool();
+        }
+
+        v = opts->getKeyValue("ordered");
+        if (v.getType() == NT_BOOLEAN) {
+            subOpts.Ordered = v.getAsBool();
+        }
+    }
+
+    natsSubscription* sub = nullptr;
+    jsErrCode jerr{};
+    natsStatus s = js_PullSubscribe(&sub, js, subject, durable, nullptr, &subOpts, &jerr);
+    if (s != NATS_OK) {
+        nats_js_error(xsink, "NATS-JETSTREAM-ERROR", s, jerr,
+            "failed to pull subscribe to subject '%s' durable '%s' with options",
+            subject, durable);
+        return nullptr;
+    }
+    return new QoreNatsSubscription(sub);
+}
+
 QoreNatsKVStore* QoreNatsJetStream::keyValue(const char* bucket, ExceptionSink* xsink) {
     if (!js) {
         xsink->raiseException("NATS-KV-ERROR", "JetStream context is not valid");

@@ -91,6 +91,14 @@ public class JetStreamTest inherits QUnit::Test {
         addTestCase("js message metadata test", \jsMessageMetadataTest());
         addTestCase("js account info test", \jsAccountInfoTest());
 
+        # Phase 3 - JetStream operations tests
+        addTestCase("list streams test", \listStreamsTest());
+        addTestCase("list consumers test", \listConsumersTest());
+        addTestCase("update consumer test", \updateConsumerTest());
+        addTestCase("get stream message test", \getStreamMsgTest());
+        addTestCase("delete stream message test", \deleteStreamMsgTest());
+        addTestCase("ordered consumer test", \orderedConsumerTest());
+
         # Negative tests
         addTestCase("stream not found test", \streamNotFoundTest());
         addTestCase("consumer not found test", \consumerNotFoundTest());
@@ -1181,6 +1189,214 @@ public class JetStreamTest inherits QUnit::Test {
         assertTrue(info.consumers >= 0);
         assertTrue(info.api_total >= 0);
 
+        conn.close();
+    }
+
+    # --- Phase 3: JetStream Operations tests ---
+
+    listStreamsTest() {
+        NatsConnection conn(url);
+        JetStreamContext js = conn.jetStream();
+
+        string s1 = uniqueName("LSTR1");
+        string s2 = uniqueName("LSTR2");
+
+        js.addStream(cast<hash<NatsStreamConfig>>({
+            "name": s1,
+            "subjects": (s1 + ".>",),
+            "storage": NATS_STORAGE_MEMORY,
+        }));
+        js.addStream(cast<hash<NatsStreamConfig>>({
+            "name": s2,
+            "subjects": (s2 + ".>",),
+            "storage": NATS_STORAGE_MEMORY,
+        }));
+
+        # List stream names
+        list<string> names = js.listStreamNames();
+        assertTrue(names.size() >= 2);
+        assertTrue(inlist(s1, names));
+        assertTrue(inlist(s2, names));
+
+        # List stream info
+        list<hash<NatsStreamInfo>> streams = js.listStreams();
+        assertTrue(streams.size() >= 2);
+
+        # Verify at least one of our streams is in the list with correct info
+        bool found_s1 = False;
+        for (int i = 0; i < streams.size(); ++i) {
+            if (streams[i].config.name == s1) {
+                found_s1 = True;
+                break;
+            }
+        }
+        assertTrue(found_s1);
+
+        js.deleteStream(s1);
+        js.deleteStream(s2);
+        conn.close();
+    }
+
+    listConsumersTest() {
+        NatsConnection conn(url);
+        JetStreamContext js = conn.jetStream();
+
+        string stream = uniqueName("LCON");
+        js.addStream(cast<hash<NatsStreamConfig>>({
+            "name": stream,
+            "subjects": (stream + ".>",),
+            "storage": NATS_STORAGE_MEMORY,
+        }));
+
+        js.addConsumer(stream, cast<hash<NatsConsumerConfig>>({
+            "durable_name": "cons1",
+            "ack_policy": NATS_ACK_EXPLICIT,
+        }));
+        js.addConsumer(stream, cast<hash<NatsConsumerConfig>>({
+            "durable_name": "cons2",
+            "ack_policy": NATS_ACK_EXPLICIT,
+        }));
+
+        # List consumer names
+        list<string> names = js.listConsumerNames(stream);
+        assertEq(2, names.size());
+        assertTrue(inlist("cons1", names));
+        assertTrue(inlist("cons2", names));
+
+        # List consumer info
+        list<hash<NatsConsumerInfo>> consumers = js.listConsumers(stream);
+        assertEq(2, consumers.size());
+
+        js.deleteStream(stream);
+        conn.close();
+    }
+
+    updateConsumerTest() {
+        NatsConnection conn(url);
+        JetStreamContext js = conn.jetStream();
+
+        string stream = uniqueName("UCON");
+        js.addStream(cast<hash<NatsStreamConfig>>({
+            "name": stream,
+            "subjects": (stream + ".>",),
+            "storage": NATS_STORAGE_MEMORY,
+        }));
+
+        js.addConsumer(stream, cast<hash<NatsConsumerConfig>>({
+            "durable_name": "upd-test",
+            "ack_policy": NATS_ACK_EXPLICIT,
+            "description": "original",
+        }));
+
+        hash<NatsConsumerInfo> updated = js.updateConsumer(stream,
+            cast<hash<NatsConsumerConfig>>({
+                "durable_name": "upd-test",
+                "ack_policy": NATS_ACK_EXPLICIT,
+                "description": "updated",
+            }));
+        assertEq("updated", updated.config.description);
+
+        # Verify via getConsumerInfo too
+        hash<NatsConsumerInfo> info = js.getConsumerInfo(stream, "upd-test");
+        assertEq("updated", info.config.description);
+
+        js.deleteStream(stream);
+        conn.close();
+    }
+
+    getStreamMsgTest() {
+        NatsConnection conn(url);
+        JetStreamContext js = conn.jetStream();
+
+        string stream = uniqueName("GMSG");
+        js.addStream(cast<hash<NatsStreamConfig>>({
+            "name": stream,
+            "subjects": (stream + ".>",),
+            "storage": NATS_STORAGE_MEMORY,
+            "allow_direct": True,
+        }));
+
+        hash<NatsPubAck> ack = js.publish(stream + ".test", binary("msg-by-seq"));
+
+        # Get by sequence
+        *hash<NatsMsgInfo> msg = js.getMsg(stream, ack.sequence);
+        assertEq(True, exists msg);
+        assertEq("msg-by-seq", msg.data.toString());
+
+        # Get last message for subject
+        js.publish(stream + ".test", binary("last-msg"));
+        *hash<NatsMsgInfo> last = js.getLastMsg(stream, stream + ".test");
+        assertEq(True, exists last);
+        assertEq("last-msg", last.data.toString());
+
+        # Get non-existent sequence returns NOTHING
+        *hash<NatsMsgInfo> missing = js.getMsg(stream, 99999);
+        assertNothing(missing);
+
+        js.deleteStream(stream);
+        conn.close();
+    }
+
+    deleteStreamMsgTest() {
+        NatsConnection conn(url);
+        JetStreamContext js = conn.jetStream();
+
+        string stream = uniqueName("DMSG");
+        js.addStream(cast<hash<NatsStreamConfig>>({
+            "name": stream,
+            "subjects": (stream + ".>",),
+            "storage": NATS_STORAGE_MEMORY,
+            "allow_direct": True,
+        }));
+
+        hash<NatsPubAck> ack = js.publish(stream + ".test", binary("to-delete"));
+
+        # Delete message
+        js.deleteMsg(stream, ack.sequence);
+
+        # Verify deleted - message should be gone
+        *hash<NatsMsgInfo> msg = js.getMsg(stream, ack.sequence);
+        assertNothing(msg);
+
+        # Test eraseMsg
+        hash<NatsPubAck> ack2 = js.publish(stream + ".test", binary("to-erase"));
+        js.eraseMsg(stream, ack2.sequence);
+        *hash<NatsMsgInfo> erased = js.getMsg(stream, ack2.sequence);
+        assertNothing(erased);
+
+        js.deleteStream(stream);
+        conn.close();
+    }
+
+    orderedConsumerTest() {
+        NatsConnection conn(url);
+        JetStreamContext js = conn.jetStream();
+
+        string stream = uniqueName("OCON");
+        js.addStream(cast<hash<NatsStreamConfig>>({
+            "name": stream,
+            "subjects": (stream + ".>",),
+            "storage": NATS_STORAGE_MEMORY,
+        }));
+
+        # Publish messages
+        for (int i = 0; i < 5; ++i) {
+            js.publish(stream + ".ordered", binary("msg-" + string(i)));
+        }
+
+        # Subscribe with ordered option
+        NatsSubscription nsub = js.subscribeWithOptions(stream + ".ordered",
+            cast<hash<NatsJSSubOptions>>({"ordered": True, "stream": stream}));
+
+        # Should receive messages in order
+        for (int i = 0; i < 5; ++i) {
+            *hash<NatsMsgInfo> msg = nsub.nextMsg(5s);
+            assertEq(True, exists msg);
+            assertEq("msg-" + string(i), msg.data.toString());
+        }
+
+        nsub.unsubscribe();
+        js.deleteStream(stream);
         conn.close();
     }
 }

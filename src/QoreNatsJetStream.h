@@ -75,6 +75,29 @@ public:
     DLLLOCAL QoreNatsSubscription* pullSubscribe(const char* subject, const char* durable,
         ExceptionSink* xsink);
 
+    // List operations
+    DLLLOCAL QoreListNode* listStreams(ExceptionSink* xsink);
+    DLLLOCAL QoreListNode* listStreamNames(ExceptionSink* xsink);
+    DLLLOCAL QoreListNode* listConsumers(const char* stream, ExceptionSink* xsink);
+    DLLLOCAL QoreListNode* listConsumerNames(const char* stream, ExceptionSink* xsink);
+
+    // Consumer update
+    DLLLOCAL QoreHashNode* updateConsumer(const char* stream, const QoreHashNode* config,
+        ExceptionSink* xsink);
+
+    // Stream message operations
+    DLLLOCAL QoreHashNode* getMsg(const char* stream, uint64_t seq, ExceptionSink* xsink);
+    DLLLOCAL QoreHashNode* getLastMsg(const char* stream, const char* subject,
+        ExceptionSink* xsink);
+    DLLLOCAL int deleteMsg(const char* stream, uint64_t seq, ExceptionSink* xsink);
+    DLLLOCAL int eraseMsg(const char* stream, uint64_t seq, ExceptionSink* xsink);
+
+    // Subscribe with options
+    DLLLOCAL QoreNatsSubscription* subscribeWithOptions(const char* subject,
+        const QoreHashNode* opts, ExceptionSink* xsink);
+    DLLLOCAL QoreNatsSubscription* pullSubscribeWithOptions(const char* subject,
+        const char* durable, const QoreHashNode* opts, ExceptionSink* xsink);
+
     // KV operations
     DLLLOCAL QoreNatsKVStore* keyValue(const char* bucket, ExceptionSink* xsink);
     DLLLOCAL QoreNatsKVStore* createKeyValue(const QoreHashNode* config, ExceptionSink* xsink);

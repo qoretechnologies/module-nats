@@ -69,6 +69,7 @@ const TypedHashDecl* hashdeclNatsJSMsgMetadata = nullptr;
 const TypedHashDecl* hashdeclNatsJSPubOptions = nullptr;
 const TypedHashDecl* hashdeclNatsJSAccountLimits = nullptr;
 const TypedHashDecl* hashdeclNatsJSAccountInfo = nullptr;
+const TypedHashDecl* hashdeclNatsJSSubOptions = nullptr;
 
 QoreNamespace NatsNs("Qore::Nats");
 
@@ -99,6 +100,7 @@ static void nats_module_init(QoreModuleInitContext& ctx, ExceptionSink& xsink) {
     hashdeclNatsJSPubOptions = init_hashdecl_NatsJSPubOptions(NatsNs);
     hashdeclNatsJSAccountLimits = init_hashdecl_NatsJSAccountLimits(NatsNs);
     hashdeclNatsJSAccountInfo = init_hashdecl_NatsJSAccountInfo(NatsNs);
+    hashdeclNatsJSSubOptions = init_hashdecl_NatsJSSubOptions(NatsNs);
 
     // Initialize classes in dependency order:
     // NatsSubscription has no class deps

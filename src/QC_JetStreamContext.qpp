@@ -244,6 +244,159 @@ NatsSubscription JetStreamContext::pullSubscribe(string subject, string durable)
     return new QoreObject(QC_NATSSUBSCRIPTION, getProgram(), sub);
 }
 
+//! Returns a list of all stream information
+/** @return a list of @ref NatsStreamInfo hashes
+
+    @throw NATS-JETSTREAM-ERROR if the request fails
+
+    @since %nats 1.0
+*/
+list<hash<NatsStreamInfo>> JetStreamContext::listStreams() [flags=RET_VALUE_ONLY] {
+    return js->listStreams(xsink);
+}
+
+//! Returns a list of all stream names
+/** @return a list of stream name strings
+
+    @throw NATS-JETSTREAM-ERROR if the request fails
+
+    @since %nats 1.0
+*/
+list<string> JetStreamContext::listStreamNames() [flags=RET_VALUE_ONLY] {
+    return js->listStreamNames(xsink);
+}
+
+//! Returns a list of all consumer information for a stream
+/** @param stream the stream name
+
+    @return a list of @ref NatsConsumerInfo hashes
+
+    @throw NATS-JETSTREAM-ERROR if the request fails
+
+    @since %nats 1.0
+*/
+list<hash<NatsConsumerInfo>> JetStreamContext::listConsumers(string stream) [flags=RET_VALUE_ONLY] {
+    return js->listConsumers(stream->c_str(), xsink);
+}
+
+//! Returns a list of all consumer names for a stream
+/** @param stream the stream name
+
+    @return a list of consumer name strings
+
+    @throw NATS-JETSTREAM-ERROR if the request fails
+
+    @since %nats 1.0
+*/
+list<string> JetStreamContext::listConsumerNames(string stream) [flags=RET_VALUE_ONLY] {
+    return js->listConsumerNames(stream->c_str(), xsink);
+}
+
+//! Updates an existing consumer on a stream
+/** @param stream the stream name
+    @param config the updated consumer configuration
+
+    @return a @ref NatsConsumerInfo hash
+
+    @throw NATS-JETSTREAM-ERROR if the update fails
+
+    @since %nats 1.0
+*/
+hash<NatsConsumerInfo> JetStreamContext::updateConsumer(string stream, hash<NatsConsumerConfig> config) {
+    return js->updateConsumer(stream->c_str(), config, xsink);
+}
+
+//! Gets a message from a stream by sequence number
+/** @param stream the stream name
+    @param seq the sequence number
+
+    @return a @ref NatsMsgInfo hash, or @ref nothing if not found
+
+    @throw NATS-JETSTREAM-ERROR if the request fails
+
+    @since %nats 1.0
+*/
+*hash<NatsMsgInfo> JetStreamContext::getMsg(string stream, int seq) [flags=RET_VALUE_ONLY] {
+    return js->getMsg(stream->c_str(), (uint64_t)seq, xsink);
+}
+
+//! Gets the last message for a subject from a stream
+/** @param stream the stream name
+    @param subject the subject to get the last message for
+
+    @return a @ref NatsMsgInfo hash, or @ref nothing if not found
+
+    @throw NATS-JETSTREAM-ERROR if the request fails
+
+    @since %nats 1.0
+*/
+*hash<NatsMsgInfo> JetStreamContext::getLastMsg(string stream, string subject) [flags=RET_VALUE_ONLY] {
+    return js->getLastMsg(stream->c_str(), subject->c_str(), xsink);
+}
+
+//! Deletes a message from a stream by sequence number
+/** @param stream the stream name
+    @param seq the sequence number to delete
+
+    @throw NATS-JETSTREAM-ERROR if the delete fails
+
+    @since %nats 1.0
+*/
+nothing JetStreamContext::deleteMsg(string stream, int seq) {
+    js->deleteMsg(stream->c_str(), (uint64_t)seq, xsink);
+}
+
+//! Securely erases a message from a stream by sequence number
+/** Unlike @ref deleteMsg(), this overwrites the message data in storage.
+
+    @param stream the stream name
+    @param seq the sequence number to erase
+
+    @throw NATS-JETSTREAM-ERROR if the erase fails
+
+    @since %nats 1.0
+*/
+nothing JetStreamContext::eraseMsg(string stream, int seq) {
+    js->eraseMsg(stream->c_str(), (uint64_t)seq, xsink);
+}
+
+//! Subscribes to a JetStream subject with options
+/** @param subject the subject to subscribe to
+    @param opts subscription options (see @ref NatsJSSubOptions)
+
+    @return a new @ref NatsSubscription object
+
+    @throw NATS-JETSTREAM-ERROR if the subscription fails
+
+    @since %nats 1.0
+*/
+NatsSubscription JetStreamContext::subscribeWithOptions(string subject, hash<NatsJSSubOptions> opts) {
+    QoreNatsSubscription* nsub = js->subscribeWithOptions(subject->c_str(), opts, xsink);
+    if (!nsub) {
+        return QoreValue();
+    }
+    return new QoreObject(QC_NATSSUBSCRIPTION, getProgram(), nsub);
+}
+
+//! Pull subscribes to a JetStream subject with options
+/** @param subject the subject to subscribe to
+    @param durable the durable consumer name
+    @param opts subscription options (see @ref NatsJSSubOptions)
+
+    @return a new @ref NatsSubscription object
+
+    @throw NATS-JETSTREAM-ERROR if the subscription fails
+
+    @since %nats 1.0
+*/
+NatsSubscription JetStreamContext::pullSubscribeWithOptions(string subject, string durable, hash<NatsJSSubOptions> opts) {
+    QoreNatsSubscription* nsub = js->pullSubscribeWithOptions(subject->c_str(), durable->c_str(), opts, xsink);
+    if (!nsub) {
+        return QoreValue();
+    }
+    return new QoreObject(QC_NATSSUBSCRIPTION, getProgram(), nsub);
+}
+
 //! Opens an existing Key-Value store bucket
 /** @param bucket the bucket name
     @return a new @ref NatsKeyValueStore object
