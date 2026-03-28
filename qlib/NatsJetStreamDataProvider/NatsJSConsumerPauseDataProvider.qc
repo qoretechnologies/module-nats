@@ -113,6 +113,8 @@ public class NatsJSConsumerPauseDataProvider inherits AbstractDataProvider {
         return <DataProviderInfo>{
             "type": "NatsJSConsumerPauseDataProvider",
             "supports_request": True,
+            "display_name": "Pause Consumer",
+            "short_desc": "Pause a JetStream consumer until a specified time",
         };
     }
 }

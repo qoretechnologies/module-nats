@@ -92,6 +92,8 @@ public class NatsJSConsumerNamesDataProvider inherits AbstractDataProvider {
         return <DataProviderInfo>{
             "type": "NatsJSConsumerNamesDataProvider",
             "supports_request": True,
+            "display_name": "Consumer Names",
+            "short_desc": "List all consumer names for a JetStream stream",
         };
     }
 }

@@ -70,6 +70,8 @@ public class NatsJSStreamGetMsgDataProvider inherits AbstractDataProvider {
         return <DataProviderInfo>{
             "type": "NatsJSStreamGetMsgDataProvider",
             "supports_request": True,
+            "display_name": "Get Message",
+            "short_desc": "Retrieve a message from a stream by sequence number",
         };
     }
 }

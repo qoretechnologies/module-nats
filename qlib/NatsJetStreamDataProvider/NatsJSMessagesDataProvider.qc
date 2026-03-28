@@ -71,6 +71,8 @@ public class NatsJSMessagesDataProvider inherits AbstractDataProvider {
             "type": "NatsJSMessagesDataProvider",
             "supports_children": True,
             "children_can_support_apis": True,
+            "display_name": "Messages",
+            "short_desc": "JetStream stream message operations",
         };
     }
 }

@@ -69,6 +69,8 @@ public class NatsJSStreamDeleteMsgDataProvider inherits AbstractDataProvider {
         return <DataProviderInfo>{
             "type": "NatsJSStreamDeleteMsgDataProvider",
             "supports_request": True,
+            "display_name": "Delete Message",
+            "short_desc": "Delete a message from a stream by sequence number",
         };
     }
 }

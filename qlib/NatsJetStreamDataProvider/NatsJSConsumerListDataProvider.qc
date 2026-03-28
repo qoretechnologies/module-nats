@@ -93,6 +93,8 @@ public class NatsJSConsumerListDataProvider inherits AbstractDataProvider {
         return <DataProviderInfo>{
             "type": "NatsJSConsumerListDataProvider",
             "supports_request": True,
+            "display_name": "List Consumers",
+            "short_desc": "List all consumers for a JetStream stream",
         };
     }
 }

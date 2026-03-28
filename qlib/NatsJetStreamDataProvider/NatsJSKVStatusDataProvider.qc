@@ -92,6 +92,8 @@ public class NatsJSKVStatusDataProvider inherits AbstractDataProvider {
         return <DataProviderInfo>{
             "type": "NatsJSKVStatusDataProvider",
             "supports_request": True,
+            "display_name": "Bucket Status",
+            "short_desc": "Get status information for a Key-Value bucket",
         };
     }
 }

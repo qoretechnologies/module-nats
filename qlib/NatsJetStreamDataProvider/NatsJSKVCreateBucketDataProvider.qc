@@ -80,6 +80,8 @@ public class NatsJSKVCreateBucketDataProvider inherits AbstractDataProvider {
         return <DataProviderInfo>{
             "type": "NatsJSKVCreateBucketDataProvider",
             "supports_request": True,
+            "display_name": "Create Bucket",
+            "short_desc": "Create a new Key-Value store bucket",
         };
     }
 }

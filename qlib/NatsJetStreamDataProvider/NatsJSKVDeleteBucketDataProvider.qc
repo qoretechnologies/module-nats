@@ -91,6 +91,8 @@ public class NatsJSKVDeleteBucketDataProvider inherits AbstractDataProvider {
         return <DataProviderInfo>{
             "type": "NatsJSKVDeleteBucketDataProvider",
             "supports_request": True,
+            "display_name": "Delete Bucket",
+            "short_desc": "Permanently delete a Key-Value store bucket",
         };
     }
 }

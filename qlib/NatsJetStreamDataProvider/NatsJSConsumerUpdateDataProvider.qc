@@ -82,6 +82,8 @@ public class NatsJSConsumerUpdateDataProvider inherits AbstractDataProvider {
         return <DataProviderInfo>{
             "type": "NatsJSConsumerUpdateDataProvider",
             "supports_request": True,
+            "display_name": "Update Consumer",
+            "short_desc": "Update a JetStream consumer configuration",
         };
     }
 }
