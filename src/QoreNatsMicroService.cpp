@@ -55,9 +55,9 @@ microError* QoreNatsMicroService::requestHandler(microRequest* req) {
     const char* data = microRequest_GetData(req);
     int data_len = microRequest_GetDataLength(req);
     if (data && data_len > 0) {
-        BinaryNode* bin = new BinaryNode();
+        SimpleRefHolder<BinaryNode> bin(new BinaryNode());
         bin->append(data, data_len);
-        req_hash->setKeyValue("data", bin, &xsink);
+        req_hash->setKeyValue("data", bin.release(), &xsink);
         if (xsink) {
             xsink.clear();
             return micro_Errorf("failed to build request hash");
