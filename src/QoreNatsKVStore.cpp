@@ -25,6 +25,9 @@
 */
 
 #include "QoreNatsKVStore.h"
+#include "QoreNatsKVWatcher.h"
+
+#include <vector>
 
 QoreNatsKVStore::QoreNatsKVStore(kvStore* kv) : kv(kv) {
 }
@@ -37,65 +40,7 @@ QoreNatsKVStore::~QoreNatsKVStore() {
 }
 
 QoreHashNode* QoreNatsKVStore::entryToHash(kvEntry* entry, ExceptionSink* xsink) {
-    if (!entry) {
-        xsink->raiseException("NATS-KV-ERROR", "internal error: null KV entry");
-        return nullptr;
-    }
-
-    ReferenceHolder<QoreHashNode> h(new QoreHashNode(hashdeclNatsKVEntry, xsink), xsink);
-    if (*xsink) {
-        return nullptr;
-    }
-
-    const char* bucket = kvEntry_Bucket(entry);
-    if (bucket) {
-        h->setKeyValue("bucket", new QoreStringNode(bucket), xsink);
-        if (*xsink) {
-            return nullptr;
-        }
-    }
-
-    const char* key = kvEntry_Key(entry);
-    if (key) {
-        h->setKeyValue("key", new QoreStringNode(key), xsink);
-        if (*xsink) {
-            return nullptr;
-        }
-    }
-
-    const void* val = kvEntry_Value(entry);
-    int val_len = kvEntry_ValueLen(entry);
-    if (val && val_len > 0) {
-        SimpleRefHolder<BinaryNode> bin(new BinaryNode);
-        bin->append(val, val_len);
-        h->setKeyValue("value", bin.release(), xsink);
-        if (*xsink) {
-            return nullptr;
-        }
-    }
-
-    h->setKeyValue("revision", (int64)kvEntry_Revision(entry), xsink);
-    if (*xsink) {
-        return nullptr;
-    }
-
-    // Created timestamp (nanoseconds since epoch -> Qore date)
-    int64 created_ns = kvEntry_Created(entry);
-    if (created_ns > 0) {
-        int64 created_us = created_ns / 1000;
-        h->setKeyValue("created", DateTimeNode::makeAbsolute(
-            currentTZ(), created_us / 1000000, (int)(created_us % 1000000)), xsink);
-        if (*xsink) {
-            return nullptr;
-        }
-    }
-
-    h->setKeyValue("operation", (int64)kvEntry_Operation(entry), xsink);
-    if (*xsink) {
-        return nullptr;
-    }
-
-    return h.release();
+    return nats_kv_entry_to_hash(entry, xsink);
 }
 
 int64 QoreNatsKVStore::put(const char* key, const void* data, int data_len,
@@ -364,4 +309,107 @@ QoreHashNode* QoreNatsKVStore::status(ExceptionSink* xsink) {
         return nullptr;
     }
     return h.release();
+}
+
+static void configure_watch_options(kvWatchOptions* wo, const QoreHashNode* opts) {
+    kvWatchOptions_Init(wo);
+    if (!opts) {
+        return;
+    }
+    QoreValue v = opts->getKeyValue("ignore_deletes");
+    if (v.getType() == NT_BOOLEAN) {
+        wo->IgnoreDeletes = v.getAsBool();
+    }
+    v = opts->getKeyValue("meta_only");
+    if (v.getType() == NT_BOOLEAN) {
+        wo->MetaOnly = v.getAsBool();
+    }
+    v = opts->getKeyValue("updates_only");
+    if (v.getType() == NT_BOOLEAN) {
+        wo->UpdatesOnly = v.getAsBool();
+    }
+}
+
+QoreNatsKVWatcher* QoreNatsKVStore::watch(const char* key, const QoreHashNode* opts,
+        ExceptionSink* xsink) {
+    if (!kv) {
+        xsink->raiseException("NATS-KV-ERROR", "KV store is not valid");
+        return nullptr;
+    }
+    if (qore_check_cancel(xsink)) {
+        return nullptr;
+    }
+
+    kvWatchOptions wo;
+    configure_watch_options(&wo, opts);
+
+    kvWatcher* w = nullptr;
+    natsStatus s = kvStore_Watch(&w, kv, key, &wo);
+    if (s != NATS_OK) {
+        nats_error(xsink, "NATS-KV-ERROR", s, "failed to watch key '%s'", key);
+        return nullptr;
+    }
+    return new QoreNatsKVWatcher(w);
+}
+
+QoreNatsKVWatcher* QoreNatsKVStore::watchMulti(const QoreListNode* keys,
+        const QoreHashNode* opts, ExceptionSink* xsink) {
+    if (!kv) {
+        xsink->raiseException("NATS-KV-ERROR", "KV store is not valid");
+        return nullptr;
+    }
+    if (qore_check_cancel(xsink)) {
+        return nullptr;
+    }
+
+    kvWatchOptions wo;
+    configure_watch_options(&wo, opts);
+
+    size_t num_keys = keys->size();
+    if (num_keys == 0) {
+        xsink->raiseException("NATS-KV-ERROR", "keys list must not be empty");
+        return nullptr;
+    }
+
+    // Build const char** array
+    std::vector<const char*> key_ptrs(num_keys);
+    for (size_t i = 0; i < num_keys; ++i) {
+        QoreValue v = keys->retrieveEntry(i);
+        if (v.getType() != NT_STRING) {
+            xsink->raiseException("NATS-KV-ERROR",
+                "keys list element %zu is not a string", i);
+            return nullptr;
+        }
+        key_ptrs[i] = v.get<const QoreStringNode>()->c_str();
+    }
+
+    kvWatcher* w = nullptr;
+    natsStatus s = kvStore_WatchMulti(&w, kv, key_ptrs.data(), (int)num_keys, &wo);
+    if (s != NATS_OK) {
+        nats_error(xsink, "NATS-KV-ERROR", s, "failed to watch multiple keys");
+        return nullptr;
+    }
+    return new QoreNatsKVWatcher(w);
+}
+
+QoreNatsKVWatcher* QoreNatsKVStore::watchAll(const QoreHashNode* opts,
+        ExceptionSink* xsink) {
+    if (!kv) {
+        xsink->raiseException("NATS-KV-ERROR", "KV store is not valid");
+        return nullptr;
+    }
+    if (qore_check_cancel(xsink)) {
+        return nullptr;
+    }
+
+    kvWatchOptions wo;
+    configure_watch_options(&wo, opts);
+
+    kvWatcher* w = nullptr;
+    natsStatus s = kvStore_WatchAll(&w, kv, &wo);
+    if (s != NATS_OK) {
+        nats_error(xsink, "NATS-KV-ERROR", s, "failed to watch all keys");
+        return nullptr;
+    }
+    return new QoreNatsKVWatcher(w);
 }

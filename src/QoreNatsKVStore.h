@@ -76,6 +76,17 @@ public:
     //! Get bucket status
     DLLLOCAL QoreHashNode* status(ExceptionSink* xsink);
 
+    //! Watch a key pattern for changes
+    DLLLOCAL QoreNatsKVWatcher* watch(const char* key, const QoreHashNode* opts,
+        ExceptionSink* xsink);
+
+    //! Watch multiple keys for changes
+    DLLLOCAL QoreNatsKVWatcher* watchMulti(const QoreListNode* keys, const QoreHashNode* opts,
+        ExceptionSink* xsink);
+
+    //! Watch all keys for changes
+    DLLLOCAL QoreNatsKVWatcher* watchAll(const QoreHashNode* opts, ExceptionSink* xsink);
+
 private:
     kvStore* kv = nullptr;
 

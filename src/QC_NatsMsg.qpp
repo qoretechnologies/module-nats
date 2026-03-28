@@ -794,3 +794,17 @@ hashdecl Qore::Nats::NatsKVBucketStatus {
     //! Total bytes used by the bucket
     int bytes;
 }
+
+//! Options for KV watch operations
+/** @since %nats 1.0
+*/
+hashdecl Qore::Nats::NatsKVWatchOptions {
+    //! If True, do not receive delete/purge notifications
+    *bool ignore_deletes;
+
+    //! If True, only receive metadata (no values)
+    *bool meta_only;
+
+    //! If True, skip initial value snapshot and only receive updates
+    *bool updates_only;
+}

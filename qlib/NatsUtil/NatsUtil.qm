@@ -57,6 +57,8 @@ public namespace Nats {
     - @ref Nats::NatsChannelSubscription "NatsChannelSubscription": channel-based
       async subscription wrapper supporting \c foreach iteration and \c channel_select()
       multiplexing
+    - @ref Nats::NatsChannelKVWatch "NatsChannelKVWatch": channel-based KV watcher
+      wrapper for async iteration over key-value changes
     - @ref Nats::NatsHelper "NatsHelper": subject validation and URL parsing utilities
 
     For the data provider API integration (factory, connections, action catalog),

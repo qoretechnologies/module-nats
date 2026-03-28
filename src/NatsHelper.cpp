@@ -133,6 +133,68 @@ QoreHashNode* nats_msg_to_hash(natsMsg* msg, ExceptionSink* xsink) {
     return h.release();
 }
 
+QoreHashNode* nats_kv_entry_to_hash(kvEntry* entry, ExceptionSink* xsink) {
+    if (!entry) {
+        xsink->raiseException("NATS-KV-ERROR", "internal error: null KV entry");
+        return nullptr;
+    }
+
+    ReferenceHolder<QoreHashNode> h(new QoreHashNode(hashdeclNatsKVEntry, xsink), xsink);
+    if (*xsink) {
+        return nullptr;
+    }
+
+    const char* bucket = kvEntry_Bucket(entry);
+    if (bucket) {
+        h->setKeyValue("bucket", new QoreStringNode(bucket), xsink);
+        if (*xsink) {
+            return nullptr;
+        }
+    }
+
+    const char* key = kvEntry_Key(entry);
+    if (key) {
+        h->setKeyValue("key", new QoreStringNode(key), xsink);
+        if (*xsink) {
+            return nullptr;
+        }
+    }
+
+    const void* val = kvEntry_Value(entry);
+    int val_len = kvEntry_ValueLen(entry);
+    if (val && val_len > 0) {
+        SimpleRefHolder<BinaryNode> bin(new BinaryNode);
+        bin->append(val, val_len);
+        h->setKeyValue("value", bin.release(), xsink);
+        if (*xsink) {
+            return nullptr;
+        }
+    }
+
+    h->setKeyValue("revision", (int64)kvEntry_Revision(entry), xsink);
+    if (*xsink) {
+        return nullptr;
+    }
+
+    // Created timestamp (nanoseconds since epoch -> Qore date)
+    int64 created_ns = kvEntry_Created(entry);
+    if (created_ns > 0) {
+        int64 created_us = created_ns / 1000;
+        h->setKeyValue("created", DateTimeNode::makeAbsolute(
+            currentTZ(), created_us / 1000000, (int)(created_us % 1000000)), xsink);
+        if (*xsink) {
+            return nullptr;
+        }
+    }
+
+    h->setKeyValue("operation", (int64)kvEntry_Operation(entry), xsink);
+    if (*xsink) {
+        return nullptr;
+    }
+
+    return h.release();
+}
+
 //! Parse a NATS URL into host and port
 /** Supports nats://host:port, tls://host:port, and host:port formats
 */

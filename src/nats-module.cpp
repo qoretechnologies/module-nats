@@ -28,6 +28,7 @@
 #include "QC_NatsConnection.h"
 #include "QC_NatsSubscription.h"
 #include "QC_JetStreamContext.h"
+#include "QC_NatsKeyValueWatcher.h"
 #include "QC_NatsKeyValueStore.h"
 
 static void nats_module_init(QoreModuleInitContext& ctx, ExceptionSink& xsink);
@@ -72,6 +73,7 @@ const TypedHashDecl* hashdeclNatsJSAccountInfo = nullptr;
 const TypedHashDecl* hashdeclNatsJSSubOptions = nullptr;
 const TypedHashDecl* hashdeclNatsSubscriptionStats = nullptr;
 const TypedHashDecl* hashdeclNatsKVBucketStatus = nullptr;
+const TypedHashDecl* hashdeclNatsKVWatchOptions = nullptr;
 
 QoreNamespace NatsNs("Qore::Nats");
 
@@ -107,11 +109,14 @@ static void nats_module_init(QoreModuleInitContext& ctx, ExceptionSink& xsink) {
     // Initialize Phase 4 hashdecls (Monitoring & Statistics)
     hashdeclNatsSubscriptionStats = init_hashdecl_NatsSubscriptionStats(NatsNs);
     hashdeclNatsKVBucketStatus = init_hashdecl_NatsKVBucketStatus(NatsNs);
+    hashdeclNatsKVWatchOptions = init_hashdecl_NatsKVWatchOptions(NatsNs);
 
     // Initialize classes in dependency order:
     // NatsSubscription has no class deps
     NatsNs.addSystemClass(initNatsSubscriptionClass(NatsNs));
-    // NatsKeyValueStore has no class deps
+    // NatsKeyValueWatcher has no class deps
+    NatsNs.addSystemClass(initNatsKeyValueWatcherClass(NatsNs));
+    // NatsKeyValueStore depends on NatsKeyValueWatcher (watch methods return it)
     NatsNs.addSystemClass(initNatsKeyValueStoreClass(NatsNs));
     // JetStreamContext depends on NatsSubscription, NatsKeyValueStore
     NatsNs.addSystemClass(initJetStreamContextClass(NatsNs));

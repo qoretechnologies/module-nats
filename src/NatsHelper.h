@@ -71,6 +71,13 @@ DLLLOCAL int check_nats_network_access(const char* url, ExceptionSink* xsink);
 */
 DLLLOCAL int check_nats_file_access(const char* path, ExceptionSink* xsink);
 
+//! Convert a kvEntry to a hash<NatsKVEntry>
+/** @param entry the KV entry (caller retains ownership)
+    @param xsink the exception sink
+    @return a hash<NatsKVEntry> or nullptr on error
+*/
+DLLLOCAL QoreHashNode* nats_kv_entry_to_hash(kvEntry* entry, ExceptionSink* xsink);
+
 //! RAII helper for natsMsg destruction
 class NatsMsgHolder {
 public:

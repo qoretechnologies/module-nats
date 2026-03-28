@@ -102,6 +102,15 @@ public class JetStreamTest inherits QUnit::Test {
         # KV bucket status test
         addTestCase("kv bucket status test", \kvBucketStatusTest());
 
+        # KV watcher tests
+        addTestCase("kv watcher watchAll test", \kvWatcherWatchAllTest());
+        addTestCase("kv watcher watch key test", \kvWatcherWatchKeyTest());
+        addTestCase("kv watcher watchMulti test", \kvWatcherWatchMultiTest());
+        addTestCase("kv watcher updates_only test", \kvWatcherUpdatesOnlyTest());
+        addTestCase("kv watcher ignore_deletes test", \kvWatcherIgnoreDeletesTest());
+        addTestCase("kv watcher timeout test", \kvWatcherTimeoutTest());
+        addTestCase("kv watcher channel test", \kvWatcherChannelTest());
+
         # Negative tests
         addTestCase("stream not found test", \streamNotFoundTest());
         addTestCase("consumer not found test", \consumerNotFoundTest());
@@ -981,6 +990,251 @@ public class JetStreamTest inherits QUnit::Test {
         assertEq(1, sts.replicas);
         assertTrue(sts.bytes > 0);
         assertEq(0, sts.ttl_ms);
+
+        js.deleteKeyValue(bucket);
+        conn.close();
+    }
+
+    # --- KV Watcher tests ---
+
+    kvWatcherWatchAllTest() {
+        NatsConnection conn(url);
+        JetStreamContext js = conn.jetStream();
+
+        string bucket = "test-watchall-" + string(rand() % 100000);
+        NatsKeyValueStore kv = js.createKeyValue(cast<hash<NatsKVConfig>>({
+            "bucket": bucket,
+            "storage": NATS_STORAGE_MEMORY,
+        }));
+
+        # Start watcher with updates_only BEFORE putting values
+        NatsKeyValueWatcher watcher = kv.watchAll(
+            cast<hash<NatsKVWatchOptions>>({"updates_only": True}));
+
+        # Put a value
+        kv.putString("watch-key1", "watch-value1");
+
+        # Get the update from watcher
+        *hash<NatsKVEntry> entry = watcher.next(5s);
+        assertEq(True, exists entry);
+        assertEq("watch-key1", entry.key);
+        assertEq("watch-value1", entry.value.toString());
+        assertEq(bucket, entry.bucket);
+        assertTrue(entry.revision > 0);
+
+        # Put another key and verify
+        kv.putString("watch-key2", "val2");
+        *hash<NatsKVEntry> entry2 = watcher.next(5s);
+        assertEq(True, exists entry2);
+        assertEq("watch-key2", entry2.key);
+        assertEq("val2", entry2.value.toString());
+
+        watcher.stop();
+        js.deleteKeyValue(bucket);
+        conn.close();
+    }
+
+    kvWatcherWatchKeyTest() {
+        NatsConnection conn(url);
+        JetStreamContext js = conn.jetStream();
+
+        string bucket = "test-watchkey-" + string(rand() % 100000);
+        NatsKeyValueStore kv = js.createKeyValue(cast<hash<NatsKVConfig>>({
+            "bucket": bucket,
+            "storage": NATS_STORAGE_MEMORY,
+        }));
+
+        # Watch a specific key pattern
+        NatsKeyValueWatcher watcher = kv.watch("mykey",
+            cast<hash<NatsKVWatchOptions>>({"updates_only": True}));
+
+        # Put a value that matches
+        kv.putString("mykey", "value1");
+
+        # Put a value that does NOT match the pattern
+        kv.putString("otherkey", "other-value");
+
+        # Should receive the matching update
+        *hash<NatsKVEntry> entry = watcher.next(5s);
+        assertEq(True, exists entry);
+        assertEq("mykey", entry.key);
+        assertEq("value1", entry.value.toString());
+
+        # Update the watched key
+        kv.putString("mykey", "value2");
+        *hash<NatsKVEntry> entry2 = watcher.next(5s);
+        assertEq(True, exists entry2);
+        assertEq("mykey", entry2.key);
+        assertEq("value2", entry2.value.toString());
+
+        watcher.stop();
+        js.deleteKeyValue(bucket);
+        conn.close();
+    }
+
+    kvWatcherWatchMultiTest() {
+        NatsConnection conn(url);
+        JetStreamContext js = conn.jetStream();
+
+        string bucket = "test-watchmulti-" + string(rand() % 100000);
+        NatsKeyValueStore kv = js.createKeyValue(cast<hash<NatsKVConfig>>({
+            "bucket": bucket,
+            "storage": NATS_STORAGE_MEMORY,
+        }));
+
+        # Watch multiple specific keys
+        NatsKeyValueWatcher watcher = kv.watchMulti(("key-a", "key-b"),
+            cast<hash<NatsKVWatchOptions>>({"updates_only": True}));
+
+        # Put matching values
+        kv.putString("key-a", "val-a");
+        kv.putString("key-b", "val-b");
+        # Put a non-matching value
+        kv.putString("key-c", "val-c");
+
+        # Should receive both matching updates
+        *hash<NatsKVEntry> e1 = watcher.next(5s);
+        assertEq(True, exists e1);
+
+        *hash<NatsKVEntry> e2 = watcher.next(5s);
+        assertEq(True, exists e2);
+
+        # Verify we got both key-a and key-b (order may vary)
+        list<string> received_keys = (e1.key, e2.key);
+        assertTrue(inlist("key-a", received_keys));
+        assertTrue(inlist("key-b", received_keys));
+
+        watcher.stop();
+        js.deleteKeyValue(bucket);
+        conn.close();
+    }
+
+    kvWatcherUpdatesOnlyTest() {
+        NatsConnection conn(url);
+        JetStreamContext js = conn.jetStream();
+
+        string bucket = "test-watchupdonly-" + string(rand() % 100000);
+        NatsKeyValueStore kv = js.createKeyValue(cast<hash<NatsKVConfig>>({
+            "bucket": bucket,
+            "storage": NATS_STORAGE_MEMORY,
+        }));
+
+        # Put a value BEFORE starting the watcher
+        kv.putString("pre-existing", "old-value");
+
+        # Watch with updates_only: should NOT see the pre-existing value
+        NatsKeyValueWatcher watcher = kv.watchAll(
+            cast<hash<NatsKVWatchOptions>>({"updates_only": True}));
+
+        # Put a new value
+        kv.putString("new-key", "new-value");
+
+        # Should receive only the new value
+        *hash<NatsKVEntry> entry = watcher.next(5s);
+        assertEq(True, exists entry);
+        assertEq("new-key", entry.key);
+        assertEq("new-value", entry.value.toString());
+
+        watcher.stop();
+        js.deleteKeyValue(bucket);
+        conn.close();
+    }
+
+    kvWatcherIgnoreDeletesTest() {
+        NatsConnection conn(url);
+        JetStreamContext js = conn.jetStream();
+
+        string bucket = "test-watchignore-" + string(rand() % 100000);
+        NatsKeyValueStore kv = js.createKeyValue(cast<hash<NatsKVConfig>>({
+            "bucket": bucket,
+            "storage": NATS_STORAGE_MEMORY,
+        }));
+
+        # Watch with ignore_deletes
+        NatsKeyValueWatcher watcher = kv.watchAll(
+            cast<hash<NatsKVWatchOptions>>({"updates_only": True, "ignore_deletes": True}));
+
+        # Put and then delete a key
+        kv.putString("del-key", "del-value");
+        kv.delete("del-key");
+
+        # Put another key
+        kv.putString("keep-key", "keep-value");
+
+        # Should receive the put for del-key
+        *hash<NatsKVEntry> e1 = watcher.next(5s);
+        assertEq(True, exists e1);
+        assertEq("del-key", e1.key);
+
+        # Should receive the put for keep-key (the delete is ignored)
+        *hash<NatsKVEntry> e2 = watcher.next(5s);
+        assertEq(True, exists e2);
+        assertEq("keep-key", e2.key);
+
+        watcher.stop();
+        js.deleteKeyValue(bucket);
+        conn.close();
+    }
+
+    kvWatcherTimeoutTest() {
+        NatsConnection conn(url);
+        JetStreamContext js = conn.jetStream();
+
+        string bucket = "test-watchtmo-" + string(rand() % 100000);
+        NatsKeyValueStore kv = js.createKeyValue(cast<hash<NatsKVConfig>>({
+            "bucket": bucket,
+            "storage": NATS_STORAGE_MEMORY,
+        }));
+
+        NatsKeyValueWatcher watcher = kv.watchAll(
+            cast<hash<NatsKVWatchOptions>>({"updates_only": True}));
+
+        # No updates, should timeout
+        *hash<NatsKVEntry> entry = watcher.next(500ms);
+        assertNothing(entry);
+
+        watcher.stop();
+        js.deleteKeyValue(bucket);
+        conn.close();
+    }
+
+    kvWatcherChannelTest() {
+        NatsConnection conn(url);
+        JetStreamContext js = conn.jetStream();
+
+        string bucket = "test-watchchan-" + string(rand() % 100000);
+        NatsKeyValueStore kv = js.createKeyValue(cast<hash<NatsKVConfig>>({
+            "bucket": bucket,
+            "storage": NATS_STORAGE_MEMORY,
+        }));
+
+        NatsKeyValueWatcher watcher = kv.watchAll(
+            cast<hash<NatsKVWatchOptions>>({"updates_only": True}));
+
+        # Create a channel-based watcher
+        NatsChannelKVWatch watch = new NatsChannelKVWatch(watcher);
+        assertTrue(watch.isActive());
+
+        # Put some values
+        kv.putString("chan-key1", "chan-val1");
+        kv.putString("chan-key2", "chan-val2");
+
+        # Receive via the channel wrapper
+        *hash<NatsKVEntry> e1 = watch.recv(5s);
+        assertEq(True, exists e1);
+        assertEq("chan-key1", e1.key);
+
+        *hash<NatsKVEntry> e2 = watch.recv(5s);
+        assertEq(True, exists e2);
+        assertEq("chan-key2", e2.key);
+
+        # Timeout
+        *hash<NatsKVEntry> e3 = watch.recv(500ms);
+        assertNothing(e3);
+
+        # Close
+        watch.close();
+        assertFalse(watch.isActive());
 
         js.deleteKeyValue(bucket);
         conn.close();

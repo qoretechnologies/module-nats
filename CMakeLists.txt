@@ -70,6 +70,7 @@ set(QPP_SRC
     src/QC_NatsMsg.qpp
     src/QC_NatsSubscription.qpp
     src/QC_JetStreamContext.qpp
+    src/QC_NatsKeyValueWatcher.qpp
     src/QC_NatsKeyValueStore.qpp
 )
 
@@ -80,6 +81,7 @@ set(CPP_SRC
     src/QoreNatsSubscription.cpp
     src/QoreNatsJetStream.cpp
     src/QoreNatsKVStore.cpp
+    src/QoreNatsKVWatcher.cpp
 )
 
 qore_wrap_qpp_value(QPP_SOURCES METALIST QPP_META_SRC ${QPP_SRC})

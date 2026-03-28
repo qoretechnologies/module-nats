@@ -1,0 +1,80 @@
+/* -*- mode: c++; indent-tabs-mode: nil -*- */
+/** @file QC_NatsKeyValueWatcher.cpp defines the %Qore NatsKeyValueWatcher class */
+/*
+    Qore nats module
+
+    Copyright (C) 2026 Qore Technologies, s.r.o.
+
+    Permission is hereby granted, free of charge, to any person obtaining a
+    copy of this software and associated documentation files (the "Software"),
+    to deal in the Software without restriction, including without limitation
+    the rights to use, copy, modify, merge, publish, distribute, sublicense,
+    and/or sell copies of the Software, and to permit persons to whom the
+    Software is furnished to do so, subject to the following conditions:
+
+    The above copyright notice and this permission notice shall be included in
+    all copies or substantial portions of the Software.
+
+    THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+    IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+    FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+    AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+    DEALINGS IN THE SOFTWARE.
+*/
+
+#include "nats-module.h"
+#include "QC_NatsKeyValueWatcher.h"
+
+//! Watches a NATS KV store for changes
+/** This class provides a polling interface to watch for key-value changes.
+
+    @par Example: Watch for all key changes
+    @code{.py}
+NatsConnection conn("nats://localhost:4222");
+JetStreamContext js = conn.jetStream();
+NatsKeyValueStore kv = js.keyValue("config");
+
+NatsKeyValueWatcher watcher = kv.watchAll(<NatsKVWatchOptions>{"updates_only": True});
+while (True) {
+    *hash<NatsKVEntry> entry = watcher.next(5s);
+    if (entry) {
+        printf("Key %s changed: %s\n", entry.key, entry.value.toString());
+    }
+}
+watcher.stop();
+    @endcode
+
+    @note NatsKeyValueWatcher objects are created by @ref NatsKeyValueStore::watch(),
+    @ref NatsKeyValueStore::watchMulti(), or @ref NatsKeyValueStore::watchAll() --
+    not directly instantiated.
+
+    @since %nats 1.0
+*/
+qclass NatsKeyValueWatcher [arg=QoreNatsKVWatcher* w; ns=Qore::Nats; dom=NETWORK];
+
+//! Gets the next KV entry update
+/** @param timeout_ms timeout in milliseconds (default: 5 seconds)
+
+    @return a @ref NatsKVEntry hash, or @ref nothing on timeout
+
+    @throw NATS-KV-WATCH-ERROR if the watcher is not valid or an error occurs
+
+    @since %nats 1.0
+*/
+*hash<NatsKVEntry> NatsKeyValueWatcher::next(timeout timeout_ms = 5s) {
+    return w->next(timeout_ms, xsink);
+}
+
+//! Stops the watcher
+/** After calling stop, any pending or future calls to @ref next() will return
+    immediately.
+
+    @throw NATS-KV-WATCH-ERROR if the watcher is not valid or stop fails
+
+    @since %nats 1.0
+*/
+nothing NatsKeyValueWatcher::stop() {
+    w->stop(xsink);
+}

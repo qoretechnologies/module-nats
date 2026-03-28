@@ -26,6 +26,7 @@
 
 #include "nats-module.h"
 #include "QC_NatsKeyValueStore.h"
+#include "QC_NatsKeyValueWatcher.h"
 
 //! The NatsKeyValueStore class provides access to a NATS JetStream Key-Value store
 /**
@@ -187,4 +188,80 @@ string NatsKeyValueStore::bucketName() [flags=RET_VALUE_ONLY] {
 */
 hash<NatsKVBucketStatus> NatsKeyValueStore::status() [flags=RET_VALUE_ONLY] {
     return kv->status(xsink);
+}
+
+//! Watches a key pattern for changes
+/** @param key the key pattern to watch (supports wildcards like \c "config.*")
+    @param opts optional watch options
+
+    @return a @ref NatsKeyValueWatcher for receiving updates
+
+    @throw NATS-KV-ERROR if the KV store is not valid or watch fails
+
+    @par Example:
+    @code{.py}
+NatsKeyValueWatcher watcher = kv.watch("config.*");
+*hash<NatsKVEntry> entry = watcher.next(5s);
+    @endcode
+
+    @since %nats 1.0
+*/
+NatsKeyValueWatcher NatsKeyValueStore::watch(string key, *hash<NatsKVWatchOptions> opts) {
+    QoreNatsKVWatcher* w = kv->watch(key->c_str(), opts, xsink);
+    if (!w) {
+        return QoreValue();
+    }
+    return new QoreObject(QC_NATSKEYVALUEWATCHER, getProgram(), w);
+}
+
+//! Watches multiple keys for changes
+/** @param keys the list of key patterns to watch
+    @param opts optional watch options
+
+    @return a @ref NatsKeyValueWatcher for receiving updates
+
+    @throw NATS-KV-ERROR if the KV store is not valid, keys list is empty, or watch fails
+
+    @par Example:
+    @code{.py}
+NatsKeyValueWatcher watcher = kv.watchMulti(("key1", "key2", "prefix.*"));
+*hash<NatsKVEntry> entry = watcher.next(5s);
+    @endcode
+
+    @since %nats 1.0
+*/
+NatsKeyValueWatcher NatsKeyValueStore::watchMulti(list<string> keys, *hash<NatsKVWatchOptions> opts) {
+    QoreNatsKVWatcher* w = kv->watchMulti(keys, opts, xsink);
+    if (!w) {
+        return QoreValue();
+    }
+    return new QoreObject(QC_NATSKEYVALUEWATCHER, getProgram(), w);
+}
+
+//! Watches all keys in the bucket for changes
+/** @param opts optional watch options
+
+    @return a @ref NatsKeyValueWatcher for receiving updates
+
+    @throw NATS-KV-ERROR if the KV store is not valid or watch fails
+
+    @par Example:
+    @code{.py}
+NatsKeyValueWatcher watcher = kv.watchAll(<NatsKVWatchOptions>{"updates_only": True});
+while (True) {
+    *hash<NatsKVEntry> entry = watcher.next(5s);
+    if (entry) {
+        printf("Key %s changed\n", entry.key);
+    }
+}
+    @endcode
+
+    @since %nats 1.0
+*/
+NatsKeyValueWatcher NatsKeyValueStore::watchAll(*hash<NatsKVWatchOptions> opts) {
+    QoreNatsKVWatcher* w = kv->watchAll(opts, xsink);
+    if (!w) {
+        return QoreValue();
+    }
+    return new QoreObject(QC_NATSKEYVALUEWATCHER, getProgram(), w);
 }
