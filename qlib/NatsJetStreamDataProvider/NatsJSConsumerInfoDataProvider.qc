@@ -32,16 +32,19 @@ public class NatsJSConsumerInfoRequestDataType inherits HashDataType {
             "stream": {
                 "type": StringType,
                 "display_name": "Stream Name",
-                "short_desc": "Stream name",
-                "desc": "Stream name",
+                "short_desc": "Stream name containing the consumer",
+                "desc": "The name of the JetStream stream that owns the consumer.\n\n"
+                    "The stream must exist; an error is raised if not found.",
                 "required": True,
                 "example_value": "ORDERS",
             },
             "consumer": {
                 "type": StringType,
                 "display_name": "Consumer Name",
-                "short_desc": "Consumer name",
-                "desc": "Consumer name",
+                "short_desc": "Consumer name to get info for",
+                "desc": "The name of the consumer to retrieve information for.\n\n"
+                    "The consumer must exist on the specified stream; an error is raised "
+                    "if not found.",
                 "required": True,
                 "example_value": "order-processor",
             },
@@ -76,7 +79,11 @@ public class NatsJSConsumerInfoDataProvider inherits AbstractDataProvider {
     }
 
     *string getDesc() {
-        return "Gets information about a JetStream consumer";
+        return "Retrieves configuration and delivery state for a JetStream consumer.\n\n"
+            "Returns the consumer's configuration (ack policy, deliver policy, filter "
+            "subject) and current state (pending messages, redelivery count, last "
+            "acknowledged sequence). Use this to monitor consumer health and processing "
+            "progress.";
     }
 
     private *AbstractDataProviderType getRequestTypeImpl() {

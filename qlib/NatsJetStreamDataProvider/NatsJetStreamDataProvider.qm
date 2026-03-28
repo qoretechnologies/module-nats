@@ -45,8 +45,12 @@ module NatsJetStreamDataProvider {
             "name": NatsJetStreamDataProvider::AppName,
             "display_name": "NATS JetStream",
             "short_desc": "NATS JetStream streaming and KV store",
-            "desc": "NATS JetStream provides persistent messaging with stream management, "
-                "consumer management, and key-value store capabilities",
+            "desc": "NATS JetStream extends core NATS with persistent messaging, "
+                "at-least-once delivery, and exactly-once semantics.\n\n"
+                "Provides stream management for durable message storage, consumer "
+                "management for delivery strategies, guaranteed publish with "
+                "acknowledgments, and a distributed key-value store for configuration "
+                "and shared state.",
             "scheme": "nats",
             "groups": (DataProvider::AppGroup::Messaging, DataProvider::AppGroup::ApiIntegration,),
             "logo": NatsJetStreamLogo,
@@ -60,8 +64,11 @@ module NatsJetStreamDataProvider {
             "path": "/streams/create",
             "action": "stream-create",
             "display_name": "Create Stream",
-            "short_desc": "Create a JetStream stream",
-            "desc": "Creates a new JetStream stream with the given configuration",
+            "short_desc": "Create a JetStream stream for durable message storage",
+            "desc": "Creates a new JetStream stream for durable message storage.\n\n"
+                "Streams capture messages published to matching subjects and persist "
+                "them according to configured retention policies. Use streams for "
+                "message replay, audit trails, and guaranteed delivery.",
             "action_code": DPAT_API,
             "groups": "Streams",
             "options": DataProviderActionCatalog::getActionOptionFromFields(
@@ -83,8 +90,10 @@ module NatsJetStreamDataProvider {
             "path": "/streams/delete",
             "action": "stream-delete",
             "display_name": "Delete Stream",
-            "short_desc": "Delete a JetStream stream",
-            "desc": "Deletes a JetStream stream",
+            "short_desc": "Permanently delete a JetStream stream",
+            "desc": "Permanently deletes a JetStream stream and all its messages.\n\n"
+                "**Warning**: this removes the stream, all stored messages, and all "
+                "associated consumers. This action cannot be undone.",
             "action_code": DPAT_API,
             "groups": "Streams",
             "options": DataProviderActionCatalog::getActionOptionFromFields(
@@ -100,8 +109,11 @@ module NatsJetStreamDataProvider {
             "path": "/streams/info",
             "action": "stream-info",
             "display_name": "Stream Info",
-            "short_desc": "Get JetStream stream information",
-            "desc": "Gets information about a JetStream stream",
+            "short_desc": "Get stream configuration and state information",
+            "desc": "Retrieves configuration and state information for a JetStream "
+                "stream.\n\n"
+                "Returns the stream's subject filters, retention policy, storage "
+                "limits, and current state including message count and byte size.",
             "action_code": DPAT_API,
             "groups": "Streams",
             "options": DataProviderActionCatalog::getActionOptionFromFields(
@@ -118,7 +130,11 @@ module NatsJetStreamDataProvider {
             "action": "stream-purge",
             "display_name": "Purge Stream",
             "short_desc": "Purge all messages from a stream",
-            "desc": "Purges all messages from a JetStream stream",
+            "desc": "Removes all messages from a JetStream stream while preserving "
+                "its configuration.\n\n"
+                "**Warning**: this permanently deletes all messages in the stream. "
+                "The stream configuration and consumers are preserved, but consumer "
+                "sequence positions are reset.",
             "action_code": DPAT_API,
             "groups": "Streams",
             "options": DataProviderActionCatalog::getActionOptionFromFields(
@@ -136,8 +152,12 @@ module NatsJetStreamDataProvider {
             "path": "/consumers/create",
             "action": "consumer-create",
             "display_name": "Create Consumer",
-            "short_desc": "Create a JetStream consumer",
-            "desc": "Creates a new consumer on a JetStream stream",
+            "short_desc": "Create a consumer for stream message processing",
+            "desc": "Creates a new consumer on a JetStream stream for message "
+                "processing.\n\n"
+                "Consumers define how messages are delivered from a stream, including "
+                "delivery policy, acknowledgment requirements, and retry behavior. "
+                "Durable consumers survive client disconnects.",
             "action_code": DPAT_API,
             "groups": "Consumers",
             "options": DataProviderActionCatalog::getActionOptionFromFields(
@@ -160,8 +180,10 @@ module NatsJetStreamDataProvider {
             "path": "/consumers/delete",
             "action": "consumer-delete",
             "display_name": "Delete Consumer",
-            "short_desc": "Delete a JetStream consumer",
-            "desc": "Deletes a consumer from a JetStream stream",
+            "short_desc": "Delete a consumer from a JetStream stream",
+            "desc": "Deletes a consumer from a JetStream stream.\n\n"
+                "**Warning**: this permanently removes the consumer and its tracking "
+                "state. Unacknowledged messages will not be redelivered.",
             "action_code": DPAT_API,
             "groups": "Consumers",
             "options": DataProviderActionCatalog::getActionOptionFromFields(
@@ -177,8 +199,11 @@ module NatsJetStreamDataProvider {
             "path": "/consumers/info",
             "action": "consumer-info",
             "display_name": "Consumer Info",
-            "short_desc": "Get JetStream consumer information",
-            "desc": "Gets information about a JetStream consumer",
+            "short_desc": "Get consumer configuration and delivery state",
+            "desc": "Retrieves configuration and delivery state for a JetStream "
+                "consumer.\n\n"
+                "Returns the consumer's ack policy, deliver policy, filter subject, "
+                "and current state including pending messages and processing progress.",
             "action_code": DPAT_API,
             "groups": "Consumers",
             "options": DataProviderActionCatalog::getActionOptionFromFields(
@@ -196,9 +221,12 @@ module NatsJetStreamDataProvider {
             "path": "/publish",
             "action": "js-publish",
             "display_name": "JetStream Publish",
-            "short_desc": "Publish with JetStream acknowledgment",
-            "desc": "Publishes a message to a JetStream subject and returns the publish "
-                "acknowledgment",
+            "short_desc": "Publish with guaranteed delivery and acknowledgment",
+            "desc": "Publishes a message to a JetStream subject with guaranteed "
+                "delivery.\n\n"
+                "Unlike basic NATS publish, the message is persisted to a stream and a "
+                "publish acknowledgment is returned confirming storage with the "
+                "`stream` name and `sequence` number.",
             "action_code": DPAT_API,
             "groups": "Messaging",
             "options": DataProviderActionCatalog::getActionOptionFromFields(
@@ -218,8 +246,11 @@ module NatsJetStreamDataProvider {
             "path": "/kv/put",
             "action": "kv-put",
             "display_name": "KV Put",
-            "short_desc": "Put a value in a KV bucket",
-            "desc": "Puts a value for a key in a NATS JetStream Key-Value store",
+            "short_desc": "Store a value for a key in a KV bucket",
+            "desc": "Stores a value for a key in a JetStream KV bucket.\n\n"
+                "Creates the key if it does not exist, or updates it with a new "
+                "revision. Returns the new `revision` number for optimistic "
+                "concurrency control.",
             "action_code": DPAT_API,
             "groups": "Key-Value",
             "options": DataProviderActionCatalog::getActionOptionFromFields(
@@ -237,8 +268,11 @@ module NatsJetStreamDataProvider {
             "path": "/kv/get",
             "action": "kv-get",
             "display_name": "KV Get",
-            "short_desc": "Get a value from a KV bucket",
-            "desc": "Gets a value for a key from a NATS JetStream Key-Value store",
+            "short_desc": "Retrieve a value and metadata for a key",
+            "desc": "Retrieves the current value and metadata for a key from a "
+                "JetStream KV bucket.\n\n"
+                "Returns the latest revision including `value`, `revision`, `created` "
+                "timestamp, and `operation` type.",
             "action_code": DPAT_API,
             "groups": "Key-Value",
             "options": DataProviderActionCatalog::getActionOptionFromFields(
@@ -254,8 +288,10 @@ module NatsJetStreamDataProvider {
             "path": "/kv/delete",
             "action": "kv-delete",
             "display_name": "KV Delete",
-            "short_desc": "Delete a key from a KV bucket",
-            "desc": "Deletes a key from a NATS JetStream Key-Value store",
+            "short_desc": "Soft-delete a key from a KV bucket",
+            "desc": "Soft-deletes a key from a JetStream KV bucket.\n\n"
+                "Places a delete marker so the key no longer appears in listings or "
+                "get operations. The key's revision history is preserved.",
             "action_code": DPAT_API,
             "groups": "Key-Value",
             "options": DataProviderActionCatalog::getActionOptionFromFields(
@@ -271,8 +307,10 @@ module NatsJetStreamDataProvider {
             "path": "/kv/keys",
             "action": "kv-keys",
             "display_name": "KV Keys",
-            "short_desc": "List keys in a KV bucket",
-            "desc": "Lists all keys in a NATS JetStream Key-Value store bucket",
+            "short_desc": "List all active keys in a KV bucket",
+            "desc": "Lists all active keys in a JetStream KV bucket.\n\n"
+                "Returns key names with current (non-deleted) values. Deleted or "
+                "purged keys are excluded from the listing.",
             "action_code": DPAT_API,
             "groups": "Key-Value",
             "options": DataProviderActionCatalog::getActionOptionFromFields(
@@ -288,9 +326,12 @@ module NatsJetStreamDataProvider {
             "path": "/kv/history",
             "action": "kv-history",
             "display_name": "KV History",
-            "short_desc": "Get revision history for a KV key",
-            "desc": "Gets the revision history for a key in a NATS JetStream Key-Value "
-                "store",
+            "short_desc": "Get the complete revision history for a KV key",
+            "desc": "Retrieves the complete revision history for a key in a JetStream "
+                "KV bucket.\n\n"
+                "Returns all revisions ordered from oldest to newest, including put, "
+                "delete, and purge operations. Use this for audit trails and debugging "
+                "configuration changes.",
             "action_code": DPAT_API,
             "groups": "Key-Value",
             "options": DataProviderActionCatalog::getActionOptionFromFields(
@@ -308,8 +349,12 @@ module NatsJetStreamDataProvider {
             "path": "/subscribe",
             "action": "subscribe",
             "display_name": "JetStream Subscribe",
-            "short_desc": "Subscribe to JetStream messages",
-            "desc": "Subscribe to JetStream messages with push-based delivery",
+            "short_desc": "Subscribe to JetStream messages with push delivery",
+            "desc": "Subscribes to JetStream messages with push-based delivery for "
+                "real-time event processing.\n\n"
+                "Messages are pushed to the subscriber as they arrive in the stream. "
+                "Includes JetStream metadata such as stream sequence numbers and "
+                "timestamps.",
             "action_code": DPAT_EVENT,
             "action_val": EVENT_JS_MESSAGE,
             "groups": "Messaging",
@@ -320,9 +365,12 @@ module NatsJetStreamDataProvider {
             "path": "/pull-subscribe",
             "action": "pull-subscribe",
             "display_name": "JetStream Pull Subscribe",
-            "short_desc": "Pull subscribe to JetStream messages",
-            "desc": "Subscribe to JetStream messages with pull-based delivery using a "
-                "durable consumer",
+            "short_desc": "Pull subscribe with a durable consumer",
+            "desc": "Subscribes to JetStream messages with pull-based delivery using "
+                "a durable consumer.\n\n"
+                "The client controls delivery rate by requesting message batches, "
+                "providing natural backpressure. The `durable` consumer tracks the "
+                "last acknowledged position across restarts.",
             "action_code": DPAT_EVENT,
             "action_val": EVENT_JS_MESSAGE,
             "groups": "Messaging",

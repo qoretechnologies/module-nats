@@ -33,15 +33,18 @@ public class NatsJSKVGetRequestDataType inherits HashDataType {
                 "type": StringType,
                 "display_name": "Bucket",
                 "short_desc": "KV bucket name",
-                "desc": "KV bucket name",
+                "desc": "The name of the JetStream KV bucket to read from.\n\n"
+                    "The bucket must already exist; an error is raised if not found.",
                 "required": True,
                 "example_value": "config",
             },
             "key": {
                 "type": StringType,
                 "display_name": "Key",
-                "short_desc": "Key name",
-                "desc": "Key name",
+                "short_desc": "Key name to retrieve",
+                "desc": "The key name to retrieve the current value for.\n\n"
+                    "Returns the latest revision of the key. If the key does not exist or "
+                    "has been deleted, an error is raised.",
                 "required": True,
                 "example_value": "app.setting",
             },
@@ -76,7 +79,11 @@ public class NatsJSKVGetDataProvider inherits AbstractDataProvider {
     }
 
     *string getDesc() {
-        return "Gets a value for a key from a NATS JetStream Key-Value store";
+        return "Retrieves the current value and metadata for a key from a JetStream KV "
+            "bucket.\n\n"
+            "Returns the latest revision of the key entry including `value`, `revision`, "
+            "`created` timestamp, and `operation` type. Use this for reading distributed "
+            "configuration, feature flags, or cached values.";
     }
 
     private *AbstractDataProviderType getRequestTypeImpl() {

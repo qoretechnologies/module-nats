@@ -41,7 +41,11 @@ public class NatsJSPullSubscribeRequestDataType inherits HashDataType {
                 "type": StringType,
                 "display_name": "Durable Name",
                 "short_desc": "Durable consumer name for pull subscription",
-                "desc": "Durable consumer name for pull subscription",
+                "desc": "The durable consumer name that persists the subscription state.\n\n"
+                    "Durable consumers survive client disconnects and server restarts. "
+                    "When the client reconnects with the same `durable` name, message "
+                    "delivery resumes from the last acknowledged position. The consumer "
+                    "must already exist on the stream or will be created automatically.",
                 "required": True,
                 "example_value": "order-processor",
             },
@@ -101,7 +105,12 @@ public class NatsJSPullSubscribeEventDataProvider inherits AbstractDataProvider,
     }
 
     *string getDesc() {
-        return "Observable event provider for JetStream pull subscriptions";
+        return "Observable event provider for JetStream pull-based message delivery with "
+            "durable consumers.\n\n"
+            "The client controls the rate of message delivery by explicitly requesting "
+            "batches from the server. This provides natural backpressure and is ideal for "
+            "batch processing workloads. The `durable` consumer tracks the last "
+            "acknowledged position, ensuring no messages are lost across restarts.";
     }
 
     setObserverRequest(*hash<auto> req) {

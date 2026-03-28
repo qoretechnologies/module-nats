@@ -33,15 +33,18 @@ public class NatsJSKVHistoryRequestDataType inherits HashDataType {
                 "type": StringType,
                 "display_name": "Bucket",
                 "short_desc": "KV bucket name",
-                "desc": "KV bucket name",
+                "desc": "The name of the JetStream KV bucket containing the key.\n\n"
+                    "The bucket must already exist; an error is raised if not found.",
                 "required": True,
                 "example_value": "config",
             },
             "key": {
                 "type": StringType,
                 "display_name": "Key",
-                "short_desc": "Key name",
-                "desc": "Key name",
+                "short_desc": "Key name to get history for",
+                "desc": "The key name to retrieve the complete revision history for.\n\n"
+                    "Returns all revisions including put, delete, and purge operations, "
+                    "providing a complete audit trail of changes to the key.",
                 "required": True,
                 "example_value": "app.setting",
             },
@@ -62,7 +65,12 @@ public class NatsJSKVHistoryResponseDataType inherits HashDataType {
                 "type": SoftListType,
                 "display_name": "Entries",
                 "short_desc": "List of KV entry revisions",
-                "desc": "List of KV entry revisions",
+                "desc": "List of all revision entries for the requested key, ordered from "
+                    "oldest to newest.\n\n"
+                    "Each entry contains the `bucket`, `key`, `value`, `revision`, "
+                    "`created`, and `operation` fields. This includes put, delete, and "
+                    "purge operations, providing a complete audit trail of changes to "
+                    "the key.",
             },
         };
     }
@@ -95,7 +103,12 @@ public class NatsJSKVHistoryDataProvider inherits AbstractDataProvider {
     }
 
     *string getDesc() {
-        return "Gets the revision history for a key in a NATS JetStream Key-Value store";
+        return "Retrieves the complete revision history for a key in a JetStream KV "
+            "bucket.\n\n"
+            "Returns all revisions ordered from oldest to newest, including put, delete, "
+            "and purge operations. Use this for audit trails, debugging configuration "
+            "changes, or implementing rollback logic. The number of revisions retained "
+            "depends on the bucket's history configuration.";
     }
 
     private *AbstractDataProviderType getRequestTypeImpl() {

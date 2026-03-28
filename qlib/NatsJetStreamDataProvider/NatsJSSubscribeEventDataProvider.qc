@@ -93,7 +93,11 @@ public class NatsJSSubscribeEventDataProvider inherits AbstractDataProvider, Del
     }
 
     *string getDesc() {
-        return "Observable event provider for JetStream push subscriptions";
+        return "Observable event provider for JetStream push-based message delivery.\n\n"
+            "Messages are pushed to the subscriber as they arrive in the stream. This is "
+            "suitable for real-time event processing where low latency is important. "
+            "Messages include JetStream metadata such as stream sequence numbers and "
+            "timestamps. For flow-controlled batch processing, use pull-subscribe instead.";
     }
 
     setObserverRequest(*hash<auto> req) {

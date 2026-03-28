@@ -33,7 +33,8 @@ public class NatsJSKVDeleteRequestDataType inherits HashDataType {
                 "type": StringType,
                 "display_name": "Bucket",
                 "short_desc": "KV bucket name",
-                "desc": "KV bucket name",
+                "desc": "The name of the JetStream KV bucket containing the key.\n\n"
+                    "The bucket must already exist; an error is raised if not found.",
                 "required": True,
                 "example_value": "config",
             },
@@ -41,7 +42,11 @@ public class NatsJSKVDeleteRequestDataType inherits HashDataType {
                 "type": StringType,
                 "display_name": "Key",
                 "short_desc": "Key name to delete",
-                "desc": "Key name to delete",
+                "desc": "The key name to delete from the bucket.\n\n"
+                    "A delete operation creates a delete marker in the key's history "
+                    "rather than physically removing it. The key will no longer appear in "
+                    "`keys` listings, but its history remains accessible via the history "
+                    "action.",
                 "required": True,
                 "example_value": "app.setting",
             },
@@ -75,7 +80,11 @@ public class NatsJSKVDeleteDataProvider inherits AbstractDataProvider {
     }
 
     *string getDesc() {
-        return "Deletes a key from a NATS JetStream Key-Value store";
+        return "Soft-deletes a key from a JetStream KV bucket.\n\n"
+            "Places a delete marker on the key so it no longer appears in key listings "
+            "or get operations. The key's revision history is preserved and accessible "
+            "via the history action. Use purge at the stream level to permanently remove "
+            "historical data.";
     }
 
     private *AbstractDataProviderType getRequestTypeImpl() {

@@ -42,7 +42,11 @@ public class NatsJSConsumersDataProvider inherits AbstractDataProvider {
     }
 
     *string getDesc() {
-        return "Container for JetStream consumer management operations";
+        return "Container for JetStream consumer lifecycle management.\n\n"
+            "Provides access to operations for creating, deleting, and inspecting "
+            "JetStream consumers. Consumers define message delivery strategies including "
+            "acknowledgment policies, delivery ordering, filtering, and retry behavior "
+            "for processing messages from a stream.";
     }
 
     private *list<string> getChildProviderNamesImpl() {

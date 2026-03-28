@@ -89,7 +89,11 @@ public class NatsRequestDataProvider inherits AbstractDataProvider {
     }
 
     *string getDesc() {
-        return "Sends a NATS request and waits for a reply";
+        return "Sends a synchronous request to a NATS subject and waits for a reply.\n\n"
+            "Implements the request-reply messaging pattern for microservice communication. "
+            "A unique reply subject (inbox) is created automatically. The call blocks until "
+            "a response is received or the `timeout_ms` expires. **Only the first reply is "
+            "returned**; subsequent replies to the same inbox are discarded.";
     }
 
     private *AbstractDataProviderType getRequestTypeImpl() {

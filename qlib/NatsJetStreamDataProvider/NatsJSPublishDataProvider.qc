@@ -32,8 +32,11 @@ public class NatsJSPublishRequestDataType inherits HashDataType {
             "subject": {
                 "type": StringType,
                 "display_name": "Subject",
-                "short_desc": "Subject to publish to",
-                "desc": "Subject to publish to",
+                "short_desc": "JetStream subject to publish to",
+                "desc": "The JetStream subject to publish the message to.\n\n"
+                    "The subject must match at least one stream's subject filter for the "
+                    "message to be persisted. If no stream captures the subject, the "
+                    "publish will fail with a \"no responders\" error.",
                 "required": True,
                 "example_value": "orders.created",
             },
@@ -41,14 +44,17 @@ public class NatsJSPublishRequestDataType inherits HashDataType {
                 "type": DataOrNothingType,
                 "display_name": "Binary Data",
                 "short_desc": "Binary message payload",
-                "desc": "Binary message payload",
+                "desc": "The binary message payload; use either `data` or `string_data`.\n\n"
+                    "Binary data is stored as-is in the stream without encoding.",
             },
             "string_data": {
                 "type": StringOrNothingType,
                 "display_name": "String Data",
-                "short_desc": "String message payload (alternative to data)",
-                "desc": "String message payload (alternative to data)",
-                "example_value": "Hello, World!",
+                "short_desc": "String message payload",
+                "desc": "The string message payload (alternative to `data`).\n\n"
+                    "The string is converted to binary before publishing. Use this for "
+                    "JSON, XML, or other text-based payloads.",
+                "example_value": "{\"order_id\": 12345, \"status\": \"created\"}",
             },
         };
     }
@@ -81,7 +87,11 @@ public class NatsJSPublishDataProvider inherits AbstractDataProvider {
     }
 
     *string getDesc() {
-        return "Publishes a message to a JetStream subject and returns the publish acknowledgment";
+        return "Publishes a message to a JetStream subject with guaranteed delivery.\n\n"
+            "Unlike basic NATS publish, JetStream publish persists the message to a stream "
+            "and returns a publish acknowledgment (`pub_ack`) confirming storage. The "
+            "acknowledgment includes the `stream` name and `sequence` number assigned to "
+            "the message. If the message cannot be stored, an error is raised.";
     }
 
     private *AbstractDataProviderType getRequestTypeImpl() {

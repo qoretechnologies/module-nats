@@ -42,7 +42,11 @@ public class NatsJSKVDataProvider inherits AbstractDataProvider {
     }
 
     *string getDesc() {
-        return "Container for JetStream Key-Value store operations";
+        return "Container for JetStream Key-Value store operations.\n\n"
+            "Provides access to a distributed key-value store built on JetStream streams. "
+            "Supports put, get, delete, key listing, and revision history. Ideal for "
+            "distributed configuration, feature flags, service discovery, and lightweight "
+            "caching with built-in audit trails.";
     }
 
     private *list<string> getChildProviderNamesImpl() {

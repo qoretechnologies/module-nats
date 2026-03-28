@@ -54,7 +54,11 @@ public class NatsPublishRequestDataType inherits HashDataType {
                 "type": AutoHashOrNothingType,
                 "display_name": "Headers",
                 "short_desc": "Optional message headers",
-                "desc": "Optional message headers as key-value pairs",
+                "desc": "Optional NATS message headers as key-value pairs.\n\n"
+                    "Headers provide out-of-band metadata without modifying the message "
+                    "payload. Common uses include routing hints, content types, and "
+                    "correlation IDs. Header keys are case-sensitive.",
+                "example_value": {"Content-Type": "application/json", "X-Correlation-Id": "abc-123"},
             },
         };
     }
@@ -87,7 +91,11 @@ public class NatsPublishDataProvider inherits AbstractDataProvider {
     }
 
     *string getDesc() {
-        return "Publishes a message to a NATS subject";
+        return "Publishes a message to a NATS subject using the fire-and-forget pattern.\n\n"
+            "The message is sent to all subscribers currently listening on the `subject`. "
+            "There is **no delivery confirmation**; if no subscribers are listening, the "
+            "message is silently discarded. For guaranteed delivery, use JetStream publish "
+            "instead.";
     }
 
     private *AbstractDataProviderType getRequestTypeImpl() {

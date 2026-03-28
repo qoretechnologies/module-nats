@@ -42,7 +42,11 @@ public class NatsJSStreamsDataProvider inherits AbstractDataProvider {
     }
 
     *string getDesc() {
-        return "Container for JetStream stream management operations";
+        return "Container for JetStream stream lifecycle management.\n\n"
+            "Provides access to operations for creating, deleting, inspecting, and "
+            "purging JetStream streams. Streams are the durable message storage layer "
+            "that captures messages published to matching subjects for replay, audit "
+            "trails, and guaranteed delivery.";
     }
 
     private *list<string> getChildProviderNamesImpl() {

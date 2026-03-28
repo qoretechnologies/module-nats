@@ -33,7 +33,10 @@ public class NatsJSStreamPurgeRequestDataType inherits HashDataType {
                 "type": StringType,
                 "display_name": "Stream Name",
                 "short_desc": "Stream name to purge",
-                "desc": "Stream name to purge",
+                "desc": "The name of the JetStream stream to purge.\n\n"
+                    "**Warning**: purging removes all messages from the stream while "
+                    "preserving the stream configuration and consumers. Consumer sequence "
+                    "tracking is reset. This operation cannot be undone.",
                 "required": True,
                 "example_value": "ORDERS",
             },
@@ -67,7 +70,12 @@ public class NatsJSStreamPurgeDataProvider inherits AbstractDataProvider {
     }
 
     *string getDesc() {
-        return "Purges all messages from a JetStream stream";
+        return "Removes all messages from a JetStream stream while preserving its "
+            "configuration.\n\n"
+            "**Warning**: this is a destructive operation that permanently deletes all "
+            "messages in the stream. The stream configuration and consumers are preserved, "
+            "but consumer sequence positions are reset. Use this for maintenance, testing, "
+            "or clearing stale data.";
     }
 
     private *AbstractDataProviderType getRequestTypeImpl() {

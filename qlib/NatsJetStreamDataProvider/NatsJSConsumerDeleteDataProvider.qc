@@ -32,8 +32,9 @@ public class NatsJSConsumerDeleteRequestDataType inherits HashDataType {
             "stream": {
                 "type": StringType,
                 "display_name": "Stream Name",
-                "short_desc": "Stream name",
-                "desc": "Stream name",
+                "short_desc": "Stream name containing the consumer",
+                "desc": "The name of the JetStream stream that owns the consumer to delete.\n\n"
+                    "The stream must exist and contain the specified consumer.",
                 "required": True,
                 "example_value": "ORDERS",
             },
@@ -41,7 +42,11 @@ public class NatsJSConsumerDeleteRequestDataType inherits HashDataType {
                 "type": StringType,
                 "display_name": "Consumer Name",
                 "short_desc": "Consumer name to delete",
-                "desc": "Consumer name to delete",
+                "desc": "The name of the consumer to delete from the stream.\n\n"
+                    "**Warning**: deleting a consumer discards its tracking state, "
+                    "including the last acknowledged sequence position. If the consumer is "
+                    "re-created, it will start from the configured delivery policy, not "
+                    "from where it left off.",
                 "required": True,
                 "example_value": "order-processor",
             },
@@ -75,7 +80,10 @@ public class NatsJSConsumerDeleteDataProvider inherits AbstractDataProvider {
     }
 
     *string getDesc() {
-        return "Deletes a consumer from a JetStream stream";
+        return "Deletes a consumer from a JetStream stream.\n\n"
+            "**Warning**: this permanently removes the consumer and its tracking state. "
+            "Any unacknowledged messages will not be redelivered. Active subscriptions "
+            "using this consumer will be terminated.";
     }
 
     private *AbstractDataProviderType getRequestTypeImpl() {

@@ -33,30 +33,39 @@ public class NatsJSKVPutRequestDataType inherits HashDataType {
                 "type": StringType,
                 "display_name": "Bucket",
                 "short_desc": "KV bucket name",
-                "desc": "KV bucket name",
+                "desc": "The name of the JetStream KV bucket to store the value in.\n\n"
+                    "The bucket must already exist. Use dot-separated naming conventions "
+                    "for organization (e.g. `config`, `cache`, `feature-flags`).",
                 "required": True,
                 "example_value": "config",
             },
             "key": {
                 "type": StringType,
                 "display_name": "Key",
-                "short_desc": "Key name",
-                "desc": "Key name",
+                "short_desc": "Key name to store the value under",
+                "desc": "The key name to store the value under.\n\n"
+                    "Keys can use dot-separated hierarchies (e.g. `app.database.host`). "
+                    "If the key already exists, its value is updated and a new revision "
+                    "is created.",
                 "required": True,
                 "example_value": "app.setting",
             },
             "data": {
                 "type": DataOrNothingType,
                 "display_name": "Binary Data",
-                "short_desc": "Binary value",
-                "desc": "Binary value",
+                "short_desc": "Binary value to store",
+                "desc": "The binary value to store; use either `data` or `string_data`.\n\n"
+                    "Binary data is stored as-is without encoding. If both `data` and "
+                    "`string_data` are provided, `data` takes precedence.",
             },
             "string_data": {
                 "type": StringOrNothingType,
                 "display_name": "String Data",
-                "short_desc": "String value (alternative to data)",
-                "desc": "String value (alternative to data)",
-                "example_value": "value1",
+                "short_desc": "String value to store",
+                "desc": "The string value to store (alternative to `data`).\n\n"
+                    "Use this for configuration values, JSON, or other text content. "
+                    "The string is converted to binary before storage.",
+                "example_value": "{\"max_connections\": 100}",
             },
         };
     }
@@ -75,7 +84,12 @@ public class NatsJSKVPutResponseDataType inherits HashDataType {
                 "type": IntType,
                 "display_name": "Revision",
                 "short_desc": "The revision number of the put value",
-                "desc": "The revision number of the put value",
+                "desc": "The new revision number assigned to the value after the put "
+                    "operation.\n\n"
+                    "Revision numbers are monotonically increasing across all keys in "
+                    "the bucket. This value can be used for optimistic concurrency "
+                    "control on subsequent updates.",
+                "example_value": 1,
             },
         };
     }
@@ -108,7 +122,11 @@ public class NatsJSKVPutDataProvider inherits AbstractDataProvider {
     }
 
     *string getDesc() {
-        return "Puts a value for a key in a NATS JetStream Key-Value store";
+        return "Stores a value for a key in a JetStream KV bucket.\n\n"
+            "Creates the key if it does not exist, or updates it with a new revision if "
+            "it does. Returns the new `revision` number, which can be used for optimistic "
+            "concurrency control. Ideal for distributed configuration, feature flags, and "
+            "shared state management.";
     }
 
     private *AbstractDataProviderType getRequestTypeImpl() {

@@ -51,26 +51,31 @@ public class NatsDataProvider inherits AbstractDataProvider {
                 "display_name": "URL",
                 "short_desc": "NATS server URL",
                 "type": AbstractDataProviderTypeMap."string",
-                "desc": "NATS server URL (e.g., nats://localhost:4222)",
+                "desc": "The NATS server connection URL.\n\n"
+                    "Format: `nats://host:port` for plaintext or `tls://host:port` for "
+                    "TLS. Default port is `4222`.",
                 "required": True,
             },
             "token": <DataProviderOptionInfo>{
                 "display_name": "Token",
                 "short_desc": "Authentication token",
                 "type": AbstractDataProviderTypeMap."string",
-                "desc": "NATS authentication token",
+                "desc": "Token for NATS token-based authentication.\n\n"
+                    "Mutually exclusive with `username`/`password` authentication.",
             },
             "username": <DataProviderOptionInfo>{
                 "display_name": "Username",
                 "short_desc": "Username for authentication",
                 "type": AbstractDataProviderTypeMap."string",
-                "desc": "Username for NATS authentication",
+                "desc": "Username for NATS username/password authentication.\n\n"
+                    "Must be used together with `password`.",
             },
             "password": <DataProviderOptionInfo>{
                 "display_name": "Password",
                 "short_desc": "Password for authentication",
                 "type": AbstractDataProviderTypeMap."string",
-                "desc": "Password for NATS authentication",
+                "desc": "Password for NATS username/password authentication.\n\n"
+                    "Must be used together with `username`.",
                 "sensitive": True,
             },
         };
@@ -108,7 +113,11 @@ public class NatsDataProvider inherits AbstractDataProvider {
 
     #! Returns the data provider description
     *string getDesc() {
-        return "NATS messaging data provider";
+        return "Root data provider for NATS core messaging.\n\n"
+            "Provides access to publish/subscribe, request/reply, and queue group "
+            "messaging patterns over a NATS connection. For persistent messaging with "
+            "streams, consumers, and key-value storage, use the JetStream data provider "
+            "instead.";
     }
 
     #! Returns a list of child data provider names

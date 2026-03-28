@@ -33,7 +33,9 @@ public class NatsJSStreamInfoRequestDataType inherits HashDataType {
                 "type": StringType,
                 "display_name": "Stream Name",
                 "short_desc": "Stream name to get info for",
-                "desc": "Stream name",
+                "desc": "The name of the JetStream stream to retrieve information for.\n\n"
+                    "The stream must already exist; an error is raised if the stream is "
+                    "not found.",
                 "required": True,
                 "example_value": "ORDERS",
             },
@@ -68,7 +70,11 @@ public class NatsJSStreamInfoDataProvider inherits AbstractDataProvider {
     }
 
     *string getDesc() {
-        return "Gets information about a JetStream stream";
+        return "Retrieves configuration and state information for a JetStream stream.\n\n"
+            "Returns the stream's configuration (subjects, retention policy, storage "
+            "limits) and current state (message count, byte size, consumer count). Use "
+            "this to monitor stream health, verify configuration, and check storage "
+            "utilization.";
     }
 
     private *AbstractDataProviderType getRequestTypeImpl() {

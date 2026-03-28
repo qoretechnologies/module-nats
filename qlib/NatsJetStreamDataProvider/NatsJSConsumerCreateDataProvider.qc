@@ -47,7 +47,11 @@ public class NatsJSConsumerCreateDataProvider inherits AbstractDataProvider {
     }
 
     *string getDesc() {
-        return "Creates a new consumer on a JetStream stream";
+        return "Creates a new consumer on a JetStream stream for message processing.\n\n"
+            "Consumers define how messages are delivered from a stream, including delivery "
+            "policy (all, last, new, by sequence), acknowledgment requirements, and retry "
+            "behavior. Durable consumers survive client disconnects and resume from their "
+            "last acknowledged position.";
     }
 
     private *AbstractDataProviderType getRequestTypeImpl() {

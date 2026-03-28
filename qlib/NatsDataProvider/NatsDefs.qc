@@ -41,25 +41,48 @@ public namespace NatsDataProvider {
                     "type": StringType,
                     "display_name": "Subject",
                     "short_desc": "The subject the message was published to",
-                    "desc": "The subject the message was published to",
+                    "desc": "The NATS subject the message was published to, using "
+                        "dot-separated hierarchical naming (e.g., "
+                        "`orders.created`, `events.user.login`).\n\n"
+                        "Use wildcard subscriptions with `*` (single token) or "
+                        "`>` (multiple tokens) to match multiple subjects.",
+                    "example_value": "orders.created",
                 },
                 "data": {
                     "type": DataOrNothingType,
                     "display_name": "Data",
                     "short_desc": "The message payload",
-                    "desc": "The binary message payload",
+                    "desc": "The binary message payload containing the body of "
+                        "the NATS message.\n\n"
+                        "This field is `NOTHING` if the message was published "
+                        "without a payload. **Applications must handle the "
+                        "deserialization** of the binary data according to the "
+                        "expected format (e.g., JSON, Protobuf, plain text).",
                 },
                 "reply": {
                     "type": StringOrNothingType,
                     "display_name": "Reply Subject",
-                    "short_desc": "The reply subject",
-                    "desc": "The reply subject, if this is a request message",
+                    "short_desc": "The reply subject for request-reply messaging",
+                    "desc": "The reply-to subject used for NATS request-reply "
+                        "patterns. This is an auto-generated inbox address "
+                        "(e.g., `_INBOX.abc123`) set by the requesting "
+                        "client.\n\n"
+                        "When present, the subscriber should publish a "
+                        "response to this subject to complete the "
+                        "request-reply exchange. This field is `NOTHING` for "
+                        "fire-and-forget messages.",
+                    "example_value": "_INBOX.abc123",
                 },
                 "headers": {
                     "type": AutoHashOrNothingType,
                     "display_name": "Headers",
-                    "short_desc": "Message headers",
-                    "desc": "Optional message headers as key-value pairs",
+                    "short_desc": "Optional message headers as key-value pairs",
+                    "desc": "Optional NATS message headers providing "
+                        "out-of-band metadata as key-value pairs.\n\n"
+                        "Headers can carry routing hints, content types, "
+                        "tracing identifiers, or application-specific metadata "
+                        "without modifying the message payload. This field is "
+                        "`NOTHING` when no headers were set by the publisher.",
                 },
             };
         }
@@ -78,14 +101,26 @@ public namespace NatsDataProvider {
                 "err": {
                     "type": StringType,
                     "display_name": "Error Code",
-                    "short_desc": "The error code",
-                    "desc": "The error code",
+                    "short_desc": "The error code identifying the type of failure",
+                    "desc": "The NATS error code string identifying the type of "
+                        "failure that occurred (e.g., "
+                        "`NATS-CONNECTION-ERROR`).\n\n"
+                        "Use this field to implement error-specific handling "
+                        "logic, such as reconnection strategies or alerting "
+                        "based on the error category.",
+                    "example_value": "NATS-CONNECTION-ERROR",
                 },
                 "desc": {
                     "type": StringType,
                     "display_name": "Description",
-                    "short_desc": "The error description",
-                    "desc": "The error description",
+                    "short_desc": "A human-readable description of the error",
+                    "desc": "A human-readable description providing details "
+                        "about the error condition.\n\n"
+                        "This message is suitable for logging and diagnostic "
+                        "purposes. **Do not parse this string "
+                        "programmatically**; use the `err` field for "
+                        "error-type identification instead.",
+                    "example_value": "Connection to NATS server lost",
                 },
             };
         }

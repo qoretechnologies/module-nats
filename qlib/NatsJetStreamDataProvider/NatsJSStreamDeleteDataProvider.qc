@@ -33,7 +33,10 @@ public class NatsJSStreamDeleteRequestDataType inherits HashDataType {
                 "type": StringType,
                 "display_name": "Stream Name",
                 "short_desc": "Stream name to delete",
-                "desc": "Stream name to delete",
+                "desc": "The name of the JetStream stream to delete.\n\n"
+                    "**Warning**: this permanently removes the stream and all its stored "
+                    "messages. Any consumers attached to the stream will also be deleted. "
+                    "This operation cannot be undone.",
                 "required": True,
                 "example_value": "ORDERS",
             },
@@ -67,7 +70,11 @@ public class NatsJSStreamDeleteDataProvider inherits AbstractDataProvider {
     }
 
     *string getDesc() {
-        return "Deletes a JetStream stream";
+        return "Permanently deletes a JetStream stream and all its messages.\n\n"
+            "**Warning**: this is a destructive operation that removes the stream, all "
+            "stored messages, and all associated consumers. This action cannot be undone. "
+            "Consider using purge instead if you only need to remove messages while "
+            "preserving the stream configuration.";
     }
 
     private *AbstractDataProviderType getRequestTypeImpl() {

@@ -36,8 +36,10 @@ public class NatsConnectionProvider inherits ConnectionProvider::AbstractConnect
         const ConnectionScheme = <ConnectionSchemeInfo>{
             "display_name": "NATS Connection",
             "short_desc": "A connection to a NATS server",
-            "desc": "A connection to a NATS messaging server supporting "
-                "publish/subscribe, request/reply, and queue group messaging",
+            "desc": "A connection to a NATS messaging server for publish/subscribe, "
+                "request/reply, and queue group messaging patterns.\n\n"
+                "Supports plaintext (`nats://`) connections with optional token or "
+                "username/password authentication.",
             "cls": Class::forName("NatsDataProvider::NatsConnectionProvider"),
             "schemes": {
                 "nats": True,
@@ -50,20 +52,23 @@ public class NatsConnectionProvider inherits ConnectionProvider::AbstractConnect
                     "display_name": "Token",
                     "short_desc": "Authentication token",
                     "type": "string",
-                    "desc": "NATS authentication token",
+                    "desc": "Token for NATS token-based authentication.\n\n"
+                        "Mutually exclusive with `username`/`password` authentication.",
                     "sensitive": True,
                 },
                 "username": <ConnectionOptionInfo>{
                     "display_name": "Username",
                     "short_desc": "Username for authentication",
                     "type": "string",
-                    "desc": "Username for NATS authentication",
+                    "desc": "Username for NATS username/password authentication.\n\n"
+                        "Must be used together with `password`.",
                 },
                 "password": <ConnectionOptionInfo>{
                     "display_name": "Password",
                     "short_desc": "Password for authentication",
                     "type": "string",
-                    "desc": "Password for NATS authentication",
+                    "desc": "Password for NATS username/password authentication.\n\n"
+                        "Must be used together with `username`.",
                     "sensitive": True,
                 },
             },
@@ -183,7 +188,9 @@ public class NatsTlsConnectionProvider inherits NatsConnectionProvider {
         const ConnectionScheme = <ConnectionSchemeInfo>{
             "display_name": "NATS TLS Connection",
             "short_desc": "A TLS-encrypted connection to a NATS server",
-            "desc": "A TLS-encrypted connection to a NATS messaging server",
+            "desc": "A TLS-encrypted connection to a NATS messaging server.\n\n"
+                "Provides the same messaging capabilities as the plaintext connection "
+                "with transport-layer encryption for secure communication.",
             "cls": Class::forName("NatsDataProvider::NatsTlsConnectionProvider"),
             "schemes": {
                 "natss": True,

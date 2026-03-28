@@ -49,8 +49,11 @@ module NatsDataProvider {
             "name": NatsDataProvider::AppName,
             "display_name": "NATS Server",
             "short_desc": "NATS messaging server",
-            "desc": "Connect to NATS messaging servers for publish/subscribe, "
-                "request/reply, and queue group messaging patterns",
+            "desc": "NATS is a lightweight, high-performance messaging system for "
+                "cloud-native applications.\n\n"
+                "Supports publish/subscribe for event broadcasting, request/reply for "
+                "synchronous microservice communication, and queue groups for "
+                "load-balanced message processing across worker instances.",
             "scheme": "nats",
             "groups": (DataProvider::AppGroup::Messaging, DataProvider::AppGroup::ApiIntegration,),
             "logo": NatsLogo,
@@ -64,8 +67,12 @@ module NatsDataProvider {
             "path": "/publish",
             "action": "publish",
             "display_name": "Publish Message",
-            "short_desc": "Publish a message to a NATS subject",
-            "desc": "Publishes a message to the specified NATS subject",
+            "short_desc": "Publish a fire-and-forget message to a NATS subject",
+            "desc": "Publishes a message to the specified NATS subject using the "
+                "fire-and-forget pattern.\n\n"
+                "The message is delivered to all active subscribers on the `subject`. "
+                "**No delivery confirmation** is provided; if no subscribers are "
+                "listening, the message is silently discarded.",
             "action_code": DPAT_API,
             "groups": "Messaging",
             "options": DataProviderActionCatalog::getActionOptionFromFields(
@@ -85,8 +92,12 @@ module NatsDataProvider {
             "path": "/request",
             "action": "request",
             "display_name": "Request/Reply",
-            "short_desc": "Send a request and wait for a reply",
-            "desc": "Sends a request to a NATS subject and waits for a reply",
+            "short_desc": "Send a synchronous request and wait for a reply",
+            "desc": "Sends a synchronous request to a NATS subject and waits for a "
+                "reply.\n\n"
+                "Implements the request-reply pattern for microservice communication. "
+                "A unique inbox is created automatically. The call blocks until a "
+                "response arrives or `timeout_ms` expires.",
             "action_code": DPAT_API,
             "groups": "Messaging",
             "options": DataProviderActionCatalog::getActionOptionFromFields(
@@ -106,9 +117,12 @@ module NatsDataProvider {
             "path": "/subscribe",
             "action": "subscribe",
             "display_name": "Subscribe to Messages",
-            "short_desc": "Subscribe to messages on a NATS subject",
-            "desc": "Subscribe to messages on a NATS subject with observable event-based "
-                "delivery",
+            "short_desc": "Subscribe to real-time messages on a NATS subject",
+            "desc": "Subscribes to messages on a NATS subject with observable event-based "
+                "delivery.\n\n"
+                "Supports wildcard subjects (`*` for single token, `>` for multi-token). "
+                "Every active subscriber receives every matching message. For "
+                "load-balanced delivery, use queue-subscribe instead.",
             "action_code": DPAT_EVENT,
             "action_val": EVENT_NATS_MESSAGE,
             "groups": "Messaging",
@@ -121,9 +135,12 @@ module NatsDataProvider {
             "path": "/queue-subscribe",
             "action": "queue-subscribe",
             "display_name": "Queue Subscribe",
-            "short_desc": "Subscribe with a queue group for load-balanced delivery",
-            "desc": "Subscribe to messages on a NATS subject with a queue group for "
-                "load-balanced delivery across consumers",
+            "short_desc": "Queue subscribe for load-balanced message delivery",
+            "desc": "Subscribes to messages on a NATS subject with a queue group for "
+                "load-balanced delivery.\n\n"
+                "Each message is delivered to **exactly one** member of the queue group, "
+                "enabling horizontal scaling of message processing across multiple "
+                "worker instances without duplicate processing.",
             "action_code": DPAT_EVENT,
             "action_val": EVENT_NATS_MESSAGE,
             "groups": "Messaging",

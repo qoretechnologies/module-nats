@@ -32,8 +32,9 @@ public class NatsJSKVKeysRequestDataType inherits HashDataType {
             "bucket": {
                 "type": StringType,
                 "display_name": "Bucket",
-                "short_desc": "KV bucket name",
-                "desc": "KV bucket name",
+                "short_desc": "KV bucket name to list keys for",
+                "desc": "The name of the JetStream KV bucket to list keys for.\n\n"
+                    "The bucket must already exist; an error is raised if not found.",
                 "required": True,
                 "example_value": "config",
             },
@@ -54,7 +55,11 @@ public class NatsJSKVKeysResponseDataType inherits HashDataType {
                 "type": SoftListType,
                 "display_name": "Keys",
                 "short_desc": "List of key names in the bucket",
-                "desc": "List of key names in the bucket",
+                "desc": "List of all key names currently stored in the KV bucket.\n\n"
+                    "Only keys with active values are returned; deleted or purged keys "
+                    "are excluded. Keys may use dot-separated hierarchies (e.g. "
+                    "`app.database.host`).",
+                "example_value": ("app.setting", "app.database.host"),
             },
         };
     }
@@ -87,7 +92,10 @@ public class NatsJSKVKeysDataProvider inherits AbstractDataProvider {
     }
 
     *string getDesc() {
-        return "Lists all keys in a NATS JetStream Key-Value store bucket";
+        return "Lists all active keys in a JetStream KV bucket.\n\n"
+            "Returns the names of all keys that have current (non-deleted) values. "
+            "Deleted or purged keys are excluded. Use this for discovering available "
+            "configuration keys, enumerating feature flags, or auditing bucket contents.";
     }
 
     private *AbstractDataProviderType getRequestTypeImpl() {

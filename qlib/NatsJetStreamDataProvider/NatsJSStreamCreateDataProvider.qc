@@ -47,7 +47,11 @@ public class NatsJSStreamCreateDataProvider inherits AbstractDataProvider {
     }
 
     *string getDesc() {
-        return "Creates a new JetStream stream with the given configuration";
+        return "Creates a new JetStream stream for durable message storage.\n\n"
+            "Streams capture messages published to matching subjects and persist them "
+            "according to the configured retention policy, storage limits, and replication "
+            "settings. Use streams for message replay, audit trails, event sourcing, and "
+            "guaranteed delivery to consumers.";
     }
 
     private *AbstractDataProviderType getRequestTypeImpl() {

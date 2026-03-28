@@ -33,15 +33,22 @@ public class NatsQueueSubscribeRequestDataType inherits HashDataType {
                 "type": StringType,
                 "display_name": "Subject",
                 "short_desc": "NATS subject to subscribe to",
-                "desc": "The NATS subject to subscribe to",
+                "desc": "The NATS subject to subscribe to (supports wildcards `*` and `>`).\n\n"
+                    "Use `*` to match a single token (e.g. `tasks.*`) or `>` to match one "
+                    "or more tokens (e.g. `tasks.>` matches `tasks.process`, "
+                    "`tasks.process.high`, etc.).",
                 "required": True,
-                "example_value": "tasks.process",
+                "example_value": "tasks.>",
             },
             "queue": {
                 "type": StringType,
                 "display_name": "Queue Group",
                 "short_desc": "Queue group name for load balancing",
-                "desc": "The queue group name for load-balanced message delivery",
+                "desc": "The queue group name for load-balanced message delivery.\n\n"
+                    "All subscribers sharing the same `queue` group name form a worker "
+                    "pool. Each message is delivered to **exactly one** member of the group, "
+                    "enabling horizontal scaling of message processing across multiple "
+                    "instances without duplicate processing.",
                 "required": True,
                 "example_value": "workers",
             },
@@ -81,7 +88,11 @@ public class NatsQueueSubscribeEventDataProvider inherits AbstractDataProvider, 
     }
 
     *string getDesc() {
-        return "Observable event provider for NATS queue subscriptions";
+        return "Observable event provider for NATS queue group subscriptions.\n\n"
+            "Provides load-balanced message delivery across multiple subscriber instances. "
+            "Each message matching the `subject` is delivered to **exactly one** member of "
+            "the `queue` group, making this ideal for scaling out worker pools and "
+            "preventing duplicate processing.";
     }
 
     setObserverRequest(*hash<auto> req) {

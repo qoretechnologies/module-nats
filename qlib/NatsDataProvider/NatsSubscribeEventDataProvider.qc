@@ -90,7 +90,11 @@ public class NatsSubscribeEventDataProvider inherits AbstractDataProvider, Delay
     }
 
     *string getDesc() {
-        return "Observable event provider for NATS subscriptions";
+        return "Observable event provider for real-time NATS message delivery.\n\n"
+            "Subscribes to a NATS `subject` and raises events for each incoming message. "
+            "Supports wildcard subjects: `*` matches a single token, `>` matches one or "
+            "more tokens. Every active subscriber receives every matching message. For "
+            "load-balanced delivery across multiple workers, use queue-subscribe instead.";
     }
 
     setObserverRequest(*hash<auto> req) {
