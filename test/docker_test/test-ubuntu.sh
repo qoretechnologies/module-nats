@@ -26,8 +26,14 @@ echo "export QORE_GID=999" >> ${ENV_FILE}
 export MAKE_JOBS=4
 
 # install nats.c client library from source
-NATS_C_VERSION=v3.10.0
+NATS_C_VERSION=v3.12.0
 git clone --depth 1 --branch ${NATS_C_VERSION} https://github.com/nats-io/nats.c.git /tmp/nats-c
+
+# patch nats.c bug: _update_last_error() called unconditionally even when
+# err is NULL, causing NumErrors to increment on every successful request
+sed -i 's/    _update_last_error(ep, err);/    if (err != NULL)\n        _update_last_error(ep, err);/' \
+    /tmp/nats-c/src/micro_endpoint.c
+
 mkdir -p /tmp/nats-c/build
 cd /tmp/nats-c/build
 cmake .. -DCMAKE_INSTALL_PREFIX=${INSTALL_PREFIX} -DNATS_BUILD_STREAMING=OFF -DBUILD_TESTING=OFF

@@ -180,9 +180,7 @@ public class MicroTest inherits QUnit::Test {
         assertTrue(exists stats.endpoints);
         assertTrue(stats.endpoints.size() >= 1);
         assertEq(3, stats.endpoints[0].num_requests);
-        # num_errors may be non-zero due to unpatched nats.c bug where
-        # _update_last_error is called unconditionally on every request
-        assertTrue(stats.endpoints[0].num_errors >= 0);
+        assertEq(0, stats.endpoints[0].num_errors);
         assertTrue(stats.endpoints[0].processing_time_ns >= 0);
 
         svc.stop();
@@ -277,9 +275,7 @@ public class MicroTest inherits QUnit::Test {
         # Check that error stats are recorded
         hash<NatsMicroServiceStats> stats = svc.getStats();
         assertEq(1, stats.endpoints[0].num_requests);
-        # num_errors may be 1 (patched nats.c) or 2 (unpatched nats.c bug:
-        # _update_last_error called unconditionally, incrementing on success too)
-        assertTrue(stats.endpoints[0].num_errors >= 1);
+        assertEq(1, stats.endpoints[0].num_errors);
         assertTrue(stats.endpoints[0].last_error.size() > 0);
 
         svc.stop();
