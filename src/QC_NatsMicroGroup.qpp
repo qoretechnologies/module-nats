@@ -1,0 +1,90 @@
+/* -*- mode: c++; indent-tabs-mode: nil -*- */
+/** @file QC_NatsMicroGroup.cpp defines the %Qore NatsMicroGroup class */
+/*
+    Qore nats module
+
+    Copyright (C) 2026 Qore Technologies, s.r.o.
+
+    Permission is hereby granted, free of charge, to any person obtaining a
+    copy of this software and associated documentation files (the "Software"),
+    to deal in the Software without restriction, including without limitation
+    the rights to use, copy, modify, merge, publish, distribute, sublicense,
+    and/or sell copies of the Software, and to permit persons to whom the
+    Software is furnished to do so, subject to the following conditions:
+
+    The above copyright notice and this permission notice shall be included in
+    all copies or substantial portions of the Software.
+
+    THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+    IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+    FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+    AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+    DEALINGS IN THE SOFTWARE.
+*/
+
+#include "nats-module.h"
+#include "QC_NatsMicroGroup.h"
+
+//! The NatsMicroGroup class provides endpoint group management for NATS microservices
+/**
+    Groups organize endpoints under a common subject prefix. For example, endpoints
+    added to a group with prefix \c "api" will have their subjects prefixed with
+    \c "api.".
+
+    @par Example:
+    @code{.py}
+NatsMicroGroup grp = svc.addGroup("api");
+NatsMicroGroup sub_grp = grp.addGroup("v2");
+sub_grp.addEndpoint(<NatsMicroEndpointConfig>{
+    "name": "users",
+    "handler": *data sub (hash<auto> req) { return "user list"; },
+});
+# endpoint listens on "api.v2.users"
+    @endcode
+
+    @note NatsMicroGroup objects are created by @ref NatsMicroService::addGroup()
+    or @ref NatsMicroGroup::addGroup() -- not directly instantiated.
+
+    @since %nats 1.0
+*/
+qclass NatsMicroGroup [arg=QoreNatsMicroGroup* mgrp; ns=Qore::Nats; dom=NETWORK];
+
+//! Adds a sub-group with a subject prefix
+/** @param prefix the subject prefix for the sub-group
+
+    @return a new @ref NatsMicroGroup object
+
+    @throw NATS-MICRO-ERROR if the group creation fails
+
+    @since %nats 1.0
+*/
+NatsMicroGroup NatsMicroGroup::addGroup(string prefix) {
+    QoreNatsMicroGroup* g = mgrp->addGroup(prefix->c_str(), xsink);
+    if (!g) {
+        return QoreValue();
+    }
+    return new QoreObject(QC_NATSMICROGROUP, getProgram(), g);
+}
+
+//! Adds an endpoint to the group
+/** The endpoint's subject will be prefixed with the group's prefix.
+
+    @param config the endpoint configuration (see @ref NatsMicroEndpointConfig)
+
+    @throw NATS-MICRO-ERROR if the endpoint creation fails
+
+    @par Example:
+    @code{.py}
+grp.addEndpoint(<NatsMicroEndpointConfig>{
+    "name": "hello",
+    "handler": *data sub (hash<auto> req) { return "world"; },
+});
+    @endcode
+
+    @since %nats 1.0
+*/
+nothing NatsMicroGroup::addEndpoint(hash<NatsMicroEndpointConfig> config) {
+    mgrp->addEndpoint(config, getProgram(), xsink);
+}

@@ -30,6 +30,8 @@
 #include "QC_JetStreamContext.h"
 #include "QC_NatsKeyValueWatcher.h"
 #include "QC_NatsKeyValueStore.h"
+#include "QC_NatsMicroService.h"
+#include "QC_NatsMicroGroup.h"
 
 static void nats_module_init(QoreModuleInitContext& ctx, ExceptionSink& xsink);
 static void nats_module_ns_init(QoreNamespace* rns, QoreNamespace* qns, ExceptionSink& xsink);
@@ -74,6 +76,12 @@ const TypedHashDecl* hashdeclNatsJSSubOptions = nullptr;
 const TypedHashDecl* hashdeclNatsSubscriptionStats = nullptr;
 const TypedHashDecl* hashdeclNatsKVBucketStatus = nullptr;
 const TypedHashDecl* hashdeclNatsKVWatchOptions = nullptr;
+const TypedHashDecl* hashdeclNatsMicroEndpointConfig = nullptr;
+const TypedHashDecl* hashdeclNatsMicroServiceConfig = nullptr;
+const TypedHashDecl* hashdeclNatsMicroEndpointInfo = nullptr;
+const TypedHashDecl* hashdeclNatsMicroServiceInfo = nullptr;
+const TypedHashDecl* hashdeclNatsMicroEndpointStats = nullptr;
+const TypedHashDecl* hashdeclNatsMicroServiceStats = nullptr;
 
 QoreNamespace NatsNs("Qore::Nats");
 
@@ -111,6 +119,14 @@ static void nats_module_init(QoreModuleInitContext& ctx, ExceptionSink& xsink) {
     hashdeclNatsKVBucketStatus = init_hashdecl_NatsKVBucketStatus(NatsNs);
     hashdeclNatsKVWatchOptions = init_hashdecl_NatsKVWatchOptions(NatsNs);
 
+    // Initialize Phase 7 hashdecls (Microservices)
+    hashdeclNatsMicroEndpointConfig = init_hashdecl_NatsMicroEndpointConfig(NatsNs);
+    hashdeclNatsMicroServiceConfig = init_hashdecl_NatsMicroServiceConfig(NatsNs);
+    hashdeclNatsMicroEndpointInfo = init_hashdecl_NatsMicroEndpointInfo(NatsNs);
+    hashdeclNatsMicroServiceInfo = init_hashdecl_NatsMicroServiceInfo(NatsNs);
+    hashdeclNatsMicroEndpointStats = init_hashdecl_NatsMicroEndpointStats(NatsNs);
+    hashdeclNatsMicroServiceStats = init_hashdecl_NatsMicroServiceStats(NatsNs);
+
     // Initialize classes in dependency order:
     // NatsSubscription has no class deps
     NatsNs.addSystemClass(initNatsSubscriptionClass(NatsNs));
@@ -120,7 +136,11 @@ static void nats_module_init(QoreModuleInitContext& ctx, ExceptionSink& xsink) {
     NatsNs.addSystemClass(initNatsKeyValueStoreClass(NatsNs));
     // JetStreamContext depends on NatsSubscription, NatsKeyValueStore
     NatsNs.addSystemClass(initJetStreamContextClass(NatsNs));
-    // NatsConnection depends on NatsSubscription, JetStreamContext
+    // NatsMicroGroup has no class deps
+    NatsNs.addSystemClass(initNatsMicroGroupClass(NatsNs));
+    // NatsMicroService depends on NatsMicroGroup (addGroup returns it)
+    NatsNs.addSystemClass(initNatsMicroServiceClass(NatsNs));
+    // NatsConnection depends on NatsSubscription, JetStreamContext, NatsMicroService
     NatsNs.addSystemClass(initNatsConnectionClass(NatsNs));
 }
 
@@ -129,6 +149,6 @@ static void nats_module_ns_init(QoreNamespace* rns, QoreNamespace* qns, Exceptio
 }
 
 static void nats_module_delete() {
-    // nats.c library cleanup
-    nats_Close();
+    // nats.c library cleanup; wait for async operations to finish
+    nats_CloseAndWait(5000);
 }

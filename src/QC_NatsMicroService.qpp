@@ -1,0 +1,164 @@
+/* -*- mode: c++; indent-tabs-mode: nil -*- */
+/** @file QC_NatsMicroService.cpp defines the %Qore NatsMicroService class */
+/*
+    Qore nats module
+
+    Copyright (C) 2026 Qore Technologies, s.r.o.
+
+    Permission is hereby granted, free of charge, to any person obtaining a
+    copy of this software and associated documentation files (the "Software"),
+    to deal in the Software without restriction, including without limitation
+    the rights to use, copy, modify, merge, publish, distribute, sublicense,
+    and/or sell copies of the Software, and to permit persons to whom the
+    Software is furnished to do so, subject to the following conditions:
+
+    The above copyright notice and this permission notice shall be included in
+    all copies or substantial portions of the Software.
+
+    THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+    IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+    FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+    AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+    DEALINGS IN THE SOFTWARE.
+*/
+
+#include "nats-module.h"
+#include "QC_NatsMicroService.h"
+#include "QC_NatsMicroGroup.h"
+
+//! The NatsMicroService class provides a NATS microservice
+/**
+    NATS microservices are a lightweight framework for building request/reply
+    services. They support automatic service discovery, monitoring, and stats
+    collection via built-in \c $SRV subjects.
+
+    @par Example: Create a simple echo microservice
+    @code{.py}
+NatsConnection conn("nats://localhost:4222");
+NatsMicroService svc = conn.createMicroService(<NatsMicroServiceConfig>{
+    "name": "echo-svc",
+    "version": "1.0.0",
+    "description": "Echo microservice",
+    "endpoint": <NatsMicroEndpointConfig>{
+        "name": "echo",
+        "subject": "echo",
+        "handler": *data sub (hash<auto> req) { return req.data; },
+    },
+});
+# ... service handles requests until stopped
+svc.stop();
+    @endcode
+
+    @note NatsMicroService objects are created by @ref NatsConnection::createMicroService()
+    -- not directly instantiated.
+
+    @since %nats 1.0
+*/
+qclass NatsMicroService [arg=QoreNatsMicroService* msvc; ns=Qore::Nats; dom=NETWORK];
+
+//! Stops the microservice
+/** After stopping, the service will no longer accept requests.
+
+    @throw NATS-MICRO-ERROR if the stop fails
+
+    @since %nats 1.0
+*/
+nothing NatsMicroService::stop() {
+    msvc->stop(xsink);
+}
+
+//! Returns True if the microservice has been stopped
+/** @return True if the service is stopped
+
+    @since %nats 1.0
+*/
+bool NatsMicroService::isStopped() [flags=RET_VALUE_ONLY] {
+    return msvc->isStopped();
+}
+
+//! Returns information about the microservice
+/** @return a @ref NatsMicroServiceInfo hash with service metadata
+
+    @throw NATS-MICRO-ERROR if the info retrieval fails
+
+    @par Example:
+    @code{.py}
+hash<NatsMicroServiceInfo> info = svc.getInfo();
+printf("Service: %s v%s (id: %s)\n", info.name, info.version, info.id);
+    @endcode
+
+    @since %nats 1.0
+*/
+hash<NatsMicroServiceInfo> NatsMicroService::getInfo() [flags=RET_VALUE_ONLY] {
+    return msvc->getInfo(xsink);
+}
+
+//! Returns statistics about the microservice
+/** @return a @ref NatsMicroServiceStats hash with endpoint-level stats
+
+    @throw NATS-MICRO-ERROR if the stats retrieval fails
+
+    @par Example:
+    @code{.py}
+hash<NatsMicroServiceStats> stats = svc.getStats();
+foreach hash<NatsMicroEndpointStats> ep in (stats.endpoints) {
+    printf("Endpoint %s: %d requests, %d errors\n", ep.name, ep.num_requests, ep.num_errors);
+}
+    @endcode
+
+    @since %nats 1.0
+*/
+hash<NatsMicroServiceStats> NatsMicroService::getStats() [flags=RET_VALUE_ONLY] {
+    return msvc->getStats(xsink);
+}
+
+//! Adds an endpoint group with a subject prefix
+/** Groups organize endpoints under a common subject prefix.
+
+    @param prefix the subject prefix for the group
+
+    @return a new @ref NatsMicroGroup object
+
+    @throw NATS-MICRO-ERROR if the group creation fails
+
+    @par Example:
+    @code{.py}
+NatsMicroGroup grp = svc.addGroup("api");
+grp.addEndpoint(<NatsMicroEndpointConfig>{
+    "name": "hello",
+    "handler": *data sub (hash<auto> req) { return "world"; },
+});
+# endpoint listens on "api.hello"
+    @endcode
+
+    @since %nats 1.0
+*/
+NatsMicroGroup NatsMicroService::addGroup(string prefix) {
+    QoreNatsMicroGroup* g = msvc->addGroup(prefix->c_str(), xsink);
+    if (!g) {
+        return QoreValue();
+    }
+    return new QoreObject(QC_NATSMICROGROUP, getProgram(), g);
+}
+
+//! Adds an endpoint to the microservice
+/** @param config the endpoint configuration (see @ref NatsMicroEndpointConfig)
+
+    @throw NATS-MICRO-ERROR if the endpoint creation fails
+
+    @par Example:
+    @code{.py}
+svc.addEndpoint(<NatsMicroEndpointConfig>{
+    "name": "greet",
+    "subject": "greet",
+    "handler": *data sub (hash<auto> req) { return "hello"; },
+});
+    @endcode
+
+    @since %nats 1.0
+*/
+nothing NatsMicroService::addEndpoint(hash<NatsMicroEndpointConfig> config) {
+    msvc->addEndpoint(config, getProgram(), xsink);
+}

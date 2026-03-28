@@ -41,10 +41,20 @@ if(NOT NATS_INCLUDE_DIR OR NOT NATS_LIBRARY)
     FetchContent_Declare(
         nats_c
         GIT_REPOSITORY https://github.com/nats-io/nats.c.git
-        GIT_TAG        v3.10.0
+        GIT_TAG        v3.12.0
         GIT_SHALLOW    TRUE
     )
     FetchContent_MakeAvailable(nats_c)
+
+    # Patch nats.c bug: _update_last_error() called unconditionally even when
+    # err is NULL, causing NumErrors to increment on every successful request.
+    # See: https://github.com/nats-io/nats.c/issues/XXX
+    file(READ "${nats_c_SOURCE_DIR}/src/micro_endpoint.c" _micro_ep_src)
+    string(REPLACE
+        "    _update_last_error(ep, err);\n    micro_unlock_endpoint(ep);\n\n    microError_Destroy(err);"
+        "    if (err != NULL)\n        _update_last_error(ep, err);\n    micro_unlock_endpoint(ep);\n\n    microError_Destroy(err);"
+        _micro_ep_src "${_micro_ep_src}")
+    file(WRITE "${nats_c_SOURCE_DIR}/src/micro_endpoint.c" "${_micro_ep_src}")
     # nats.c source puts headers in src/nats.h, but installed layout is nats/nats.h.
     # Create a symlink so #include <nats/nats.h> works from the source tree.
     file(MAKE_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/nats_include")
@@ -72,6 +82,8 @@ set(QPP_SRC
     src/QC_JetStreamContext.qpp
     src/QC_NatsKeyValueWatcher.qpp
     src/QC_NatsKeyValueStore.qpp
+    src/QC_NatsMicroService.qpp
+    src/QC_NatsMicroGroup.qpp
 )
 
 set(CPP_SRC
@@ -82,6 +94,8 @@ set(CPP_SRC
     src/QoreNatsJetStream.cpp
     src/QoreNatsKVStore.cpp
     src/QoreNatsKVWatcher.cpp
+    src/QoreNatsMicroService.cpp
+    src/QoreNatsMicroGroup.cpp
 )
 
 qore_wrap_qpp_value(QPP_SOURCES METALIST QPP_META_SRC ${QPP_SRC})

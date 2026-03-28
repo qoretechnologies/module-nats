@@ -27,6 +27,7 @@
 #include "QoreNatsConnection.h"
 #include "QoreNatsSubscription.h"
 #include "QoreNatsJetStream.h"
+#include "QoreNatsMicroService.h"
 
 QoreNatsConnection::QoreNatsConnection(const char* url, ExceptionSink* xsink) {
     // Check sandbox network access
@@ -1345,4 +1346,13 @@ QoreHashNode* QoreNatsConnection::getConnectionInfo(ExceptionSink* xsink) {
     }
 
     return h.release();
+}
+
+QoreNatsMicroService* QoreNatsConnection::createMicroService(const QoreHashNode* config,
+        QoreProgram* pgm, ExceptionSink* xsink) {
+    if (!conn) {
+        xsink->raiseException("NATS-MICRO-ERROR", "not connected");
+        return nullptr;
+    }
+    return new QoreNatsMicroService(conn, config, pgm, xsink);
 }

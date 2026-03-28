@@ -50,6 +50,15 @@ DLLLOCAL void nats_error(ExceptionSink* xsink, const char* err, natsStatus s,
 DLLLOCAL void nats_js_error(ExceptionSink* xsink, const char* err, natsStatus s,
     jsErrCode jerr, const char* fmt, ...);
 
+//! Raise a Qore exception from a microError
+/** @param xsink the exception sink
+    @param err the Qore exception error code (e.g. "NATS-MICRO-ERROR")
+    @param me the microError (will be destroyed by this function)
+    @param fmt printf-style format string for the description
+*/
+DLLLOCAL void nats_micro_error(ExceptionSink* xsink, const char* err, microError* me,
+    const char* fmt, ...);
+
 //! Convert a natsMsg to a hash<NatsMsgInfo>
 /** @param msg the NATS message (caller retains ownership)
     @param xsink the exception sink

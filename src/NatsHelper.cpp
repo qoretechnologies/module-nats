@@ -69,6 +69,28 @@ void nats_js_error(ExceptionSink* xsink, const char* err, natsStatus s,
     xsink->raiseException(err, desc.c_str());
 }
 
+void nats_micro_error(ExceptionSink* xsink, const char* err, microError* me,
+        const char* fmt, ...) {
+    QoreString desc;
+    while (true) {
+        va_list args;
+        va_start(args, fmt);
+        int rc = desc.vsprintf(fmt, args);
+        va_end(args);
+        if (!rc) {
+            break;
+        }
+    }
+    if (me) {
+        char buf[256];
+        microError_String(me, buf, sizeof(buf));
+        desc.concat(": ");
+        desc.concat(buf);
+        microError_Destroy(me);
+    }
+    xsink->raiseException(err, desc.c_str());
+}
+
 QoreHashNode* nats_msg_to_hash(natsMsg* msg, ExceptionSink* xsink) {
     ReferenceHolder<QoreHashNode> h(new QoreHashNode(hashdeclNatsMsgInfo, xsink), xsink);
     if (*xsink) {

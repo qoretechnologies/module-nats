@@ -808,3 +808,111 @@ hashdecl Qore::Nats::NatsKVWatchOptions {
     //! If True, skip initial value snapshot and only receive updates
     *bool updates_only;
 }
+
+//! Configuration for a NATS microservice endpoint
+/** @since %nats 1.0
+*/
+hashdecl Qore::Nats::NatsMicroEndpointConfig {
+    //! Endpoint name (required)
+    string name;
+
+    //! Subject to listen on (defaults to name if omitted)
+    *string subject;
+
+    //! Request handler closure; receives a hash with \c "subject" and \c "data" keys, returns \c *data for the response
+    code handler;
+}
+
+//! NATS microservice configuration
+/** @since %nats 1.0
+*/
+hashdecl Qore::Nats::NatsMicroServiceConfig {
+    //! Service name (required)
+    string name;
+
+    //! Service version in semver format (required)
+    string version;
+
+    //! Service description
+    *string description;
+
+    //! Default endpoint configuration
+    *hash<Qore::Nats::NatsMicroEndpointConfig> endpoint;
+}
+
+//! NATS microservice endpoint information
+/** @since %nats 1.0
+*/
+hashdecl Qore::Nats::NatsMicroEndpointInfo {
+    //! Endpoint name
+    string name;
+
+    //! Subject the endpoint listens on
+    string subject;
+}
+
+//! NATS microservice information
+/** @since %nats 1.0
+*/
+hashdecl Qore::Nats::NatsMicroServiceInfo {
+    //! Service name
+    string name;
+
+    //! Service version
+    string version;
+
+    //! Service description
+    *string description;
+
+    //! Service instance ID
+    string id;
+
+    //! List of endpoint info
+    *list<hash<Qore::Nats::NatsMicroEndpointInfo>> endpoints;
+}
+
+//! NATS microservice endpoint statistics
+/** @since %nats 1.0
+*/
+hashdecl Qore::Nats::NatsMicroEndpointStats {
+    //! Endpoint name
+    string name;
+
+    //! Subject the endpoint listens on
+    string subject;
+
+    //! Number of requests processed
+    int num_requests;
+
+    //! Number of errors
+    int num_errors;
+
+    //! Total processing time in nanoseconds
+    int processing_time_ns;
+
+    //! Average processing time in nanoseconds
+    int average_processing_time_ns;
+
+    //! Last error message
+    *string last_error;
+}
+
+//! NATS microservice statistics
+/** @since %nats 1.0
+*/
+hashdecl Qore::Nats::NatsMicroServiceStats {
+    //! Service name
+    string name;
+
+    //! Service version
+    string version;
+
+    //! Service instance ID
+    string id;
+
+    //! When the service was started
+    *date started;
+
+    //! List of endpoint stats
+    *list<hash<Qore::Nats::NatsMicroEndpointStats>> endpoints;
+}

@@ -1,0 +1,360 @@
+#!/usr/bin/env qore
+# -*- mode: qore; indent-tabs-mode: nil -*-
+
+/*
+    Copyright (C) 2026 Qore Technologies, s.r.o., all rights reserved
+
+    Permission is hereby granted, free of charge, to any person obtaining a
+    copy of this software and associated documentation files (the "Software"),
+    to deal in the Software without restriction, including without limitation
+    the rights to use, copy, modify, merge, publish, distribute, sublicense,
+    and/or sell copies of the Software, and to permit persons to whom the
+    Software is furnished to do so, subject to the following conditions:
+
+    The above copyright notice and this permission notice shall be included in
+    all copies or substantial portions of the Software.
+
+    THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+    IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+    FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+    AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+    DEALINGS IN THE SOFTWARE.
+
+    NATS module microservices test suite
+*/
+
+%modern
+
+%requires QUnit
+%requires nats
+
+%exec-class MicroTest
+
+public class MicroTest inherits QUnit::Test {
+    private {
+        int port;
+        string url;
+        *int nats_pid;
+        string pid_file;
+    }
+
+    constructor() : QUnit::Test("MicroTest", "1.0") {
+        addTestCase("basic micro service test", \basicServiceTest());
+        addTestCase("micro service info test", \serviceInfoTest());
+        addTestCase("micro service stats test", \serviceStatsTest());
+        addTestCase("micro group test", \groupTest());
+        addTestCase("micro sub-group test", \subGroupTest());
+        addTestCase("micro add endpoint test", \addEndpointTest());
+        addTestCase("micro error handling test", \errorHandlingTest());
+        addTestCase("micro string response test", \stringResponseTest());
+        addTestCase("micro stop test", \stopTest());
+        addTestCase("micro no endpoint test", \noEndpointTest());
+
+        # negative tests
+        addTestCase("micro invalid config test", \invalidConfigTest());
+
+        set_return_value(main());
+    }
+
+    private startServer() {
+        port = 10000 + (rand() % 50000);
+        pid_file = sprintf("/tmp/nats-micro-test-%d.pid", port);
+        list<string> args = ("nats-server", "-p", string(port), "-a", "127.0.0.1",
+            "--pid", pid_file);
+        string cmd = foldl $1 + " " + $2, args;
+        cmd += " &";
+        system(cmd);
+        # Wait for pid file
+        for (int i = 0; i < 50; ++i) {
+            if (is_file(pid_file)) {
+                nats_pid = trim(ReadOnlyFile::readTextFile(pid_file)).toInt();
+                break;
+            }
+            usleep(100000);
+        }
+        if (!nats_pid) {
+            throw "NATS-TEST-ERROR", sprintf("nats-server failed to start on port %d", port);
+        }
+        url = sprintf("nats://127.0.0.1:%d", port);
+    }
+
+    private stopServer() {
+        if (nats_pid) {
+            kill(nats_pid, SIGTERM);
+            # Wait for process to exit
+            for (int i = 0; i < 50; ++i) {
+                if (!is_file(sprintf("/proc/%d/status", nats_pid))) {
+                    break;
+                }
+                usleep(100000);
+            }
+            nats_pid = NOTHING;
+        }
+        if (is_file(pid_file)) {
+            unlink(pid_file);
+        }
+    }
+
+    globalSetUp() {
+        startServer();
+    }
+
+    globalTearDown() {
+        stopServer();
+    }
+
+    basicServiceTest() {
+        NatsConnection conn(url);
+        NatsMicroService svc = conn.createMicroService(cast<hash<NatsMicroServiceConfig>>({
+            "name": "test-echo",
+            "version": "1.0.0",
+            "description": "Echo microservice",
+            "endpoint": cast<hash<NatsMicroEndpointConfig>>({
+                "name": "echo",
+                "subject": "test.echo",
+                "handler": *data sub (hash<auto> req) { return req.data; },
+            }),
+        }));
+
+        assertFalse(svc.isStopped());
+
+        # Send a request and verify echo
+        hash<NatsMsgInfo> reply = conn.request("test.echo", binary("hello"), 5s);
+        assertEq(binary("hello"), reply.data);
+
+        svc.stop();
+        assertTrue(svc.isStopped());
+        conn.close();
+    }
+
+    serviceInfoTest() {
+        NatsConnection conn(url);
+        NatsMicroService svc = conn.createMicroService(cast<hash<NatsMicroServiceConfig>>({
+            "name": "info-svc",
+            "version": "2.0.0",
+            "description": "Info test",
+            "endpoint": cast<hash<NatsMicroEndpointConfig>>({
+                "name": "ping",
+                "subject": "test.info.ping",
+                "handler": *data sub (hash<auto> req) { return "pong"; },
+            }),
+        }));
+
+        hash<NatsMicroServiceInfo> info = svc.getInfo();
+        assertEq("info-svc", info.name);
+        assertEq("2.0.0", info.version);
+        assertEq("Info test", info.description);
+        assertTrue(info.id.size() > 0);
+        assertTrue(exists info.endpoints);
+        assertTrue(info.endpoints.size() >= 1);
+        assertEq("ping", info.endpoints[0].name);
+
+        svc.stop();
+        conn.close();
+    }
+
+    serviceStatsTest() {
+        NatsConnection conn(url);
+        NatsMicroService svc = conn.createMicroService(cast<hash<NatsMicroServiceConfig>>({
+            "name": "stats-svc",
+            "version": "1.0.0",
+            "endpoint": cast<hash<NatsMicroEndpointConfig>>({
+                "name": "work",
+                "subject": "test.stats.work",
+                "handler": *data sub (hash<auto> req) { return "done"; },
+            }),
+        }));
+
+        # Send some requests
+        for (int i = 0; i < 3; ++i) {
+            conn.request("test.stats.work", binary("job"), 5s);
+        }
+
+        hash<NatsMicroServiceStats> stats = svc.getStats();
+        assertEq("stats-svc", stats.name);
+        assertEq("1.0.0", stats.version);
+        assertTrue(stats.id.size() > 0);
+        assertTrue(exists stats.started);
+        assertTrue(exists stats.endpoints);
+        assertTrue(stats.endpoints.size() >= 1);
+        assertEq(3, stats.endpoints[0].num_requests);
+        assertEq(0, stats.endpoints[0].num_errors);
+        assertTrue(stats.endpoints[0].processing_time_ns >= 0);
+
+        svc.stop();
+        conn.close();
+    }
+
+    groupTest() {
+        NatsConnection conn(url);
+        NatsMicroService svc = conn.createMicroService(cast<hash<NatsMicroServiceConfig>>({
+            "name": "group-svc",
+            "version": "1.0.0",
+        }));
+
+        NatsMicroGroup grp = svc.addGroup("api");
+        grp.addEndpoint(cast<hash<NatsMicroEndpointConfig>>({
+            "name": "hello",
+            "subject": "hello",
+            "handler": *data sub (hash<auto> req) { return "world"; },
+        }));
+
+        hash<NatsMsgInfo> reply = conn.request("api.hello", binary(""), 5s);
+        assertEq("world", reply.data.toString());
+
+        svc.stop();
+        conn.close();
+    }
+
+    subGroupTest() {
+        NatsConnection conn(url);
+        NatsMicroService svc = conn.createMicroService(cast<hash<NatsMicroServiceConfig>>({
+            "name": "subgroup-svc",
+            "version": "1.0.0",
+        }));
+
+        NatsMicroGroup grp = svc.addGroup("api");
+        NatsMicroGroup v2 = grp.addGroup("v2");
+        v2.addEndpoint(cast<hash<NatsMicroEndpointConfig>>({
+            "name": "users",
+            "subject": "users",
+            "handler": *data sub (hash<auto> req) { return "user-list"; },
+        }));
+
+        hash<NatsMsgInfo> reply = conn.request("api.v2.users", binary(""), 5s);
+        assertEq("user-list", reply.data.toString());
+
+        svc.stop();
+        conn.close();
+    }
+
+    addEndpointTest() {
+        NatsConnection conn(url);
+        NatsMicroService svc = conn.createMicroService(cast<hash<NatsMicroServiceConfig>>({
+            "name": "endpoint-svc",
+            "version": "1.0.0",
+        }));
+
+        svc.addEndpoint(cast<hash<NatsMicroEndpointConfig>>({
+            "name": "greet",
+            "subject": "test.greet",
+            "handler": *data sub (hash<auto> req) { return "hi"; },
+        }));
+
+        hash<NatsMsgInfo> reply = conn.request("test.greet", binary(""), 5s);
+        assertEq("hi", reply.data.toString());
+
+        # Check that the endpoint shows up in info
+        hash<NatsMicroServiceInfo> info = svc.getInfo();
+        assertTrue(info.endpoints.size() >= 1);
+
+        svc.stop();
+        conn.close();
+    }
+
+    errorHandlingTest() {
+        NatsConnection conn(url);
+        NatsMicroService svc = conn.createMicroService(cast<hash<NatsMicroServiceConfig>>({
+            "name": "error-svc",
+            "version": "1.0.0",
+            "endpoint": cast<hash<NatsMicroEndpointConfig>>({
+                "name": "fail",
+                "subject": "test.fail",
+                "handler": *data sub (hash<auto> req) {
+                    throw "TEST-ERROR", "intentional error";
+                },
+            }),
+        }));
+
+        # The request should still get a response (NATS micro framework converts errors)
+        hash<NatsMsgInfo> reply = conn.request("test.fail", binary(""), 5s);
+        assertTrue(exists reply);
+
+        # Check that error stats are recorded
+        hash<NatsMicroServiceStats> stats = svc.getStats();
+        assertEq(1, stats.endpoints[0].num_requests);
+        assertEq(1, stats.endpoints[0].num_errors);
+        assertTrue(stats.endpoints[0].last_error.size() > 0);
+
+        svc.stop();
+        conn.close();
+    }
+
+    stringResponseTest() {
+        NatsConnection conn(url);
+        NatsMicroService svc = conn.createMicroService(cast<hash<NatsMicroServiceConfig>>({
+            "name": "string-svc",
+            "version": "1.0.0",
+            "endpoint": cast<hash<NatsMicroEndpointConfig>>({
+                "name": "upper",
+                "subject": "test.upper",
+                "handler": *data sub (hash<auto> req) {
+                    return req.data ? req.data.toString().upr() : "";
+                },
+            }),
+        }));
+
+        hash<NatsMsgInfo> reply = conn.request("test.upper", binary("hello world"), 5s);
+        assertEq("HELLO WORLD", reply.data.toString());
+
+        svc.stop();
+        conn.close();
+    }
+
+    stopTest() {
+        NatsConnection conn(url);
+        NatsMicroService svc = conn.createMicroService(cast<hash<NatsMicroServiceConfig>>({
+            "name": "stop-svc",
+            "version": "1.0.0",
+            "endpoint": cast<hash<NatsMicroEndpointConfig>>({
+                "name": "noop",
+                "subject": "test.stop.noop",
+                "handler": *data sub (hash<auto> req) { return; },
+            }),
+        }));
+
+        assertFalse(svc.isStopped());
+        svc.stop();
+        assertTrue(svc.isStopped());
+
+        # Double stop should not crash
+        svc.stop();
+        assertTrue(svc.isStopped());
+
+        conn.close();
+    }
+
+    noEndpointTest() {
+        NatsConnection conn(url);
+
+        # Service with no default endpoint, endpoints added later
+        NatsMicroService svc = conn.createMicroService(cast<hash<NatsMicroServiceConfig>>({
+            "name": "bare-svc",
+            "version": "1.0.0",
+            "description": "Service with no default endpoint",
+        }));
+
+        assertFalse(svc.isStopped());
+
+        hash<NatsMicroServiceInfo> info = svc.getInfo();
+        assertEq("bare-svc", info.name);
+
+        svc.stop();
+        conn.close();
+    }
+
+    invalidConfigTest() {
+        NatsConnection conn(url);
+
+        # Missing version should fail
+        assertThrows("NATS-MICRO-ERROR", sub () {
+            conn.createMicroService(cast<hash<NatsMicroServiceConfig>>({
+                "name": "bad-svc",
+            }));
+        });
+
+        conn.close();
+    }
+}

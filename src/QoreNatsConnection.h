@@ -149,6 +149,10 @@ public:
     //! Get comprehensive connection info
     DLLLOCAL QoreHashNode* getConnectionInfo(ExceptionSink* xsink);
 
+    //! Create a microservice on this connection
+    DLLLOCAL QoreNatsMicroService* createMicroService(const QoreHashNode* config,
+        QoreProgram* pgm, ExceptionSink* xsink);
+
     //! Get the raw natsConnection pointer
     DLLLOCAL natsConnection* getConnection() const { return conn; }
 

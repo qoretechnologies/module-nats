@@ -28,6 +28,7 @@
 #include "QC_NatsConnection.h"
 #include "QC_NatsSubscription.h"
 #include "QC_JetStreamContext.h"
+#include "QC_NatsMicroService.h"
 
 //! The NatsConnection class provides a connection to a NATS server
 /**
@@ -461,4 +462,38 @@ nothing NatsConnection::reconnect() {
 */
 hash<NatsConnectionInfo> NatsConnection::getConnectionInfo() [flags=RET_VALUE_ONLY] {
     return conn->getConnectionInfo(xsink);
+}
+
+//! Creates a NATS microservice on this connection
+/** Microservices are a lightweight request/reply framework with built-in
+    monitoring and discovery via \c $SRV subjects.
+
+    @param config the microservice configuration (see @ref NatsMicroServiceConfig)
+
+    @return a new @ref NatsMicroService object
+
+    @throw NATS-MICRO-ERROR if the microservice cannot be created
+
+    @par Example:
+    @code{.py}
+NatsMicroService svc = conn.createMicroService(<NatsMicroServiceConfig>{
+    "name": "my-svc",
+    "version": "1.0.0",
+    "description": "My microservice",
+    "endpoint": <NatsMicroEndpointConfig>{
+        "name": "echo",
+        "subject": "echo",
+        "handler": *data sub (hash<auto> req) { return req.data; },
+    },
+});
+    @endcode
+
+    @since %nats 1.0
+*/
+NatsMicroService NatsConnection::createMicroService(hash<NatsMicroServiceConfig> config) {
+    QoreNatsMicroService* msvc = conn->createMicroService(config, getProgram(), xsink);
+    if (!msvc) {
+        return QoreValue();
+    }
+    return new QoreObject(QC_NATSMICROSERVICE, getProgram(), msvc);
 }
