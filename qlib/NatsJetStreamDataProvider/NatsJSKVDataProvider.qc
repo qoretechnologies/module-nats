@@ -50,7 +50,8 @@ public class NatsJSKVDataProvider inherits AbstractDataProvider {
     }
 
     private *list<string> getChildProviderNamesImpl() {
-        return ("put", "get", "delete", "keys", "history");
+        return ("put", "get", "delete", "keys", "history", "create-bucket", "delete-bucket",
+            "status");
     }
 
     private *AbstractDataProvider getChildProviderImpl(string name) {
@@ -65,6 +66,12 @@ public class NatsJSKVDataProvider inherits AbstractDataProvider {
                 return new NatsJSKVKeysDataProvider(js);
             case "history":
                 return new NatsJSKVHistoryDataProvider(js);
+            case "create-bucket":
+                return new NatsJSKVCreateBucketDataProvider(js);
+            case "delete-bucket":
+                return new NatsJSKVDeleteBucketDataProvider(js);
+            case "status":
+                return new NatsJSKVStatusDataProvider(js);
         }
     }
 

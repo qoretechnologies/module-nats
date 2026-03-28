@@ -27,12 +27,15 @@ public namespace NatsJetStreamDataProvider {
 
 #! Main NATS JetStream data provider
 /** Root data provider for NATS JetStream. Children are:
-    - \c streams — stream management (create, delete, info, purge)
-    - \c consumers — consumer management (create, delete, info)
+    - \c streams — stream management (create, delete, info, list, names, purge, update)
+    - \c consumers — consumer management (create, delete, info, list, names, pause, update)
+    - \c messages — direct message access (get, get-last, delete, erase)
     - \c publish — publish with JetStream acknowledgment
     - \c subscribe — push-based JetStream subscription
     - \c pull-subscribe — pull-based JetStream subscription
-    - \c kv — key-value store operations (put, get, delete, keys, history)
+    - \c kv — key-value store operations (put, get, delete, keys, history, create-bucket,
+      delete-bucket, status)
+    - \c account-info — account resource usage and API statistics
 
     @since NatsJetStreamDataProvider 1.0
 */
@@ -128,7 +131,8 @@ public class NatsJetStreamDataProvider inherits AbstractDataProvider {
 
     #! Returns a list of child data provider names
     private *list<string> getChildProviderNamesImpl() {
-        return ("streams", "consumers", "publish", "subscribe", "pull-subscribe", "kv");
+        return ("streams", "consumers", "messages", "publish", "subscribe", "pull-subscribe",
+            "kv", "account-info");
     }
 
     #! Returns the given child data provider
@@ -138,6 +142,8 @@ public class NatsJetStreamDataProvider inherits AbstractDataProvider {
                 return new NatsJSStreamsDataProvider(js);
             case "consumers":
                 return new NatsJSConsumersDataProvider(js);
+            case "messages":
+                return new NatsJSMessagesDataProvider(js);
             case "publish":
                 return new NatsJSPublishDataProvider(js);
             case "subscribe":
@@ -146,6 +152,8 @@ public class NatsJetStreamDataProvider inherits AbstractDataProvider {
                 return new NatsJSPullSubscribeEventDataProvider(js, client);
             case "kv":
                 return new NatsJSKVDataProvider(js);
+            case "account-info":
+                return new NatsJSAccountInfoDataProvider(js);
         }
     }
 

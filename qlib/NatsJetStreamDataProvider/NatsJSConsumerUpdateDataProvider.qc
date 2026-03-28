@@ -1,0 +1,89 @@
+# -*- mode: qore; indent-tabs-mode: nil -*-
+#! @file NatsJSConsumerUpdateDataProvider.qc JetStream consumer update data provider
+
+/*  NatsJSConsumerUpdateDataProvider.qc Copyright 2026 Qore Technologies, s.r.o.
+
+    Permission is hereby granted, free of charge, to any person obtaining a
+    copy of this software and associated documentation files (the "Software"),
+    to deal in the Software without restriction, including without limitation
+    the rights to use, copy, modify, merge, publish, distribute, sublicense,
+    and/or sell copies of the Software, and to permit persons to whom the
+    Software is furnished to do so, subject to the following conditions:
+
+    The above copyright notice and this permission notice shall be included in
+    all copies or substantial portions of the Software.
+
+    THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+    IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+    FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+    AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+    DEALINGS IN THE SOFTWARE.
+*/
+
+#! Contains all public definitions in the NatsJetStreamDataProvider module
+public namespace NatsJetStreamDataProvider {
+
+#! JetStream consumer update data provider
+/** @since NatsJetStreamDataProvider 1.0
+*/
+public class NatsJSConsumerUpdateDataProvider inherits AbstractDataProvider {
+    public {
+        static NatsJSConsumerConfigDataType RequestType();
+        static NatsJSConsumerInfoDataType ResponseType();
+    }
+
+    private {
+        JetStreamContext js;
+    }
+
+    constructor(JetStreamContext js) {
+        self.js = js;
+    }
+
+    string getName() {
+        return "update";
+    }
+
+    *string getDesc() {
+        return "Updates the configuration of an existing JetStream consumer.\n\n"
+            "Modifies consumer settings such as acknowledgment policy, delivery policy, "
+            "filter subject, and retry behavior. The consumer must already exist on the "
+            "specified stream. Not all settings can be changed after creation. Returns "
+            "the updated consumer information.";
+    }
+
+    private *AbstractDataProviderType getRequestTypeImpl() {
+        return NatsJSConsumerConfigDataType;
+    }
+
+    private *AbstractDataProviderType getResponseTypeImpl() {
+        return NatsJSConsumerInfoDataType;
+    }
+
+    private auto doRequestImpl(auto req, *hash<auto> request_options) {
+        return js.updateConsumer(req.stream, <NatsConsumerConfig>{
+            "durable_name": req.durable_name,
+            "deliver_subject": req.deliver_subject,
+            "deliver_group": req.deliver_group,
+            "ack_policy": req.ack_policy,
+            "ack_wait": req.ack_wait,
+            "deliver_policy": req.deliver_policy,
+            "replay_policy": req.replay_policy,
+            "filter_subject": req.filter_subject,
+            "max_deliver": req.max_deliver,
+            "max_ack_pending": req.max_ack_pending,
+            "description": req.description,
+        });
+    }
+
+    private hash<DataProviderInfo> getStaticInfoImpl() {
+        return <DataProviderInfo>{
+            "type": "NatsJSConsumerUpdateDataProvider",
+            "supports_request": True,
+        };
+    }
+}
+
+} # namespace NatsJetStreamDataProvider

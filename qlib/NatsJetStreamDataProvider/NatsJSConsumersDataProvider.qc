@@ -50,7 +50,7 @@ public class NatsJSConsumersDataProvider inherits AbstractDataProvider {
     }
 
     private *list<string> getChildProviderNamesImpl() {
-        return ("create", "delete", "info");
+        return ("create", "delete", "info", "list", "names", "pause", "update");
     }
 
     private *AbstractDataProvider getChildProviderImpl(string name) {
@@ -61,6 +61,14 @@ public class NatsJSConsumersDataProvider inherits AbstractDataProvider {
                 return new NatsJSConsumerDeleteDataProvider(js);
             case "info":
                 return new NatsJSConsumerInfoDataProvider(js);
+            case "list":
+                return new NatsJSConsumerListDataProvider(js);
+            case "names":
+                return new NatsJSConsumerNamesDataProvider(js);
+            case "pause":
+                return new NatsJSConsumerPauseDataProvider(js);
+            case "update":
+                return new NatsJSConsumerUpdateDataProvider(js);
         }
     }
 

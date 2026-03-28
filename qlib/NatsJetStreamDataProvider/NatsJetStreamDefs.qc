@@ -777,4 +777,444 @@ public namespace NatsJetStreamDataProvider {
     }
 
     public const NatsJSKVEntryDataType = new NatsJSKVEntryDataType();
+
+    #! JetStream account info response data type
+    public class NatsJSAccountInfoDataType inherits HashDataType {
+        public {
+            const Fields = {
+                "memory": {
+                    "type": IntType,
+                    "display_name": "Memory",
+                    "short_desc": "Memory used in bytes",
+                    "desc": "Total memory used by JetStream in bytes.\n\n"
+                        "This reflects the combined memory footprint of all in-memory streams "
+                        "and their messages. Monitor this value against account limits to "
+                        "avoid running out of memory.",
+                    "example_value": 1048576,
+                },
+                "storage": {
+                    "type": IntType,
+                    "display_name": "Storage",
+                    "short_desc": "Storage used in bytes",
+                    "desc": "Total storage used by JetStream in bytes.\n\n"
+                        "This reflects the combined disk footprint of all file-backed streams "
+                        "and their messages. Monitor this value against account limits to "
+                        "plan capacity.",
+                    "example_value": 5242880,
+                },
+                "streams": {
+                    "type": IntType,
+                    "display_name": "Streams",
+                    "short_desc": "Number of active streams",
+                    "desc": "Total number of active JetStream streams in the account.\n\n"
+                        "Includes both file-backed and memory-backed streams. Check against "
+                        "account limits to determine remaining capacity.",
+                    "example_value": 5,
+                },
+                "consumers": {
+                    "type": IntType,
+                    "display_name": "Consumers",
+                    "short_desc": "Total number of consumers across all streams",
+                    "desc": "Total number of consumers across all streams in the account.\n\n"
+                        "Includes both durable and ephemeral consumers that are currently "
+                        "registered.",
+                    "example_value": 12,
+                },
+                "domain": {
+                    "type": StringOrNothingType,
+                    "display_name": "Domain",
+                    "short_desc": "JetStream domain name for multi-domain setups",
+                    "desc": "The JetStream domain name for multi-domain setups.\n\n"
+                        "In a multi-domain JetStream deployment, this identifies which domain "
+                        "the account belongs to. Returns `NOTHING` if no domain is configured.",
+                },
+                "api_total": {
+                    "type": IntType,
+                    "display_name": "API Total",
+                    "short_desc": "Total number of JetStream API requests processed",
+                    "desc": "Total number of JetStream API requests that have been processed "
+                        "by the server for this account.\n\n"
+                        "This is a cumulative counter since the server started and can be used "
+                        "for monitoring API usage patterns.",
+                    "example_value": 10000,
+                },
+                "api_errors": {
+                    "type": IntType,
+                    "display_name": "API Errors",
+                    "short_desc": "Number of JetStream API errors",
+                    "desc": "Total number of JetStream API requests that resulted in errors "
+                        "for this account.\n\n"
+                        "A rising error count may indicate misconfigured clients, permission "
+                        "issues, or resource exhaustion.",
+                    "example_value": 5,
+                },
+            };
+        }
+        constructor() : HashDataType("NatsJSAccountInfoResponse") {
+            addQoreFields(Fields);
+        }
+    }
+
+    public const NatsJSAccountInfoDataType = new NatsJSAccountInfoDataType();
+
+    #! Consumer pause response data type
+    public class NatsJSConsumerPauseResponseDataType inherits HashDataType {
+        public {
+            const Fields = {
+                "paused": {
+                    "type": BoolType,
+                    "display_name": "Paused",
+                    "short_desc": "Whether the consumer is currently paused",
+                    "desc": "Indicates whether the consumer is currently in a paused state.\n\n"
+                        "A paused consumer stops receiving messages until the `pause_until` "
+                        "time is reached or the consumer is explicitly resumed.",
+                    "example_value": True,
+                },
+                "pause_until": {
+                    "type": DateOrNothingType,
+                    "display_name": "Pause Until",
+                    "short_desc": "When the consumer will automatically resume",
+                    "desc": "The timestamp when the consumer will automatically resume "
+                        "message delivery.\n\n"
+                        "After this time, the consumer will start receiving messages again "
+                        "without requiring manual intervention. Returns `NOTHING` if the "
+                        "consumer is not paused.",
+                },
+                "pause_remaining_ms": {
+                    "type": IntOrNothingType,
+                    "display_name": "Pause Remaining (ms)",
+                    "short_desc": "Remaining pause time in milliseconds",
+                    "desc": "The remaining time in milliseconds until the consumer "
+                        "automatically resumes.\n\n"
+                        "Returns `NOTHING` if the consumer is not paused or the pause has "
+                        "already expired.",
+                    "example_value": 30000,
+                },
+            };
+        }
+        constructor() : HashDataType("NatsJSConsumerPauseResponse") {
+            addQoreFields(Fields);
+        }
+    }
+
+    public const NatsJSConsumerPauseResponseDataType = new NatsJSConsumerPauseResponseDataType();
+
+    #! KV bucket status response data type
+    public class NatsJSKVBucketStatusDataType inherits HashDataType {
+        public {
+            const Fields = {
+                "bucket": {
+                    "type": StringType,
+                    "display_name": "Bucket",
+                    "short_desc": "Bucket name",
+                    "desc": "The name of the KV bucket.\n\n"
+                        "This is the unique identifier used to reference the bucket in all "
+                        "KV operations.",
+                    "example_value": "config",
+                },
+                "values": {
+                    "type": IntType,
+                    "display_name": "Values",
+                    "short_desc": "Number of unique keys in the bucket",
+                    "desc": "The number of unique keys currently stored in the bucket.\n\n"
+                        "This count excludes deleted keys that only have tombstone entries.",
+                    "example_value": 42,
+                },
+                "history": {
+                    "type": IntType,
+                    "display_name": "History",
+                    "short_desc": "Number of historical revisions kept per key",
+                    "desc": "The maximum number of historical revisions that are kept per "
+                        "key in this bucket.\n\n"
+                        "When the history limit is reached, older revisions are automatically "
+                        "removed.",
+                    "example_value": 5,
+                },
+                "ttl_ms": {
+                    "type": IntType,
+                    "display_name": "TTL (ms)",
+                    "short_desc": "Time-to-live for values in milliseconds",
+                    "desc": "The time-to-live for values in the bucket, in milliseconds.\n\n"
+                        "A value of `0` means no TTL is configured and values persist "
+                        "indefinitely.",
+                    "example_value": 0,
+                },
+                "replicas": {
+                    "type": IntType,
+                    "display_name": "Replicas",
+                    "short_desc": "Number of replicas",
+                    "desc": "The number of replicas configured for this bucket.\n\n"
+                        "Higher replica counts provide better durability and availability "
+                        "in a clustered NATS deployment.",
+                    "example_value": 1,
+                },
+                "bytes": {
+                    "type": IntType,
+                    "display_name": "Bytes",
+                    "short_desc": "Total bytes used by the bucket",
+                    "desc": "Total storage in bytes consumed by all keys and their "
+                        "revisions in this bucket.\n\n"
+                        "This includes values, metadata, and internal overhead.",
+                    "example_value": 1048576,
+                },
+            };
+        }
+        constructor() : HashDataType("NatsJSKVBucketStatusResponse") {
+            addQoreFields(Fields);
+        }
+    }
+
+    public const NatsJSKVBucketStatusDataType = new NatsJSKVBucketStatusDataType();
+
+    #! KV bucket configuration request data type (for createKeyValue)
+    public class NatsJSKVConfigRequestDataType inherits HashDataType {
+        public {
+            const Fields = {
+                "bucket": {
+                    "type": StringType,
+                    "display_name": "Bucket Name",
+                    "short_desc": "Bucket name to create",
+                    "desc": "The name for the new KV bucket.\n\n"
+                        "Bucket names must be alphanumeric and may include dashes or "
+                        "underscores. The name must be unique within the JetStream account.",
+                    "required": True,
+                    "example_value": "config",
+                },
+                "description": {
+                    "type": StringOrNothingType,
+                    "display_name": "Description",
+                    "short_desc": "Bucket description",
+                    "desc": "Optional human-readable description for the bucket.\n\n"
+                        "This is a free-form text field that can be used to document the "
+                        "bucket's purpose and the types of data it stores.",
+                },
+                "max_value_size": {
+                    "type": IntOrNothingType,
+                    "display_name": "Max Value Size",
+                    "short_desc": "Maximum value size in bytes",
+                    "desc": "Maximum size in bytes for any individual value stored in the "
+                        "bucket.\n\n"
+                        "Values exceeding this size will be rejected. If not set, the server "
+                        "default is used.",
+                },
+                "history": {
+                    "type": IntOrNothingType,
+                    "display_name": "History",
+                    "short_desc": "Number of historical values to keep per key",
+                    "desc": "The number of historical revisions to retain for each key.\n\n"
+                        "Allows retrieving previous values via the history API. A value of "
+                        "`1` means only the latest revision is kept. **Default is `1` if not "
+                        "specified.**",
+                    "example_value": 5,
+                },
+                "ttl": {
+                    "type": IntOrNothingType,
+                    "display_name": "TTL (ms)",
+                    "short_desc": "Time-to-live for values in milliseconds",
+                    "desc": "Time-to-live for values in the bucket, in milliseconds.\n\n"
+                        "Values older than this duration are automatically removed. Set to "
+                        "`0` or omit for no TTL (values persist indefinitely).",
+                },
+                "max_bytes": {
+                    "type": IntOrNothingType,
+                    "display_name": "Max Bytes",
+                    "short_desc": "Maximum total bytes in the bucket",
+                    "desc": "Maximum total storage in bytes for all keys and revisions in "
+                        "the bucket.\n\n"
+                        "When this limit is reached, old revisions are removed to make room. "
+                        "If not set, the server default is used.",
+                },
+                "storage": {
+                    "type": IntOrNothingType,
+                    "display_name": "Storage Type",
+                    "short_desc": "Storage type",
+                    "desc": "Controls where bucket data is persisted.\n\n"
+                        "- `0` (File): data is stored on disk for durability across server "
+                        "restarts\n"
+                        "- `1` (Memory): data is stored in memory for higher throughput but "
+                        "is lost on server restart\n\n"
+                        "**Default is `0` (File) if not specified.**",
+                    "allowed_values": (
+                        <AllowedValueInfo>{"value": 0, "display_name": "File",
+                            "short_desc": "Store data on disk"},
+                        <AllowedValueInfo>{"value": 1, "display_name": "Memory",
+                            "short_desc": "Store data in memory"},
+                    ),
+                },
+                "num_replicas": {
+                    "type": IntOrNothingType,
+                    "display_name": "Replicas",
+                    "short_desc": "Number of replicas",
+                    "desc": "Number of copies of the bucket data to maintain across a NATS "
+                        "cluster for high availability.\n\n"
+                        "A value of `1` means no replication (single copy). **Must be an odd "
+                        "number and cannot exceed the number of servers in the cluster.**",
+                    "example_value": 1,
+                },
+            };
+        }
+        constructor() : HashDataType("NatsJSKVConfigRequest") {
+            addQoreFields(Fields);
+        }
+    }
+
+    public const NatsJSKVConfigRequestDataType = new NatsJSKVConfigRequestDataType();
+
+    #! Stream list response data type
+    public class NatsJSStreamListResponseDataType inherits HashDataType {
+        public {
+            const Fields = {
+                "streams": {
+                    "type": SoftListType,
+                    "display_name": "Streams",
+                    "short_desc": "List of stream information hashes",
+                    "desc": "A list of stream information hashes, one per stream.\n\n"
+                        "Each entry contains the stream's configuration and current state "
+                        "including message count and byte size.",
+                },
+            };
+        }
+        constructor() : HashDataType("NatsJSStreamListResponse") {
+            addQoreFields(Fields);
+        }
+    }
+
+    public const NatsJSStreamListResponseDataType = new NatsJSStreamListResponseDataType();
+
+    #! Stream names response data type
+    public class NatsJSStreamNamesResponseDataType inherits HashDataType {
+        public {
+            const Fields = {
+                "names": {
+                    "type": SoftListType,
+                    "display_name": "Names",
+                    "short_desc": "List of stream names",
+                    "desc": "A list of stream name strings.\n\n"
+                        "Returns only the names without full stream configuration or state. "
+                        "Use this for lightweight enumeration when detailed information is "
+                        "not needed.",
+                },
+            };
+        }
+        constructor() : HashDataType("NatsJSStreamNamesResponse") {
+            addQoreFields(Fields);
+        }
+    }
+
+    public const NatsJSStreamNamesResponseDataType = new NatsJSStreamNamesResponseDataType();
+
+    #! Consumer list response data type
+    public class NatsJSConsumerListResponseDataType inherits HashDataType {
+        public {
+            const Fields = {
+                "consumers": {
+                    "type": SoftListType,
+                    "display_name": "Consumers",
+                    "short_desc": "List of consumer information hashes",
+                    "desc": "A list of consumer information hashes for the specified "
+                        "stream.\n\n"
+                        "Each entry contains the consumer's configuration and current "
+                        "delivery state including pending messages and acknowledgment "
+                        "progress.",
+                },
+            };
+        }
+        constructor() : HashDataType("NatsJSConsumerListResponse") {
+            addQoreFields(Fields);
+        }
+    }
+
+    public const NatsJSConsumerListResponseDataType = new NatsJSConsumerListResponseDataType();
+
+    #! Consumer names response data type
+    public class NatsJSConsumerNamesResponseDataType inherits HashDataType {
+        public {
+            const Fields = {
+                "names": {
+                    "type": SoftListType,
+                    "display_name": "Names",
+                    "short_desc": "List of consumer names",
+                    "desc": "A list of consumer name strings for the specified stream.\n\n"
+                        "Returns only the names without full consumer configuration or "
+                        "state. Use this for lightweight enumeration when detailed "
+                        "information is not needed.",
+                },
+            };
+        }
+        constructor() : HashDataType("NatsJSConsumerNamesResponse") {
+            addQoreFields(Fields);
+        }
+    }
+
+    public const NatsJSConsumerNamesResponseDataType = new NatsJSConsumerNamesResponseDataType();
+
+    #! Stream message request data type (for getMsg)
+    public class NatsJSStreamMsgRequestDataType inherits HashDataType {
+        public {
+            const Fields = {
+                "stream": {
+                    "type": StringType,
+                    "display_name": "Stream Name",
+                    "short_desc": "Stream name",
+                    "desc": "The name of the JetStream stream to retrieve the message "
+                        "from.\n\n"
+                        "The stream must already exist; an error is raised if the stream "
+                        "is not found.",
+                    "required": True,
+                    "example_value": "ORDERS",
+                },
+                "seq": {
+                    "type": IntType,
+                    "display_name": "Sequence Number",
+                    "short_desc": "Message sequence number",
+                    "desc": "The sequence number of the message to retrieve.\n\n"
+                        "Sequence numbers are assigned monotonically by the stream. Use "
+                        "stream info to determine the valid range (`first_seq` to "
+                        "`last_seq`).",
+                    "required": True,
+                    "example_value": 42,
+                },
+            };
+        }
+        constructor() : HashDataType("NatsJSStreamMsgRequest") {
+            addQoreFields(Fields);
+        }
+    }
+
+    public const NatsJSStreamMsgRequestDataType = new NatsJSStreamMsgRequestDataType();
+
+    #! Stream message by subject request data type (for getLastMsg)
+    public class NatsJSStreamMsgBySubjectRequestDataType inherits HashDataType {
+        public {
+            const Fields = {
+                "stream": {
+                    "type": StringType,
+                    "display_name": "Stream Name",
+                    "short_desc": "Stream name",
+                    "desc": "The name of the JetStream stream to retrieve the message "
+                        "from.\n\n"
+                        "The stream must already exist; an error is raised if the stream "
+                        "is not found.",
+                    "required": True,
+                    "example_value": "ORDERS",
+                },
+                "subject": {
+                    "type": StringType,
+                    "display_name": "Subject",
+                    "short_desc": "Subject to get last message for",
+                    "desc": "The subject to retrieve the last message for.\n\n"
+                        "Returns the most recently published message on this subject "
+                        "within the stream. The subject must match one of the stream's "
+                        "configured subject filters.",
+                    "required": True,
+                    "example_value": "orders.created",
+                },
+            };
+        }
+        constructor() : HashDataType("NatsJSStreamMsgBySubjectRequest") {
+            addQoreFields(Fields);
+        }
+    }
+
+    public const NatsJSStreamMsgBySubjectRequestDataType = new NatsJSStreamMsgBySubjectRequestDataType();
 }

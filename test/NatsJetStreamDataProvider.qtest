@@ -52,6 +52,7 @@ public class NatsJetStreamDataProviderTest inherits QUnit::Test {
         addTestCase("streams children test", \streamsChildrenTest());
         addTestCase("consumers children test", \consumersChildrenTest());
         addTestCase("kv children test", \kvChildrenTest());
+        addTestCase("messages children test", \messagesChildrenTest());
 
         # Stream CRUD tests
         addTestCase("stream create test", \streamCreateTest());
@@ -73,6 +74,34 @@ public class NatsJetStreamDataProviderTest inherits QUnit::Test {
         addTestCase("kv delete test", \kvDeleteTest());
         addTestCase("kv keys test", \kvKeysTest());
         addTestCase("kv history test", \kvHistoryTest());
+
+        # New stream actions
+        addTestCase("stream list test", \streamListTest());
+        addTestCase("stream names test", \streamNamesTest());
+        addTestCase("stream update test", \streamUpdateTest());
+
+        # New consumer actions
+        addTestCase("consumer list test", \consumerListTest());
+        addTestCase("consumer names test", \consumerNamesTest());
+        addTestCase("consumer update test", \consumerUpdateTest());
+        addTestCase("consumer pause test", \consumerPauseTest());
+
+        # Message actions
+        addTestCase("message get test", \messageGetTest());
+        addTestCase("message get-last test", \messageGetLastTest());
+        addTestCase("message delete test", \messageDeleteTest());
+        addTestCase("message erase test", \messageEraseTest());
+
+        # Account info
+        addTestCase("account info test", \accountInfoTest());
+
+        # KV bucket management
+        addTestCase("kv create bucket test", \kvCreateBucketTest());
+        addTestCase("kv delete bucket test", \kvDeleteBucketTest());
+        addTestCase("kv status test", \kvStatusTest());
+
+        # Publish with options
+        addTestCase("js publish with options test", \jsPublishWithOptionsTest());
 
         # Negative tests
         addTestCase("stream info not found test", \streamInfoNotFoundTest());
@@ -148,13 +177,15 @@ public class NatsJetStreamDataProviderTest inherits QUnit::Test {
         NatsJetStreamDataProvider dp({"url": url});
         *list<string> children = dp.getChildProviderNames();
         assertEq(True, exists children);
-        assertEq(6, children.size());
+        assertEq(8, children.size());
         assertTrue(inlist("streams", children));
         assertTrue(inlist("consumers", children));
+        assertTrue(inlist("messages", children));
         assertTrue(inlist("publish", children));
         assertTrue(inlist("subscribe", children));
         assertTrue(inlist("pull-subscribe", children));
         assertTrue(inlist("kv", children));
+        assertTrue(inlist("account-info", children));
     }
 
     streamsChildrenTest() {
@@ -162,11 +193,14 @@ public class NatsJetStreamDataProviderTest inherits QUnit::Test {
         AbstractDataProvider streams_dp = dp.getChildProvider("streams");
         *list<string> children = streams_dp.getChildProviderNames();
         assertEq(True, exists children);
-        assertEq(4, children.size());
+        assertEq(7, children.size());
         assertTrue(inlist("create", children));
         assertTrue(inlist("delete", children));
         assertTrue(inlist("info", children));
+        assertTrue(inlist("list", children));
+        assertTrue(inlist("names", children));
         assertTrue(inlist("purge", children));
+        assertTrue(inlist("update", children));
     }
 
     consumersChildrenTest() {
@@ -174,10 +208,14 @@ public class NatsJetStreamDataProviderTest inherits QUnit::Test {
         AbstractDataProvider consumers_dp = dp.getChildProvider("consumers");
         *list<string> children = consumers_dp.getChildProviderNames();
         assertEq(True, exists children);
-        assertEq(3, children.size());
+        assertEq(7, children.size());
         assertTrue(inlist("create", children));
         assertTrue(inlist("delete", children));
         assertTrue(inlist("info", children));
+        assertTrue(inlist("list", children));
+        assertTrue(inlist("names", children));
+        assertTrue(inlist("pause", children));
+        assertTrue(inlist("update", children));
     }
 
     kvChildrenTest() {
@@ -185,12 +223,27 @@ public class NatsJetStreamDataProviderTest inherits QUnit::Test {
         AbstractDataProvider kv_dp = dp.getChildProvider("kv");
         *list<string> children = kv_dp.getChildProviderNames();
         assertEq(True, exists children);
-        assertEq(5, children.size());
+        assertEq(8, children.size());
         assertTrue(inlist("put", children));
         assertTrue(inlist("get", children));
         assertTrue(inlist("delete", children));
         assertTrue(inlist("keys", children));
         assertTrue(inlist("history", children));
+        assertTrue(inlist("create-bucket", children));
+        assertTrue(inlist("delete-bucket", children));
+        assertTrue(inlist("status", children));
+    }
+
+    messagesChildrenTest() {
+        NatsJetStreamDataProvider dp({"url": url});
+        AbstractDataProvider messages_dp = dp.getChildProvider("messages");
+        *list<string> children = messages_dp.getChildProviderNames();
+        assertEq(True, exists children);
+        assertEq(4, children.size());
+        assertTrue(inlist("get", children));
+        assertTrue(inlist("get-last", children));
+        assertTrue(inlist("delete", children));
+        assertTrue(inlist("erase", children));
     }
 
     # --- Stream CRUD tests ---
@@ -639,6 +692,563 @@ public class NatsJetStreamDataProviderTest inherits QUnit::Test {
         # Cleanup
         js.deleteKeyValue(bucket);
         client.close();
+    }
+
+    # --- Stream list/names/update tests ---
+
+    streamListTest() {
+        NatsJetStreamDataProvider dp({"url": url});
+
+        string stream_name = uniqueName("DPSLI");
+
+        # Create stream
+        AbstractDataProvider create_dp = dp.getChildProvider("streams").getChildProvider("create");
+        create_dp.doRequest({
+            "name": stream_name,
+            "subjects": (stream_name + ".>",),
+            "storage": NATS_STORAGE_MEMORY,
+        });
+
+        # List streams via data provider
+        AbstractDataProvider list_dp = dp.getChildProvider("streams").getChildProvider("list");
+        auto result = list_dp.doRequest(NOTHING);
+
+        assertEq(True, exists result.streams);
+        assertTrue(result.streams.size() >= 1);
+
+        # Find our stream in the list
+        bool found = False;
+        foreach auto stream_info in (result.streams) {
+            if (stream_info.config.name == stream_name) {
+                found = True;
+                break;
+            }
+        }
+        assertTrue(found);
+
+        # Cleanup
+        AbstractDataProvider delete_dp = dp.getChildProvider("streams").getChildProvider("delete");
+        delete_dp.doRequest({"name": stream_name});
+    }
+
+    streamNamesTest() {
+        NatsJetStreamDataProvider dp({"url": url});
+
+        string stream_name = uniqueName("DPSNA");
+
+        # Create stream
+        AbstractDataProvider create_dp = dp.getChildProvider("streams").getChildProvider("create");
+        create_dp.doRequest({
+            "name": stream_name,
+            "subjects": (stream_name + ".>",),
+            "storage": NATS_STORAGE_MEMORY,
+        });
+
+        # List stream names via data provider
+        AbstractDataProvider names_dp = dp.getChildProvider("streams").getChildProvider("names");
+        auto result = names_dp.doRequest(NOTHING);
+
+        assertEq(True, exists result.names);
+        assertTrue(result.names.size() >= 1);
+        assertTrue(inlist(stream_name, result.names));
+
+        # Cleanup
+        AbstractDataProvider delete_dp = dp.getChildProvider("streams").getChildProvider("delete");
+        delete_dp.doRequest({"name": stream_name});
+    }
+
+    streamUpdateTest() {
+        NatsJetStreamDataProvider dp({"url": url});
+
+        string stream_name = uniqueName("DPSUP");
+
+        # Create stream
+        AbstractDataProvider create_dp = dp.getChildProvider("streams").getChildProvider("create");
+        create_dp.doRequest({
+            "name": stream_name,
+            "subjects": (stream_name + ".>",),
+            "storage": NATS_STORAGE_MEMORY,
+        });
+
+        # Update stream via data provider (change description)
+        AbstractDataProvider update_dp = dp.getChildProvider("streams").getChildProvider("update");
+        auto result = update_dp.doRequest({
+            "name": stream_name,
+            "subjects": (stream_name + ".>",),
+            "storage": NATS_STORAGE_MEMORY,
+            "description": "Updated description",
+        });
+
+        assertEq(stream_name, result.config.name);
+        assertEq("Updated description", result.config.description);
+
+        # Cleanup
+        AbstractDataProvider delete_dp = dp.getChildProvider("streams").getChildProvider("delete");
+        delete_dp.doRequest({"name": stream_name});
+    }
+
+    # --- Consumer list/names/update/pause tests ---
+
+    consumerListTest() {
+        NatsJetStreamDataProvider dp({"url": url});
+
+        string stream_name = uniqueName("DPCLI");
+
+        # Create stream
+        AbstractDataProvider stream_create_dp = dp.getChildProvider("streams")
+            .getChildProvider("create");
+        stream_create_dp.doRequest({
+            "name": stream_name,
+            "subjects": (stream_name + ".>",),
+            "storage": NATS_STORAGE_MEMORY,
+        });
+
+        # Create consumers
+        AbstractDataProvider consumer_create_dp = dp.getChildProvider("consumers")
+            .getChildProvider("create");
+        consumer_create_dp.doRequest({
+            "stream": stream_name,
+            "durable_name": "consumer1",
+            "ack_policy": NATS_ACK_EXPLICIT,
+        });
+        consumer_create_dp.doRequest({
+            "stream": stream_name,
+            "durable_name": "consumer2",
+            "ack_policy": NATS_ACK_EXPLICIT,
+        });
+
+        # List consumers via data provider
+        AbstractDataProvider list_dp = dp.getChildProvider("consumers").getChildProvider("list");
+        auto result = list_dp.doRequest({"stream": stream_name});
+
+        assertEq(True, exists result.consumers);
+        assertEq(2, result.consumers.size());
+
+        # Cleanup
+        AbstractDataProvider delete_dp = dp.getChildProvider("streams").getChildProvider("delete");
+        delete_dp.doRequest({"name": stream_name});
+    }
+
+    consumerNamesTest() {
+        NatsJetStreamDataProvider dp({"url": url});
+
+        string stream_name = uniqueName("DPCNA");
+
+        # Create stream
+        AbstractDataProvider stream_create_dp = dp.getChildProvider("streams")
+            .getChildProvider("create");
+        stream_create_dp.doRequest({
+            "name": stream_name,
+            "subjects": (stream_name + ".>",),
+            "storage": NATS_STORAGE_MEMORY,
+        });
+
+        # Create consumer
+        AbstractDataProvider consumer_create_dp = dp.getChildProvider("consumers")
+            .getChildProvider("create");
+        consumer_create_dp.doRequest({
+            "stream": stream_name,
+            "durable_name": "named-consumer",
+            "ack_policy": NATS_ACK_EXPLICIT,
+        });
+
+        # List consumer names via data provider
+        AbstractDataProvider names_dp = dp.getChildProvider("consumers").getChildProvider("names");
+        auto result = names_dp.doRequest({"stream": stream_name});
+
+        assertEq(True, exists result.names);
+        assertEq(1, result.names.size());
+        assertTrue(inlist("named-consumer", result.names));
+
+        # Cleanup
+        AbstractDataProvider delete_dp = dp.getChildProvider("streams").getChildProvider("delete");
+        delete_dp.doRequest({"name": stream_name});
+    }
+
+    consumerUpdateTest() {
+        NatsJetStreamDataProvider dp({"url": url});
+
+        string stream_name = uniqueName("DPCU");
+
+        # Create stream
+        AbstractDataProvider stream_create_dp = dp.getChildProvider("streams")
+            .getChildProvider("create");
+        stream_create_dp.doRequest({
+            "name": stream_name,
+            "subjects": (stream_name + ".>",),
+            "storage": NATS_STORAGE_MEMORY,
+        });
+
+        # Create consumer
+        AbstractDataProvider consumer_create_dp = dp.getChildProvider("consumers")
+            .getChildProvider("create");
+        consumer_create_dp.doRequest({
+            "stream": stream_name,
+            "durable_name": "upd-consumer",
+            "ack_policy": NATS_ACK_EXPLICIT,
+        });
+
+        # Update consumer via data provider (change description)
+        AbstractDataProvider update_dp = dp.getChildProvider("consumers").getChildProvider("update");
+        auto result = update_dp.doRequest({
+            "stream": stream_name,
+            "durable_name": "upd-consumer",
+            "ack_policy": NATS_ACK_EXPLICIT,
+            "description": "Updated consumer",
+        });
+
+        assertEq("upd-consumer", result.config.durable_name);
+        assertEq("Updated consumer", result.config.description);
+
+        # Cleanup
+        AbstractDataProvider delete_dp = dp.getChildProvider("streams").getChildProvider("delete");
+        delete_dp.doRequest({"name": stream_name});
+    }
+
+    consumerPauseTest() {
+        NatsJetStreamDataProvider dp({"url": url});
+
+        string stream_name = uniqueName("DPCP");
+
+        # Create stream
+        AbstractDataProvider stream_create_dp = dp.getChildProvider("streams")
+            .getChildProvider("create");
+        stream_create_dp.doRequest({
+            "name": stream_name,
+            "subjects": (stream_name + ".>",),
+            "storage": NATS_STORAGE_MEMORY,
+        });
+
+        # Create consumer
+        AbstractDataProvider consumer_create_dp = dp.getChildProvider("consumers")
+            .getChildProvider("create");
+        consumer_create_dp.doRequest({
+            "stream": stream_name,
+            "durable_name": "pause-consumer",
+            "ack_policy": NATS_ACK_EXPLICIT,
+        });
+
+        # Pause consumer via data provider (pause for 1 minute from now)
+        AbstractDataProvider pause_dp = dp.getChildProvider("consumers").getChildProvider("pause");
+        date pause_until = now_us() + 1m;
+        auto result = pause_dp.doRequest({
+            "stream": stream_name,
+            "consumer": "pause-consumer",
+            "pause_until": pause_until,
+        });
+
+        assertTrue(result.paused);
+
+        # Cleanup
+        AbstractDataProvider delete_dp = dp.getChildProvider("streams").getChildProvider("delete");
+        delete_dp.doRequest({"name": stream_name});
+    }
+
+    # --- Message action tests ---
+
+    messageGetTest() {
+        NatsJetStreamDataProvider dp({"url": url});
+
+        string stream_name = uniqueName("DPMG");
+        string subject = stream_name + ".msg";
+
+        # Create stream and publish a message
+        AbstractDataProvider create_dp = dp.getChildProvider("streams").getChildProvider("create");
+        create_dp.doRequest({
+            "name": stream_name,
+            "subjects": (stream_name + ".>",),
+            "storage": NATS_STORAGE_MEMORY,
+        });
+
+        AbstractDataProvider pub_dp = dp.getChildProvider("publish");
+        auto ack = pub_dp.doRequest({
+            "subject": subject,
+            "string_data": "test-message",
+        });
+
+        # Get message by sequence via data provider
+        AbstractDataProvider get_dp = dp.getChildProvider("messages").getChildProvider("get");
+        auto result = get_dp.doRequest({
+            "stream": stream_name,
+            "seq": ack.sequence,
+        });
+
+        assertEq(True, exists result);
+        assertEq(subject, result.subject);
+        assertEq("test-message", result.data.toString());
+
+        # Cleanup
+        AbstractDataProvider delete_dp = dp.getChildProvider("streams").getChildProvider("delete");
+        delete_dp.doRequest({"name": stream_name});
+    }
+
+    messageGetLastTest() {
+        NatsJetStreamDataProvider dp({"url": url});
+
+        string stream_name = uniqueName("DPMGL");
+        string subject = stream_name + ".msg";
+
+        # Create stream and publish multiple messages
+        AbstractDataProvider create_dp = dp.getChildProvider("streams").getChildProvider("create");
+        create_dp.doRequest({
+            "name": stream_name,
+            "subjects": (stream_name + ".>",),
+            "storage": NATS_STORAGE_MEMORY,
+        });
+
+        AbstractDataProvider pub_dp = dp.getChildProvider("publish");
+        pub_dp.doRequest({"subject": subject, "string_data": "first"});
+        pub_dp.doRequest({"subject": subject, "string_data": "second"});
+        pub_dp.doRequest({"subject": subject, "string_data": "third"});
+
+        # Get last message for subject
+        AbstractDataProvider get_last_dp = dp.getChildProvider("messages")
+            .getChildProvider("get-last");
+        auto result = get_last_dp.doRequest({
+            "stream": stream_name,
+            "subject": subject,
+        });
+
+        assertEq(True, exists result);
+        assertEq(subject, result.subject);
+        assertEq("third", result.data.toString());
+
+        # Cleanup
+        AbstractDataProvider delete_dp = dp.getChildProvider("streams").getChildProvider("delete");
+        delete_dp.doRequest({"name": stream_name});
+    }
+
+    messageDeleteTest() {
+        NatsJetStreamDataProvider dp({"url": url});
+
+        string stream_name = uniqueName("DPMD");
+        string subject = stream_name + ".msg";
+
+        # Create stream and publish a message
+        AbstractDataProvider create_dp = dp.getChildProvider("streams").getChildProvider("create");
+        create_dp.doRequest({
+            "name": stream_name,
+            "subjects": (stream_name + ".>",),
+            "storage": NATS_STORAGE_MEMORY,
+        });
+
+        AbstractDataProvider pub_dp = dp.getChildProvider("publish");
+        auto ack = pub_dp.doRequest({
+            "subject": subject,
+            "string_data": "delete-me",
+        });
+
+        # Delete message via data provider
+        AbstractDataProvider del_dp = dp.getChildProvider("messages").getChildProvider("delete");
+        del_dp.doRequest({
+            "stream": stream_name,
+            "seq": ack.sequence,
+        });
+
+        # The message should be gone (getMsg returns nothing for deleted)
+        AbstractDataProvider get_dp = dp.getChildProvider("messages").getChildProvider("get");
+        auto result = get_dp.doRequest({
+            "stream": stream_name,
+            "seq": ack.sequence,
+        });
+        assertNothing(result);
+
+        # Cleanup
+        AbstractDataProvider delete_dp = dp.getChildProvider("streams").getChildProvider("delete");
+        delete_dp.doRequest({"name": stream_name});
+    }
+
+    messageEraseTest() {
+        NatsJetStreamDataProvider dp({"url": url});
+
+        string stream_name = uniqueName("DPME");
+        string subject = stream_name + ".msg";
+
+        # Create stream and publish a message
+        AbstractDataProvider create_dp = dp.getChildProvider("streams").getChildProvider("create");
+        create_dp.doRequest({
+            "name": stream_name,
+            "subjects": (stream_name + ".>",),
+            "storage": NATS_STORAGE_MEMORY,
+        });
+
+        AbstractDataProvider pub_dp = dp.getChildProvider("publish");
+        auto ack = pub_dp.doRequest({
+            "subject": subject,
+            "string_data": "erase-me",
+        });
+
+        # Erase message via data provider
+        AbstractDataProvider erase_dp = dp.getChildProvider("messages").getChildProvider("erase");
+        erase_dp.doRequest({
+            "stream": stream_name,
+            "seq": ack.sequence,
+        });
+
+        # The message should be gone
+        AbstractDataProvider get_dp = dp.getChildProvider("messages").getChildProvider("get");
+        auto result = get_dp.doRequest({
+            "stream": stream_name,
+            "seq": ack.sequence,
+        });
+        assertNothing(result);
+
+        # Cleanup
+        AbstractDataProvider delete_dp = dp.getChildProvider("streams").getChildProvider("delete");
+        delete_dp.doRequest({"name": stream_name});
+    }
+
+    # --- Account info test ---
+
+    accountInfoTest() {
+        NatsJetStreamDataProvider dp({"url": url});
+
+        # Get account info via data provider
+        AbstractDataProvider acct_dp = dp.getChildProvider("account-info");
+        auto result = acct_dp.doRequest(NOTHING);
+
+        assertEq(True, exists result);
+        assertTrue(result.memory >= 0);
+        assertTrue(result.storage >= 0);
+        assertTrue(result.streams >= 0);
+        assertTrue(result.consumers >= 0);
+        assertTrue(result.api_total >= 0);
+        assertTrue(result.api_errors >= 0);
+    }
+
+    # --- KV bucket management tests ---
+
+    kvCreateBucketTest() {
+        NatsJetStreamDataProvider dp({"url": url});
+
+        string bucket = uniqueName("dpcrbkt");
+
+        # Create bucket via data provider
+        AbstractDataProvider create_dp = dp.getChildProvider("kv").getChildProvider("create-bucket");
+        auto result = create_dp.doRequest({
+            "bucket": bucket,
+            "history": 3,
+            "storage": NATS_STORAGE_MEMORY,
+        });
+
+        assertEq(bucket, result.bucket);
+        assertEq(3, result.history);
+        assertEq(0, result.values);
+
+        # Cleanup
+        NatsClient client(url);
+        JetStreamContext js = client.getConnection().jetStream();
+        js.deleteKeyValue(bucket);
+        client.close();
+    }
+
+    kvDeleteBucketTest() {
+        NatsJetStreamDataProvider dp({"url": url});
+
+        string bucket = uniqueName("dpdelbkt");
+
+        # Create bucket via direct API
+        NatsClient client(url);
+        JetStreamContext js = client.getConnection().jetStream();
+        js.createKeyValue(<NatsKVConfig>{
+            "bucket": bucket,
+            "storage": NATS_STORAGE_MEMORY,
+        });
+        client.close();
+
+        # Delete bucket via data provider
+        AbstractDataProvider delete_dp = dp.getChildProvider("kv").getChildProvider("delete-bucket");
+        delete_dp.doRequest({"bucket": bucket});
+
+        # Attempting to open the deleted bucket should fail
+        NatsClient client2(url);
+        JetStreamContext js2 = client2.getConnection().jetStream();
+        assertThrows("NATS-KV-ERROR", sub () {
+            js2.keyValue(bucket);
+        });
+        client2.close();
+    }
+
+    kvStatusTest() {
+        NatsJetStreamDataProvider dp({"url": url});
+
+        string bucket = uniqueName("dpkvst");
+
+        # Create bucket and add some keys
+        NatsClient client(url);
+        JetStreamContext js = client.getConnection().jetStream();
+        NatsKeyValueStore kv = js.createKeyValue(<NatsKVConfig>{
+            "bucket": bucket,
+            "storage": NATS_STORAGE_MEMORY,
+            "history": 5,
+        });
+        kv.putString("key1", "val1");
+        kv.putString("key2", "val2");
+
+        # Get status via data provider
+        AbstractDataProvider status_dp = dp.getChildProvider("kv").getChildProvider("status");
+        auto result = status_dp.doRequest({"bucket": bucket});
+
+        assertEq(bucket, result.bucket);
+        assertEq(2, result.values);
+        assertEq(5, result.history);
+        assertEq(1, result.replicas);
+        assertTrue(result.bytes > 0);
+
+        # Cleanup
+        js.deleteKeyValue(bucket);
+        client.close();
+    }
+
+    # --- Publish with options test ---
+
+    jsPublishWithOptionsTest() {
+        NatsJetStreamDataProvider dp({"url": url});
+
+        string stream_name = uniqueName("DPJPO");
+        string subject = stream_name + ".msg";
+
+        # Create stream first
+        AbstractDataProvider create_dp = dp.getChildProvider("streams").getChildProvider("create");
+        create_dp.doRequest({
+            "name": stream_name,
+            "subjects": (stream_name + ".>",),
+            "storage": NATS_STORAGE_MEMORY,
+        });
+
+        # Publish with msg_id for idempotent publishing
+        AbstractDataProvider pub_dp = dp.getChildProvider("publish");
+        auto ack1 = pub_dp.doRequest({
+            "subject": subject,
+            "string_data": "idempotent-msg",
+            "msg_id": "unique-id-1",
+        });
+
+        assertEq(stream_name, ack1.stream);
+        assertTrue(ack1.sequence > 0);
+        assertFalse(ack1.duplicate);
+
+        # Publish same msg_id again (should be duplicate)
+        auto ack2 = pub_dp.doRequest({
+            "subject": subject,
+            "string_data": "idempotent-msg",
+            "msg_id": "unique-id-1",
+        });
+
+        assertEq(ack1.sequence, ack2.sequence);
+        assertTrue(ack2.duplicate);
+
+        # Publish with expect_stream
+        auto ack3 = pub_dp.doRequest({
+            "subject": subject,
+            "string_data": "expected-stream-msg",
+            "expect_stream": stream_name,
+        });
+        assertEq(stream_name, ack3.stream);
+
+        # Cleanup
+        AbstractDataProvider delete_dp = dp.getChildProvider("streams").getChildProvider("delete");
+        delete_dp.doRequest({"name": stream_name});
     }
 
     # --- Negative tests ---

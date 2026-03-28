@@ -146,6 +146,61 @@ module NatsJetStreamDataProvider {
             "output_type": AbstractDataProviderTypeMap."nothing",
         });
 
+        DataProviderActionCatalog::registerAction(<DataProviderActionInfo>{
+            "app": NatsJetStreamDataProvider::AppName,
+            "path": "/streams/list",
+            "action": "stream-list",
+            "display_name": "List Streams",
+            "short_desc": "List all JetStream streams with configuration and state",
+            "desc": "Lists all JetStream streams with their configuration and current "
+                "state.\n\n"
+                "Returns detailed information for each stream including subject filters, "
+                "retention policy, storage limits, message count, and consumer count.",
+            "action_code": DPAT_API,
+            "groups": "Streams",
+            "output_type": NatsJSStreamListDataProvider::ResponseType,
+        });
+        DataProviderActionCatalog::registerAction(<DataProviderActionInfo>{
+            "app": NatsJetStreamDataProvider::AppName,
+            "path": "/streams/names",
+            "action": "stream-names",
+            "display_name": "Stream Names",
+            "short_desc": "List all JetStream stream names",
+            "desc": "Lists all JetStream stream names without full configuration or "
+                "state details.\n\n"
+                "Use this for lightweight enumeration when you only need to check which "
+                "streams exist.",
+            "action_code": DPAT_API,
+            "groups": "Streams",
+            "output_type": NatsJSStreamNamesDataProvider::ResponseType,
+        });
+        DataProviderActionCatalog::registerAction(<DataProviderActionInfo>{
+            "app": NatsJetStreamDataProvider::AppName,
+            "path": "/streams/update",
+            "action": "stream-update",
+            "display_name": "Update Stream",
+            "short_desc": "Update a JetStream stream configuration",
+            "desc": "Updates the configuration of an existing JetStream stream.\n\n"
+                "Modifies stream settings such as subject filters, retention policy, "
+                "storage limits, and replication. Not all settings can be changed after "
+                "creation.",
+            "action_code": DPAT_API,
+            "groups": "Streams",
+            "options": DataProviderActionCatalog::getActionOptionFromFields(
+                NatsJSStreamConfigDataType::Fields{"name",}, {
+                    "preselected": True,
+                    "required": True,
+                },
+            ) + DataProviderActionCatalog::getActionOptionFromFields(
+                NatsJSStreamConfigDataType::Fields{"subjects",}, {
+                    "preselected": True,
+                },
+            ) + DataProviderActionCatalog::getActionOptionFromFields(
+                NatsJSStreamConfigDataType::Fields - ("name", "subjects"),
+            ),
+            "output_type": NatsJSStreamUpdateDataProvider::ResponseType,
+        });
+
         # Register actions for consumers
         DataProviderActionCatalog::registerAction(<DataProviderActionInfo>{
             "app": NatsJetStreamDataProvider::AppName,
@@ -213,6 +268,99 @@ module NatsJetStreamDataProvider {
                 },
             ),
             "output_type": NatsJSConsumerInfoDataProvider::ResponseType,
+        });
+
+        DataProviderActionCatalog::registerAction(<DataProviderActionInfo>{
+            "app": NatsJetStreamDataProvider::AppName,
+            "path": "/consumers/list",
+            "action": "consumer-list",
+            "display_name": "List Consumers",
+            "short_desc": "List all consumers for a JetStream stream",
+            "desc": "Lists all consumers for a JetStream stream with their configuration "
+                "and delivery state.\n\n"
+                "Returns detailed information for each consumer including delivery policy, "
+                "acknowledgment settings, and processing progress.",
+            "action_code": DPAT_API,
+            "groups": "Consumers",
+            "options": DataProviderActionCatalog::getActionOptionFromFields(
+                NatsJSConsumerListRequestDataType::Fields, {
+                    "preselected": True,
+                    "required": True,
+                },
+            ),
+            "output_type": NatsJSConsumerListDataProvider::ResponseType,
+        });
+        DataProviderActionCatalog::registerAction(<DataProviderActionInfo>{
+            "app": NatsJetStreamDataProvider::AppName,
+            "path": "/consumers/names",
+            "action": "consumer-names",
+            "display_name": "Consumer Names",
+            "short_desc": "List all consumer names for a JetStream stream",
+            "desc": "Lists all consumer names for a JetStream stream without full "
+                "configuration or state details.\n\n"
+                "Use this for lightweight enumeration when you only need to check which "
+                "consumers exist.",
+            "action_code": DPAT_API,
+            "groups": "Consumers",
+            "options": DataProviderActionCatalog::getActionOptionFromFields(
+                NatsJSConsumerNamesRequestDataType::Fields, {
+                    "preselected": True,
+                    "required": True,
+                },
+            ),
+            "output_type": NatsJSConsumerNamesDataProvider::ResponseType,
+        });
+        DataProviderActionCatalog::registerAction(<DataProviderActionInfo>{
+            "app": NatsJetStreamDataProvider::AppName,
+            "path": "/consumers/update",
+            "action": "consumer-update",
+            "display_name": "Update Consumer",
+            "short_desc": "Update a JetStream consumer configuration",
+            "desc": "Updates the configuration of an existing JetStream consumer.\n\n"
+                "Modifies consumer settings such as acknowledgment policy, delivery "
+                "policy, filter subject, and retry behavior. Not all settings can be "
+                "changed after creation.",
+            "action_code": DPAT_API,
+            "groups": "Consumers",
+            "options": DataProviderActionCatalog::getActionOptionFromFields(
+                NatsJSConsumerConfigDataType::Fields{"stream",}, {
+                    "preselected": True,
+                    "required": True,
+                },
+            ) + DataProviderActionCatalog::getActionOptionFromFields(
+                NatsJSConsumerConfigDataType::Fields{"durable_name", "ack_policy"}, {
+                    "preselected": True,
+                },
+            ) + DataProviderActionCatalog::getActionOptionFromFields(
+                NatsJSConsumerConfigDataType::Fields
+                    - ("stream", "durable_name", "ack_policy"),
+            ),
+            "output_type": NatsJSConsumerUpdateDataProvider::ResponseType,
+        });
+        DataProviderActionCatalog::registerAction(<DataProviderActionInfo>{
+            "app": NatsJetStreamDataProvider::AppName,
+            "path": "/consumers/pause",
+            "action": "consumer-pause",
+            "display_name": "Pause Consumer",
+            "short_desc": "Pause a JetStream consumer until a specified time",
+            "desc": "Pauses a JetStream consumer until a specified time.\n\n"
+                "A paused consumer stops receiving messages until the specified time, "
+                "at which point delivery automatically resumes. Use this for maintenance "
+                "windows or rate limiting.",
+            "action_code": DPAT_API,
+            "groups": "Consumers",
+            "options": DataProviderActionCatalog::getActionOptionFromFields(
+                NatsJSConsumerPauseRequestDataType::Fields{"stream", "consumer"}, {
+                    "preselected": True,
+                    "required": True,
+                },
+            ) + DataProviderActionCatalog::getActionOptionFromFields(
+                NatsJSConsumerPauseRequestDataType::Fields{"pause_until",}, {
+                    "preselected": True,
+                    "required": True,
+                },
+            ),
+            "output_type": NatsJSConsumerPauseDataProvider::ResponseType,
         });
 
         # Register publish action
@@ -343,6 +491,163 @@ module NatsJetStreamDataProvider {
             "output_type": NatsJSKVHistoryDataProvider::ResponseType,
         });
 
+        # Register message actions
+        DataProviderActionCatalog::registerAction(<DataProviderActionInfo>{
+            "app": NatsJetStreamDataProvider::AppName,
+            "path": "/messages/get",
+            "action": "message-get",
+            "display_name": "Get Message",
+            "short_desc": "Retrieve a message from a stream by sequence number",
+            "desc": "Retrieves a message from a JetStream stream by sequence number.\n\n"
+                "Returns the message payload, subject, and headers. Returns nothing if no "
+                "message exists at the given sequence.",
+            "action_code": DPAT_API,
+            "groups": "Messages",
+            "options": DataProviderActionCatalog::getActionOptionFromFields(
+                NatsJSStreamMsgRequestDataType::Fields, {
+                    "preselected": True,
+                    "required": True,
+                },
+            ),
+            "output_type": NatsJSStreamGetMsgDataProvider::ResponseType,
+        });
+        DataProviderActionCatalog::registerAction(<DataProviderActionInfo>{
+            "app": NatsJetStreamDataProvider::AppName,
+            "path": "/messages/get-last",
+            "action": "message-get-last",
+            "display_name": "Get Last Message",
+            "short_desc": "Get the last message for a subject from a stream",
+            "desc": "Retrieves the last message for a subject from a JetStream stream.\n\n"
+                "Returns the most recently published message on the specified subject. "
+                "Returns nothing if no message exists for the subject.",
+            "action_code": DPAT_API,
+            "groups": "Messages",
+            "options": DataProviderActionCatalog::getActionOptionFromFields(
+                NatsJSStreamMsgBySubjectRequestDataType::Fields, {
+                    "preselected": True,
+                    "required": True,
+                },
+            ),
+            "output_type": NatsJSStreamGetLastMsgDataProvider::ResponseType,
+        });
+        DataProviderActionCatalog::registerAction(<DataProviderActionInfo>{
+            "app": NatsJetStreamDataProvider::AppName,
+            "path": "/messages/delete",
+            "action": "message-delete",
+            "display_name": "Delete Message",
+            "short_desc": "Delete a message from a stream by sequence number",
+            "desc": "Deletes a message from a JetStream stream by sequence number.\n\n"
+                "The message data may still be recoverable from storage. For guaranteed "
+                "data removal, use the erase action instead.",
+            "action_code": DPAT_API,
+            "groups": "Messages",
+            "options": DataProviderActionCatalog::getActionOptionFromFields(
+                NatsJSStreamMsgRequestDataType::Fields, {
+                    "preselected": True,
+                    "required": True,
+                },
+            ),
+            "output_type": AbstractDataProviderTypeMap."nothing",
+        });
+        DataProviderActionCatalog::registerAction(<DataProviderActionInfo>{
+            "app": NatsJetStreamDataProvider::AppName,
+            "path": "/messages/erase",
+            "action": "message-erase",
+            "display_name": "Erase Message",
+            "short_desc": "Securely erase a message from a stream",
+            "desc": "Securely erases a message from a JetStream stream by sequence "
+                "number.\n\n"
+                "Unlike delete, this overwrites the message data in storage for compliance "
+                "with data protection regulations.",
+            "action_code": DPAT_API,
+            "groups": "Messages",
+            "options": DataProviderActionCatalog::getActionOptionFromFields(
+                NatsJSStreamMsgRequestDataType::Fields, {
+                    "preselected": True,
+                    "required": True,
+                },
+            ),
+            "output_type": AbstractDataProviderTypeMap."nothing",
+        });
+
+        # Register account action
+        DataProviderActionCatalog::registerAction(<DataProviderActionInfo>{
+            "app": NatsJetStreamDataProvider::AppName,
+            "path": "/account-info",
+            "action": "account-info",
+            "display_name": "Account Info",
+            "short_desc": "Get JetStream account resource usage and API statistics",
+            "desc": "Retrieves JetStream account information including resource usage "
+                "and API statistics.\n\n"
+                "Returns memory and storage usage, stream and consumer counts, and API "
+                "request totals. Use this for capacity planning and monitoring.",
+            "action_code": DPAT_API,
+            "groups": "Account",
+            "output_type": NatsJSAccountInfoDataProvider::ResponseType,
+        });
+
+        # Register KV bucket management actions
+        DataProviderActionCatalog::registerAction(<DataProviderActionInfo>{
+            "app": NatsJetStreamDataProvider::AppName,
+            "path": "/kv/create-bucket",
+            "action": "kv-create-bucket",
+            "display_name": "KV Create Bucket",
+            "short_desc": "Create a new KV store bucket",
+            "desc": "Creates a new JetStream Key-Value store bucket.\n\n"
+                "Creates a bucket with the specified configuration including history "
+                "depth, TTL, storage type, and replication. Returns the initial bucket "
+                "status.",
+            "action_code": DPAT_API,
+            "groups": "Key-Value",
+            "options": DataProviderActionCatalog::getActionOptionFromFields(
+                NatsJSKVConfigRequestDataType::Fields{"bucket",}, {
+                    "preselected": True,
+                    "required": True,
+                },
+            ) + DataProviderActionCatalog::getActionOptionFromFields(
+                NatsJSKVConfigRequestDataType::Fields - ("bucket",),
+            ),
+            "output_type": NatsJSKVCreateBucketDataProvider::ResponseType,
+        });
+        DataProviderActionCatalog::registerAction(<DataProviderActionInfo>{
+            "app": NatsJetStreamDataProvider::AppName,
+            "path": "/kv/delete-bucket",
+            "action": "kv-delete-bucket",
+            "display_name": "KV Delete Bucket",
+            "short_desc": "Permanently delete a KV store bucket",
+            "desc": "Permanently deletes a JetStream Key-Value store bucket.\n\n"
+                "**Warning**: this removes the bucket, all stored keys, and all revision "
+                "history. This action cannot be undone.",
+            "action_code": DPAT_API,
+            "groups": "Key-Value",
+            "options": DataProviderActionCatalog::getActionOptionFromFields(
+                NatsJSKVDeleteBucketRequestDataType::Fields, {
+                    "preselected": True,
+                    "required": True,
+                },
+            ),
+            "output_type": AbstractDataProviderTypeMap."nothing",
+        });
+        DataProviderActionCatalog::registerAction(<DataProviderActionInfo>{
+            "app": NatsJetStreamDataProvider::AppName,
+            "path": "/kv/status",
+            "action": "kv-status",
+            "display_name": "KV Bucket Status",
+            "short_desc": "Get status information for a KV bucket",
+            "desc": "Retrieves status information for a JetStream KV bucket.\n\n"
+                "Returns the bucket's key count, history depth, TTL, replica count, and "
+                "total storage usage.",
+            "action_code": DPAT_API,
+            "groups": "Key-Value",
+            "options": DataProviderActionCatalog::getActionOptionFromFields(
+                NatsJSKVStatusRequestDataType::Fields, {
+                    "preselected": True,
+                    "required": True,
+                },
+            ),
+            "output_type": NatsJSKVStatusDataProvider::ResponseType,
+        });
+
         # Register subscribe events
         DataProviderActionCatalog::registerAction(<DataProviderActionInfo>{
             "app": NatsJetStreamDataProvider::AppName,
@@ -390,35 +695,53 @@ module NatsJetStreamDataProvider {
     and key-value store capabilities through a uniform API.
 
     Key capabilities:
-    - <b>Streams</b>: create, delete, get info, and purge JetStream streams
-    - <b>Consumers</b>: create, delete, and get info on JetStream consumers
-    - <b>Publish</b>: publish messages with JetStream acknowledgment
+    - <b>Streams</b>: create, delete, get info, list, names, purge, and update JetStream streams
+    - <b>Consumers</b>: create, delete, get info, list, names, pause, and update consumers
+    - <b>Messages</b>: get, get-last, delete, and erase individual stream messages
+    - <b>Publish</b>: publish messages with JetStream acknowledgment and publish options
     - <b>Subscribe</b>: push-based observable event delivery from JetStream
     - <b>Pull Subscribe</b>: pull-based observable event delivery from JetStream
-    - <b>Key-Value</b>: put, get, delete, list keys, and get history for KV store entries
+    - <b>Key-Value</b>: put, get, delete, list keys, get history, create/delete buckets, and bucket status
+    - <b>Account</b>: get account resource usage and API statistics
 
     @subsection natsjetstreamdataprovider_hierarchy Provider Hierarchy
 
     @verbatim
 <root>
   ├── streams
-  │   ├── create     (NatsJSStreamCreateDataProvider — DPAT_API)
-  │   ├── delete     (NatsJSStreamDeleteDataProvider — DPAT_API)
-  │   ├── info       (NatsJSStreamInfoDataProvider — DPAT_API)
-  │   └── purge      (NatsJSStreamPurgeDataProvider — DPAT_API)
+  │   ├── create       (NatsJSStreamCreateDataProvider — DPAT_API)
+  │   ├── delete       (NatsJSStreamDeleteDataProvider — DPAT_API)
+  │   ├── info         (NatsJSStreamInfoDataProvider — DPAT_API)
+  │   ├── list         (NatsJSStreamListDataProvider — DPAT_API)
+  │   ├── names        (NatsJSStreamNamesDataProvider — DPAT_API)
+  │   ├── purge        (NatsJSStreamPurgeDataProvider — DPAT_API)
+  │   └── update       (NatsJSStreamUpdateDataProvider — DPAT_API)
   ├── consumers
-  │   ├── create     (NatsJSConsumerCreateDataProvider — DPAT_API)
-  │   ├── delete     (NatsJSConsumerDeleteDataProvider — DPAT_API)
-  │   └── info       (NatsJSConsumerInfoDataProvider — DPAT_API)
-  ├── publish        (NatsJSPublishDataProvider — DPAT_API)
-  ├── subscribe      (NatsJSSubscribeEventDataProvider — DPAT_EVENT)
-  ├── pull-subscribe (NatsJSPullSubscribeEventDataProvider — DPAT_EVENT)
-  └── kv
-      ├── put        (NatsJSKVPutDataProvider — DPAT_API)
-      ├── get        (NatsJSKVGetDataProvider — DPAT_API)
-      ├── delete     (NatsJSKVDeleteDataProvider — DPAT_API)
-      ├── keys       (NatsJSKVKeysDataProvider — DPAT_API)
-      └── history    (NatsJSKVHistoryDataProvider — DPAT_API)
+  │   ├── create       (NatsJSConsumerCreateDataProvider — DPAT_API)
+  │   ├── delete       (NatsJSConsumerDeleteDataProvider — DPAT_API)
+  │   ├── info         (NatsJSConsumerInfoDataProvider — DPAT_API)
+  │   ├── list         (NatsJSConsumerListDataProvider — DPAT_API)
+  │   ├── names        (NatsJSConsumerNamesDataProvider — DPAT_API)
+  │   ├── pause        (NatsJSConsumerPauseDataProvider — DPAT_API)
+  │   └── update       (NatsJSConsumerUpdateDataProvider — DPAT_API)
+  ├── messages
+  │   ├── get          (NatsJSStreamGetMsgDataProvider — DPAT_API)
+  │   ├── get-last     (NatsJSStreamGetLastMsgDataProvider — DPAT_API)
+  │   ├── delete       (NatsJSStreamDeleteMsgDataProvider — DPAT_API)
+  │   └── erase        (NatsJSStreamEraseMsgDataProvider — DPAT_API)
+  ├── publish          (NatsJSPublishDataProvider — DPAT_API)
+  ├── subscribe        (NatsJSSubscribeEventDataProvider — DPAT_EVENT)
+  ├── pull-subscribe   (NatsJSPullSubscribeEventDataProvider — DPAT_EVENT)
+  ├── kv
+  │   ├── put          (NatsJSKVPutDataProvider — DPAT_API)
+  │   ├── get          (NatsJSKVGetDataProvider — DPAT_API)
+  │   ├── delete       (NatsJSKVDeleteDataProvider — DPAT_API)
+  │   ├── keys         (NatsJSKVKeysDataProvider — DPAT_API)
+  │   ├── history      (NatsJSKVHistoryDataProvider — DPAT_API)
+  │   ├── create-bucket(NatsJSKVCreateBucketDataProvider — DPAT_API)
+  │   ├── delete-bucket(NatsJSKVDeleteBucketDataProvider — DPAT_API)
+  │   └── status       (NatsJSKVStatusDataProvider — DPAT_API)
+  └── account-info     (NatsJSAccountInfoDataProvider — DPAT_API)
     @endverbatim
 
     @section natsjetstreamdataprovider_relnotes Release Notes

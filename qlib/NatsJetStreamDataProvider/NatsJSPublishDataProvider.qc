@@ -56,6 +56,60 @@ public class NatsJSPublishRequestDataType inherits HashDataType {
                     "JSON, XML, or other text-based payloads.",
                 "example_value": "{\"order_id\": 12345, \"status\": \"created\"}",
             },
+            "msg_id": {
+                "type": StringOrNothingType,
+                "display_name": "Message ID",
+                "short_desc": "Message ID for idempotent publishing",
+                "desc": "A unique message identifier for idempotent publishing.\n\n"
+                    "JetStream tracks message IDs within a configurable deduplication window. "
+                    "If a message with the same ID is published again within the window, the "
+                    "server returns the original `sequence` number and sets `duplicate` to "
+                    "`True`.",
+            },
+            "expect_stream": {
+                "type": StringOrNothingType,
+                "display_name": "Expected Stream",
+                "short_desc": "Expected stream name",
+                "desc": "The expected stream name that the message should be published to.\n\n"
+                    "If the message would be stored in a different stream, the publish fails "
+                    "with an error. Use this for safety when publishing to subjects captured "
+                    "by multiple streams.",
+            },
+            "expect_last_msg_id": {
+                "type": StringOrNothingType,
+                "display_name": "Expected Last Message ID",
+                "short_desc": "Expected last message ID",
+                "desc": "The expected message ID of the last message in the stream.\n\n"
+                    "If the last message's ID does not match, the publish fails. Use this "
+                    "for sequence integrity checks.",
+            },
+            "expect_last_seq": {
+                "type": IntOrNothingType,
+                "display_name": "Expected Last Sequence",
+                "short_desc": "Expected last sequence number",
+                "desc": "The expected sequence number of the last message in the stream.\n\n"
+                    "If the stream's last sequence number does not match, the publish fails. "
+                    "Use this for optimistic concurrency control to ensure no messages have "
+                    "been published between reads.",
+            },
+            "expect_last_subject_seq": {
+                "type": IntOrNothingType,
+                "display_name": "Expected Last Subject Sequence",
+                "short_desc": "Expected last subject sequence",
+                "desc": "The expected sequence number of the last message for this specific "
+                    "subject.\n\n"
+                    "If the last message on the subject does not have this sequence number, "
+                    "the publish fails. Use this for subject-level optimistic concurrency.",
+            },
+            "expect_no_message": {
+                "type": BoolOrNothingType,
+                "display_name": "Expect No Message",
+                "short_desc": "Expect no existing messages for subject",
+                "desc": "When set to `True`, the publish will fail if any message already "
+                    "exists for the subject.\n\n"
+                    "Use this to ensure that only the first message for a subject is "
+                    "accepted, implementing a create-only semantic.",
+            },
         };
     }
     constructor() : HashDataType("NatsJSPublishRequest") {
@@ -111,6 +165,19 @@ public class NatsJSPublishDataProvider inherits AbstractDataProvider {
             payload = req.data;
         } else if (req.string_data) {
             payload = binary(req.string_data);
+        }
+        # Check if any publish options are set
+        if (req.msg_id || req.expect_stream || req.expect_last_msg_id
+                || exists req.expect_last_seq || exists req.expect_last_subject_seq
+                || exists req.expect_no_message) {
+            return js.publishWithOptions(req.subject, payload, <NatsJSPubOptions>{
+                "msg_id": req.msg_id,
+                "expect_stream": req.expect_stream,
+                "expect_last_msg_id": req.expect_last_msg_id,
+                "expect_last_seq": req.expect_last_seq,
+                "expect_last_subject_seq": req.expect_last_subject_seq,
+                "expect_no_message": req.expect_no_message,
+            });
         }
         return js.publish(req.subject, payload);
     }

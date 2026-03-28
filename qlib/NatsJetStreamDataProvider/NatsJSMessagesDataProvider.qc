@@ -1,7 +1,7 @@
 # -*- mode: qore; indent-tabs-mode: nil -*-
-#! @file NatsJSStreamsDataProvider.qc Container data provider for JetStream stream operations
+#! @file NatsJSMessagesDataProvider.qc Container data provider for JetStream message operations
 
-/*  NatsJSStreamsDataProvider.qc Copyright 2026 Qore Technologies, s.r.o.
+/*  NatsJSMessagesDataProvider.qc Copyright 2026 Qore Technologies, s.r.o.
 
     Permission is hereby granted, free of charge, to any person obtaining a
     copy of this software and associated documentation files (the "Software"),
@@ -25,10 +25,10 @@
 #! Contains all public definitions in the NatsJetStreamDataProvider module
 public namespace NatsJetStreamDataProvider {
 
-#! Container data provider for JetStream stream management operations
+#! Container data provider for JetStream direct message access operations
 /** @since NatsJetStreamDataProvider 1.0
 */
-public class NatsJSStreamsDataProvider inherits AbstractDataProvider {
+public class NatsJSMessagesDataProvider inherits AbstractDataProvider {
     private {
         JetStreamContext js;
     }
@@ -38,43 +38,37 @@ public class NatsJSStreamsDataProvider inherits AbstractDataProvider {
     }
 
     string getName() {
-        return "streams";
+        return "messages";
     }
 
     *string getDesc() {
-        return "Container for JetStream stream lifecycle management.\n\n"
-            "Provides access to operations for creating, deleting, inspecting, and "
-            "purging JetStream streams. Streams are the durable message storage layer "
-            "that captures messages published to matching subjects for replay, audit "
-            "trails, and guaranteed delivery.";
+        return "Container for JetStream direct message access operations.\n\n"
+            "Provides access to operations for retrieving, deleting, and securely erasing "
+            "individual messages from a stream by sequence number or subject. Use these "
+            "operations for message inspection, selective cleanup, and compliance with "
+            "data retention policies.";
     }
 
     private *list<string> getChildProviderNamesImpl() {
-        return ("create", "delete", "info", "list", "names", "purge", "update");
+        return ("get", "get-last", "delete", "erase");
     }
 
     private *AbstractDataProvider getChildProviderImpl(string name) {
         switch (name) {
-            case "create":
-                return new NatsJSStreamCreateDataProvider(js);
+            case "get":
+                return new NatsJSStreamGetMsgDataProvider(js);
+            case "get-last":
+                return new NatsJSStreamGetLastMsgDataProvider(js);
             case "delete":
-                return new NatsJSStreamDeleteDataProvider(js);
-            case "info":
-                return new NatsJSStreamInfoDataProvider(js);
-            case "list":
-                return new NatsJSStreamListDataProvider(js);
-            case "names":
-                return new NatsJSStreamNamesDataProvider(js);
-            case "purge":
-                return new NatsJSStreamPurgeDataProvider(js);
-            case "update":
-                return new NatsJSStreamUpdateDataProvider(js);
+                return new NatsJSStreamDeleteMsgDataProvider(js);
+            case "erase":
+                return new NatsJSStreamEraseMsgDataProvider(js);
         }
     }
 
     private hash<DataProviderInfo> getStaticInfoImpl() {
         return <DataProviderInfo>{
-            "type": "NatsJSStreamsDataProvider",
+            "type": "NatsJSMessagesDataProvider",
             "supports_children": True,
             "children_can_support_apis": True,
         };
