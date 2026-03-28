@@ -99,6 +99,9 @@ public class JetStreamTest inherits QUnit::Test {
         addTestCase("delete stream message test", \deleteStreamMsgTest());
         addTestCase("ordered consumer test", \orderedConsumerTest());
 
+        # KV bucket status test
+        addTestCase("kv bucket status test", \kvBucketStatusTest());
+
         # Negative tests
         addTestCase("stream not found test", \streamNotFoundTest());
         addTestCase("consumer not found test", \consumerNotFoundTest());
@@ -951,6 +954,35 @@ public class JetStreamTest inherits QUnit::Test {
             js.keyValue(bucket);
         });
 
+        conn.close();
+    }
+
+    # --- KV bucket status test ---
+
+    kvBucketStatusTest() {
+        NatsConnection conn(url);
+        JetStreamContext js = conn.jetStream();
+
+        string bucket = "test-status-" + string(rand() % 100000);
+        NatsKeyValueStore kv = js.createKeyValue(cast<hash<NatsKVConfig>>({
+            "bucket": bucket,
+            "history": 5,
+            "storage": NATS_STORAGE_MEMORY,
+        }));
+
+        # Put some values
+        kv.putString("key1", "val1");
+        kv.putString("key2", "val2");
+
+        hash<NatsKVBucketStatus> sts = kv.status();
+        assertEq(bucket, sts.bucket);
+        assertEq(2, sts.values);
+        assertEq(5, sts.history);
+        assertEq(1, sts.replicas);
+        assertTrue(sts.bytes > 0);
+        assertEq(0, sts.ttl_ms);
+
+        js.deleteKeyValue(bucket);
         conn.close();
     }
 

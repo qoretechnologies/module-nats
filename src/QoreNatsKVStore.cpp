@@ -312,3 +312,56 @@ const char* QoreNatsKVStore::bucketName() const {
     }
     return kvStore_Bucket(kv);
 }
+
+QoreHashNode* QoreNatsKVStore::status(ExceptionSink* xsink) {
+    if (!kv) {
+        xsink->raiseException("NATS-KV-ERROR", "KV store is not valid");
+        return nullptr;
+    }
+    if (qore_check_cancel(xsink)) {
+        return nullptr;
+    }
+
+    kvStatus* sts = nullptr;
+    natsStatus s = kvStore_Status(&sts, kv);
+    if (s != NATS_OK) {
+        nats_error(xsink, "NATS-KV-ERROR", s, "failed to get bucket status");
+        return nullptr;
+    }
+
+    ReferenceHolder<QoreHashNode> h(new QoreHashNode(hashdeclNatsKVBucketStatus, xsink), xsink);
+    if (*xsink) {
+        kvStatus_Destroy(sts);
+        return nullptr;
+    }
+
+    const char* bucket = kvStatus_Bucket(sts);
+    if (bucket) {
+        h->setKeyValue("bucket", new QoreStringNode(bucket), xsink);
+        if (*xsink) {
+            kvStatus_Destroy(sts);
+            return nullptr;
+        }
+    }
+    if (!*xsink) {
+        h->setKeyValue("values", (int64)kvStatus_Values(sts), xsink);
+    }
+    if (!*xsink) {
+        h->setKeyValue("history", (int64)kvStatus_History(sts), xsink);
+    }
+    if (!*xsink) {
+        h->setKeyValue("ttl_ms", (int64)(kvStatus_TTL(sts) / 1000000LL), xsink);
+    }
+    if (!*xsink) {
+        h->setKeyValue("replicas", (int64)kvStatus_Replicas(sts), xsink);
+    }
+    if (!*xsink) {
+        h->setKeyValue("bytes", (int64)kvStatus_Bytes(sts), xsink);
+    }
+    kvStatus_Destroy(sts);
+
+    if (*xsink) {
+        return nullptr;
+    }
+    return h.release();
+}

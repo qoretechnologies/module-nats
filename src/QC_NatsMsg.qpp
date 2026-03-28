@@ -730,3 +730,49 @@ hashdecl Qore::Nats::NatsJSSubOptions {
     //! If True, create an ordered consumer (FIFO, no redelivery)
     *bool ordered;
 }
+
+//! Subscription statistics
+/** @since %nats 1.0
+*/
+hashdecl Qore::Nats::NatsSubscriptionStats {
+    //! The subscription subject
+    *string subject;
+
+    //! The subscription ID
+    int id;
+
+    //! Number of pending messages
+    int pending_msgs;
+
+    //! Number of pending bytes
+    int pending_bytes;
+
+    //! Number of delivered messages
+    int delivered_msgs;
+
+    //! Number of dropped messages
+    int dropped_msgs;
+}
+
+//! Key-Value bucket status
+/** @since %nats 1.0
+*/
+hashdecl Qore::Nats::NatsKVBucketStatus {
+    //! Bucket name
+    string bucket;
+
+    //! Number of values in the bucket
+    int values;
+
+    //! Number of historical values to keep per key
+    int history;
+
+    //! Time-to-live in milliseconds (0 = unlimited)
+    int ttl_ms;
+
+    //! Number of replicas
+    int replicas;
+
+    //! Total bytes used by the bucket
+    int bytes;
+}

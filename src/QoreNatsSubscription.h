@@ -89,6 +89,27 @@ public:
     //! Get JetStream metadata for the last received message
     DLLLOCAL QoreHashNode* getMetadata(ExceptionSink* xsink);
 
+    //! Get subscription subject
+    DLLLOCAL const char* getSubject() const;
+
+    //! Get subscription ID
+    DLLLOCAL int64 getId() const;
+
+    //! Get pending message and byte counts
+    DLLLOCAL QoreHashNode* getPending(ExceptionSink* xsink);
+
+    //! Get delivered message count
+    DLLLOCAL int64 getDelivered(ExceptionSink* xsink);
+
+    //! Get dropped message count
+    DLLLOCAL int64 getDropped(ExceptionSink* xsink);
+
+    //! Get subscription stats
+    DLLLOCAL QoreHashNode* getSubscriptionStats(ExceptionSink* xsink);
+
+    //! Set pending message and byte limits
+    DLLLOCAL int setPendingLimits(int msg_limit, int bytes_limit, ExceptionSink* xsink);
+
 private:
     natsSubscription* sub = nullptr;
     natsMsg* lastMsg = nullptr;

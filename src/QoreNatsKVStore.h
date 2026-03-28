@@ -73,6 +73,9 @@ public:
     //! Get bucket name
     DLLLOCAL const char* bucketName() const;
 
+    //! Get bucket status
+    DLLLOCAL QoreHashNode* status(ExceptionSink* xsink);
+
 private:
     kvStore* kv = nullptr;
 

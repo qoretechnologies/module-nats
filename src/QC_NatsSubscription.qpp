@@ -227,3 +227,77 @@ nothing NatsSubscription::nakWithDelay(timeout delay) {
 *hash<NatsJSMsgMetadata> NatsSubscription::getMetadata() [flags=RET_VALUE_ONLY] {
     return sub->getMetadata(xsink);
 }
+
+//! Returns the subscription subject
+/** @return the subscription subject string
+
+    @since %nats 1.0
+*/
+string NatsSubscription::getSubject() [flags=RET_VALUE_ONLY] {
+    return new QoreStringNode(sub->getSubject());
+}
+
+//! Returns the subscription ID
+/** @return the subscription ID
+
+    @since %nats 1.0
+*/
+int NatsSubscription::getId() [flags=RET_VALUE_ONLY] {
+    return sub->getId();
+}
+
+//! Returns pending message and byte counts
+/** @return a hash with \c msgs (int) and \c bytes (int) keys
+
+    @throw NATS-SUBSCRIBE-ERROR if the subscription is not valid
+
+    @since %nats 1.0
+*/
+hash<auto> NatsSubscription::getPending() [flags=RET_VALUE_ONLY] {
+    return sub->getPending(xsink);
+}
+
+//! Returns the number of delivered messages
+/** @return the delivered message count
+
+    @throw NATS-SUBSCRIBE-ERROR if the subscription is not valid
+
+    @since %nats 1.0
+*/
+int NatsSubscription::getDelivered() [flags=RET_VALUE_ONLY] {
+    return sub->getDelivered(xsink);
+}
+
+//! Returns the number of dropped messages
+/** @return the dropped message count
+
+    @throw NATS-SUBSCRIBE-ERROR if the subscription is not valid
+
+    @since %nats 1.0
+*/
+int NatsSubscription::getDropped() [flags=RET_VALUE_ONLY] {
+    return sub->getDropped(xsink);
+}
+
+//! Returns subscription statistics
+/** @return a @ref NatsSubscriptionStats hash
+
+    @throw NATS-SUBSCRIBE-ERROR if the subscription is not valid
+
+    @since %nats 1.0
+*/
+hash<NatsSubscriptionStats> NatsSubscription::getSubscriptionStats() [flags=RET_VALUE_ONLY] {
+    return sub->getSubscriptionStats(xsink);
+}
+
+//! Sets the maximum pending message and byte limits
+/** @param msg_limit maximum pending messages (-1 for no limit)
+    @param bytes_limit maximum pending bytes (-1 for no limit)
+
+    @throw NATS-SUBSCRIBE-ERROR if the subscription is not valid or the operation fails
+
+    @since %nats 1.0
+*/
+nothing NatsSubscription::setPendingLimits(int msg_limit, int bytes_limit) {
+    sub->setPendingLimits((int)msg_limit, (int)bytes_limit, xsink);
+}

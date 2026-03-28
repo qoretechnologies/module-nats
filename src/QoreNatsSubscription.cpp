@@ -337,6 +337,133 @@ int QoreNatsSubscription::nakWithDelay(int64 delay_ms, ExceptionSink* xsink) {
     return 0;
 }
 
+const char* QoreNatsSubscription::getSubject() const {
+    if (!sub) {
+        return "";
+    }
+    return natsSubscription_GetSubject(sub);
+}
+
+int64 QoreNatsSubscription::getId() const {
+    if (!sub) {
+        return -1;
+    }
+    return natsSubscription_GetID(sub);
+}
+
+QoreHashNode* QoreNatsSubscription::getPending(ExceptionSink* xsink) {
+    if (!sub) {
+        xsink->raiseException("NATS-SUBSCRIBE-ERROR", "subscription is not valid");
+        return nullptr;
+    }
+    int msgs = 0, bytes = 0;
+    natsStatus s = natsSubscription_GetPending(sub, &msgs, &bytes);
+    if (s != NATS_OK) {
+        nats_error(xsink, "NATS-SUBSCRIBE-ERROR", s, "failed to get pending counts");
+        return nullptr;
+    }
+    ReferenceHolder<QoreHashNode> h(new QoreHashNode(autoTypeInfo), xsink);
+    h->setKeyValue("msgs", (int64)msgs, xsink);
+    if (!*xsink) {
+        h->setKeyValue("bytes", (int64)bytes, xsink);
+    }
+    if (*xsink) {
+        return nullptr;
+    }
+    return h.release();
+}
+
+int64 QoreNatsSubscription::getDelivered(ExceptionSink* xsink) {
+    if (!sub) {
+        xsink->raiseException("NATS-SUBSCRIBE-ERROR", "subscription is not valid");
+        return -1;
+    }
+    int64_t msgs = 0;
+    natsStatus s = natsSubscription_GetDelivered(sub, &msgs);
+    if (s != NATS_OK) {
+        nats_error(xsink, "NATS-SUBSCRIBE-ERROR", s, "failed to get delivered count");
+        return -1;
+    }
+    return (int64)msgs;
+}
+
+int64 QoreNatsSubscription::getDropped(ExceptionSink* xsink) {
+    if (!sub) {
+        xsink->raiseException("NATS-SUBSCRIBE-ERROR", "subscription is not valid");
+        return -1;
+    }
+    int64_t msgs = 0;
+    natsStatus s = natsSubscription_GetDropped(sub, &msgs);
+    if (s != NATS_OK) {
+        nats_error(xsink, "NATS-SUBSCRIBE-ERROR", s, "failed to get dropped count");
+        return -1;
+    }
+    return (int64)msgs;
+}
+
+QoreHashNode* QoreNatsSubscription::getSubscriptionStats(ExceptionSink* xsink) {
+    if (!sub) {
+        xsink->raiseException("NATS-SUBSCRIBE-ERROR", "subscription is not valid");
+        return nullptr;
+    }
+
+    int pendingMsgs = 0, pendingBytes = 0;
+    int maxPendingMsgs = 0, maxPendingBytes = 0;
+    int64_t deliveredMsgs = 0, droppedMsgs = 0;
+    natsStatus s = natsSubscription_GetStats(sub, &pendingMsgs, &pendingBytes,
+        &maxPendingMsgs, &maxPendingBytes, &deliveredMsgs, &droppedMsgs);
+    if (s != NATS_OK) {
+        nats_error(xsink, "NATS-SUBSCRIBE-ERROR", s, "failed to get subscription stats");
+        return nullptr;
+    }
+
+    ReferenceHolder<QoreHashNode> h(new QoreHashNode(hashdeclNatsSubscriptionStats, xsink), xsink);
+    if (*xsink) {
+        return nullptr;
+    }
+
+    const char* subject = natsSubscription_GetSubject(sub);
+    if (subject) {
+        h->setKeyValue("subject", new QoreStringNode(subject), xsink);
+        if (*xsink) {
+            return nullptr;
+        }
+    }
+    if (!*xsink) {
+        h->setKeyValue("id", (int64)natsSubscription_GetID(sub), xsink);
+    }
+    if (!*xsink) {
+        h->setKeyValue("pending_msgs", (int64)pendingMsgs, xsink);
+    }
+    if (!*xsink) {
+        h->setKeyValue("pending_bytes", (int64)pendingBytes, xsink);
+    }
+    if (!*xsink) {
+        h->setKeyValue("delivered_msgs", (int64)deliveredMsgs, xsink);
+    }
+    if (!*xsink) {
+        h->setKeyValue("dropped_msgs", (int64)droppedMsgs, xsink);
+    }
+    if (*xsink) {
+        return nullptr;
+    }
+    return h.release();
+}
+
+int QoreNatsSubscription::setPendingLimits(int msg_limit, int bytes_limit,
+        ExceptionSink* xsink) {
+    if (!sub) {
+        xsink->raiseException("NATS-SUBSCRIBE-ERROR", "subscription is not valid");
+        return -1;
+    }
+    natsStatus s = natsSubscription_SetPendingLimits(sub, msg_limit, bytes_limit);
+    if (s != NATS_OK) {
+        nats_error(xsink, "NATS-SUBSCRIBE-ERROR", s, "failed to set pending limits");
+        return -1;
+    }
+    return 0;
+}
+
 QoreHashNode* QoreNatsSubscription::getMetadata(ExceptionSink* xsink) {
     if (!lastMsg) {
         return nullptr;

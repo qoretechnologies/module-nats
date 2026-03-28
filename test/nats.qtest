@@ -89,6 +89,9 @@ public class NatsTest inherits QUnit::Test {
         addTestCase("connection info test", \connectionInfoTest());
         addTestCase("connection options extended test", \connectionOptionsExtendedTest());
 
+        # Subscription stats tests
+        addTestCase("subscription stats test", \subscriptionStatsTest());
+
         # Negative tests
         addTestCase("publish on closed connection test", \publishClosedTest());
         addTestCase("invalid subject test", \invalidSubjectTest());
@@ -650,6 +653,54 @@ public class NatsTest inherits QUnit::Test {
         assertEq("user", result3.username);
         assertEq("pass", result3.password);
         assertEq("host", result3.host);
+    }
+
+    # --- Subscription stats tests ---
+
+    subscriptionStatsTest() {
+        NatsConnection conn(url);
+        NatsSubscription nsub = conn.subscribe("test.stats.sub");
+
+        # Check basic stats
+        assertEq("test.stats.sub", nsub.getSubject());
+        assertTrue(nsub.getId() > 0);
+
+        # Set and verify pending limits
+        nsub.setPendingLimits(1000, 1048576);
+
+        # Publish some messages and check delivered count
+        for (int i = 0; i < 3; ++i) {
+            conn.publish("test.stats.sub", binary("msg" + string(i)));
+        }
+        conn.flush(2s);
+
+        # Fetch messages
+        for (int i = 0; i < 3; ++i) {
+            nsub.nextMsg(2s);
+        }
+
+        int delivered = nsub.getDelivered();
+        assertEq(3, delivered);
+
+        # Get dropped count (should be 0 in normal conditions)
+        int dropped = nsub.getDropped();
+        assertEq(0, dropped);
+
+        # Get pending counts
+        hash<auto> pending = nsub.getPending();
+        assertTrue(pending.hasKey("msgs"));
+        assertTrue(pending.hasKey("bytes"));
+        assertEq(0, pending.msgs);
+
+        # Get full stats
+        hash<NatsSubscriptionStats> stats = nsub.getSubscriptionStats();
+        assertEq("test.stats.sub", stats.subject);
+        assertEq(3, stats.delivered_msgs);
+        assertEq(0, stats.dropped_msgs);
+        assertTrue(stats.id > 0);
+
+        nsub.unsubscribe();
+        conn.close();
     }
 
     # --- Negative tests ---

@@ -177,3 +177,14 @@ list<hash<NatsKVEntry>> NatsKeyValueStore::history(string key) {
 string NatsKeyValueStore::bucketName() [flags=RET_VALUE_ONLY] {
     return new QoreStringNode(kv->bucketName());
 }
+
+//! Returns the bucket status
+/** @return a @ref NatsKVBucketStatus hash
+
+    @throw NATS-KV-ERROR if the KV store is not valid
+
+    @since %nats 1.0
+*/
+hash<NatsKVBucketStatus> NatsKeyValueStore::status() [flags=RET_VALUE_ONLY] {
+    return kv->status(xsink);
+}
