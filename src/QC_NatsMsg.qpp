@@ -295,6 +295,39 @@ hashdecl Qore::Nats::NatsStreamConfig {
 
     //! Stream description
     *string description;
+
+    //! Maximum number of messages per subject (-1 = unlimited)
+    *int max_msgs_per_subject;
+
+    //! Maximum number of consumers (-1 = unlimited)
+    *int max_consumers;
+
+    //! Duplicate message detection window in milliseconds
+    *int duplicate_window_ms;
+
+    //! If True, seal the stream (no new messages can be added)
+    *bool sealed;
+
+    //! If True, restrict the ability to delete messages
+    *bool deny_delete;
+
+    //! If True, restrict the ability to purge messages
+    *bool deny_purge;
+
+    //! If True, allow rollup headers to purge subjects
+    *bool allow_rollup;
+
+    //! If True, do not require acknowledgment of messages
+    *bool no_ack;
+
+    //! If True, allow direct access to messages (used by KV)
+    *bool allow_direct;
+
+    //! If True, allow direct access for mirrors
+    *bool mirror_direct;
+
+    //! If True, apply per-subject new-message discard semantics
+    *bool discard_new_per_subject;
 }
 
 //! Configuration for a JetStream consumer
@@ -339,6 +372,48 @@ hashdecl Qore::Nats::NatsConsumerConfig {
 
     //! Consumer description
     *string description;
+
+    //! Consumer name (for named consumers, alternative to durable_name)
+    *string name;
+
+    //! Redelivery backoff durations in milliseconds
+    *list<int> back_off;
+
+    //! Rate limit in bits per second
+    *int rate_limit_bps;
+
+    //! If True, enable flow control
+    *bool flow_control;
+
+    //! Heartbeat interval in milliseconds
+    *int heartbeat_ms;
+
+    //! If True, deliver only headers (no message bodies)
+    *bool headers_only;
+
+    //! Maximum pull batch size
+    *int max_request_batch;
+
+    //! Maximum pull request expiration in milliseconds
+    *int max_request_expires_ms;
+
+    //! Maximum pull request bytes
+    *int max_request_max_bytes;
+
+    //! Ephemeral consumer inactivity threshold in milliseconds
+    *int inactive_threshold_ms;
+
+    //! Number of replicas for the consumer
+    *int num_replicas;
+
+    //! If True, force memory storage for the consumer
+    *bool memory_storage;
+
+    //! Multiple filter subjects
+    *list<string> filter_subjects;
+
+    //! Sampling frequency as a percentage string (e.g., "100")
+    *string sample_frequency;
 }
 
 //! Information about a JetStream stream
@@ -521,4 +596,117 @@ hashdecl Qore::Nats::NatsConnectionInfo {
 
     //! Connection statistics
     hash<Qore::Nats::NatsConnectionStats> stats;
+}
+
+//! JetStream message metadata
+/** @since %nats 1.0
+*/
+hashdecl Qore::Nats::NatsJSMsgMetadata {
+    //! The JetStream domain
+    *string domain;
+
+    //! The stream name
+    string stream;
+
+    //! The consumer name
+    string consumer;
+
+    //! Number of times this message has been delivered
+    int num_delivered;
+
+    //! The stream sequence number
+    int stream_seq;
+
+    //! The consumer sequence number
+    int consumer_seq;
+
+    //! Number of pending messages for this consumer
+    int num_pending;
+
+    //! Message timestamp
+    *date timestamp;
+}
+
+//! JetStream publish options for controlling publish behavior
+/** @since %nats 1.0
+*/
+hashdecl Qore::Nats::NatsJSPubOptions {
+    //! Maximum time to wait for a publish response in milliseconds
+    *int max_wait_ms;
+
+    //! Message ID for de-duplication
+    *string msg_id;
+
+    //! Expected stream name for the publish
+    *string expect_stream;
+
+    //! Expected last message ID in the stream
+    *string expect_last_msg_id;
+
+    //! Expected last sequence number in the stream
+    *int expect_last_seq;
+
+    //! Expected last sequence number for the subject
+    *int expect_last_subject_seq;
+
+    //! If True, expect no messages exist for the subject
+    *bool expect_no_message;
+}
+
+//! JetStream account limits
+/** @since %nats 1.0
+*/
+hashdecl Qore::Nats::NatsJSAccountLimits {
+    //! Maximum memory in bytes
+    int max_memory;
+
+    //! Maximum storage in bytes
+    int max_storage;
+
+    //! Maximum number of streams
+    int max_streams;
+
+    //! Maximum number of consumers
+    int max_consumers;
+
+    //! Maximum outstanding unacknowledged messages
+    int max_ack_pending;
+
+    //! Maximum bytes per memory stream
+    int memory_max_stream_bytes;
+
+    //! Maximum bytes per storage stream
+    int storage_max_stream_bytes;
+
+    //! If True, max bytes is required for streams
+    bool max_bytes_required;
+}
+
+//! JetStream account information
+/** @since %nats 1.0
+*/
+hashdecl Qore::Nats::NatsJSAccountInfo {
+    //! Memory used in bytes
+    int memory;
+
+    //! Storage used in bytes
+    int storage;
+
+    //! Number of streams
+    int streams;
+
+    //! Number of consumers
+    int consumers;
+
+    //! JetStream domain
+    *string domain;
+
+    //! Total API calls
+    int api_total;
+
+    //! Total API errors
+    int api_errors;
+
+    //! Account limits
+    hash<Qore::Nats::NatsJSAccountLimits> limits;
 }

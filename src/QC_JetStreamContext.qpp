@@ -171,6 +171,35 @@ hash<NatsPubAck> JetStreamContext::publish(string subject, *binary data) {
         xsink);
 }
 
+//! Publishes a message with JetStream acknowledgment and publish options
+/** @param subject the subject to publish to
+    @param data optional binary payload
+    @param opts publish options for controlling publish behavior
+
+    @return a @ref NatsPubAck hash
+
+    @throw NATS-JETSTREAM-ERROR if the publish fails
+
+    @since %nats 1.0
+*/
+hash<NatsPubAck> JetStreamContext::publishWithOptions(string subject, *binary data, hash<NatsJSPubOptions> opts) {
+    return js->publishWithOptions(subject->c_str(),
+        data ? data->getPtr() : nullptr,
+        data ? (int)data->size() : 0,
+        opts, xsink);
+}
+
+//! Returns JetStream account information
+/** @return a @ref NatsJSAccountInfo hash
+
+    @throw NATS-JETSTREAM-ERROR if the request fails
+
+    @since %nats 1.0
+*/
+hash<NatsJSAccountInfo> JetStreamContext::getAccountInfo() [flags=RET_VALUE_ONLY] {
+    return js->getAccountInfo(xsink);
+}
+
 //! Creates a push subscription on a JetStream subject
 /** @param subject the subject to subscribe to
     @return a new @ref NatsSubscription object

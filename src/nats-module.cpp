@@ -65,6 +65,10 @@ const TypedHashDecl* hashdeclNatsKVConfig = nullptr;
 const TypedHashDecl* hashdeclNatsKVEntry = nullptr;
 const TypedHashDecl* hashdeclNatsConnectionStats = nullptr;
 const TypedHashDecl* hashdeclNatsConnectionInfo = nullptr;
+const TypedHashDecl* hashdeclNatsJSMsgMetadata = nullptr;
+const TypedHashDecl* hashdeclNatsJSPubOptions = nullptr;
+const TypedHashDecl* hashdeclNatsJSAccountLimits = nullptr;
+const TypedHashDecl* hashdeclNatsJSAccountInfo = nullptr;
 
 QoreNamespace NatsNs("Qore::Nats");
 
@@ -89,6 +93,12 @@ static void nats_module_init(QoreModuleInitContext& ctx, ExceptionSink& xsink) {
     // Initialize Phase 4 hashdecls (Connection introspection)
     hashdeclNatsConnectionStats = init_hashdecl_NatsConnectionStats(NatsNs);
     hashdeclNatsConnectionInfo = init_hashdecl_NatsConnectionInfo(NatsNs);
+
+    // Initialize Phase 5 hashdecls (JetStream metadata and publish options)
+    hashdeclNatsJSMsgMetadata = init_hashdecl_NatsJSMsgMetadata(NatsNs);
+    hashdeclNatsJSPubOptions = init_hashdecl_NatsJSPubOptions(NatsNs);
+    hashdeclNatsJSAccountLimits = init_hashdecl_NatsJSAccountLimits(NatsNs);
+    hashdeclNatsJSAccountInfo = init_hashdecl_NatsJSAccountInfo(NatsNs);
 
     // Initialize classes in dependency order:
     // NatsSubscription has no class deps

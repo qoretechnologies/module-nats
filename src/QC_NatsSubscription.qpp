@@ -207,3 +207,23 @@ nothing NatsSubscription::inProgress() {
 nothing NatsSubscription::term() {
     sub->term(xsink);
 }
+
+//! Negative acknowledges the last received message with a redelivery delay
+/** @param delay the redelivery delay
+
+    @throw NATS-SUBSCRIBE-ERROR if no message to acknowledge or the operation fails
+
+    @since %nats 1.0
+*/
+nothing NatsSubscription::nakWithDelay(timeout delay) {
+    sub->nakWithDelay(delay, xsink);
+}
+
+//! Returns JetStream metadata for the last received message
+/** @return a @ref NatsJSMsgMetadata hash, or @ref nothing if no message or not a JetStream message
+
+    @since %nats 1.0
+*/
+*hash<NatsJSMsgMetadata> NatsSubscription::getMetadata() [flags=RET_VALUE_ONLY] {
+    return sub->getMetadata(xsink);
+}

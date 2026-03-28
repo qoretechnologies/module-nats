@@ -84,6 +84,13 @@ public class JetStreamTest inherits QUnit::Test {
         addTestCase("kv bucket name test", \kvBucketNameTest());
         addTestCase("kv delete bucket test", \kvDeleteBucketTest());
 
+        # Extended config tests (Phase 2)
+        addTestCase("extended stream config test", \extendedStreamConfigTest());
+        addTestCase("extended consumer config test", \extendedConsumerConfigTest());
+        addTestCase("js publish with options test", \jsPublishWithOptionsTest());
+        addTestCase("js message metadata test", \jsMessageMetadataTest());
+        addTestCase("js account info test", \jsAccountInfoTest());
+
         # Negative tests
         addTestCase("stream not found test", \streamNotFoundTest());
         addTestCase("consumer not found test", \consumerNotFoundTest());
@@ -1020,6 +1027,160 @@ public class JetStreamTest inherits QUnit::Test {
         });
 
         js.deleteKeyValue(bucket);
+        conn.close();
+    }
+
+    extendedStreamConfigTest() {
+        NatsConnection conn(url);
+        JetStreamContext js = conn.jetStream();
+
+        string stream_name = "test-ext-stream-" + string(rand() % 100000);
+
+        # Create stream with extended config fields
+        hash<NatsStreamInfo> info = js.addStream(cast<hash<NatsStreamConfig>>({
+            "name": stream_name,
+            "subjects": (stream_name + ".>",),
+            "storage": NATS_STORAGE_MEMORY,
+            "max_msgs_per_subject": 10,
+            "deny_delete": True,
+            "deny_purge": True,
+            "allow_direct": True,
+        }));
+
+        # Verify the extended fields are returned
+        assertEq(stream_name, info.config.name);
+        assertEq(10, info.config.max_msgs_per_subject);
+        assertTrue(info.config.deny_delete);
+        assertTrue(info.config.deny_purge);
+        assertTrue(info.config.allow_direct);
+
+        # Publish more than max_msgs_per_subject messages to one subject
+        for (int i = 0; i < 15; ++i) {
+            js.publish(stream_name + ".test", binary("msg" + string(i)));
+        }
+
+        # Verify only 10 messages retained per subject
+        hash<NatsStreamInfo> check = js.getStreamInfo(stream_name);
+        assertEq(10, check.messages);
+
+        js.deleteStream(stream_name);
+        conn.close();
+    }
+
+    extendedConsumerConfigTest() {
+        NatsConnection conn(url);
+        JetStreamContext js = conn.jetStream();
+
+        string stream_name = "test-ext-consumer-" + string(rand() % 100000);
+        js.addStream(cast<hash<NatsStreamConfig>>({
+            "name": stream_name,
+            "subjects": (stream_name + ".>",),
+            "storage": NATS_STORAGE_MEMORY,
+        }));
+
+        # Create consumer with extended config
+        hash<NatsConsumerInfo> info = js.addConsumer(stream_name,
+            cast<hash<NatsConsumerConfig>>({
+                "durable_name": "ext-consumer",
+                "ack_policy": NATS_ACK_EXPLICIT,
+                "headers_only": True,
+                "max_deliver": 3,
+                "max_ack_pending": 100,
+            }));
+
+        assertEq("ext-consumer", info.config.durable_name);
+        assertTrue(info.config.headers_only);
+        assertEq(3, info.config.max_deliver);
+        assertEq(100, info.config.max_ack_pending);
+
+        js.deleteConsumer(stream_name, "ext-consumer");
+        js.deleteStream(stream_name);
+        conn.close();
+    }
+
+    jsPublishWithOptionsTest() {
+        NatsConnection conn(url);
+        JetStreamContext js = conn.jetStream();
+
+        string stream_name = "test-pub-opts-" + string(rand() % 100000);
+        js.addStream(cast<hash<NatsStreamConfig>>({
+            "name": stream_name,
+            "subjects": (stream_name + ".>",),
+            "storage": NATS_STORAGE_MEMORY,
+        }));
+
+        # Publish with msg_id for dedup
+        hash<NatsPubAck> ack1 = js.publishWithOptions(
+            stream_name + ".dedup",
+            binary("test-msg"),
+            cast<hash<NatsJSPubOptions>>({"msg_id": "unique-1"}));
+        assertFalse(ack1.duplicate);
+        assertEq(stream_name, ack1.stream);
+
+        # Publish again with same msg_id - should be duplicate
+        hash<NatsPubAck> ack2 = js.publishWithOptions(
+            stream_name + ".dedup",
+            binary("test-msg"),
+            cast<hash<NatsJSPubOptions>>({"msg_id": "unique-1"}));
+        assertTrue(ack2.duplicate);
+
+        # Publish with expect_stream
+        assertThrows("NATS-JETSTREAM-ERROR", sub () {
+            js.publishWithOptions(
+                stream_name + ".test",
+                binary("data"),
+                cast<hash<NatsJSPubOptions>>({"expect_stream": "wrong-stream"}));
+        });
+
+        js.deleteStream(stream_name);
+        conn.close();
+    }
+
+    jsMessageMetadataTest() {
+        NatsConnection conn(url);
+        JetStreamContext js = conn.jetStream();
+
+        string stream_name = "test-metadata-" + string(rand() % 100000);
+        js.addStream(cast<hash<NatsStreamConfig>>({
+            "name": stream_name,
+            "subjects": (stream_name + ".>",),
+            "storage": NATS_STORAGE_MEMORY,
+        }));
+
+        js.publish(stream_name + ".meta", binary("meta-test"));
+
+        # Pull subscribe and get metadata
+        NatsSubscription nsub = js.pullSubscribe(stream_name + ".meta", "meta-durable");
+        list<hash<NatsMsgInfo>> msgs = nsub.fetch(1, 5s);
+        assertTrue(msgs.size() >= 1);
+
+        # Get metadata for the received message
+        *hash<NatsJSMsgMetadata> meta = nsub.getMetadata();
+        assertEq(stream_name, meta.stream);
+        assertEq("meta-durable", meta.consumer);
+        assertTrue(meta.stream_seq > 0);
+        assertTrue(meta.consumer_seq > 0);
+        assertTrue(meta.num_delivered >= 1);
+
+        nsub.ack();
+
+        js.deleteConsumer(stream_name, "meta-durable");
+        js.deleteStream(stream_name);
+        conn.close();
+    }
+
+    jsAccountInfoTest() {
+        NatsConnection conn(url);
+        JetStreamContext js = conn.jetStream();
+
+        hash<NatsJSAccountInfo> info = js.getAccountInfo();
+        # Basic validation - account info should have valid limits
+        assertTrue(info.limits.max_memory != 0 || info.limits.max_storage != 0
+            || info.memory >= 0);
+        assertTrue(info.streams >= 0);
+        assertTrue(info.consumers >= 0);
+        assertTrue(info.api_total >= 0);
+
         conn.close();
     }
 }

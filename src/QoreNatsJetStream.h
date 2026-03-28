@@ -61,6 +61,13 @@ public:
     DLLLOCAL QoreHashNode* publish(const char* subject, const void* data, int data_len,
         ExceptionSink* xsink);
 
+    //! Publish with options
+    DLLLOCAL QoreHashNode* publishWithOptions(const char* subject, const void* data,
+        int data_len, const QoreHashNode* pub_opts, ExceptionSink* xsink);
+
+    //! Get JetStream account info
+    DLLLOCAL QoreHashNode* getAccountInfo(ExceptionSink* xsink);
+
     // Subscribe (push)
     DLLLOCAL QoreNatsSubscription* subscribe(const char* subject, ExceptionSink* xsink);
 

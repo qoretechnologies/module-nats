@@ -83,6 +83,12 @@ public:
     //! JetStream: terminate delivery of the last message
     DLLLOCAL int term(ExceptionSink* xsink);
 
+    //! Negative acknowledge with redelivery delay
+    DLLLOCAL int nakWithDelay(int64 delay_ms, ExceptionSink* xsink);
+
+    //! Get JetStream metadata for the last received message
+    DLLLOCAL QoreHashNode* getMetadata(ExceptionSink* xsink);
+
 private:
     natsSubscription* sub = nullptr;
     natsMsg* lastMsg = nullptr;

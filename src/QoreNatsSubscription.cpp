@@ -321,3 +321,72 @@ int QoreNatsSubscription::term(ExceptionSink* xsink) {
     }
     return 0;
 }
+
+int QoreNatsSubscription::nakWithDelay(int64 delay_ms, ExceptionSink* xsink) {
+    if (!lastMsg) {
+        xsink->raiseException("NATS-SUBSCRIBE-ERROR",
+            "no message to negative-acknowledge with delay");
+        return -1;
+    }
+    natsStatus s = natsMsg_NakWithDelay(lastMsg, delay_ms * 1000000LL, nullptr);
+    if (s != NATS_OK) {
+        nats_error(xsink, "NATS-SUBSCRIBE-ERROR", s,
+            "failed to negative-acknowledge message with delay");
+        return -1;
+    }
+    return 0;
+}
+
+QoreHashNode* QoreNatsSubscription::getMetadata(ExceptionSink* xsink) {
+    if (!lastMsg) {
+        return nullptr;
+    }
+
+    jsMsgMetaData* meta = nullptr;
+    natsStatus s = natsMsg_GetMetaData(&meta, lastMsg);
+    if (s != NATS_OK) {
+        // Not a JetStream message or no metadata - not an error
+        return nullptr;
+    }
+
+    ReferenceHolder<QoreHashNode> h(new QoreHashNode(hashdeclNatsJSMsgMetadata, xsink), xsink);
+    if (*xsink) {
+        jsMsgMetaData_Destroy(meta);
+        return nullptr;
+    }
+
+    if (meta->Domain) {
+        h->setKeyValue("domain", new QoreStringNode(meta->Domain), xsink);
+    }
+    if (!*xsink && meta->Stream) {
+        h->setKeyValue("stream", new QoreStringNode(meta->Stream), xsink);
+    }
+    if (!*xsink && meta->Consumer) {
+        h->setKeyValue("consumer", new QoreStringNode(meta->Consumer), xsink);
+    }
+    if (!*xsink) {
+        h->setKeyValue("num_delivered", (int64)meta->NumDelivered, xsink);
+    }
+    if (!*xsink) {
+        h->setKeyValue("stream_seq", (int64)meta->Sequence.Stream, xsink);
+    }
+    if (!*xsink) {
+        h->setKeyValue("consumer_seq", (int64)meta->Sequence.Consumer, xsink);
+    }
+    if (!*xsink) {
+        h->setKeyValue("num_pending", (int64)meta->NumPending, xsink);
+    }
+    if (!*xsink && meta->Timestamp > 0) {
+        int64 us = meta->Timestamp / 1000;
+        h->setKeyValue("timestamp",
+            DateTimeNode::makeAbsolute(currentTZ(), us / 1000000, (int)(us % 1000000)),
+            xsink);
+    }
+
+    jsMsgMetaData_Destroy(meta);
+
+    if (*xsink) {
+        return nullptr;
+    }
+    return h.release();
+}
