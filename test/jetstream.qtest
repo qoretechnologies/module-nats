@@ -99,6 +99,10 @@ public class JetStreamTest inherits QUnit::Test {
         addTestCase("delete stream message test", \deleteStreamMsgTest());
         addTestCase("ordered consumer test", \orderedConsumerTest());
 
+        # Deferred items
+        addTestCase("pause consumer test", \pauseConsumerTest());
+        addTestCase("async publish test", \asyncPublishTest());
+
         # KV bucket status test
         addTestCase("kv bucket status test", \kvBucketStatusTest());
 
@@ -1682,6 +1686,60 @@ public class JetStreamTest inherits QUnit::Test {
         }
 
         nsub.unsubscribe();
+        js.deleteStream(stream);
+        conn.close();
+    }
+
+    pauseConsumerTest() {
+        NatsConnection conn(url);
+        JetStreamContext js = conn.jetStream();
+
+        string stream = "test-pause-" + string(rand() % 100000);
+        js.addStream(cast<hash<NatsStreamConfig>>({
+            "name": stream,
+            "subjects": (stream + ".>",),
+            "storage": NATS_STORAGE_MEMORY,
+        }));
+
+        js.addConsumer(stream, cast<hash<NatsConsumerConfig>>({
+            "durable_name": "pause-test",
+            "ack_policy": NATS_ACK_EXPLICIT,
+        }));
+
+        # Pause for 10 seconds from now
+        date pause_until = now_us() + 10s;
+        hash<NatsJSConsumerPauseResponse> resp = js.pauseConsumer(stream, "pause-test",
+            pause_until);
+        assertTrue(resp.paused);
+        assertTrue(resp.pause_remaining_ms > 0);
+
+        js.deleteStream(stream);
+        conn.close();
+    }
+
+    asyncPublishTest() {
+        NatsConnection conn(url);
+        JetStreamContext js = conn.jetStream();
+
+        string stream = "test-async-pub-" + string(rand() % 100000);
+        js.addStream(cast<hash<NatsStreamConfig>>({
+            "name": stream,
+            "subjects": (stream + ".>",),
+            "storage": NATS_STORAGE_MEMORY,
+        }));
+
+        # Publish multiple messages asynchronously
+        for (int i = 0; i < 10; ++i) {
+            js.publishAsync(stream + ".test", binary("async-msg-" + string(i)));
+        }
+
+        # Wait for all acks
+        js.publishAsyncComplete(10s);
+
+        # Verify all messages were stored
+        hash<NatsStreamInfo> info = js.getStreamInfo(stream);
+        assertEq(10, info.messages);
+
         js.deleteStream(stream);
         conn.close();
     }

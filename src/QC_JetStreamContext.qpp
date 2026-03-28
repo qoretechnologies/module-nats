@@ -397,6 +397,53 @@ NatsSubscription JetStreamContext::pullSubscribeWithOptions(string subject, stri
     return new QoreObject(QC_NATSSUBSCRIPTION, getProgram(), nsub);
 }
 
+//! Pauses a consumer until a specified time
+/** @param stream the stream name
+    @param consumer the consumer name
+    @param pause_until the time until which the consumer should be paused
+
+    @return a @ref NatsJSConsumerPauseResponse hash
+
+    @throw NATS-JETSTREAM-ERROR if the pause fails
+
+    @since %nats 1.0
+*/
+hash<NatsJSConsumerPauseResponse> JetStreamContext::pauseConsumer(string stream, string consumer, date pause_until) {
+    int64 epoch_ns = (int64)pause_until->getEpochSecondsUTC() * 1000000000LL
+        + (int64)pause_until->getMicrosecond() * 1000LL;
+    return js->pauseConsumer(stream->c_str(), consumer->c_str(), epoch_ns, xsink);
+}
+
+//! Publishes a message asynchronously to JetStream (fire-and-forget)
+/** The message is published without waiting for acknowledgment. Use
+    @ref publishAsyncComplete() to wait for all pending acknowledgments.
+
+    @param subject the subject to publish to
+    @param data optional binary payload
+    @param opts optional publish options
+
+    @throw NATS-JETSTREAM-ERROR if the publish fails
+
+    @since %nats 1.0
+*/
+nothing JetStreamContext::publishAsync(string subject, *binary data, *hash<NatsJSPubOptions> opts) {
+    js->publishAsync(subject->c_str(),
+        data ? data->getPtr() : nullptr,
+        data ? (int)data->size() : 0,
+        opts ? (const QoreHashNode*)opts : nullptr, xsink);
+}
+
+//! Waits for all pending asynchronous publish acknowledgments
+/** @param timeout_ms maximum time to wait in milliseconds (default: 5000)
+
+    @throw NATS-JETSTREAM-ERROR if the wait fails or times out
+
+    @since %nats 1.0
+*/
+nothing JetStreamContext::publishAsyncComplete(timeout timeout_ms = 5s) {
+    js->publishAsyncComplete(timeout_ms, xsink);
+}
+
 //! Opens an existing Key-Value store bucket
 /** @param bucket the bucket name
     @return a new @ref NatsKeyValueStore object

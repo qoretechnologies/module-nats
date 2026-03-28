@@ -1410,6 +1410,127 @@ QoreNatsSubscription* QoreNatsJetStream::pullSubscribeWithOptions(const char* su
     return new QoreNatsSubscription(sub);
 }
 
+QoreHashNode* QoreNatsJetStream::pauseConsumer(const char* stream, const char* consumer,
+        int64 pause_until_epoch_ns, ExceptionSink* xsink) {
+    if (!js) {
+        xsink->raiseException("NATS-JETSTREAM-ERROR", "JetStream context is not valid");
+        return nullptr;
+    }
+    if (qore_check_cancel(xsink)) {
+        return nullptr;
+    }
+
+    jsConsumerPauseResponse* cpr = nullptr;
+    jsErrCode jerr{};
+    natsStatus s = js_PauseConsumer(&cpr, js, stream, consumer,
+        (uint64_t)pause_until_epoch_ns, nullptr, &jerr);
+    if (s != NATS_OK) {
+        nats_js_error(xsink, "NATS-JETSTREAM-ERROR", s, jerr,
+            "failed to pause consumer '%s' on stream '%s'", consumer, stream);
+        return nullptr;
+    }
+
+    ReferenceHolder<QoreHashNode> h(new QoreHashNode(hashdeclNatsJSConsumerPauseResponse, xsink),
+        xsink);
+    if (*xsink) {
+        jsConsumerPauseResponse_Destroy(cpr);
+        return nullptr;
+    }
+
+    h->setKeyValue("paused", cpr->Paused, xsink);
+    if (!*xsink && cpr->PauseUntil > 0) {
+        int64 pause_us = cpr->PauseUntil / 1000;
+        h->setKeyValue("pause_until", DateTimeNode::makeAbsolute(
+            currentTZ(), pause_us / 1000000, (int)(pause_us % 1000000)), xsink);
+    }
+    if (!*xsink && cpr->PauseRemaining > 0) {
+        h->setKeyValue("pause_remaining_ms", (int64)(cpr->PauseRemaining / 1000000LL), xsink);
+    }
+    jsConsumerPauseResponse_Destroy(cpr);
+
+    if (*xsink) {
+        return nullptr;
+    }
+    return h.release();
+}
+
+int QoreNatsJetStream::publishAsync(const char* subject, const void* data, int data_len,
+        const QoreHashNode* pub_opts, ExceptionSink* xsink) {
+    if (!js) {
+        xsink->raiseException("NATS-JETSTREAM-ERROR", "JetStream context is not valid");
+        return -1;
+    }
+    if (qore_check_cancel(xsink)) {
+        return -1;
+    }
+
+    jsPubOptions po;
+    jsPubOptions_Init(&po);
+
+    if (pub_opts) {
+        QoreValue v = pub_opts->getKeyValue("max_wait_ms");
+        if (v.getType() == NT_INT) {
+            po.MaxWait = v.getAsBigInt();
+        }
+        v = pub_opts->getKeyValue("msg_id");
+        if (v.getType() == NT_STRING) {
+            po.MsgId = v.get<const QoreStringNode>()->c_str();
+        }
+        v = pub_opts->getKeyValue("expect_stream");
+        if (v.getType() == NT_STRING) {
+            po.ExpectStream = v.get<const QoreStringNode>()->c_str();
+        }
+        v = pub_opts->getKeyValue("expect_last_msg_id");
+        if (v.getType() == NT_STRING) {
+            po.ExpectLastMsgId = v.get<const QoreStringNode>()->c_str();
+        }
+        v = pub_opts->getKeyValue("expect_last_seq");
+        if (v.getType() == NT_INT) {
+            po.ExpectLastSeq = (uint64_t)v.getAsBigInt();
+        }
+        v = pub_opts->getKeyValue("expect_last_subject_seq");
+        if (v.getType() == NT_INT) {
+            po.ExpectLastSubjectSeq = (uint64_t)v.getAsBigInt();
+        }
+        v = pub_opts->getKeyValue("expect_no_message");
+        if (v.getType() == NT_BOOLEAN) {
+            po.ExpectNoMessage = v.getAsBool();
+        }
+    }
+
+    natsStatus s = js_PublishAsync(js, subject, data, data_len, pub_opts ? &po : nullptr);
+    if (s != NATS_OK) {
+        nats_error(xsink, "NATS-JETSTREAM-ERROR", s,
+            "failed to async publish to subject '%s'", subject);
+        return -1;
+    }
+    return 0;
+}
+
+int QoreNatsJetStream::publishAsyncComplete(int64 timeout_ms, ExceptionSink* xsink) {
+    if (!js) {
+        xsink->raiseException("NATS-JETSTREAM-ERROR", "JetStream context is not valid");
+        return -1;
+    }
+    if (qore_check_cancel(xsink)) {
+        return -1;
+    }
+
+    jsPubOptions po;
+    jsPubOptions_Init(&po);
+    if (timeout_ms > 0) {
+        po.MaxWait = timeout_ms;
+    }
+
+    natsStatus s = js_PublishAsyncComplete(js, &po);
+    if (s != NATS_OK) {
+        nats_error(xsink, "NATS-JETSTREAM-ERROR", s,
+            "failed to complete async publish");
+        return -1;
+    }
+    return 0;
+}
+
 QoreNatsKVStore* QoreNatsJetStream::keyValue(const char* bucket, ExceptionSink* xsink) {
     if (!js) {
         xsink->raiseException("NATS-KV-ERROR", "JetStream context is not valid");

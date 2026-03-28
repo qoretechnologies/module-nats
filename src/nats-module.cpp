@@ -76,6 +76,7 @@ const TypedHashDecl* hashdeclNatsJSSubOptions = nullptr;
 const TypedHashDecl* hashdeclNatsSubscriptionStats = nullptr;
 const TypedHashDecl* hashdeclNatsKVBucketStatus = nullptr;
 const TypedHashDecl* hashdeclNatsKVWatchOptions = nullptr;
+const TypedHashDecl* hashdeclNatsJSConsumerPauseResponse = nullptr;
 const TypedHashDecl* hashdeclNatsMicroEndpointConfig = nullptr;
 const TypedHashDecl* hashdeclNatsMicroServiceConfig = nullptr;
 const TypedHashDecl* hashdeclNatsMicroEndpointInfo = nullptr;
@@ -118,6 +119,7 @@ static void nats_module_init(QoreModuleInitContext& ctx, ExceptionSink& xsink) {
     hashdeclNatsSubscriptionStats = init_hashdecl_NatsSubscriptionStats(NatsNs);
     hashdeclNatsKVBucketStatus = init_hashdecl_NatsKVBucketStatus(NatsNs);
     hashdeclNatsKVWatchOptions = init_hashdecl_NatsKVWatchOptions(NatsNs);
+    hashdeclNatsJSConsumerPauseResponse = init_hashdecl_NatsJSConsumerPauseResponse(NatsNs);
 
     // Initialize Phase 7 hashdecls (Microservices)
     hashdeclNatsMicroEndpointConfig = init_hashdecl_NatsMicroEndpointConfig(NatsNs);

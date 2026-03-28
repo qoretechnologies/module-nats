@@ -98,6 +98,15 @@ public:
     DLLLOCAL QoreNatsSubscription* pullSubscribeWithOptions(const char* subject,
         const char* durable, const QoreHashNode* opts, ExceptionSink* xsink);
 
+    // Consumer pause
+    DLLLOCAL QoreHashNode* pauseConsumer(const char* stream, const char* consumer,
+        int64 pause_until_epoch_ns, ExceptionSink* xsink);
+
+    // Async publish
+    DLLLOCAL int publishAsync(const char* subject, const void* data, int data_len,
+        const QoreHashNode* pub_opts, ExceptionSink* xsink);
+    DLLLOCAL int publishAsyncComplete(int64 timeout_ms, ExceptionSink* xsink);
+
     // KV operations
     DLLLOCAL QoreNatsKVStore* keyValue(const char* bucket, ExceptionSink* xsink);
     DLLLOCAL QoreNatsKVStore* createKeyValue(const QoreHashNode* config, ExceptionSink* xsink);

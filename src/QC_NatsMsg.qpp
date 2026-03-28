@@ -809,6 +809,20 @@ hashdecl Qore::Nats::NatsKVWatchOptions {
     *bool updates_only;
 }
 
+//! Response from pausing a JetStream consumer
+/** @since %nats 1.0
+*/
+hashdecl Qore::Nats::NatsJSConsumerPauseResponse {
+    //! True if the consumer is paused
+    bool paused;
+
+    //! When the consumer will resume (epoch seconds)
+    *date pause_until;
+
+    //! Remaining pause time in milliseconds
+    *int pause_remaining_ms;
+}
+
 //! Configuration for a NATS microservice endpoint
 /** @since %nats 1.0
 */
