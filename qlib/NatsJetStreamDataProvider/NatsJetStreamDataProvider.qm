@@ -663,6 +663,12 @@ module NatsJetStreamDataProvider {
             "action_code": DPAT_EVENT,
             "action_val": EVENT_JS_MESSAGE,
             "groups": "Messaging",
+            "options": DataProviderActionCatalog::getActionOptionFromFields(
+                NatsJSSubscribeRequestDataType::Fields{"subject",}, {
+                    "preselected": True,
+                    "required": True,
+                },
+            ),
             "output_type": NatsJSMessageDataType,
         });
         DataProviderActionCatalog::registerAction(<DataProviderActionInfo>{
@@ -679,6 +685,12 @@ module NatsJetStreamDataProvider {
             "action_code": DPAT_EVENT,
             "action_val": EVENT_JS_MESSAGE,
             "groups": "Messaging",
+            "options": DataProviderActionCatalog::getActionOptionFromFields(
+                NatsJSPullSubscribeRequestDataType::Fields, {
+                    "preselected": True,
+                    "required": True,
+                },
+            ),
             "output_type": NatsJSMessageDataType,
         });
     };

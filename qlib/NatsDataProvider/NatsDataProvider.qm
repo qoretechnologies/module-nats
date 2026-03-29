@@ -126,6 +126,12 @@ module NatsDataProvider {
             "action_code": DPAT_EVENT,
             "action_val": EVENT_NATS_MESSAGE,
             "groups": "Messaging",
+            "options": DataProviderActionCatalog::getActionOptionFromFields(
+                NatsSubscribeRequestDataType::Fields{"subject",}, {
+                    "preselected": True,
+                    "required": True,
+                },
+            ),
             "output_type": NatsMessageDataType,
         });
 
@@ -144,6 +150,12 @@ module NatsDataProvider {
             "action_code": DPAT_EVENT,
             "action_val": EVENT_NATS_MESSAGE,
             "groups": "Messaging",
+            "options": DataProviderActionCatalog::getActionOptionFromFields(
+                NatsQueueSubscribeRequestDataType::Fields, {
+                    "preselected": True,
+                    "required": True,
+                },
+            ),
             "output_type": NatsMessageDataType,
         });
     };

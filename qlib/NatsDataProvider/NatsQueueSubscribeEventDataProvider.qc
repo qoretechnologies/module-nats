@@ -137,6 +137,27 @@ public class NatsQueueSubscribeEventDataProvider inherits AbstractDataProvider, 
         };
     }
 
+    private auto getExampleEventDataImpl(string event_id) {
+        switch (event_id) {
+            case EVENT_NATS_MESSAGE:
+                return {
+                    "subject": "tasks.process",
+                    "data": <776f726b>,
+                    "reply": NOTHING,
+                    "headers": {
+                        "Content-Type": "application/json",
+                    },
+                };
+            case EVENT_NATS_ERROR:
+                return {
+                    "err": "NATS-CONNECTION-ERROR",
+                    "desc": "Connection to NATS server lost",
+                };
+            case EVENT_NATS_COMPLETE:
+                return {};
+        }
+    }
+
     private hash<string, hash<DataProviderMessageInfo>> getEventTypesImpl() {
         return {
             EVENT_NATS_MESSAGE: <DataProviderMessageInfo>{

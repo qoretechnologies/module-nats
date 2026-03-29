@@ -33,7 +33,11 @@ public class NatsJSPullSubscribeRequestDataType inherits HashDataType {
                 "type": StringType,
                 "display_name": "Subject",
                 "short_desc": "JetStream subject to subscribe to",
-                "desc": "The JetStream subject to subscribe to",
+                "desc": "The JetStream subject to subscribe to.\n\n"
+                    "Supports NATS wildcard tokens: `*` matches a single token "
+                    "(e.g. `orders.*` matches `orders.created`) and `>` matches one or "
+                    "more tokens (e.g. `orders.>` matches `orders.created`, "
+                    "`orders.us.created`, etc.).",
                 "required": True,
                 "example_value": "orders.>",
             },
@@ -152,6 +156,27 @@ public class NatsJSPullSubscribeEventDataProvider inherits AbstractDataProvider,
             "type": "NatsJSPullSubscribeEventDataProvider",
             "supports_observable": True,
         };
+    }
+
+    private auto getExampleEventDataImpl(string event_id) {
+        switch (event_id) {
+            case EVENT_JS_MESSAGE:
+                return {
+                    "subject": "orders.created",
+                    "data": <68656c6c6f>,
+                    "reply": NOTHING,
+                    "headers": {
+                        "Content-Type": "application/json",
+                    },
+                };
+            case EVENT_JS_ERROR:
+                return {
+                    "err": "10037",
+                    "desc": "no message found",
+                };
+            case EVENT_JS_COMPLETE:
+                return {};
+        }
     }
 
     private hash<string, hash<DataProviderMessageInfo>> getEventTypesImpl() {
