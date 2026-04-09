@@ -48,9 +48,7 @@ public class NatsInteropTest inherits QUnit::Test {
 
     constructor() : QUnit::Test("NatsInteropTest", "1.0") {
         # Verify the nats CLI is available before registering tests
-        try {
-            backquote("nats --version 2>/dev/null");
-        } catch (hash<ExceptionInfo> ex) {
+        if (system("which nats > /dev/null 2>&1")) {
             printf("SKIP: nats CLI not found, skipping interop tests\n");
             set_return_value(0);
             return;
