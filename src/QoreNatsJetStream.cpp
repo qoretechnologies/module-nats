@@ -29,6 +29,18 @@
 #include "QoreNatsKVStore.h"
 
 #include <cstring>
+#include <deque>
+#include <string>
+
+struct NatsStringStorage {
+    std::deque<std::string> strings;
+
+    const char* add(const QoreValue& v) {
+        QoreStringValueHelper str(v);
+        strings.emplace_back(str->c_str(), str->size());
+        return strings.back().c_str();
+    }
+};
 
 QoreNatsJetStream::QoreNatsJetStream(natsConnection* conn, ExceptionSink* xsink)
         : conn(conn) {
@@ -49,17 +61,17 @@ QoreNatsJetStream::~QoreNatsJetStream() {
 }
 
 int QoreNatsJetStream::configureStreamConfig(jsStreamConfig* cfg,
-        const QoreHashNode* config, ExceptionSink* xsink) {
+        const QoreHashNode* config, NatsStringStorage& strings, ExceptionSink* xsink) {
     jsStreamConfig_Init(cfg);
 
     QoreValue v = config->getKeyValue("name");
     if (v.getType() == NT_STRING) {
-        cfg->Name = v.get<const QoreStringNode>()->c_str();
+        cfg->Name = strings.add(v);
     }
 
     v = config->getKeyValue("description");
     if (v.getType() == NT_STRING) {
-        cfg->Description = v.get<const QoreStringNode>()->c_str();
+        cfg->Description = strings.add(v);
     }
 
     v = config->getKeyValue("subjects");
@@ -76,7 +88,7 @@ int QoreNatsJetStream::configureStreamConfig(jsStreamConfig* cfg,
         for (int i = 0; i < cfg->SubjectsLen; ++i) {
             QoreValue sv = subjects->retrieveEntry(i);
             if (sv.getType() == NT_STRING) {
-                subj_arr[i] = sv.get<const QoreStringNode>()->c_str();
+                subj_arr[i] = strings.add(sv);
             } else {
                 subj_arr[i] = "";
             }
@@ -314,7 +326,8 @@ QoreHashNode* QoreNatsJetStream::addStream(const QoreHashNode* config,
     }
 
     jsStreamConfig cfg;
-    configureStreamConfig(&cfg, config, xsink);
+    NatsStringStorage strings;
+    configureStreamConfig(&cfg, config, strings, xsink);
     if (*xsink) {
         if (cfg.Subjects) {
             free((void*)cfg.Subjects);
@@ -351,7 +364,8 @@ QoreHashNode* QoreNatsJetStream::updateStream(const QoreHashNode* config,
     }
 
     jsStreamConfig cfg;
-    configureStreamConfig(&cfg, config, xsink);
+    NatsStringStorage strings;
+    configureStreamConfig(&cfg, config, strings, xsink);
     if (*xsink) {
         if (cfg.Subjects) {
             free((void*)cfg.Subjects);
@@ -439,27 +453,27 @@ int QoreNatsJetStream::purgeStream(const char* name, ExceptionSink* xsink) {
 }
 
 int QoreNatsJetStream::configureConsumerConfig(jsConsumerConfig* cfg,
-        const QoreHashNode* config, ExceptionSink* xsink) {
+        const QoreHashNode* config, NatsStringStorage& strings, ExceptionSink* xsink) {
     jsConsumerConfig_Init(cfg);
 
     QoreValue v = config->getKeyValue("durable_name");
     if (v.getType() == NT_STRING) {
-        cfg->Durable = v.get<const QoreStringNode>()->c_str();
+        cfg->Durable = strings.add(v);
     }
 
     v = config->getKeyValue("deliver_subject");
     if (v.getType() == NT_STRING) {
-        cfg->DeliverSubject = v.get<const QoreStringNode>()->c_str();
+        cfg->DeliverSubject = strings.add(v);
     }
 
     v = config->getKeyValue("deliver_group");
     if (v.getType() == NT_STRING) {
-        cfg->DeliverGroup = v.get<const QoreStringNode>()->c_str();
+        cfg->DeliverGroup = strings.add(v);
     }
 
     v = config->getKeyValue("description");
     if (v.getType() == NT_STRING) {
-        cfg->Description = v.get<const QoreStringNode>()->c_str();
+        cfg->Description = strings.add(v);
     }
 
     v = config->getKeyValue("ack_policy");
@@ -489,7 +503,7 @@ int QoreNatsJetStream::configureConsumerConfig(jsConsumerConfig* cfg,
 
     v = config->getKeyValue("filter_subject");
     if (v.getType() == NT_STRING) {
-        cfg->FilterSubject = v.get<const QoreStringNode>()->c_str();
+        cfg->FilterSubject = strings.add(v);
     }
 
     v = config->getKeyValue("max_deliver");
@@ -504,7 +518,7 @@ int QoreNatsJetStream::configureConsumerConfig(jsConsumerConfig* cfg,
 
     v = config->getKeyValue("name");
     if (v.getType() == NT_STRING) {
-        cfg->Name = v.get<const QoreStringNode>()->c_str();
+        cfg->Name = strings.add(v);
     }
 
     v = config->getKeyValue("back_off");
@@ -592,14 +606,14 @@ int QoreNatsJetStream::configureConsumerConfig(jsConsumerConfig* cfg,
             for (int i = 0; i < cfg->FilterSubjectsLen; ++i) {
                 QoreValue sv = fs->retrieveEntry(i);
                 cfg->FilterSubjects[i] = sv.getType() == NT_STRING
-                    ? sv.get<const QoreStringNode>()->c_str() : "";
+                    ? strings.add(sv) : "";
             }
         }
     }
 
     v = config->getKeyValue("sample_frequency");
     if (v.getType() == NT_STRING) {
-        cfg->SampleFrequency = v.get<const QoreStringNode>()->c_str();
+        cfg->SampleFrequency = strings.add(v);
     }
 
     return 0;
@@ -735,7 +749,8 @@ QoreHashNode* QoreNatsJetStream::addConsumer(const char* stream,
     }
 
     jsConsumerConfig cfg;
-    configureConsumerConfig(&cfg, config, xsink);
+    NatsStringStorage strings;
+    configureConsumerConfig(&cfg, config, strings, xsink);
     if (*xsink) {
         if (cfg.BackOff) {
             free((void*)cfg.BackOff);
@@ -897,6 +912,7 @@ QoreHashNode* QoreNatsJetStream::publishWithOptions(const char* subject, const v
 
     jsPubOptions po;
     jsPubOptions_Init(&po);
+    NatsStringStorage strings;
 
     QoreValue v = pub_opts->getKeyValue("max_wait_ms");
     if (v.getType() == NT_INT) {
@@ -905,17 +921,17 @@ QoreHashNode* QoreNatsJetStream::publishWithOptions(const char* subject, const v
 
     v = pub_opts->getKeyValue("msg_id");
     if (v.getType() == NT_STRING) {
-        po.MsgId = v.get<const QoreStringNode>()->c_str();
+        po.MsgId = strings.add(v);
     }
 
     v = pub_opts->getKeyValue("expect_stream");
     if (v.getType() == NT_STRING) {
-        po.ExpectStream = v.get<const QoreStringNode>()->c_str();
+        po.ExpectStream = strings.add(v);
     }
 
     v = pub_opts->getKeyValue("expect_last_msg_id");
     if (v.getType() == NT_STRING) {
-        po.ExpectLastMsgId = v.get<const QoreStringNode>()->c_str();
+        po.ExpectLastMsgId = strings.add(v);
     }
 
     v = pub_opts->getKeyValue("expect_last_seq");
@@ -1185,7 +1201,8 @@ QoreHashNode* QoreNatsJetStream::updateConsumer(const char* stream,
     }
 
     jsConsumerConfig cfg;
-    configureConsumerConfig(&cfg, config, xsink);
+    NatsStringStorage strings;
+    configureConsumerConfig(&cfg, config, strings, xsink);
     if (*xsink) {
         if (cfg.BackOff) {
             free(cfg.BackOff);
@@ -1328,21 +1345,22 @@ QoreNatsSubscription* QoreNatsJetStream::subscribeWithOptions(const char* subjec
 
     jsSubOptions subOpts;
     jsSubOptions_Init(&subOpts);
+    NatsStringStorage strings;
 
     if (opts) {
         QoreValue v = opts->getKeyValue("stream");
         if (v.getType() == NT_STRING) {
-            subOpts.Stream = v.get<const QoreStringNode>()->c_str();
+            subOpts.Stream = strings.add(v);
         }
 
         v = opts->getKeyValue("consumer");
         if (v.getType() == NT_STRING) {
-            subOpts.Consumer = v.get<const QoreStringNode>()->c_str();
+            subOpts.Consumer = strings.add(v);
         }
 
         v = opts->getKeyValue("queue");
         if (v.getType() == NT_STRING) {
-            subOpts.Queue = v.get<const QoreStringNode>()->c_str();
+            subOpts.Queue = strings.add(v);
         }
 
         v = opts->getKeyValue("manual_ack");
@@ -1380,11 +1398,12 @@ QoreNatsSubscription* QoreNatsJetStream::pullSubscribeWithOptions(const char* su
     jsSubOptions subOpts;
     jsSubOptions_Init(&subOpts);
     subOpts.Config.Durable = durable;
+    NatsStringStorage strings;
 
     if (opts) {
         QoreValue v = opts->getKeyValue("stream");
         if (v.getType() == NT_STRING) {
-            subOpts.Stream = v.get<const QoreStringNode>()->c_str();
+            subOpts.Stream = strings.add(v);
         }
 
         v = opts->getKeyValue("manual_ack");
@@ -1466,6 +1485,7 @@ int QoreNatsJetStream::publishAsync(const char* subject, const void* data, int d
 
     jsPubOptions po;
     jsPubOptions_Init(&po);
+    NatsStringStorage strings;
 
     if (pub_opts) {
         QoreValue v = pub_opts->getKeyValue("max_wait_ms");
@@ -1474,15 +1494,15 @@ int QoreNatsJetStream::publishAsync(const char* subject, const void* data, int d
         }
         v = pub_opts->getKeyValue("msg_id");
         if (v.getType() == NT_STRING) {
-            po.MsgId = v.get<const QoreStringNode>()->c_str();
+            po.MsgId = strings.add(v);
         }
         v = pub_opts->getKeyValue("expect_stream");
         if (v.getType() == NT_STRING) {
-            po.ExpectStream = v.get<const QoreStringNode>()->c_str();
+            po.ExpectStream = strings.add(v);
         }
         v = pub_opts->getKeyValue("expect_last_msg_id");
         if (v.getType() == NT_STRING) {
-            po.ExpectLastMsgId = v.get<const QoreStringNode>()->c_str();
+            po.ExpectLastMsgId = strings.add(v);
         }
         v = pub_opts->getKeyValue("expect_last_seq");
         if (v.getType() == NT_INT) {
@@ -1562,15 +1582,16 @@ QoreNatsKVStore* QoreNatsJetStream::createKeyValue(const QoreHashNode* config,
 
     kvConfig kvc;
     memset(&kvc, 0, sizeof(kvc));
+    NatsStringStorage strings;
 
     QoreValue v = config->getKeyValue("bucket");
     if (v.getType() == NT_STRING) {
-        kvc.Bucket = v.get<const QoreStringNode>()->c_str();
+        kvc.Bucket = strings.add(v);
     }
 
     v = config->getKeyValue("description");
     if (v.getType() == NT_STRING) {
-        kvc.Description = v.get<const QoreStringNode>()->c_str();
+        kvc.Description = strings.add(v);
     }
 
     v = config->getKeyValue("max_value_size");

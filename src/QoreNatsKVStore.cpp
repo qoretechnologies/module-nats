@@ -27,6 +27,7 @@
 #include "QoreNatsKVStore.h"
 #include "QoreNatsKVWatcher.h"
 
+#include <string>
 #include <vector>
 
 QoreNatsKVStore::QoreNatsKVStore(kvStore* kv) : kv(kv) {
@@ -373,6 +374,8 @@ QoreNatsKVWatcher* QoreNatsKVStore::watchMulti(const QoreListNode* keys,
 
     // Build const char** array
     std::vector<const char*> key_ptrs(num_keys);
+    std::vector<std::string> key_storage;
+    key_storage.reserve(num_keys);
     for (size_t i = 0; i < num_keys; ++i) {
         QoreValue v = keys->retrieveEntry(i);
         if (v.getType() != NT_STRING) {
@@ -380,7 +383,9 @@ QoreNatsKVWatcher* QoreNatsKVStore::watchMulti(const QoreListNode* keys,
                 "keys list element %zu is not a string", i);
             return nullptr;
         }
-        key_ptrs[i] = v.get<const QoreStringNode>()->c_str();
+        QoreStringValueHelper str(v);
+        key_storage.emplace_back(str->c_str(), str->size());
+        key_ptrs[i] = key_storage.back().c_str();
     }
 
     kvWatcher* w = nullptr;

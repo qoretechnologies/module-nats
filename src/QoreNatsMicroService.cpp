@@ -27,6 +27,8 @@
 #include "QoreNatsMicroService.h"
 #include "QoreNatsMicroGroup.h"
 
+#include <string>
+
 microError* QoreNatsMicroService::requestHandler(microRequest* req) {
     MicroEndpointCallbackContext* ctx =
         static_cast<MicroEndpointCallbackContext*>(microRequest_GetEndpointState(req));
@@ -77,8 +79,9 @@ microError* QoreNatsMicroService::requestHandler(microRequest* req) {
         QoreString err_msg("handler error");
         const QoreValue desc = xsink.getExceptionDesc();
         if (desc.getType() == NT_STRING) {
+            QoreStringValueHelper desc_str(desc);
             err_msg.clear();
-            err_msg.concat(desc.get<const QoreStringNode>()->c_str());
+            err_msg.concat(desc_str->c_str());
         }
         xsink.clear();
         return micro_Errorf("%s", err_msg.c_str());
@@ -86,7 +89,7 @@ microError* QoreNatsMicroService::requestHandler(microRequest* req) {
 
     // Send response based on return value type
     if (rv->getType() == NT_STRING) {
-        const QoreStringNode* str = rv->get<const QoreStringNode>();
+        QoreStringValueHelper str(*rv);
         return microRequest_Respond(req, str->c_str(), str->size());
     } else if (rv->getType() == NT_BINARY) {
         const BinaryNode* bin = rv->get<const BinaryNode>();
@@ -117,15 +120,20 @@ QoreNatsMicroService::QoreNatsMicroService(natsConnection* conn,
 
     // Build the microServiceConfig
     microServiceConfig svc_cfg = {};
-    svc_cfg.Name = v_name.get<const QoreStringNode>()->c_str();
-    svc_cfg.Version = v_version.get<const QoreStringNode>()->c_str();
+    QoreStringValueHelper name_str(v_name);
+    QoreStringValueHelper version_str(v_version);
+    svc_cfg.Name = name_str->c_str();
+    svc_cfg.Version = version_str->c_str();
+    QoreStringValueHelper desc_str(v_description);
     if (v_description.getType() == NT_STRING) {
-        svc_cfg.Description = v_description.get<const QoreStringNode>()->c_str();
+        svc_cfg.Description = desc_str->c_str();
     }
 
     // Handle default endpoint if provided
     microEndpointConfig ep_cfg = {};
     MicroEndpointCallbackContext* ep_ctx = nullptr;
+    std::string ep_name_storage;
+    std::string ep_subject_storage;
 
     if (v_endpoint.getType() == NT_HASH) {
         const QoreHashNode* ep_hash = v_endpoint.get<const QoreHashNode>();
@@ -139,9 +147,13 @@ QoreNatsMicroService::QoreNatsMicroService(natsConnection* conn,
             return;
         }
 
-        ep_cfg.Name = ep_name.get<const QoreStringNode>()->c_str();
+        QoreStringValueHelper ep_name_str(ep_name);
+        ep_name_storage = ep_name_str->c_str();
+        ep_cfg.Name = ep_name_storage.c_str();
         if (ep_subject.getType() == NT_STRING) {
-            ep_cfg.Subject = ep_subject.get<const QoreStringNode>()->c_str();
+            QoreStringValueHelper ep_subject_str(ep_subject);
+            ep_subject_storage = ep_subject_str->c_str();
+            ep_cfg.Subject = ep_subject_storage.c_str();
         }
 
         if (ep_handler.getType() != NT_NOTHING && ep_handler.getType() != NT_NULL) {
@@ -481,9 +493,11 @@ int QoreNatsMicroService::addEndpoint(const QoreHashNode* config,
     }
 
     microEndpointConfig ep_cfg = {};
-    ep_cfg.Name = ep_name.get<const QoreStringNode>()->c_str();
+    QoreStringValueHelper ep_name_str(ep_name);
+    ep_cfg.Name = ep_name_str->c_str();
+    QoreStringValueHelper ep_subject_str(ep_subject);
     if (ep_subject.getType() == NT_STRING) {
-        ep_cfg.Subject = ep_subject.get<const QoreStringNode>()->c_str();
+        ep_cfg.Subject = ep_subject_str->c_str();
     }
 
     MicroEndpointCallbackContext* ctx = nullptr;

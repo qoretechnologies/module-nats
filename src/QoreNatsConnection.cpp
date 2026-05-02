@@ -29,6 +29,9 @@
 #include "QoreNatsJetStream.h"
 #include "QoreNatsMicroService.h"
 
+#include <string>
+#include <vector>
+
 QoreNatsConnection::QoreNatsConnection(const char* url, ExceptionSink* xsink) {
     // Check sandbox network access
     if (check_nats_network_access(url, xsink)) {
@@ -73,7 +76,8 @@ QoreNatsConnection::QoreNatsConnection(const QoreHashNode* options, QoreProgram*
     // Get URL for sandbox check
     QoreValue url_val = options->getKeyValue("url");
     if (url_val.getType() == NT_STRING) {
-        if (check_nats_network_access(url_val.get<const QoreStringNode>()->c_str(), xsink)) {
+        QoreStringValueHelper url(url_val);
+        if (check_nats_network_access(url->c_str(), xsink)) {
             return;
         }
     }
@@ -107,7 +111,8 @@ int QoreNatsConnection::configureOptions(const QoreHashNode* options, ExceptionS
     // URL
     QoreValue v = options->getKeyValue("url");
     if (v.getType() == NT_STRING) {
-        s = natsOptions_SetURL(opts, v.get<const QoreStringNode>()->c_str());
+        QoreStringValueHelper url(v);
+        s = natsOptions_SetURL(opts, url->c_str());
         if (s != NATS_OK) {
             nats_error(xsink, "NATS-CONNECTION-ERROR", s, "failed to set URL");
             return -1;
@@ -117,7 +122,8 @@ int QoreNatsConnection::configureOptions(const QoreHashNode* options, ExceptionS
     // Token auth
     v = options->getKeyValue("token");
     if (v.getType() == NT_STRING) {
-        s = natsOptions_SetToken(opts, v.get<const QoreStringNode>()->c_str());
+        QoreStringValueHelper token(v);
+        s = natsOptions_SetToken(opts, token->c_str());
         if (s != NATS_OK) {
             nats_error(xsink, "NATS-AUTH-ERROR", s, "failed to set token");
             return -1;
@@ -128,9 +134,13 @@ int QoreNatsConnection::configureOptions(const QoreHashNode* options, ExceptionS
     v = options->getKeyValue("username");
     QoreValue pw = options->getKeyValue("password");
     if (v.getType() == NT_STRING) {
-        s = natsOptions_SetUserInfo(opts,
-            v.get<const QoreStringNode>()->c_str(),
-            pw.getType() == NT_STRING ? pw.get<const QoreStringNode>()->c_str() : nullptr);
+        QoreStringValueHelper user(v);
+        if (pw.getType() == NT_STRING) {
+            QoreStringValueHelper password(pw);
+            s = natsOptions_SetUserInfo(opts, user->c_str(), password->c_str());
+        } else {
+            s = natsOptions_SetUserInfo(opts, user->c_str(), nullptr);
+        }
         if (s != NATS_OK) {
             nats_error(xsink, "NATS-AUTH-ERROR", s, "failed to set user info");
             return -1;
@@ -140,15 +150,17 @@ int QoreNatsConnection::configureOptions(const QoreHashNode* options, ExceptionS
     // NKey seed file
     v = options->getKeyValue("nkey_seed");
     if (v.getType() == NT_STRING) {
-        if (check_nats_file_access(v.get<const QoreStringNode>()->c_str(), xsink)) {
+        QoreStringValueHelper seed(v);
+        if (check_nats_file_access(seed->c_str(), xsink)) {
             return -1;
         }
         QoreValue nkey_pub = options->getKeyValue("nkey_pub");
+        QoreStringValueHelper pub(nkey_pub);
         s = natsOptions_SetNKeyFromSeed(opts,
             nkey_pub.getType() == NT_STRING
-                ? nkey_pub.get<const QoreStringNode>()->c_str()
+                ? pub->c_str()
                 : nullptr,
-            v.get<const QoreStringNode>()->c_str());
+            seed->c_str());
         if (s != NATS_OK) {
             nats_error(xsink, "NATS-AUTH-ERROR", s, "failed to set NKey seed");
             return -1;
@@ -158,11 +170,12 @@ int QoreNatsConnection::configureOptions(const QoreHashNode* options, ExceptionS
     // Credentials file
     v = options->getKeyValue("credentials");
     if (v.getType() == NT_STRING) {
-        if (check_nats_file_access(v.get<const QoreStringNode>()->c_str(), xsink)) {
+        QoreStringValueHelper credentials(v);
+        if (check_nats_file_access(credentials->c_str(), xsink)) {
             return -1;
         }
         s = natsOptions_SetUserCredentialsFromFiles(opts,
-            v.get<const QoreStringNode>()->c_str(), nullptr);
+            credentials->c_str(), nullptr);
         if (s != NATS_OK) {
             nats_error(xsink, "NATS-AUTH-ERROR", s, "failed to set credentials file");
             return -1;
@@ -172,7 +185,8 @@ int QoreNatsConnection::configureOptions(const QoreHashNode* options, ExceptionS
     // Connection name
     v = options->getKeyValue("name");
     if (v.getType() == NT_STRING) {
-        s = natsOptions_SetName(opts, v.get<const QoreStringNode>()->c_str());
+        QoreStringValueHelper name(v);
+        s = natsOptions_SetName(opts, name->c_str());
         if (s != NATS_OK) {
             nats_error(xsink, "NATS-CONNECTION-ERROR", s, "failed to set connection name");
             return -1;
@@ -245,26 +259,26 @@ int QoreNatsConnection::configureOptions(const QoreHashNode* options, ExceptionS
         const QoreListNode* servers = v.get<const QoreListNode>();
         int count = (int)servers->size();
         if (count > 0) {
-            const char** srv_arr = (const char**)malloc(sizeof(const char*) * count);
-            if (!srv_arr) {
-                xsink->raiseException("NATS-CONNECTION-ERROR",
-                    "memory allocation failed for %d servers", count);
-                return -1;
-            }
+            std::vector<const char*> srv_arr(count);
+            std::vector<std::string> server_storage;
+            server_storage.reserve(count);
             for (int i = 0; i < count; ++i) {
                 QoreValue sv = servers->retrieveEntry(i);
-                srv_arr[i] = sv.getType() == NT_STRING
-                    ? sv.get<const QoreStringNode>()->c_str() : "";
+                if (sv.getType() == NT_STRING) {
+                    QoreStringValueHelper str(sv);
+                    server_storage.emplace_back(str->c_str(), str->size());
+                    srv_arr[i] = server_storage.back().c_str();
+                } else {
+                    srv_arr[i] = "";
+                }
             }
             // Sandbox check each server URL
             for (int i = 0; i < count; ++i) {
                 if (srv_arr[i][0] && check_nats_network_access(srv_arr[i], xsink)) {
-                    free(srv_arr);
                     return -1;
                 }
             }
-            s = natsOptions_SetServers(opts, srv_arr, count);
-            free(srv_arr);
+            s = natsOptions_SetServers(opts, srv_arr.data(), count);
             if (s != NATS_OK) {
                 nats_error(xsink, "NATS-CONNECTION-ERROR", s, "failed to set servers");
                 return -1;
@@ -398,7 +412,8 @@ int QoreNatsConnection::configureOptions(const QoreHashNode* options, ExceptionS
     // Custom inbox prefix
     v = options->getKeyValue("custom_inbox_prefix");
     if (v.getType() == NT_STRING) {
-        s = natsOptions_SetCustomInboxPrefix(opts, v.get<const QoreStringNode>()->c_str());
+        QoreStringValueHelper prefix(v);
+        s = natsOptions_SetCustomInboxPrefix(opts, prefix->c_str());
         if (s != NATS_OK) {
             nats_error(xsink, "NATS-CONNECTION-ERROR", s,
                 "failed to set custom inbox prefix");
@@ -419,11 +434,12 @@ int QoreNatsConnection::configureOptions(const QoreHashNode* options, ExceptionS
 
         QoreValue ca = tls->getKeyValue("ca_cert");
         if (ca.getType() == NT_STRING) {
-            if (check_nats_file_access(ca.get<const QoreStringNode>()->c_str(), xsink)) {
+            QoreStringValueHelper ca_str(ca);
+            if (check_nats_file_access(ca_str->c_str(), xsink)) {
                 return -1;
             }
             s = natsOptions_LoadCATrustedCertificates(opts,
-                ca.get<const QoreStringNode>()->c_str());
+                ca_str->c_str());
             if (s != NATS_OK) {
                 nats_error(xsink, "NATS-TLS-ERROR", s, "failed to load CA certificates");
                 return -1;
@@ -433,15 +449,17 @@ int QoreNatsConnection::configureOptions(const QoreHashNode* options, ExceptionS
         QoreValue cert = tls->getKeyValue("client_cert");
         QoreValue key = tls->getKeyValue("client_key");
         if (cert.getType() == NT_STRING && key.getType() == NT_STRING) {
-            if (check_nats_file_access(cert.get<const QoreStringNode>()->c_str(), xsink)) {
+            QoreStringValueHelper cert_str(cert);
+            QoreStringValueHelper key_str(key);
+            if (check_nats_file_access(cert_str->c_str(), xsink)) {
                 return -1;
             }
-            if (check_nats_file_access(key.get<const QoreStringNode>()->c_str(), xsink)) {
+            if (check_nats_file_access(key_str->c_str(), xsink)) {
                 return -1;
             }
             s = natsOptions_LoadCertificatesChain(opts,
-                cert.get<const QoreStringNode>()->c_str(),
-                key.get<const QoreStringNode>()->c_str());
+                cert_str->c_str(),
+                key_str->c_str());
             if (s != NATS_OK) {
                 nats_error(xsink, "NATS-TLS-ERROR", s,
                     "failed to load client certificate/key");
@@ -462,7 +480,8 @@ int QoreNatsConnection::configureOptions(const QoreHashNode* options, ExceptionS
         // TLS cipher list (TLSv1.2 and below)
         QoreValue ciphers = tls->getKeyValue("ciphers");
         if (ciphers.getType() == NT_STRING) {
-            s = natsOptions_SetCiphers(opts, ciphers.get<const QoreStringNode>()->c_str());
+            QoreStringValueHelper cipher_str(ciphers);
+            s = natsOptions_SetCiphers(opts, cipher_str->c_str());
             if (s != NATS_OK) {
                 nats_error(xsink, "NATS-TLS-ERROR", s, "failed to set TLS ciphers");
                 return -1;
@@ -472,7 +491,8 @@ int QoreNatsConnection::configureOptions(const QoreHashNode* options, ExceptionS
         // TLS cipher suites (TLSv1.3)
         QoreValue suites = tls->getKeyValue("cipher_suites");
         if (suites.getType() == NT_STRING) {
-            s = natsOptions_SetCipherSuites(opts, suites.get<const QoreStringNode>()->c_str());
+            QoreStringValueHelper suite_str(suites);
+            s = natsOptions_SetCipherSuites(opts, suite_str->c_str());
             if (s != NATS_OK) {
                 nats_error(xsink, "NATS-TLS-ERROR", s, "failed to set TLS cipher suites");
                 return -1;
@@ -482,8 +502,9 @@ int QoreNatsConnection::configureOptions(const QoreHashNode* options, ExceptionS
         // Expected hostname in server certificate
         QoreValue hostname = tls->getKeyValue("expected_hostname");
         if (hostname.getType() == NT_STRING) {
+            QoreStringValueHelper hostname_str(hostname);
             s = natsOptions_SetExpectedHostname(opts,
-                hostname.get<const QoreStringNode>()->c_str());
+                hostname_str->c_str());
             if (s != NATS_OK) {
                 nats_error(xsink, "NATS-TLS-ERROR", s,
                     "failed to set expected hostname");
@@ -715,7 +736,8 @@ int QoreNatsConnection::publishMsg(const char* subject, const void* data, int da
         while (hi.next()) {
             QoreValue val = hi.get();
             if (val.getType() == NT_STRING) {
-                s = natsMsgHeader_Set(msg, hi.getKey(), val.get<const QoreStringNode>()->c_str());
+                QoreStringValueHelper str(val);
+                s = natsMsgHeader_Set(msg, hi.getKey(), str->c_str());
                 if (s != NATS_OK) {
                     nats_error(xsink, "NATS-PUBLISH-ERROR", s,
                         "failed to set header '%s'", hi.getKey());

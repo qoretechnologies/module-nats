@@ -32,6 +32,7 @@
 
 class QoreNatsSubscription;
 class QoreNatsKVStore;
+struct NatsStringStorage;
 
 //! C++ wrapper for jsCtx (JetStream context)
 class QoreNatsJetStream : public AbstractPrivateData {
@@ -118,14 +119,14 @@ private:
 
     //! Helper: configure jsStreamConfig from hash
     DLLLOCAL int configureStreamConfig(jsStreamConfig* cfg, const QoreHashNode* config,
-        ExceptionSink* xsink);
+        NatsStringStorage& strings, ExceptionSink* xsink);
 
     //! Helper: convert jsStreamInfo to hash
     DLLLOCAL QoreHashNode* streamInfoToHash(jsStreamInfo* info, ExceptionSink* xsink);
 
     //! Helper: configure jsConsumerConfig from hash
     DLLLOCAL int configureConsumerConfig(jsConsumerConfig* cfg, const QoreHashNode* config,
-        ExceptionSink* xsink);
+        NatsStringStorage& strings, ExceptionSink* xsink);
 
     //! Helper: convert jsConsumerInfo to hash
     DLLLOCAL QoreHashNode* consumerInfoToHash(jsConsumerInfo* info, ExceptionSink* xsink);
