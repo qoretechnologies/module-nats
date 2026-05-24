@@ -63,7 +63,7 @@ qclass NatsKeyValueWatcher [arg=QoreNatsKVWatcher* w; ns=Qore::Nats; dom=NETWORK
 
     @since %nats 1.0
 */
-*hash<NatsKVEntry> NatsKeyValueWatcher::next(timeout timeout_ms = 5s) {
+*hash<NatsKVEntry> NatsKeyValueWatcher::next(timeout timeout_ms = 5s) [flags=NAMED_ARGS] {
     return w->next(timeout_ms, xsink);
 }
 

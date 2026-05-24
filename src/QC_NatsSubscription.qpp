@@ -65,7 +65,7 @@ if (msg) {
 
     @since %nats 1.0
 */
-*hash<NatsMsgInfo> NatsSubscription::nextMsg(timeout timeout_ms = 5s) {
+*hash<NatsMsgInfo> NatsSubscription::nextMsg(timeout timeout_ms = 5s) [flags=NAMED_ARGS] {
     return sub->nextMsg(timeout_ms, xsink);
 }
 
@@ -88,7 +88,7 @@ foreach hash<NatsMsgInfo> msg in (msgs) {
 
     @since %nats 1.0
 */
-list<hash<NatsMsgInfo>> NatsSubscription::fetch(int batch = 1, timeout timeout_ms = 5s) {
+list<hash<NatsMsgInfo>> NatsSubscription::fetch(int batch = 1, timeout timeout_ms = 5s) [flags=NAMED_ARGS] {
     return sub->fetch((int)batch, timeout_ms, xsink);
 }
 
@@ -104,7 +104,7 @@ nothing NatsSubscription::unsubscribe() {
 }
 
 //! Auto-unsubscribes after receiving the specified number of messages
-/** @param max the maximum number of messages to receive
+/** @param max_messages the maximum number of messages to receive
 
     @throw NATS-SUBSCRIBE-ERROR if the operation fails
 
@@ -115,8 +115,8 @@ sub.autoUnsubscribe(10);  # receive at most 10 messages
 
     @since %nats 1.0
 */
-nothing NatsSubscription::autoUnsubscribe(int max) {
-    sub->autoUnsubscribe((int)max, xsink);
+nothing NatsSubscription::autoUnsubscribe(int max_messages) [flags=NAMED_ARGS] {
+    sub->autoUnsubscribe((int)max_messages, xsink);
 }
 
 //! Drains the subscription (processes pending messages then unsubscribes)
@@ -144,7 +144,7 @@ nsub.waitForDrainCompletion(10s);
 
     @since %nats 1.0
 */
-nothing NatsSubscription::waitForDrainCompletion(timeout timeout_ms = 30s) {
+nothing NatsSubscription::waitForDrainCompletion(timeout timeout_ms = 30s) [flags=NAMED_ARGS] {
     sub->waitForDrainCompletion(timeout_ms, xsink);
 }
 
@@ -209,14 +209,14 @@ nothing NatsSubscription::term() {
 }
 
 //! Negative acknowledges the last received message with a redelivery delay
-/** @param delay the redelivery delay
+/** @param delay_ms the redelivery delay
 
     @throw NATS-SUBSCRIBE-ERROR if no message to acknowledge or the operation fails
 
     @since %nats 1.0
 */
-nothing NatsSubscription::nakWithDelay(timeout delay) {
-    sub->nakWithDelay(delay, xsink);
+nothing NatsSubscription::nakWithDelay(timeout delay_ms) [flags=NAMED_ARGS] {
+    sub->nakWithDelay(delay_ms, xsink);
 }
 
 //! Returns JetStream metadata for the last received message
@@ -291,13 +291,13 @@ hash<NatsSubscriptionStats> NatsSubscription::getSubscriptionStats() [flags=RET_
 }
 
 //! Sets the maximum pending message and byte limits
-/** @param msg_limit maximum pending messages (-1 for no limit)
+/** @param message_limit maximum pending messages (-1 for no limit)
     @param bytes_limit maximum pending bytes (-1 for no limit)
 
     @throw NATS-SUBSCRIBE-ERROR if the subscription is not valid or the operation fails
 
     @since %nats 1.0
 */
-nothing NatsSubscription::setPendingLimits(int msg_limit, int bytes_limit) {
-    sub->setPendingLimits((int)msg_limit, (int)bytes_limit, xsink);
+nothing NatsSubscription::setPendingLimits(int message_limit, int bytes_limit) [flags=NAMED_ARGS] {
+    sub->setPendingLimits((int)message_limit, (int)bytes_limit, xsink);
 }

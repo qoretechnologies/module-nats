@@ -68,7 +68,7 @@ NatsConnection conn("nats://localhost:4222");
 
     @since %nats 1.0
 */
-NatsConnection::constructor(string url) {
+NatsConnection::constructor(string url) [flags=NAMED_ARGS] {
     self->setPrivate(CID_NATSCONNECTION, new QoreNatsConnection(url->c_str(), xsink));
 }
 
@@ -93,7 +93,7 @@ NatsConnection conn(<NatsConnectionOptions>{
 
     @since %nats 1.0
 */
-NatsConnection::constructor(hash<NatsConnectionOptions> options) {
+NatsConnection::constructor(hash<NatsConnectionOptions> options) [flags=NAMED_ARGS] {
     self->setPrivate(CID_NATSCONNECTION, new QoreNatsConnection(options, getProgram(), xsink));
 }
 
@@ -110,7 +110,7 @@ conn.publish("events.user.login", binary("user123"));
 
     @since %nats 1.0
 */
-nothing NatsConnection::publish(string subject, *binary data) {
+nothing NatsConnection::publish(string subject, *binary data) [flags=NAMED_ARGS] {
     conn->publish(subject->c_str(),
         data ? data->getPtr() : nullptr,
         data ? (int)data->size() : 0,
@@ -130,7 +130,7 @@ conn.publishString("events.log", "something happened");
 
     @since %nats 1.0
 */
-nothing NatsConnection::publishString(string subject, string data) {
+nothing NatsConnection::publishString(string subject, string data) [flags=NAMED_ARGS] {
     conn->publish(subject->c_str(), data->c_str(), (int)data->size(), xsink);
 }
 
@@ -148,7 +148,7 @@ conn.publishMsg("orders.new", binary(data), {"Content-Type": "application/json"}
 
     @since %nats 1.0
 */
-nothing NatsConnection::publishMsg(string subject, *binary data, *hash<string, string> headers) {
+nothing NatsConnection::publishMsg(string subject, *binary data, *hash<string, string> headers) [flags=NAMED_ARGS] {
     conn->publishMsg(subject->c_str(),
         data ? data->getPtr() : nullptr,
         data ? (int)data->size() : 0,
@@ -174,7 +174,7 @@ printf("Reply: %s\n", reply.data.toString());
 
     @since %nats 1.0
 */
-hash<NatsMsgInfo> NatsConnection::request(string subject, *binary data, timeout timeout_ms = 5s) {
+hash<NatsMsgInfo> NatsConnection::request(string subject, *binary data, timeout timeout_ms = 5s) [flags=NAMED_ARGS] {
     return conn->request(subject->c_str(),
         data ? data->getPtr() : nullptr,
         data ? (int)data->size() : 0,
@@ -197,7 +197,7 @@ NatsSubscription sub = conn.subscribe("events.>");
 
     @since %nats 1.0
 */
-NatsSubscription NatsConnection::subscribe(string subject) {
+NatsSubscription NatsConnection::subscribe(string subject) [flags=NAMED_ARGS] {
     QoreNatsSubscription* sub = conn->subscribe(subject->c_str(), xsink);
     if (!sub) {
         return QoreValue();
@@ -209,7 +209,7 @@ NatsSubscription NatsConnection::subscribe(string subject) {
 /** Messages are load-balanced across subscribers in the same queue group.
 
     @param subject the subject to subscribe to
-    @param queue the queue group name
+    @param queue_group the queue group name
 
     @return a new @ref NatsSubscription object
 
@@ -222,9 +222,9 @@ NatsSubscription sub = conn.queueSubscribe("tasks.>", "workers");
 
     @since %nats 1.0
 */
-NatsSubscription NatsConnection::queueSubscribe(string subject, string queue) {
+NatsSubscription NatsConnection::queueSubscribe(string subject, string queue_group) [flags=NAMED_ARGS] {
     QoreNatsSubscription* sub = conn->queueSubscribe(subject->c_str(),
-        queue->c_str(), xsink);
+        queue_group->c_str(), xsink);
     if (!sub) {
         return QoreValue();
     }
@@ -274,7 +274,7 @@ nothing NatsConnection::close() {
 
     @since %nats 1.0
 */
-nothing NatsConnection::flush(timeout timeout_ms = 5s) {
+nothing NatsConnection::flush(timeout timeout_ms = 5s) [flags=NAMED_ARGS] {
     conn->flush(timeout_ms, xsink);
 }
 
@@ -490,7 +490,7 @@ NatsMicroService svc = conn.createMicroService(<NatsMicroServiceConfig>{
 
     @since %nats 1.0
 */
-NatsMicroService NatsConnection::createMicroService(hash<NatsMicroServiceConfig> config) {
+NatsMicroService NatsConnection::createMicroService(hash<NatsMicroServiceConfig> config) [flags=NAMED_ARGS] {
     QoreNatsMicroService* msvc = conn->createMicroService(config, getProgram(), xsink);
     if (!msvc) {
         return QoreValue();
