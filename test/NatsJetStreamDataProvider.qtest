@@ -931,11 +931,22 @@ public class NatsJetStreamDataProviderTest inherits QUnit::Test {
         # Pause consumer via data provider (pause for 1 minute from now)
         AbstractDataProvider pause_dp = dp.getChildProvider("consumers").getChildProvider("pause");
         date pause_until = now_us() + 1m;
-        auto result = pause_dp.doRequest({
-            "stream": stream_name,
-            "consumer": "pause-consumer",
-            "pause_until": pause_until,
-        });
+        auto result;
+        try {
+            result = pause_dp.doRequest({
+                "stream": stream_name,
+                "consumer": "pause-consumer",
+                "pause_until": pause_until,
+            });
+        } catch (hash<ExceptionInfo> ex) {
+            AbstractDataProvider delete_dp = dp.getChildProvider("streams").getChildProvider("delete");
+            delete_dp.doRequest({"name": stream_name});
+            if (ex.err == "NATS-JETSTREAM-ERROR" && ex.desc.find("Timeout") >= 0) {
+                testSkip("NATS server does not support JetStream consumer pause");
+                return;
+            }
+            rethrow;
+        }
 
         assertTrue(result.paused);
 

@@ -1755,8 +1755,18 @@ public class JetStreamTest inherits QUnit::Test {
 
         # Pause for 10 seconds from now
         date pause_until = now_us() + 10s;
-        hash<NatsJSConsumerPauseResponse> resp = js.pauseConsumer(stream, "pause-test",
-            pause_until);
+        hash<NatsJSConsumerPauseResponse> resp;
+        try {
+            resp = js.pauseConsumer(stream, "pause-test", pause_until);
+        } catch (hash<ExceptionInfo> ex) {
+            js.deleteStream(stream);
+            conn.close();
+            if (ex.err == "NATS-JETSTREAM-ERROR" && ex.desc.find("Timeout") >= 0) {
+                testSkip("NATS server does not support JetStream consumer pause");
+                return;
+            }
+            rethrow;
+        }
         assertTrue(resp.paused);
         assertTrue(resp.pause_remaining_ms > 0);
 
