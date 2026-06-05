@@ -62,7 +62,7 @@ qclass JetStreamContext [arg=QoreNatsJetStream* js; ns=Qore::Nats; dom=NETWORK];
 
     @since %nats 1.0
 */
-hash<NatsStreamInfo> JetStreamContext::addStream(hash<NatsStreamConfig> config) {
+hash<NatsStreamInfo> JetStreamContext::addStream(hash<NatsStreamConfig> config) [flags=NAMED_ARGS] {
     return js->addStream(config, xsink);
 }
 
@@ -74,7 +74,7 @@ hash<NatsStreamInfo> JetStreamContext::addStream(hash<NatsStreamConfig> config) 
 
     @since %nats 1.0
 */
-hash<NatsStreamInfo> JetStreamContext::updateStream(hash<NatsStreamConfig> config) {
+hash<NatsStreamInfo> JetStreamContext::updateStream(hash<NatsStreamConfig> config) [flags=NAMED_ARGS] {
     return js->updateStream(config, xsink);
 }
 
@@ -85,7 +85,7 @@ hash<NatsStreamInfo> JetStreamContext::updateStream(hash<NatsStreamConfig> confi
 
     @since %nats 1.0
 */
-nothing JetStreamContext::deleteStream(string name) {
+nothing JetStreamContext::deleteStream(string name) [flags=NAMED_ARGS] {
     js->deleteStream(name->c_str(), xsink);
 }
 
@@ -97,7 +97,7 @@ nothing JetStreamContext::deleteStream(string name) {
 
     @since %nats 1.0
 */
-hash<NatsStreamInfo> JetStreamContext::getStreamInfo(string name) {
+hash<NatsStreamInfo> JetStreamContext::getStreamInfo(string name) [flags=NAMED_ARGS] {
     return js->getStreamInfo(name->c_str(), xsink);
 }
 
@@ -108,7 +108,7 @@ hash<NatsStreamInfo> JetStreamContext::getStreamInfo(string name) {
 
     @since %nats 1.0
 */
-nothing JetStreamContext::purgeStream(string name) {
+nothing JetStreamContext::purgeStream(string name) [flags=NAMED_ARGS] {
     js->purgeStream(name->c_str(), xsink);
 }
 
@@ -121,7 +121,7 @@ nothing JetStreamContext::purgeStream(string name) {
 
     @since %nats 1.0
 */
-hash<NatsConsumerInfo> JetStreamContext::addConsumer(string stream, hash<NatsConsumerConfig> config) {
+hash<NatsConsumerInfo> JetStreamContext::addConsumer(string stream, hash<NatsConsumerConfig> config) [flags=NAMED_ARGS] {
     return js->addConsumer(stream->c_str(), config, xsink);
 }
 
@@ -133,7 +133,7 @@ hash<NatsConsumerInfo> JetStreamContext::addConsumer(string stream, hash<NatsCon
 
     @since %nats 1.0
 */
-nothing JetStreamContext::deleteConsumer(string stream, string consumer) {
+nothing JetStreamContext::deleteConsumer(string stream, string consumer) [flags=NAMED_ARGS] {
     js->deleteConsumer(stream->c_str(), consumer->c_str(), xsink);
 }
 
@@ -146,7 +146,7 @@ nothing JetStreamContext::deleteConsumer(string stream, string consumer) {
 
     @since %nats 1.0
 */
-hash<NatsConsumerInfo> JetStreamContext::getConsumerInfo(string stream, string consumer) {
+hash<NatsConsumerInfo> JetStreamContext::getConsumerInfo(string stream, string consumer) [flags=NAMED_ARGS] {
     return js->getConsumerInfo(stream->c_str(), consumer->c_str(), xsink);
 }
 
@@ -164,7 +164,7 @@ hash<NatsPubAck> ack = js.publish("orders.new", binary("order-data"));
 
     @since %nats 1.0
 */
-hash<NatsPubAck> JetStreamContext::publish(string subject, *binary data) {
+hash<NatsPubAck> JetStreamContext::publish(string subject, *binary data) [flags=NAMED_ARGS] {
     return js->publish(subject->c_str(),
         data ? data->getPtr() : nullptr,
         data ? (int)data->size() : 0,
@@ -174,7 +174,7 @@ hash<NatsPubAck> JetStreamContext::publish(string subject, *binary data) {
 //! Publishes a message with JetStream acknowledgment and publish options
 /** @param subject the subject to publish to
     @param data optional binary payload
-    @param opts publish options for controlling publish behavior
+    @param options publish options for controlling publish behavior
 
     @return a @ref NatsPubAck hash
 
@@ -182,11 +182,11 @@ hash<NatsPubAck> JetStreamContext::publish(string subject, *binary data) {
 
     @since %nats 1.0
 */
-hash<NatsPubAck> JetStreamContext::publishWithOptions(string subject, *binary data, hash<NatsJSPubOptions> opts) {
+hash<NatsPubAck> JetStreamContext::publishWithOptions(string subject, *binary data, hash<NatsJSPubOptions> options) [flags=NAMED_ARGS] {
     return js->publishWithOptions(subject->c_str(),
         data ? data->getPtr() : nullptr,
         data ? (int)data->size() : 0,
-        opts, xsink);
+        options, xsink);
 }
 
 //! Returns JetStream account information
@@ -208,7 +208,7 @@ hash<NatsJSAccountInfo> JetStreamContext::getAccountInfo() [flags=RET_VALUE_ONLY
 
     @since %nats 1.0
 */
-NatsSubscription JetStreamContext::subscribe(string subject) {
+NatsSubscription JetStreamContext::subscribe(string subject) [flags=NAMED_ARGS] {
     QoreNatsSubscription* sub = js->subscribe(subject->c_str(), xsink);
     if (!sub) {
         return QoreValue();
@@ -235,7 +235,7 @@ if (msg) {
 
     @since %nats 1.0
 */
-NatsSubscription JetStreamContext::pullSubscribe(string subject, string durable) {
+NatsSubscription JetStreamContext::pullSubscribe(string subject, string durable) [flags=NAMED_ARGS] {
     QoreNatsSubscription* sub = js->pullSubscribe(subject->c_str(),
         durable->c_str(), xsink);
     if (!sub) {
@@ -275,7 +275,7 @@ list<string> JetStreamContext::listStreamNames() [flags=RET_VALUE_ONLY] {
 
     @since %nats 1.0
 */
-list<hash<NatsConsumerInfo>> JetStreamContext::listConsumers(string stream) [flags=RET_VALUE_ONLY] {
+list<hash<NatsConsumerInfo>> JetStreamContext::listConsumers(string stream) [flags=RET_VALUE_ONLY,NAMED_ARGS] {
     return js->listConsumers(stream->c_str(), xsink);
 }
 
@@ -288,7 +288,7 @@ list<hash<NatsConsumerInfo>> JetStreamContext::listConsumers(string stream) [fla
 
     @since %nats 1.0
 */
-list<string> JetStreamContext::listConsumerNames(string stream) [flags=RET_VALUE_ONLY] {
+list<string> JetStreamContext::listConsumerNames(string stream) [flags=RET_VALUE_ONLY,NAMED_ARGS] {
     return js->listConsumerNames(stream->c_str(), xsink);
 }
 
@@ -302,13 +302,13 @@ list<string> JetStreamContext::listConsumerNames(string stream) [flags=RET_VALUE
 
     @since %nats 1.0
 */
-hash<NatsConsumerInfo> JetStreamContext::updateConsumer(string stream, hash<NatsConsumerConfig> config) {
+hash<NatsConsumerInfo> JetStreamContext::updateConsumer(string stream, hash<NatsConsumerConfig> config) [flags=NAMED_ARGS] {
     return js->updateConsumer(stream->c_str(), config, xsink);
 }
 
 //! Gets a message from a stream by sequence number
 /** @param stream the stream name
-    @param seq the sequence number
+    @param sequence the sequence number
 
     @return a @ref NatsMsgInfo hash, or @ref nothing if not found
 
@@ -316,8 +316,8 @@ hash<NatsConsumerInfo> JetStreamContext::updateConsumer(string stream, hash<Nats
 
     @since %nats 1.0
 */
-*hash<NatsMsgInfo> JetStreamContext::getMsg(string stream, int seq) [flags=RET_VALUE_ONLY] {
-    return js->getMsg(stream->c_str(), (uint64_t)seq, xsink);
+*hash<NatsMsgInfo> JetStreamContext::getMsg(string stream, int sequence) [flags=RET_VALUE_ONLY,NAMED_ARGS] {
+    return js->getMsg(stream->c_str(), (uint64_t)sequence, xsink);
 }
 
 //! Gets the last message for a subject from a stream
@@ -330,39 +330,39 @@ hash<NatsConsumerInfo> JetStreamContext::updateConsumer(string stream, hash<Nats
 
     @since %nats 1.0
 */
-*hash<NatsMsgInfo> JetStreamContext::getLastMsg(string stream, string subject) [flags=RET_VALUE_ONLY] {
+*hash<NatsMsgInfo> JetStreamContext::getLastMsg(string stream, string subject) [flags=RET_VALUE_ONLY,NAMED_ARGS] {
     return js->getLastMsg(stream->c_str(), subject->c_str(), xsink);
 }
 
 //! Deletes a message from a stream by sequence number
 /** @param stream the stream name
-    @param seq the sequence number to delete
+    @param sequence the sequence number to delete
 
     @throw NATS-JETSTREAM-ERROR if the delete fails
 
     @since %nats 1.0
 */
-nothing JetStreamContext::deleteMsg(string stream, int seq) {
-    js->deleteMsg(stream->c_str(), (uint64_t)seq, xsink);
+nothing JetStreamContext::deleteMsg(string stream, int sequence) [flags=NAMED_ARGS] {
+    js->deleteMsg(stream->c_str(), (uint64_t)sequence, xsink);
 }
 
 //! Securely erases a message from a stream by sequence number
 /** Unlike @ref deleteMsg(), this overwrites the message data in storage.
 
     @param stream the stream name
-    @param seq the sequence number to erase
+    @param sequence the sequence number to erase
 
     @throw NATS-JETSTREAM-ERROR if the erase fails
 
     @since %nats 1.0
 */
-nothing JetStreamContext::eraseMsg(string stream, int seq) {
-    js->eraseMsg(stream->c_str(), (uint64_t)seq, xsink);
+nothing JetStreamContext::eraseMsg(string stream, int sequence) [flags=NAMED_ARGS] {
+    js->eraseMsg(stream->c_str(), (uint64_t)sequence, xsink);
 }
 
 //! Subscribes to a JetStream subject with options
 /** @param subject the subject to subscribe to
-    @param opts subscription options (see @ref NatsJSSubOptions)
+    @param options subscription options (see @ref NatsJSSubOptions)
 
     @return a new @ref NatsSubscription object
 
@@ -370,8 +370,8 @@ nothing JetStreamContext::eraseMsg(string stream, int seq) {
 
     @since %nats 1.0
 */
-NatsSubscription JetStreamContext::subscribeWithOptions(string subject, hash<NatsJSSubOptions> opts) {
-    QoreNatsSubscription* nsub = js->subscribeWithOptions(subject->c_str(), opts, xsink);
+NatsSubscription JetStreamContext::subscribeWithOptions(string subject, hash<NatsJSSubOptions> options) [flags=NAMED_ARGS] {
+    QoreNatsSubscription* nsub = js->subscribeWithOptions(subject->c_str(), options, xsink);
     if (!nsub) {
         return QoreValue();
     }
@@ -381,7 +381,7 @@ NatsSubscription JetStreamContext::subscribeWithOptions(string subject, hash<Nat
 //! Pull subscribes to a JetStream subject with options
 /** @param subject the subject to subscribe to
     @param durable the durable consumer name
-    @param opts subscription options (see @ref NatsJSSubOptions)
+    @param options subscription options (see @ref NatsJSSubOptions)
 
     @return a new @ref NatsSubscription object
 
@@ -389,8 +389,8 @@ NatsSubscription JetStreamContext::subscribeWithOptions(string subject, hash<Nat
 
     @since %nats 1.0
 */
-NatsSubscription JetStreamContext::pullSubscribeWithOptions(string subject, string durable, hash<NatsJSSubOptions> opts) {
-    QoreNatsSubscription* nsub = js->pullSubscribeWithOptions(subject->c_str(), durable->c_str(), opts, xsink);
+NatsSubscription JetStreamContext::pullSubscribeWithOptions(string subject, string durable, hash<NatsJSSubOptions> options) [flags=NAMED_ARGS] {
+    QoreNatsSubscription* nsub = js->pullSubscribeWithOptions(subject->c_str(), durable->c_str(), options, xsink);
     if (!nsub) {
         return QoreValue();
     }
@@ -408,7 +408,7 @@ NatsSubscription JetStreamContext::pullSubscribeWithOptions(string subject, stri
 
     @since %nats 1.0
 */
-hash<NatsJSConsumerPauseResponse> JetStreamContext::pauseConsumer(string stream, string consumer, date pause_until) {
+hash<NatsJSConsumerPauseResponse> JetStreamContext::pauseConsumer(string stream, string consumer, date pause_until) [flags=NAMED_ARGS] {
     int64 epoch_ns = (int64)pause_until->getEpochSecondsUTC() * 1000000000LL
         + (int64)pause_until->getMicrosecond() * 1000LL;
     return js->pauseConsumer(stream->c_str(), consumer->c_str(), epoch_ns, xsink);
@@ -420,17 +420,17 @@ hash<NatsJSConsumerPauseResponse> JetStreamContext::pauseConsumer(string stream,
 
     @param subject the subject to publish to
     @param data optional binary payload
-    @param opts optional publish options
+    @param options optional publish options
 
     @throw NATS-JETSTREAM-ERROR if the publish fails
 
     @since %nats 1.0
 */
-nothing JetStreamContext::publishAsync(string subject, *binary data, *hash<NatsJSPubOptions> opts) {
+nothing JetStreamContext::publishAsync(string subject, *binary data, *hash<NatsJSPubOptions> options) [flags=NAMED_ARGS] {
     js->publishAsync(subject->c_str(),
         data ? data->getPtr() : nullptr,
         data ? (int)data->size() : 0,
-        opts ? (const QoreHashNode*)opts : nullptr, xsink);
+        options ? (const QoreHashNode*)options : nullptr, xsink);
 }
 
 //! Waits for all pending asynchronous publish acknowledgments
@@ -440,7 +440,7 @@ nothing JetStreamContext::publishAsync(string subject, *binary data, *hash<NatsJ
 
     @since %nats 1.0
 */
-nothing JetStreamContext::publishAsyncComplete(timeout timeout_ms = 5s) {
+nothing JetStreamContext::publishAsyncComplete(timeout timeout_ms = 5s) [flags=NAMED_ARGS] {
     js->publishAsyncComplete(timeout_ms, xsink);
 }
 
@@ -452,7 +452,7 @@ nothing JetStreamContext::publishAsyncComplete(timeout timeout_ms = 5s) {
 
     @since %nats 1.0
 */
-NatsKeyValueStore JetStreamContext::keyValue(string bucket) {
+NatsKeyValueStore JetStreamContext::keyValue(string bucket) [flags=NAMED_ARGS] {
     QoreNatsKVStore* kv = js->keyValue(bucket->c_str(), xsink);
     if (!kv) {
         return QoreValue();
@@ -477,7 +477,7 @@ NatsKeyValueStore kv = js.createKeyValue(<NatsKVConfig>{
 
     @since %nats 1.0
 */
-NatsKeyValueStore JetStreamContext::createKeyValue(hash<NatsKVConfig> config) {
+NatsKeyValueStore JetStreamContext::createKeyValue(hash<NatsKVConfig> config) [flags=NAMED_ARGS] {
     QoreNatsKVStore* kv = js->createKeyValue(config, xsink);
     if (!kv) {
         return QoreValue();
@@ -492,6 +492,6 @@ NatsKeyValueStore JetStreamContext::createKeyValue(hash<NatsKVConfig> config) {
 
     @since %nats 1.0
 */
-nothing JetStreamContext::deleteKeyValue(string bucket) {
+nothing JetStreamContext::deleteKeyValue(string bucket) [flags=NAMED_ARGS] {
     js->deleteKeyValue(bucket->c_str(), xsink);
 }

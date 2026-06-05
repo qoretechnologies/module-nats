@@ -135,7 +135,7 @@ grp.addEndpoint(<NatsMicroEndpointConfig>{
 
     @since %nats 1.0
 */
-NatsMicroGroup NatsMicroService::addGroup(string prefix) {
+NatsMicroGroup NatsMicroService::addGroup(string prefix) [flags=NAMED_ARGS] {
     QoreNatsMicroGroup* g = msvc->addGroup(prefix->c_str(), xsink);
     if (!g) {
         return QoreValue();
@@ -159,6 +159,6 @@ svc.addEndpoint(<NatsMicroEndpointConfig>{
 
     @since %nats 1.0
 */
-nothing NatsMicroService::addEndpoint(hash<NatsMicroEndpointConfig> config) {
+nothing NatsMicroService::addEndpoint(hash<NatsMicroEndpointConfig> config) [flags=NAMED_ARGS] {
     msvc->addEndpoint(config, getProgram(), xsink);
 }

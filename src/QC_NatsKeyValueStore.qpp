@@ -66,7 +66,7 @@ qclass NatsKeyValueStore [arg=QoreNatsKVStore* kv; ns=Qore::Nats; dom=NETWORK];
 
     @since %nats 1.0
 */
-int NatsKeyValueStore::put(string key, binary data) {
+int NatsKeyValueStore::put(string key, binary data) [flags=NAMED_ARGS] {
     return kv->put(key->c_str(), data->getPtr(), (int)data->size(), xsink);
 }
 
@@ -79,7 +79,7 @@ int NatsKeyValueStore::put(string key, binary data) {
 
     @since %nats 1.0
 */
-int NatsKeyValueStore::putString(string key, string data) {
+int NatsKeyValueStore::putString(string key, string data) [flags=NAMED_ARGS] {
     return kv->putString(key->c_str(), data->c_str(), xsink);
 }
 
@@ -92,7 +92,7 @@ int NatsKeyValueStore::putString(string key, string data) {
 
     @since %nats 1.0
 */
-int NatsKeyValueStore::create(string key, binary data) {
+int NatsKeyValueStore::create(string key, binary data) [flags=NAMED_ARGS] {
     return kv->create(key->c_str(), data->getPtr(), (int)data->size(), xsink);
 }
 
@@ -108,7 +108,7 @@ int NatsKeyValueStore::create(string key, binary data) {
 
     @since %nats 1.0
 */
-int NatsKeyValueStore::update(string key, binary data, int revision) {
+int NatsKeyValueStore::update(string key, binary data, int revision) [flags=NAMED_ARGS] {
     return kv->update(key->c_str(), data->getPtr(), (int)data->size(),
         (uint64_t)revision, xsink);
 }
@@ -121,7 +121,7 @@ int NatsKeyValueStore::update(string key, binary data, int revision) {
 
     @since %nats 1.0
 */
-*hash<NatsKVEntry> NatsKeyValueStore::get(string key) {
+*hash<NatsKVEntry> NatsKeyValueStore::get(string key) [flags=NAMED_ARGS] {
     return kv->get(key->c_str(), xsink);
 }
 
@@ -132,7 +132,7 @@ int NatsKeyValueStore::update(string key, binary data, int revision) {
 
     @since %nats 1.0
 */
-nothing NatsKeyValueStore::delete(string key) {
+nothing NatsKeyValueStore::delete(string key) [flags=NAMED_ARGS] {
     kv->del(key->c_str(), xsink);
 }
 
@@ -143,7 +143,7 @@ nothing NatsKeyValueStore::delete(string key) {
 
     @since %nats 1.0
 */
-nothing NatsKeyValueStore::purge(string key) {
+nothing NatsKeyValueStore::purge(string key) [flags=NAMED_ARGS] {
     kv->purge(key->c_str(), xsink);
 }
 
@@ -166,7 +166,7 @@ list<string> NatsKeyValueStore::keys() {
 
     @since %nats 1.0
 */
-list<hash<NatsKVEntry>> NatsKeyValueStore::history(string key) {
+list<hash<NatsKVEntry>> NatsKeyValueStore::history(string key) [flags=NAMED_ARGS] {
     return kv->history(key->c_str(), xsink);
 }
 
@@ -192,7 +192,7 @@ hash<NatsKVBucketStatus> NatsKeyValueStore::status() [flags=RET_VALUE_ONLY] {
 
 //! Watches a key pattern for changes
 /** @param key the key pattern to watch (supports wildcards like \c "config.*")
-    @param opts optional watch options
+    @param options optional watch options
 
     @return a @ref NatsKeyValueWatcher for receiving updates
 
@@ -206,8 +206,8 @@ NatsKeyValueWatcher watcher = kv.watch("config.*");
 
     @since %nats 1.0
 */
-NatsKeyValueWatcher NatsKeyValueStore::watch(string key, *hash<NatsKVWatchOptions> opts) {
-    QoreNatsKVWatcher* w = kv->watch(key->c_str(), opts, xsink);
+NatsKeyValueWatcher NatsKeyValueStore::watch(string key, *hash<NatsKVWatchOptions> options) [flags=NAMED_ARGS] {
+    QoreNatsKVWatcher* w = kv->watch(key->c_str(), options, xsink);
     if (!w) {
         return QoreValue();
     }
@@ -216,7 +216,7 @@ NatsKeyValueWatcher NatsKeyValueStore::watch(string key, *hash<NatsKVWatchOption
 
 //! Watches multiple keys for changes
 /** @param keys the list of key patterns to watch
-    @param opts optional watch options
+    @param options optional watch options
 
     @return a @ref NatsKeyValueWatcher for receiving updates
 
@@ -230,8 +230,8 @@ NatsKeyValueWatcher watcher = kv.watchMulti(("key1", "key2", "prefix.*"));
 
     @since %nats 1.0
 */
-NatsKeyValueWatcher NatsKeyValueStore::watchMulti(list<string> keys, *hash<NatsKVWatchOptions> opts) {
-    QoreNatsKVWatcher* w = kv->watchMulti(keys, opts, xsink);
+NatsKeyValueWatcher NatsKeyValueStore::watchMulti(list<string> keys, *hash<NatsKVWatchOptions> options) [flags=NAMED_ARGS] {
+    QoreNatsKVWatcher* w = kv->watchMulti(keys, options, xsink);
     if (!w) {
         return QoreValue();
     }
@@ -239,7 +239,7 @@ NatsKeyValueWatcher NatsKeyValueStore::watchMulti(list<string> keys, *hash<NatsK
 }
 
 //! Watches all keys in the bucket for changes
-/** @param opts optional watch options
+/** @param options optional watch options
 
     @return a @ref NatsKeyValueWatcher for receiving updates
 
@@ -258,8 +258,8 @@ while (True) {
 
     @since %nats 1.0
 */
-NatsKeyValueWatcher NatsKeyValueStore::watchAll(*hash<NatsKVWatchOptions> opts) {
-    QoreNatsKVWatcher* w = kv->watchAll(opts, xsink);
+NatsKeyValueWatcher NatsKeyValueStore::watchAll(*hash<NatsKVWatchOptions> options) [flags=NAMED_ARGS] {
+    QoreNatsKVWatcher* w = kv->watchAll(options, xsink);
     if (!w) {
         return QoreValue();
     }

@@ -44,6 +44,7 @@ public class NatsTest inherits QUnit::Test {
     constructor() : QUnit::Test("NatsTest", "1.0") {
         # Connection tests
         addTestCase("connection test", \connectionTest());
+        addTestCase("named arguments test", \namedArgumentTest());
         addTestCase("connection options test", \connectionOptionsTest());
         addTestCase("connection status test", \connectionStatusTest());
 
@@ -154,6 +155,45 @@ public class NatsTest inherits QUnit::Test {
     }
 
     # --- Connection tests ---
+
+    namedArgumentTest() {
+        NatsConnection conn(url: url);
+        assertTrue(conn.isConnected());
+
+        NatsSubscription nsub = conn.subscribe(subject: "named.subject");
+        nsub.setPendingLimits(message_limit: 100, bytes_limit: 1048576);
+        conn.publish(subject: "named.subject", data: binary("hello"));
+        conn.flush(timeout_ms: 5s);
+        *hash<NatsMsgInfo> msg = nsub.nextMsg(timeout_ms: 5s);
+        assertEq(True, exists msg);
+        assertEq("named.subject", msg.subject);
+        assertEq(binary("hello"), msg.data);
+        nsub.unsubscribe();
+
+        NatsSubscription headers_sub = conn.subscribe(subject: "named.headers");
+        conn.publishMsg(subject: "named.headers", data: binary("payload"),
+            headers: {"Content-Type": "application/octet-stream"});
+        conn.flush(timeout_ms: 5s);
+        *hash<NatsMsgInfo> headers_msg = headers_sub.nextMsg(timeout_ms: 5s);
+        assertEq(True, exists headers_msg);
+        assertEq(binary("payload"), headers_msg.data);
+        headers_sub.unsubscribe();
+
+        NatsConnection conn2(options: <NatsConnectionOptions>{
+            "url": url,
+            "name": "named-args-client",
+        });
+        NatsSubscription queue_sub = conn2.queueSubscribe(subject: "named.queue", queue_group: "workers");
+        conn2.publishString(subject: "named.queue", data: "text payload");
+        conn2.flush(timeout_ms: 5s);
+        *hash<NatsMsgInfo> queue_msg = queue_sub.nextMsg(timeout_ms: 5s);
+        assertEq(True, exists queue_msg);
+        assertEq(binary("text payload"), queue_msg.data);
+        queue_sub.autoUnsubscribe(max_messages: 1);
+        conn2.close();
+
+        conn.close();
+    }
 
     connectionTest() {
         NatsConnection conn(url);

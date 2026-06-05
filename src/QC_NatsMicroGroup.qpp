@@ -60,7 +60,7 @@ qclass NatsMicroGroup [arg=QoreNatsMicroGroup* mgrp; ns=Qore::Nats; dom=NETWORK]
 
     @since %nats 1.0
 */
-NatsMicroGroup NatsMicroGroup::addGroup(string prefix) {
+NatsMicroGroup NatsMicroGroup::addGroup(string prefix) [flags=NAMED_ARGS] {
     QoreNatsMicroGroup* g = mgrp->addGroup(prefix->c_str(), xsink);
     if (!g) {
         return QoreValue();
@@ -85,6 +85,6 @@ grp.addEndpoint(<NatsMicroEndpointConfig>{
 
     @since %nats 1.0
 */
-nothing NatsMicroGroup::addEndpoint(hash<NatsMicroEndpointConfig> config) {
+nothing NatsMicroGroup::addEndpoint(hash<NatsMicroEndpointConfig> config) [flags=NAMED_ARGS] {
     mgrp->addEndpoint(config, getProgram(), xsink);
 }

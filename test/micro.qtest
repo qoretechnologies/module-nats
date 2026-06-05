@@ -42,6 +42,7 @@ public class MicroTest inherits QUnit::Test {
 
     constructor() : QUnit::Test("MicroTest", "1.0") {
         addTestCase("basic micro service test", \basicServiceTest());
+        addTestCase("named arguments test", \namedArgumentTest());
         addTestCase("micro service info test", \serviceInfoTest());
         addTestCase("micro service stats test", \serviceStatsTest());
         addTestCase("micro group test", \groupTest());
@@ -103,6 +104,29 @@ public class MicroTest inherits QUnit::Test {
 
     globalTearDown() {
         stopServer();
+    }
+
+    namedArgumentTest() {
+        NatsConnection conn(url: url);
+        NatsMicroService svc = conn.createMicroService(config: cast<hash<NatsMicroServiceConfig>>({
+            "name": "named-svc",
+            "version": "1.0.0",
+        }));
+
+        NatsMicroGroup grp = svc.addGroup(prefix: "named");
+        NatsMicroGroup v1 = grp.addGroup(prefix: "v1");
+        v1.addEndpoint(config: cast<hash<NatsMicroEndpointConfig>>({
+            "name": "echo",
+            "subject": "echo",
+            "handler": *data sub (hash<auto> req) { return req.data; },
+        }));
+
+        hash<NatsMsgInfo> reply = conn.request(subject: "named.v1.echo", data: binary("hello"), timeout_ms: 5s);
+        assertEq(binary("hello"), reply.data);
+
+        svc.stop();
+        assertTrue(svc.isStopped());
+        conn.close();
     }
 
     basicServiceTest() {

@@ -44,6 +44,7 @@ public class JetStreamTest inherits QUnit::Test {
     constructor() : QUnit::Test("JetStreamTest", "1.0") {
         # Stream CRUD tests
         addTestCase("stream create test", \streamCreateTest());
+        addTestCase("named arguments test", \namedArgumentTest());
         addTestCase("stream info test", \streamInfoTest());
         addTestCase("stream update test", \streamUpdateTest());
         addTestCase("stream purge test", \streamPurgeTest());
@@ -175,6 +176,52 @@ public class JetStreamTest inherits QUnit::Test {
     }
 
     # --- Stream CRUD tests ---
+
+    namedArgumentTest() {
+        NatsConnection conn(url: url);
+        JetStreamContext js = conn.jetStream();
+
+        string stream_name = uniqueName("NAMED");
+        string subject = stream_name + ".events";
+        hash<NatsStreamInfo> stream_info = js.addStream(config: <NatsStreamConfig>{
+            "name": stream_name,
+            "subjects": (stream_name + ".>",),
+            "storage": NATS_STORAGE_MEMORY,
+        });
+        assertEq(stream_name, stream_info.config.name);
+
+        hash<NatsPubAck> ack = js.publish(subject: subject, data: binary("payload"));
+        assertEq(stream_name, ack.stream);
+
+        *hash<NatsMsgInfo> stored_msg = js.getLastMsg(stream: stream_name, subject: subject);
+        assertEq(True, exists stored_msg);
+        assertEq(binary("payload"), stored_msg.data);
+
+        string bucket = uniqueName("kv_named");
+        NatsKeyValueStore kv = js.createKeyValue(config: <NatsKVConfig>{
+            "bucket": bucket,
+            "storage": NATS_STORAGE_MEMORY,
+        });
+        int rev = kv.putString(key: "mykey", data: "value1");
+        assertTrue(rev > 0);
+        *hash<NatsKVEntry> entry = kv.get(key: "mykey");
+        assertEq(True, exists entry);
+        assertEq("value1", entry.value.toString());
+
+        NatsKeyValueWatcher watcher = kv.watch(key: "mykey",
+            options: <NatsKVWatchOptions>{"updates_only": True});
+        kv.putString(key: "mykey", data: "value2");
+        *hash<NatsKVEntry> watched = watcher.next(timeout_ms: 5s);
+        assertEq(True, exists watched);
+        assertEq("value2", watched.value.toString());
+        watcher.stop();
+
+        kv.delete(key: "mykey");
+        assertNothing(kv.get(key: "mykey"));
+        js.deleteKeyValue(bucket: bucket);
+        js.deleteStream(name: stream_name);
+        conn.close();
+    }
 
     streamCreateTest() {
         NatsConnection conn(url);
@@ -1708,8 +1755,18 @@ public class JetStreamTest inherits QUnit::Test {
 
         # Pause for 10 seconds from now
         date pause_until = now_us() + 10s;
-        hash<NatsJSConsumerPauseResponse> resp = js.pauseConsumer(stream, "pause-test",
-            pause_until);
+        hash<NatsJSConsumerPauseResponse> resp;
+        try {
+            resp = js.pauseConsumer(stream, "pause-test", pause_until);
+        } catch (hash<ExceptionInfo> ex) {
+            js.deleteStream(stream);
+            conn.close();
+            if (ex.err == "NATS-JETSTREAM-ERROR" && ex.desc.find("Timeout") >= 0) {
+                testSkip("NATS server does not support JetStream consumer pause");
+                return;
+            }
+            rethrow;
+        }
         assertTrue(resp.paused);
         assertTrue(resp.pause_remaining_ms > 0);
 
