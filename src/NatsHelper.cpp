@@ -269,8 +269,9 @@ int check_nats_network_access(const char* url, ExceptionSink* xsink) {
         return 0;
     }
 
-    // Check hostname policy before DNS resolution
-    if (sm->network().checkHostname(host.c_str(), port, QSEC_NET_TCP)) {
+    // Check hostname policy before DNS resolution.  checkHostname() returns true when access is
+    // ALLOWED, so the policy denies the connection when it returns false.
+    if (!sm->network().checkHostname(host.c_str(), port, QSEC_NET_TCP)) {
         xsink->raiseException("NATS-CONNECTION-ERROR",
             "access to host '%s:%d' is not allowed by the network security policy",
             host.c_str(), port);
@@ -300,7 +301,9 @@ int check_nats_network_access(const char* url, ExceptionSink* xsink) {
             struct sockaddr_in6* addr = (struct sockaddr_in6*)p->ai_addr;
             addr->sin6_port = htons(port);
         }
-        if (sm->checkNetworkAccess(p->ai_addr, p->ai_addrlen, QSEC_NET_TCP, xsink)) {
+        // checkNetworkAccess() returns true when access is ALLOWED and false (raising an
+        // exception) when denied, so a resolved address is blocked when it returns false.
+        if (!sm->checkNetworkAccess(p->ai_addr, p->ai_addrlen, QSEC_NET_TCP, xsink)) {
             denied = true;
             break;
         }
@@ -316,7 +319,9 @@ int check_nats_file_access(const char* path, ExceptionSink* xsink) {
         return 0;  // No sandbox manager = allow all
     }
 
-    if (smh->checkFilesystemAccess(path, QSEC_READ, xsink)) {
+    // checkFilesystemAccess() returns true when access is ALLOWED and false (raising an
+    // exception) when denied, so access is blocked when it returns false.
+    if (!smh->checkFilesystemAccess(path, QSEC_READ, xsink)) {
         return -1;  // Access denied, exception already raised
     }
 
