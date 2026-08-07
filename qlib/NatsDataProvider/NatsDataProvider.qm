@@ -47,6 +47,7 @@ module NatsDataProvider {
         # Register app in action catalog
         DataProviderActionCatalog::registerApp(<DataProviderAppInfo>{
             "name": NatsDataProvider::AppName,
+            "presentation_source_locale": "en",
             "display_name": "NATS Server",
             "short_desc": "NATS messaging server",
             "desc": "NATS is a lightweight, high-performance messaging system for "

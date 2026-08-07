@@ -43,6 +43,7 @@ module NatsJetStreamDataProvider {
         # Register app in action catalog
         DataProviderActionCatalog::registerApp(<DataProviderAppInfo>{
             "name": NatsJetStreamDataProvider::AppName,
+            "presentation_source_locale": "en",
             "display_name": "NATS JetStream",
             "short_desc": "NATS JetStream streaming and KV store",
             "desc": "NATS JetStream extends core NATS with persistent messaging, "
