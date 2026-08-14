@@ -1,0 +1,201 @@
+{
+  "schema_version": 1,
+  "locales": {
+    "ko": {
+      "messages": {
+        "app.TkFUUw.action.c3Vic2NyaWJl.desc": {
+          "source": "Subscribes to messages on a NATS subject with observable event-based delivery.\n\nSupports wildcard subjects (`*` for single token, `>` for multi-token). Every active subscriber receives every matching message. For load-balanced delivery, use queue-subscribe instead.",
+          "message": "관찰 가능한 이벤트 기반 전달을 통해 NATS 주제의 메시지를 구독합니다.\n\n와일드카드 주제(단일 토큰의 경우 `*`, 다중 토큰의 경우 `>`)를 지원합니다. 모든 활성 구독자는 일치하는 모든 메시지를 받습니다. 로드 밸런싱된 전달을 위해 대신 queue-subscribe를 사용하세요."
+        },
+        "app.TkFUUw.action.c3Vic2NyaWJl.display_name": {
+          "source": "Subscribe to Messages",
+          "message": "메시지 구독"
+        },
+        "app.TkFUUw.action.c3Vic2NyaWJl.option.c3ViamVjdA.desc": {
+          "source": "The NATS subject to subscribe to (supports wildcards `*` and `>`)",
+          "message": "구독할 NATS 주제(와일드카드 `*` 및 `>` 지원)"
+        },
+        "app.TkFUUw.action.c3Vic2NyaWJl.option.c3ViamVjdA.display_name": {
+          "source": "Subject",
+          "message": "제목"
+        },
+        "app.TkFUUw.action.c3Vic2NyaWJl.option.c3ViamVjdA.short_desc": {
+          "source": "NATS subject to subscribe to",
+          "message": "구독할 NATS 주제"
+        },
+        "app.TkFUUw.action.c3Vic2NyaWJl.short_desc": {
+          "source": "Subscribe to real-time messages on a NATS subject",
+          "message": "NATS 주제의 실시간 메시지 구독"
+        },
+        "app.TkFUUw.action.cHVibGlzaA.desc": {
+          "source": "Publishes a message to the specified NATS subject using the fire-and-forget pattern.\n\nThe message is delivered to all active subscribers on the `subject`. **No delivery confirmation** is provided; if no subscribers are listening, the message is silently discarded.",
+          "message": "fire-and-forget 패턴을 사용하여 지정된 NATS 주제에 메시지를 게시합니다.\n\n메시지는 `subject`의 모든 활성 구독자에게 전달됩니다. **전달 확인**은 제공되지 않으며, 메시지를 수신 대기하는 구독자가 없는 경우 알림 없이 폐기됩니다."
+        },
+        "app.TkFUUw.action.cHVibGlzaA.display_name": {
+          "source": "Publish Message",
+          "message": "메시지 게시"
+        },
+        "app.TkFUUw.action.cHVibGlzaA.option.ZGF0YQ.desc": {
+          "source": "The binary message payload; use either `data` or `string_data`",
+          "message": "바이너리 메시지 페이로드; `data` 또는 `string_data` 중 하나를 사용하십시오"
+        },
+        "app.TkFUUw.action.cHVibGlzaA.option.ZGF0YQ.display_name": {
+          "source": "Binary Data",
+          "message": "바이너리 데이터"
+        },
+        "app.TkFUUw.action.cHVibGlzaA.option.ZGF0YQ.short_desc": {
+          "source": "Binary message payload",
+          "message": "바이너리 메시지 페이로드"
+        },
+        "app.TkFUUw.action.cHVibGlzaA.option.aGVhZGVycw.desc": {
+          "source": "Optional NATS message headers as key-value pairs.\n\nHeaders provide out-of-band metadata without modifying the message payload. Common uses include routing hints, content types, and correlation IDs. Header keys are case-sensitive.",
+          "message": "키-값 쌍 형태의 선택적 NATS 메시지 헤더입니다.\n\n헤더는 메시지 페이로드를 수정하지 않고 아웃오브밴드(out-of-band) 메타데이터를 제공합니다. 일반적인 용도로는 라우팅 힌트, 콘텐츠 유형, 관련성 ID(correlation ID) 등이 있습니다. 헤더 키는 대소문자를 구분합니다."
+        },
+        "app.TkFUUw.action.cHVibGlzaA.option.aGVhZGVycw.display_name": {
+          "source": "Headers",
+          "message": "헤더"
+        },
+        "app.TkFUUw.action.cHVibGlzaA.option.aGVhZGVycw.short_desc": {
+          "source": "Optional message headers",
+          "message": "선택적 메시지 헤더"
+        },
+        "app.TkFUUw.action.cHVibGlzaA.option.c3RyaW5nX2RhdGE.desc": {
+          "source": "The string message payload (alternative to `data`)",
+          "message": "문자열 메시지 페이로드(`data`의 대체)"
+        },
+        "app.TkFUUw.action.cHVibGlzaA.option.c3RyaW5nX2RhdGE.display_name": {
+          "source": "String Data",
+          "message": "문자열 데이터"
+        },
+        "app.TkFUUw.action.cHVibGlzaA.option.c3RyaW5nX2RhdGE.short_desc": {
+          "source": "String message payload",
+          "message": "문자열 메시지 페이로드"
+        },
+        "app.TkFUUw.action.cHVibGlzaA.option.c3ViamVjdA.desc": {
+          "source": "The NATS subject to publish the message to",
+          "message": "메시지를 게시할 NATS 주제"
+        },
+        "app.TkFUUw.action.cHVibGlzaA.option.c3ViamVjdA.display_name": {
+          "source": "Subject",
+          "message": "제목"
+        },
+        "app.TkFUUw.action.cHVibGlzaA.option.c3ViamVjdA.short_desc": {
+          "source": "NATS subject to publish to",
+          "message": "게시할 NATS 주제"
+        },
+        "app.TkFUUw.action.cHVibGlzaA.short_desc": {
+          "source": "Publish a fire-and-forget message to a NATS subject",
+          "message": "NATS 주제에 fire-and-forget 메시지 게시"
+        },
+        "app.TkFUUw.action.cXVldWUtc3Vic2NyaWJl.desc": {
+          "source": "Subscribes to messages on a NATS subject with a queue group for load-balanced delivery.\n\nEach message is delivered to **exactly one** member of the queue group, enabling horizontal scaling of message processing across multiple worker instances without duplicate processing.",
+          "message": "로드 밸런싱된 전달을 위해 큐 그룹과 함께 NATS 주제의 메시지를 구독합니다.\n\n각 메시지는 큐 그룹의 **정확히 하나의** 구성원에게 전달되므로, 중복 처리 없이 여러 워커 인스턴스에 걸쳐 메시지 처리를 수평 확장할 수 있습니다."
+        },
+        "app.TkFUUw.action.cXVldWUtc3Vic2NyaWJl.display_name": {
+          "source": "Queue Subscribe",
+          "message": "큐 구독"
+        },
+        "app.TkFUUw.action.cXVldWUtc3Vic2NyaWJl.option.c3ViamVjdA.desc": {
+          "source": "The NATS subject to subscribe to (supports wildcards `*` and `>`).\n\nUse `*` to match a single token (e.g. `tasks.*`) or `>` to match one or more tokens (e.g. `tasks.>` matches `tasks.process`, `tasks.process.high`, etc.).",
+          "message": "구독할 NATS 주제(와일드카드 `*` 및 `>` 지원).\n\n단일 토큰(예: `tasks.*`)을 일치시키려면 `*`를 사용하고, 하나 이상의 토큰(예: `tasks.>`는 `tasks.process`, `tasks.process.high` 등에 일치함)을 일치시키려면 `>`를 사용합니다."
+        },
+        "app.TkFUUw.action.cXVldWUtc3Vic2NyaWJl.option.c3ViamVjdA.display_name": {
+          "source": "Subject",
+          "message": "제목"
+        },
+        "app.TkFUUw.action.cXVldWUtc3Vic2NyaWJl.option.c3ViamVjdA.short_desc": {
+          "source": "NATS subject to subscribe to",
+          "message": "구독할 NATS 주제"
+        },
+        "app.TkFUUw.action.cXVldWUtc3Vic2NyaWJl.option.cXVldWU.desc": {
+          "source": "The queue group name for load-balanced message delivery.\n\nAll subscribers sharing the same `queue` group name form a worker pool. Each message is delivered to **exactly one** member of the group, enabling horizontal scaling of message processing across multiple instances without duplicate processing.",
+          "message": "로드 밸런싱된 메시지 전달을 위한 큐 그룹 이름입니다.\n\n동일한 `queue` 그룹 이름을 공유하는 모든 구독자는 워커 풀을 형성합니다. 각 메시지는 그룹의 **정확히 하나의** 구성원에게 전달되므로, 중복 처리 없이 여러 인스턴스에 걸쳐 메시지 처리를 수평 확장할 수 있습니다."
+        },
+        "app.TkFUUw.action.cXVldWUtc3Vic2NyaWJl.option.cXVldWU.display_name": {
+          "source": "Queue Group",
+          "message": "큐 그룹"
+        },
+        "app.TkFUUw.action.cXVldWUtc3Vic2NyaWJl.option.cXVldWU.short_desc": {
+          "source": "Queue group name for load balancing",
+          "message": "로드 밸런싱용 큐 그룹 이름"
+        },
+        "app.TkFUUw.action.cXVldWUtc3Vic2NyaWJl.short_desc": {
+          "source": "Queue subscribe for load-balanced message delivery",
+          "message": "로드 밸런싱된 메시지 전달을 위한 큐 구독"
+        },
+        "app.TkFUUw.action.cmVxdWVzdA.desc": {
+          "source": "Sends a synchronous request to a NATS subject and waits for a reply.\n\nImplements the request-reply pattern for microservice communication. A unique inbox is created automatically. The call blocks until a response arrives or `timeout_ms` expires.",
+          "message": "NATS 주제에 동기식 요청을 보내고 응답을 기다립니다.\n\n마이크로서비스 통신을 위한 요청-응답(request-reply) 패턴을 구현합니다. 고유한 받은편지함(inbox)이 자동으로 생성됩니다. 응답이 도착하거나 `timeout_ms`가 만료될 때까지 호출이 차단됩니다."
+        },
+        "app.TkFUUw.action.cmVxdWVzdA.display_name": {
+          "source": "Request/Reply",
+          "message": "요청/응답"
+        },
+        "app.TkFUUw.action.cmVxdWVzdA.option.ZGF0YQ.desc": {
+          "source": "The binary request payload; use either `data` or `string_data`",
+          "message": "바이너리 요청 페이로드; `data` 또는 `string_data` 중 하나를 사용하십시오"
+        },
+        "app.TkFUUw.action.cmVxdWVzdA.option.ZGF0YQ.display_name": {
+          "source": "Binary Data",
+          "message": "바이너리 데이터"
+        },
+        "app.TkFUUw.action.cmVxdWVzdA.option.ZGF0YQ.short_desc": {
+          "source": "Binary request payload",
+          "message": "바이너리 요청 페이로드"
+        },
+        "app.TkFUUw.action.cmVxdWVzdA.option.c3RyaW5nX2RhdGE.desc": {
+          "source": "The string request payload (alternative to `data`)",
+          "message": "문자열 요청 페이로드(`data`의 대체)"
+        },
+        "app.TkFUUw.action.cmVxdWVzdA.option.c3RyaW5nX2RhdGE.display_name": {
+          "source": "String Data",
+          "message": "문자열 데이터"
+        },
+        "app.TkFUUw.action.cmVxdWVzdA.option.c3RyaW5nX2RhdGE.short_desc": {
+          "source": "String request payload",
+          "message": "문자열 요청 페이로드"
+        },
+        "app.TkFUUw.action.cmVxdWVzdA.option.c3ViamVjdA.desc": {
+          "source": "The NATS subject to send the request to",
+          "message": "요청을 보낼 NATS 서브젝트"
+        },
+        "app.TkFUUw.action.cmVxdWVzdA.option.c3ViamVjdA.display_name": {
+          "source": "Subject",
+          "message": "제목"
+        },
+        "app.TkFUUw.action.cmVxdWVzdA.option.c3ViamVjdA.short_desc": {
+          "source": "NATS subject to send the request to",
+          "message": "요청을 보낼 NATS 서브젝트"
+        },
+        "app.TkFUUw.action.cmVxdWVzdA.option.dGltZW91dF9tcw.desc": {
+          "source": "Timeout in milliseconds for the request/reply operation (default: `5000`)",
+          "message": "요청/응답 작업의 제한 시간(밀리초)(기본값: `5000`)"
+        },
+        "app.TkFUUw.action.cmVxdWVzdA.option.dGltZW91dF9tcw.display_name": {
+          "source": "Timeout (ms)",
+          "message": "제한 시간(ms)"
+        },
+        "app.TkFUUw.action.cmVxdWVzdA.option.dGltZW91dF9tcw.short_desc": {
+          "source": "Request timeout in milliseconds",
+          "message": "요청 제한 시간(밀리초)"
+        },
+        "app.TkFUUw.action.cmVxdWVzdA.short_desc": {
+          "source": "Send a synchronous request and wait for a reply",
+          "message": "동기 요청을 보내고 응답을 대기합니다"
+        },
+        "app.TkFUUw.desc": {
+          "source": "NATS is a lightweight, high-performance messaging system for cloud-native applications.\n\nSupports publish/subscribe for event broadcasting, request/reply for synchronous microservice communication, and queue groups for load-balanced message processing across worker instances.",
+          "message": "NATS는 클라우드 네이티브 애플리케이션을 위한 경량의 고성능 메시징 시스템입니다.\n\n이벤트 브로드캐스팅을 위한 게시/구독, 동기식 마이크로서비스 통신을 위한 요청/응답, 작업자 인스턴스 간 부하 분산 메시지 처리를 위한 큐 그룹을 지원합니다."
+        },
+        "app.TkFUUw.display_name": {
+          "source": "NATS Server",
+          "message": "NATS 서버"
+        },
+        "app.TkFUUw.short_desc": {
+          "source": "NATS messaging server",
+          "message": "NATS 메시징 서버"
+        }
+      }
+    }
+  }
+}

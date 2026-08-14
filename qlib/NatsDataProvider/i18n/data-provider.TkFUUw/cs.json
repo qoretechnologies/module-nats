@@ -1,0 +1,201 @@
+{
+  "schema_version": 1,
+  "locales": {
+    "cs": {
+      "messages": {
+        "app.TkFUUw.action.c3Vic2NyaWJl.desc": {
+          "source": "Subscribes to messages on a NATS subject with observable event-based delivery.\n\nSupports wildcard subjects (`*` for single token, `>` for multi-token). Every active subscriber receives every matching message. For load-balanced delivery, use queue-subscribe instead.",
+          "message": "Přihlašuje se k odběru zpráv na tématu NATS s pozorovatelným doručováním na základě událostí.\n\nPodporuje témata s divokými kartami (`*` pro jeden token, `>` pro více tokenů). Každý aktivní odběratel obdrží každou odpovídající zprávu. Pro doručování s vyrovnáváním zátěže použijte místo toho queue-subscribe."
+        },
+        "app.TkFUUw.action.c3Vic2NyaWJl.display_name": {
+          "source": "Subscribe to Messages",
+          "message": "Odběr zpráv"
+        },
+        "app.TkFUUw.action.c3Vic2NyaWJl.option.c3ViamVjdA.desc": {
+          "source": "The NATS subject to subscribe to (supports wildcards `*` and `>`)",
+          "message": "Téma NATS k odběru (podporuje divoké karty `*` a `>`)"
+        },
+        "app.TkFUUw.action.c3Vic2NyaWJl.option.c3ViamVjdA.display_name": {
+          "source": "Subject",
+          "message": "Předmět"
+        },
+        "app.TkFUUw.action.c3Vic2NyaWJl.option.c3ViamVjdA.short_desc": {
+          "source": "NATS subject to subscribe to",
+          "message": "Téma NATS k odběru"
+        },
+        "app.TkFUUw.action.c3Vic2NyaWJl.short_desc": {
+          "source": "Subscribe to real-time messages on a NATS subject",
+          "message": "Přihlásit se k odběru zpráv v reálném čase na tématu NATS"
+        },
+        "app.TkFUUw.action.cHVibGlzaA.desc": {
+          "source": "Publishes a message to the specified NATS subject using the fire-and-forget pattern.\n\nThe message is delivered to all active subscribers on the `subject`. **No delivery confirmation** is provided; if no subscribers are listening, the message is silently discarded.",
+          "message": "Publikuje zprávu na zadané téma NATS pomocí vzoru fire-and-forget.\n\nZpráva je doručena všem aktivním odběratelům na `subject`. Není k dispozici **žádné potvrzení o doručení**; pokud neposlouchají žádní odběratelé, zpráva je tichou cestou zahozena."
+        },
+        "app.TkFUUw.action.cHVibGlzaA.display_name": {
+          "source": "Publish Message",
+          "message": "Publikovat zprávu"
+        },
+        "app.TkFUUw.action.cHVibGlzaA.option.ZGF0YQ.desc": {
+          "source": "The binary message payload; use either `data` or `string_data`",
+          "message": "Binární datová část zprávy; použijte buď `data` nebo `string_data`"
+        },
+        "app.TkFUUw.action.cHVibGlzaA.option.ZGF0YQ.display_name": {
+          "source": "Binary Data",
+          "message": "Binární data"
+        },
+        "app.TkFUUw.action.cHVibGlzaA.option.ZGF0YQ.short_desc": {
+          "source": "Binary message payload",
+          "message": "Binární datová část zprávy"
+        },
+        "app.TkFUUw.action.cHVibGlzaA.option.aGVhZGVycw.desc": {
+          "source": "Optional NATS message headers as key-value pairs.\n\nHeaders provide out-of-band metadata without modifying the message payload. Common uses include routing hints, content types, and correlation IDs. Header keys are case-sensitive.",
+          "message": "Volitelné hlavičky zpráv NATS jako páry klíč-hodnota.\n\nHlavičky poskytují mimopásmová metadata bez úpravy datové části zprávy. Běžné použití zahrnuje nápovědy pro směrování, typy obsahu a ID korelací. V klíčích hlaviček se rozlišují malá a velká písmena."
+        },
+        "app.TkFUUw.action.cHVibGlzaA.option.aGVhZGVycw.display_name": {
+          "source": "Headers",
+          "message": "Hlavičky"
+        },
+        "app.TkFUUw.action.cHVibGlzaA.option.aGVhZGVycw.short_desc": {
+          "source": "Optional message headers",
+          "message": "Volitelné hlavičky zprávy"
+        },
+        "app.TkFUUw.action.cHVibGlzaA.option.c3RyaW5nX2RhdGE.desc": {
+          "source": "The string message payload (alternative to `data`)",
+          "message": "Řetězcová datová část zprávy (alternativa k `data`)"
+        },
+        "app.TkFUUw.action.cHVibGlzaA.option.c3RyaW5nX2RhdGE.display_name": {
+          "source": "String Data",
+          "message": "Řetězcová data"
+        },
+        "app.TkFUUw.action.cHVibGlzaA.option.c3RyaW5nX2RhdGE.short_desc": {
+          "source": "String message payload",
+          "message": "Řetězcová datová část zprávy"
+        },
+        "app.TkFUUw.action.cHVibGlzaA.option.c3ViamVjdA.desc": {
+          "source": "The NATS subject to publish the message to",
+          "message": "Téma NATS, na které má být zpráva publikována"
+        },
+        "app.TkFUUw.action.cHVibGlzaA.option.c3ViamVjdA.display_name": {
+          "source": "Subject",
+          "message": "Předmět"
+        },
+        "app.TkFUUw.action.cHVibGlzaA.option.c3ViamVjdA.short_desc": {
+          "source": "NATS subject to publish to",
+          "message": "Téma NATS pro publikování"
+        },
+        "app.TkFUUw.action.cHVibGlzaA.short_desc": {
+          "source": "Publish a fire-and-forget message to a NATS subject",
+          "message": "Publikovat zprávu typu fire-and-forget na téma NATS"
+        },
+        "app.TkFUUw.action.cXVldWUtc3Vic2NyaWJl.desc": {
+          "source": "Subscribes to messages on a NATS subject with a queue group for load-balanced delivery.\n\nEach message is delivered to **exactly one** member of the queue group, enabling horizontal scaling of message processing across multiple worker instances without duplicate processing.",
+          "message": "Přihlašuje se k odběru zpráv na tématu NATS ze skupiny fronty pro doručování s vyrovnáváním zátěže.\n\nKaždá zpráva je doručena **právě jednomu** členovi skupiny fronty, což umožňuje horizontální škálování zpracování zpráv napříč více instancemi pracovníků bez duplicitního zpracování."
+        },
+        "app.TkFUUw.action.cXVldWUtc3Vic2NyaWJl.display_name": {
+          "source": "Queue Subscribe",
+          "message": "Odběr z fronty"
+        },
+        "app.TkFUUw.action.cXVldWUtc3Vic2NyaWJl.option.c3ViamVjdA.desc": {
+          "source": "The NATS subject to subscribe to (supports wildcards `*` and `>`).\n\nUse `*` to match a single token (e.g. `tasks.*`) or `>` to match one or more tokens (e.g. `tasks.>` matches `tasks.process`, `tasks.process.high`, etc.).",
+          "message": "Téma NATS k odběru (podporuje divoké karty `*` a `>`).\n\nPoužijte `*` pro shodu s jediným tokenem (např. `tasks.*`) nebo `>` pro shodu s jedním nebo více tokeny (např. `tasks.>` odpovídá `tasks.process`, `tasks.process.high` atd.)."
+        },
+        "app.TkFUUw.action.cXVldWUtc3Vic2NyaWJl.option.c3ViamVjdA.display_name": {
+          "source": "Subject",
+          "message": "Předmět"
+        },
+        "app.TkFUUw.action.cXVldWUtc3Vic2NyaWJl.option.c3ViamVjdA.short_desc": {
+          "source": "NATS subject to subscribe to",
+          "message": "Téma NATS k odběru"
+        },
+        "app.TkFUUw.action.cXVldWUtc3Vic2NyaWJl.option.cXVldWU.desc": {
+          "source": "The queue group name for load-balanced message delivery.\n\nAll subscribers sharing the same `queue` group name form a worker pool. Each message is delivered to **exactly one** member of the group, enabling horizontal scaling of message processing across multiple instances without duplicate processing.",
+          "message": "Název skupiny fronty pro doručování zpráv s vyrovnáváním zátěže.\n\nVšichni odběratelé sdílející stejný název skupiny `queue` tvoří fond pracovníků. Každá zpráva je doručena **právě jednomu** členovi skupiny, což umožňuje horizontální škálování zpracování zpráv napříč více instancemi bez duplicitního zpracování."
+        },
+        "app.TkFUUw.action.cXVldWUtc3Vic2NyaWJl.option.cXVldWU.display_name": {
+          "source": "Queue Group",
+          "message": "Skupina fronty"
+        },
+        "app.TkFUUw.action.cXVldWUtc3Vic2NyaWJl.option.cXVldWU.short_desc": {
+          "source": "Queue group name for load balancing",
+          "message": "Název skupiny fronty pro vyrovnávání zátěže"
+        },
+        "app.TkFUUw.action.cXVldWUtc3Vic2NyaWJl.short_desc": {
+          "source": "Queue subscribe for load-balanced message delivery",
+          "message": "Odběr z fronty pro doručování zpráv s vyrovnáváním zátěže"
+        },
+        "app.TkFUUw.action.cmVxdWVzdA.desc": {
+          "source": "Sends a synchronous request to a NATS subject and waits for a reply.\n\nImplements the request-reply pattern for microservice communication. A unique inbox is created automatically. The call blocks until a response arrives or `timeout_ms` expires.",
+          "message": "Odesílá synchronní požadavek na téma NATS a čeká na odpověď.\n\nImplementuje vzor požadavek-odpověď pro komunikaci mezi mikroslužbami. Unikátní příchozí schránka (inbox) je vytvořena automaticky. Volání blokuje, dokud nepřijde odpověď nebo nevyprší `timeout_ms`."
+        },
+        "app.TkFUUw.action.cmVxdWVzdA.display_name": {
+          "source": "Request/Reply",
+          "message": "Požadavek/odpověď"
+        },
+        "app.TkFUUw.action.cmVxdWVzdA.option.ZGF0YQ.desc": {
+          "source": "The binary request payload; use either `data` or `string_data`",
+          "message": "Binární datová část požadavku; použijte buď `data` nebo `string_data`"
+        },
+        "app.TkFUUw.action.cmVxdWVzdA.option.ZGF0YQ.display_name": {
+          "source": "Binary Data",
+          "message": "Binární data"
+        },
+        "app.TkFUUw.action.cmVxdWVzdA.option.ZGF0YQ.short_desc": {
+          "source": "Binary request payload",
+          "message": "Binární datová část požadavku"
+        },
+        "app.TkFUUw.action.cmVxdWVzdA.option.c3RyaW5nX2RhdGE.desc": {
+          "source": "The string request payload (alternative to `data`)",
+          "message": "Řetězcová datová část požadavku (alternativa k `data`)"
+        },
+        "app.TkFUUw.action.cmVxdWVzdA.option.c3RyaW5nX2RhdGE.display_name": {
+          "source": "String Data",
+          "message": "Řetězcová data"
+        },
+        "app.TkFUUw.action.cmVxdWVzdA.option.c3RyaW5nX2RhdGE.short_desc": {
+          "source": "String request payload",
+          "message": "Payload požadavku typu řetězec"
+        },
+        "app.TkFUUw.action.cmVxdWVzdA.option.c3ViamVjdA.desc": {
+          "source": "The NATS subject to send the request to",
+          "message": "Předmět NATS, na který se má odeslat požadavek"
+        },
+        "app.TkFUUw.action.cmVxdWVzdA.option.c3ViamVjdA.display_name": {
+          "source": "Subject",
+          "message": "Předmět"
+        },
+        "app.TkFUUw.action.cmVxdWVzdA.option.c3ViamVjdA.short_desc": {
+          "source": "NATS subject to send the request to",
+          "message": "Předmět NATS, na který se má odeslat požadavek"
+        },
+        "app.TkFUUw.action.cmVxdWVzdA.option.dGltZW91dF9tcw.desc": {
+          "source": "Timeout in milliseconds for the request/reply operation (default: `5000`)",
+          "message": "Časový limit v milisekundách pro operaci požadavek/odpověď (výchozí: `5000`)"
+        },
+        "app.TkFUUw.action.cmVxdWVzdA.option.dGltZW91dF9tcw.display_name": {
+          "source": "Timeout (ms)",
+          "message": "Časový limit (ms)"
+        },
+        "app.TkFUUw.action.cmVxdWVzdA.option.dGltZW91dF9tcw.short_desc": {
+          "source": "Request timeout in milliseconds",
+          "message": "Časový limit požadavku v milisekundách"
+        },
+        "app.TkFUUw.action.cmVxdWVzdA.short_desc": {
+          "source": "Send a synchronous request and wait for a reply",
+          "message": "Odeslat synchronní požadavek a počkat na odpověď"
+        },
+        "app.TkFUUw.desc": {
+          "source": "NATS is a lightweight, high-performance messaging system for cloud-native applications.\n\nSupports publish/subscribe for event broadcasting, request/reply for synchronous microservice communication, and queue groups for load-balanced message processing across worker instances.",
+          "message": "NATS je lehký a vysoce výkonný systém pro zasílání zpráv pro cloudové aplikace.\n\nPodporuje publish/subscribe pro vysílání událostí, request/reply pro synchronní komunikaci mikroslužeb a skupiny front pro vyvažování zátěže při zpracování zpráv napříč instancemi workerů."
+        },
+        "app.TkFUUw.display_name": {
+          "source": "NATS Server",
+          "message": "NATS Server"
+        },
+        "app.TkFUUw.short_desc": {
+          "source": "NATS messaging server",
+          "message": "Messaging server NATS"
+        }
+      }
+    }
+  }
+}

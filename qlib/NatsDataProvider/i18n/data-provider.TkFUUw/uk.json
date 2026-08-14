@@ -1,0 +1,201 @@
+{
+  "schema_version": 1,
+  "locales": {
+    "uk": {
+      "messages": {
+        "app.TkFUUw.action.c3Vic2NyaWJl.desc": {
+          "source": "Subscribes to messages on a NATS subject with observable event-based delivery.\n\nSupports wildcard subjects (`*` for single token, `>` for multi-token). Every active subscriber receives every matching message. For load-balanced delivery, use queue-subscribe instead.",
+          "message": "Оформлює підписку на повідомлення в темі NATS із відстежуваною доставкою на основі подій.\n\nПідтримує теми із підстановочними знаками (`*` для одного токена, `>` для кількох токенів). Кожен активний підписник отримує кожне відповідне повідомлення. Для доставки з балансуванням навантаження використовуйте queue-subscribe."
+        },
+        "app.TkFUUw.action.c3Vic2NyaWJl.display_name": {
+          "source": "Subscribe to Messages",
+          "message": "Підписатися на повідомлення"
+        },
+        "app.TkFUUw.action.c3Vic2NyaWJl.option.c3ViamVjdA.desc": {
+          "source": "The NATS subject to subscribe to (supports wildcards `*` and `>`)",
+          "message": "Тема NATS для підписки (підтримує підстановочні знаки `*` та `>`)"
+        },
+        "app.TkFUUw.action.c3Vic2NyaWJl.option.c3ViamVjdA.display_name": {
+          "source": "Subject",
+          "message": "Тема"
+        },
+        "app.TkFUUw.action.c3Vic2NyaWJl.option.c3ViamVjdA.short_desc": {
+          "source": "NATS subject to subscribe to",
+          "message": "Тема NATS для підписки"
+        },
+        "app.TkFUUw.action.c3Vic2NyaWJl.short_desc": {
+          "source": "Subscribe to real-time messages on a NATS subject",
+          "message": "Підписатися на повідомлення в режимі реального часу в темі NATS"
+        },
+        "app.TkFUUw.action.cHVibGlzaA.desc": {
+          "source": "Publishes a message to the specified NATS subject using the fire-and-forget pattern.\n\nThe message is delivered to all active subscribers on the `subject`. **No delivery confirmation** is provided; if no subscribers are listening, the message is silently discarded.",
+          "message": "Публікує повідомлення у вказану тему NATS із використанням шаблону «надіслав і забув» (fire-and-forget).\n\nПовідомлення доставляється усім активним підписникам у `subject`. **Підтвердження доставки не надається**; якщо немає підписників, які слухають, повідомлення мовчки відкидається."
+        },
+        "app.TkFUUw.action.cHVibGlzaA.display_name": {
+          "source": "Publish Message",
+          "message": "Опублікувати повідомлення"
+        },
+        "app.TkFUUw.action.cHVibGlzaA.option.ZGF0YQ.desc": {
+          "source": "The binary message payload; use either `data` or `string_data`",
+          "message": "Бінарне корисне навантаження повідомлення; використовуйте `data` або `string_data`"
+        },
+        "app.TkFUUw.action.cHVibGlzaA.option.ZGF0YQ.display_name": {
+          "source": "Binary Data",
+          "message": "Бінарні дані"
+        },
+        "app.TkFUUw.action.cHVibGlzaA.option.ZGF0YQ.short_desc": {
+          "source": "Binary message payload",
+          "message": "Бінарне корисне навантаження повідомлення"
+        },
+        "app.TkFUUw.action.cHVibGlzaA.option.aGVhZGVycw.desc": {
+          "source": "Optional NATS message headers as key-value pairs.\n\nHeaders provide out-of-band metadata without modifying the message payload. Common uses include routing hints, content types, and correlation IDs. Header keys are case-sensitive.",
+          "message": "Необов'язкові заголовки повідомлення NATS у вигляді пар «ключ-значення».\n\nЗаголовки забезпечують позасмугові метадані без зміни корисного навантаження повідомлення. Зазвичай використовуються для підказок маршрутизації, типів вмісту та ідентифікаторів кореляції (correlation ID). Ключі заголовків чутливі до регістру."
+        },
+        "app.TkFUUw.action.cHVibGlzaA.option.aGVhZGVycw.display_name": {
+          "source": "Headers",
+          "message": "Заголовки"
+        },
+        "app.TkFUUw.action.cHVibGlzaA.option.aGVhZGVycw.short_desc": {
+          "source": "Optional message headers",
+          "message": "Необов'язкові заголовки повідомлення"
+        },
+        "app.TkFUUw.action.cHVibGlzaA.option.c3RyaW5nX2RhdGE.desc": {
+          "source": "The string message payload (alternative to `data`)",
+          "message": "Рядкове корисне навантаження повідомлення (альтернатива `data`)"
+        },
+        "app.TkFUUw.action.cHVibGlzaA.option.c3RyaW5nX2RhdGE.display_name": {
+          "source": "String Data",
+          "message": "Рядкові дані"
+        },
+        "app.TkFUUw.action.cHVibGlzaA.option.c3RyaW5nX2RhdGE.short_desc": {
+          "source": "String message payload",
+          "message": "Рядкове корисне навантаження повідомлення"
+        },
+        "app.TkFUUw.action.cHVibGlzaA.option.c3ViamVjdA.desc": {
+          "source": "The NATS subject to publish the message to",
+          "message": "Тема NATS для публікації повідомлення"
+        },
+        "app.TkFUUw.action.cHVibGlzaA.option.c3ViamVjdA.display_name": {
+          "source": "Subject",
+          "message": "Тема"
+        },
+        "app.TkFUUw.action.cHVibGlzaA.option.c3ViamVjdA.short_desc": {
+          "source": "NATS subject to publish to",
+          "message": "Тема NATS для публікації"
+        },
+        "app.TkFUUw.action.cHVibGlzaA.short_desc": {
+          "source": "Publish a fire-and-forget message to a NATS subject",
+          "message": "Опублікувати повідомлення за принципом «надіслав і забув» у тему NATS"
+        },
+        "app.TkFUUw.action.cXVldWUtc3Vic2NyaWJl.desc": {
+          "source": "Subscribes to messages on a NATS subject with a queue group for load-balanced delivery.\n\nEach message is delivered to **exactly one** member of the queue group, enabling horizontal scaling of message processing across multiple worker instances without duplicate processing.",
+          "message": "Оформлює підписку на повідомлення в темі NATS із групою черги для доставки з балансуванням навантаження.\n\nКожне повідомлення доставляється **рівно одному** учаснику групи черги, що забезпечує горизонтальне масштабування обробки повідомлень між кількома робочими екземплярами без дублювання обробки."
+        },
+        "app.TkFUUw.action.cXVldWUtc3Vic2NyaWJl.display_name": {
+          "source": "Queue Subscribe",
+          "message": "Підписка на чергу"
+        },
+        "app.TkFUUw.action.cXVldWUtc3Vic2NyaWJl.option.c3ViamVjdA.desc": {
+          "source": "The NATS subject to subscribe to (supports wildcards `*` and `>`).\n\nUse `*` to match a single token (e.g. `tasks.*`) or `>` to match one or more tokens (e.g. `tasks.>` matches `tasks.process`, `tasks.process.high`, etc.).",
+          "message": "Тема NATS для підписки (підтримує підстановочні знаки `*` та `>`).\n\nВикористовуйте `*` для відповідності одному токену (наприклад, `tasks.*`) або `>` для відповідності одному чи кільком токенам (наприклад, `tasks.>` відповідає `tasks.process`, `tasks.process.high` тощо)."
+        },
+        "app.TkFUUw.action.cXVldWUtc3Vic2NyaWJl.option.c3ViamVjdA.display_name": {
+          "source": "Subject",
+          "message": "Тема"
+        },
+        "app.TkFUUw.action.cXVldWUtc3Vic2NyaWJl.option.c3ViamVjdA.short_desc": {
+          "source": "NATS subject to subscribe to",
+          "message": "Тема NATS для підписки"
+        },
+        "app.TkFUUw.action.cXVldWUtc3Vic2NyaWJl.option.cXVldWU.desc": {
+          "source": "The queue group name for load-balanced message delivery.\n\nAll subscribers sharing the same `queue` group name form a worker pool. Each message is delivered to **exactly one** member of the group, enabling horizontal scaling of message processing across multiple instances without duplicate processing.",
+          "message": "Назва групи черги для доставки повідомлень із балансуванням навантаження.\n\nУсі підписники, які мають однакову назву групи `queue`, утворюють пул робочих процесів. Кожне повідомлення доставляється **рівно одному** учаснику групи, що забезпечує горизонтальне масштабування обробки повідомлень між кількома екземплярами без дублювання обробки."
+        },
+        "app.TkFUUw.action.cXVldWUtc3Vic2NyaWJl.option.cXVldWU.display_name": {
+          "source": "Queue Group",
+          "message": "Група черги"
+        },
+        "app.TkFUUw.action.cXVldWUtc3Vic2NyaWJl.option.cXVldWU.short_desc": {
+          "source": "Queue group name for load balancing",
+          "message": "Назва групи черги для балансування навантаження"
+        },
+        "app.TkFUUw.action.cXVldWUtc3Vic2NyaWJl.short_desc": {
+          "source": "Queue subscribe for load-balanced message delivery",
+          "message": "Підписка на чергу для доставки повідомлень із балансуванням навантаження"
+        },
+        "app.TkFUUw.action.cmVxdWVzdA.desc": {
+          "source": "Sends a synchronous request to a NATS subject and waits for a reply.\n\nImplements the request-reply pattern for microservice communication. A unique inbox is created automatically. The call blocks until a response arrives or `timeout_ms` expires.",
+          "message": "Надсилає синхронний запит у тему NATS і очікує на відповідь.\n\nРеалізує шаблон «запит-відповідь» (request-reply) для взаємодії мікросервісів. Унікальна скринька вхідних (inbox) створюється автоматично. Виклик блокується, доки не надійде відповідь або не закінчиться термін дії `timeout_ms`."
+        },
+        "app.TkFUUw.action.cmVxdWVzdA.display_name": {
+          "source": "Request/Reply",
+          "message": "Запит/Відповідь"
+        },
+        "app.TkFUUw.action.cmVxdWVzdA.option.ZGF0YQ.desc": {
+          "source": "The binary request payload; use either `data` or `string_data`",
+          "message": "Бінарне корисне навантаження запиту; використовуйте `data` або `string_data`"
+        },
+        "app.TkFUUw.action.cmVxdWVzdA.option.ZGF0YQ.display_name": {
+          "source": "Binary Data",
+          "message": "Бінарні дані"
+        },
+        "app.TkFUUw.action.cmVxdWVzdA.option.ZGF0YQ.short_desc": {
+          "source": "Binary request payload",
+          "message": "Бінарне корисне навантаження запиту"
+        },
+        "app.TkFUUw.action.cmVxdWVzdA.option.c3RyaW5nX2RhdGE.desc": {
+          "source": "The string request payload (alternative to `data`)",
+          "message": "Рядкове корисне навантаження запиту (альтернатива `data`)"
+        },
+        "app.TkFUUw.action.cmVxdWVzdA.option.c3RyaW5nX2RhdGE.display_name": {
+          "source": "String Data",
+          "message": "Рядкові дані"
+        },
+        "app.TkFUUw.action.cmVxdWVzdA.option.c3RyaW5nX2RhdGE.short_desc": {
+          "source": "String request payload",
+          "message": "Корисне навантаження текстового запиту"
+        },
+        "app.TkFUUw.action.cmVxdWVzdA.option.c3ViamVjdA.desc": {
+          "source": "The NATS subject to send the request to",
+          "message": "Тема NATS, на яку надсилається запит"
+        },
+        "app.TkFUUw.action.cmVxdWVzdA.option.c3ViamVjdA.display_name": {
+          "source": "Subject",
+          "message": "Тема"
+        },
+        "app.TkFUUw.action.cmVxdWVzdA.option.c3ViamVjdA.short_desc": {
+          "source": "NATS subject to send the request to",
+          "message": "Тема NATS для надсилання запиту"
+        },
+        "app.TkFUUw.action.cmVxdWVzdA.option.dGltZW91dF9tcw.desc": {
+          "source": "Timeout in milliseconds for the request/reply operation (default: `5000`)",
+          "message": "Тайм-аут у мілісекундах для операції «запит/відповідь» (за замовчуванням: `5000`)"
+        },
+        "app.TkFUUw.action.cmVxdWVzdA.option.dGltZW91dF9tcw.display_name": {
+          "source": "Timeout (ms)",
+          "message": "Тайм-аут (мс)"
+        },
+        "app.TkFUUw.action.cmVxdWVzdA.option.dGltZW91dF9tcw.short_desc": {
+          "source": "Request timeout in milliseconds",
+          "message": "Тайм-аут запиту у мілісекундах"
+        },
+        "app.TkFUUw.action.cmVxdWVzdA.short_desc": {
+          "source": "Send a synchronous request and wait for a reply",
+          "message": "Надіслати синхронний запит і чекати на відповідь"
+        },
+        "app.TkFUUw.desc": {
+          "source": "NATS is a lightweight, high-performance messaging system for cloud-native applications.\n\nSupports publish/subscribe for event broadcasting, request/reply for synchronous microservice communication, and queue groups for load-balanced message processing across worker instances.",
+          "message": "NATS — це легковажна високоефективна система обміну повідомленнями для хмарних (cloud-native) застосунків.\n\nПідтримує шаблон «видавець/підписник» для трансляції подій, «запит/відповідь» для синхронної взаємодії мікросервісів та групи черг для збалансованої обробки повідомлень між екземплярами робочих процесів."
+        },
+        "app.TkFUUw.display_name": {
+          "source": "NATS Server",
+          "message": "Сервер NATS"
+        },
+        "app.TkFUUw.short_desc": {
+          "source": "NATS messaging server",
+          "message": "Сервер обміну повідомленнями NATS"
+        }
+      }
+    }
+  }
+}

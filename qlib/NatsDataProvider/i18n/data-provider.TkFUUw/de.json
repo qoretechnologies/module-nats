@@ -1,0 +1,201 @@
+{
+  "schema_version": 1,
+  "locales": {
+    "de": {
+      "messages": {
+        "app.TkFUUw.action.c3Vic2NyaWJl.desc": {
+          "source": "Subscribes to messages on a NATS subject with observable event-based delivery.\n\nSupports wildcard subjects (`*` for single token, `>` for multi-token). Every active subscriber receives every matching message. For load-balanced delivery, use queue-subscribe instead.",
+          "message": "Abonniert Nachrichten auf einem NATS-Subject mit beobachtbarer ereignisbasierter Zustellung.\n\nUnterstützt Wildcard-Subjects (`*` für einzelne Token, `>` für mehrere Token). Jeder aktive Abonnent erhält jede passende Nachricht. Verwenden Sie für eine lastverteilte Zustellung stattdessen queue-subscribe."
+        },
+        "app.TkFUUw.action.c3Vic2NyaWJl.display_name": {
+          "source": "Subscribe to Messages",
+          "message": "Nachrichten abonnieren"
+        },
+        "app.TkFUUw.action.c3Vic2NyaWJl.option.c3ViamVjdA.desc": {
+          "source": "The NATS subject to subscribe to (supports wildcards `*` and `>`)",
+          "message": "Das NATS-Subject, das abonniert werden soll (unterstützt die Wildcards `*` und `>`)"
+        },
+        "app.TkFUUw.action.c3Vic2NyaWJl.option.c3ViamVjdA.display_name": {
+          "source": "Subject",
+          "message": "Betreff"
+        },
+        "app.TkFUUw.action.c3Vic2NyaWJl.option.c3ViamVjdA.short_desc": {
+          "source": "NATS subject to subscribe to",
+          "message": "Zu abonnierendes NATS-Subject"
+        },
+        "app.TkFUUw.action.c3Vic2NyaWJl.short_desc": {
+          "source": "Subscribe to real-time messages on a NATS subject",
+          "message": "Echtzeitnachrichten auf einem NATS-Subject abonnieren"
+        },
+        "app.TkFUUw.action.cHVibGlzaA.desc": {
+          "source": "Publishes a message to the specified NATS subject using the fire-and-forget pattern.\n\nThe message is delivered to all active subscribers on the `subject`. **No delivery confirmation** is provided; if no subscribers are listening, the message is silently discarded.",
+          "message": "Veröffentlicht eine Nachricht an das angegebene NATS-Subject nach dem Fire-and-Forget-Muster.\n\nDie Nachricht wird an alle aktiven Abonnenten auf dem `subject` zugestellt. Es wird **keine Zustellbestätigung** bereitgestellt; wenn keine Abonnenten zuhören, wird die Nachricht stillschweigend verworfen."
+        },
+        "app.TkFUUw.action.cHVibGlzaA.display_name": {
+          "source": "Publish Message",
+          "message": "Nachricht veröffentlichen"
+        },
+        "app.TkFUUw.action.cHVibGlzaA.option.ZGF0YQ.desc": {
+          "source": "The binary message payload; use either `data` or `string_data`",
+          "message": "Die binären Nachrichtennutzdaten; verwenden Sie entweder `data` oder `string_data`"
+        },
+        "app.TkFUUw.action.cHVibGlzaA.option.ZGF0YQ.display_name": {
+          "source": "Binary Data",
+          "message": "Binärdaten"
+        },
+        "app.TkFUUw.action.cHVibGlzaA.option.ZGF0YQ.short_desc": {
+          "source": "Binary message payload",
+          "message": "Binäre Nachrichtennutzdaten"
+        },
+        "app.TkFUUw.action.cHVibGlzaA.option.aGVhZGVycw.desc": {
+          "source": "Optional NATS message headers as key-value pairs.\n\nHeaders provide out-of-band metadata without modifying the message payload. Common uses include routing hints, content types, and correlation IDs. Header keys are case-sensitive.",
+          "message": "Optionale NATS-Nachrichten-Header als Schlüssel-Wert-Paare.\n\nHeader bieten Out-of-Band-Metadaten, ohne die Nachrichtennutzdaten zu verändern. Häufige Anwendungsfälle sind Routing-Hinweise, Inhaltstypen und Korrelations-IDs. Header-Schlüssel unterscheiden zwischen Groß- und Kleinschreibung."
+        },
+        "app.TkFUUw.action.cHVibGlzaA.option.aGVhZGVycw.display_name": {
+          "source": "Headers",
+          "message": "Header"
+        },
+        "app.TkFUUw.action.cHVibGlzaA.option.aGVhZGVycw.short_desc": {
+          "source": "Optional message headers",
+          "message": "Optionale Nachrichten-Header"
+        },
+        "app.TkFUUw.action.cHVibGlzaA.option.c3RyaW5nX2RhdGE.desc": {
+          "source": "The string message payload (alternative to `data`)",
+          "message": "Die Zeichenfolgen-Nachrichtennutzdaten (Alternative zu `data`)"
+        },
+        "app.TkFUUw.action.cHVibGlzaA.option.c3RyaW5nX2RhdGE.display_name": {
+          "source": "String Data",
+          "message": "String-Daten"
+        },
+        "app.TkFUUw.action.cHVibGlzaA.option.c3RyaW5nX2RhdGE.short_desc": {
+          "source": "String message payload",
+          "message": "Zeichenfolgen-Nachrichtennutzdaten"
+        },
+        "app.TkFUUw.action.cHVibGlzaA.option.c3ViamVjdA.desc": {
+          "source": "The NATS subject to publish the message to",
+          "message": "Das NATS-Subject, an das die Nachricht veröffentlicht werden soll"
+        },
+        "app.TkFUUw.action.cHVibGlzaA.option.c3ViamVjdA.display_name": {
+          "source": "Subject",
+          "message": "Betreff"
+        },
+        "app.TkFUUw.action.cHVibGlzaA.option.c3ViamVjdA.short_desc": {
+          "source": "NATS subject to publish to",
+          "message": "NATS-Subject, an das veröffentlicht werden soll"
+        },
+        "app.TkFUUw.action.cHVibGlzaA.short_desc": {
+          "source": "Publish a fire-and-forget message to a NATS subject",
+          "message": "Eine Fire-and-Forget-Nachricht an ein NATS-Subject veröffentlichen"
+        },
+        "app.TkFUUw.action.cXVldWUtc3Vic2NyaWJl.desc": {
+          "source": "Subscribes to messages on a NATS subject with a queue group for load-balanced delivery.\n\nEach message is delivered to **exactly one** member of the queue group, enabling horizontal scaling of message processing across multiple worker instances without duplicate processing.",
+          "message": "Abonniert Nachrichten auf einem NATS-Subject mit einer Queue-Gruppe für lastverteilte Zustellung.\n\nJede Nachricht wird an **genau ein** Mitglied der Queue-Gruppe zugestellt, was eine horizontale Skalierung der Nachrichtenverarbeitung über mehrere Worker-Instanzen hinweg ohne doppelte Verarbeitung ermöglicht."
+        },
+        "app.TkFUUw.action.cXVldWUtc3Vic2NyaWJl.display_name": {
+          "source": "Queue Subscribe",
+          "message": "Queue-Abonnement"
+        },
+        "app.TkFUUw.action.cXVldWUtc3Vic2NyaWJl.option.c3ViamVjdA.desc": {
+          "source": "The NATS subject to subscribe to (supports wildcards `*` and `>`).\n\nUse `*` to match a single token (e.g. `tasks.*`) or `>` to match one or more tokens (e.g. `tasks.>` matches `tasks.process`, `tasks.process.high`, etc.).",
+          "message": "Das NATS-Subject, das abonniert werden soll (unterstützt Wildcards `*` und `>`).\n\nVerwenden Sie `*`, um ein einzelnes Token zu matchen (z. B. `tasks.*`), oder `>`, um ein oder mehrere Token zu matchen (z. B. `tasks.>` passt auf `tasks.process`, `tasks.process.high` usw.)."
+        },
+        "app.TkFUUw.action.cXVldWUtc3Vic2NyaWJl.option.c3ViamVjdA.display_name": {
+          "source": "Subject",
+          "message": "Betreff"
+        },
+        "app.TkFUUw.action.cXVldWUtc3Vic2NyaWJl.option.c3ViamVjdA.short_desc": {
+          "source": "NATS subject to subscribe to",
+          "message": "Zu abonnierendes NATS-Subject"
+        },
+        "app.TkFUUw.action.cXVldWUtc3Vic2NyaWJl.option.cXVldWU.desc": {
+          "source": "The queue group name for load-balanced message delivery.\n\nAll subscribers sharing the same `queue` group name form a worker pool. Each message is delivered to **exactly one** member of the group, enabling horizontal scaling of message processing across multiple instances without duplicate processing.",
+          "message": "Der Name der Queue-Gruppe für lastverteilte Nachrichtenzustellung.\n\nAlle Abonnenten, die denselben Gruppennamen `queue` teilen, bilden einen Worker-Pool. Jede Nachricht wird an **genau ein** Mitglied der Gruppe zugestellt, was eine horizontale Skalierung der Nachrichtenverarbeitung über mehere Instanzen hinweg ohne doppelte Verarbeitung ermöglicht."
+        },
+        "app.TkFUUw.action.cXVldWUtc3Vic2NyaWJl.option.cXVldWU.display_name": {
+          "source": "Queue Group",
+          "message": "Queue-Gruppe"
+        },
+        "app.TkFUUw.action.cXVldWUtc3Vic2NyaWJl.option.cXVldWU.short_desc": {
+          "source": "Queue group name for load balancing",
+          "message": "Queue-Gruppenname für Lastverteilung"
+        },
+        "app.TkFUUw.action.cXVldWUtc3Vic2NyaWJl.short_desc": {
+          "source": "Queue subscribe for load-balanced message delivery",
+          "message": "Queue-Abonnement für lastverteilte Nachrichtenzustellung"
+        },
+        "app.TkFUUw.action.cmVxdWVzdA.desc": {
+          "source": "Sends a synchronous request to a NATS subject and waits for a reply.\n\nImplements the request-reply pattern for microservice communication. A unique inbox is created automatically. The call blocks until a response arrives or `timeout_ms` expires.",
+          "message": "Sendet eine synchrone Anfrage an ein NATS-Subject und wartet auf eine Antwort.\n\nImplementiert das Request-Reply-Muster für die Microservice-Kommunikation. Ein eindeutiger Posteingang wird automatisch erstellt. Der Aufruf blockiert, bis eine Antwort eingeht oder `timeout_ms` abläuft."
+        },
+        "app.TkFUUw.action.cmVxdWVzdA.display_name": {
+          "source": "Request/Reply",
+          "message": "Request/Reply"
+        },
+        "app.TkFUUw.action.cmVxdWVzdA.option.ZGF0YQ.desc": {
+          "source": "The binary request payload; use either `data` or `string_data`",
+          "message": "Die binären Anfragenutzdaten; verwenden Sie entweder `data` oder `string_data`"
+        },
+        "app.TkFUUw.action.cmVxdWVzdA.option.ZGF0YQ.display_name": {
+          "source": "Binary Data",
+          "message": "Binärdaten"
+        },
+        "app.TkFUUw.action.cmVxdWVzdA.option.ZGF0YQ.short_desc": {
+          "source": "Binary request payload",
+          "message": "Binäre Anfragenutzdaten"
+        },
+        "app.TkFUUw.action.cmVxdWVzdA.option.c3RyaW5nX2RhdGE.desc": {
+          "source": "The string request payload (alternative to `data`)",
+          "message": "Die Zeichenfolgen-Anfragenutzdaten (Alternative zu `data`)"
+        },
+        "app.TkFUUw.action.cmVxdWVzdA.option.c3RyaW5nX2RhdGE.display_name": {
+          "source": "String Data",
+          "message": "String-Daten"
+        },
+        "app.TkFUUw.action.cmVxdWVzdA.option.c3RyaW5nX2RhdGE.short_desc": {
+          "source": "String request payload",
+          "message": "String-Anfragenutzdaten"
+        },
+        "app.TkFUUw.action.cmVxdWVzdA.option.c3ViamVjdA.desc": {
+          "source": "The NATS subject to send the request to",
+          "message": "Das NATS-Subject, an das die Anfrage gesendet werden soll"
+        },
+        "app.TkFUUw.action.cmVxdWVzdA.option.c3ViamVjdA.display_name": {
+          "source": "Subject",
+          "message": "Betreff"
+        },
+        "app.TkFUUw.action.cmVxdWVzdA.option.c3ViamVjdA.short_desc": {
+          "source": "NATS subject to send the request to",
+          "message": "NATS-Subject, an das die Anfrage gesendet werden soll"
+        },
+        "app.TkFUUw.action.cmVxdWVzdA.option.dGltZW91dF9tcw.desc": {
+          "source": "Timeout in milliseconds for the request/reply operation (default: `5000`)",
+          "message": "Zeitüberschreitung in Millisekunden für die Request/Reply-Operation (Standard: `5000`)"
+        },
+        "app.TkFUUw.action.cmVxdWVzdA.option.dGltZW91dF9tcw.display_name": {
+          "source": "Timeout (ms)",
+          "message": "Zeitüberschreitung (ms)"
+        },
+        "app.TkFUUw.action.cmVxdWVzdA.option.dGltZW91dF9tcw.short_desc": {
+          "source": "Request timeout in milliseconds",
+          "message": "Anfrage-Zeitüberschreitung in Millisekunden"
+        },
+        "app.TkFUUw.action.cmVxdWVzdA.short_desc": {
+          "source": "Send a synchronous request and wait for a reply",
+          "message": "Sendet eine synchrone Anfrage und wartet auf eine Antwort"
+        },
+        "app.TkFUUw.desc": {
+          "source": "NATS is a lightweight, high-performance messaging system for cloud-native applications.\n\nSupports publish/subscribe for event broadcasting, request/reply for synchronous microservice communication, and queue groups for load-balanced message processing across worker instances.",
+          "message": "NATS ist ein leichtgewichtiges, hochperformantes Messaging-System für Cloud-Native-Anwendungen.\n\nUnterstützt Publish/Subscribe für Event-Broadcasting, Request/Reply für synchrone Mikroservice-Kommunikation und Queue-Gruppen für lastverteilte Nachrichtenverarbeitung über Worker-Instanzen hinweg."
+        },
+        "app.TkFUUw.display_name": {
+          "source": "NATS Server",
+          "message": "NATS-Server"
+        },
+        "app.TkFUUw.short_desc": {
+          "source": "NATS messaging server",
+          "message": "NATS-Messaging-Server"
+        }
+      }
+    }
+  }
+}

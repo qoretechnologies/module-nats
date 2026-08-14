@@ -1,0 +1,1873 @@
+{
+  "schema_version": 1,
+  "locales": {
+    "fr": {
+      "messages": {
+        "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItY3JlYXRl.desc": {
+          "source": "Creates a new consumer on a JetStream stream for message processing.\n\nConsumers define how messages are delivered from a stream, including delivery policy, acknowledgment requirements, and retry behavior. Durable consumers survive client disconnects.",
+          "message": "Crée un nouveau consommateur sur un flux JetStream pour le traitement des messages.\n\nLes consommateurs définissent la manière dont les messages sont distribués à partir d'un flux, y compris la politique de distribution, les exigences d'accusé de réception et le comportement de réessai. Les consommateurs durables subsistent aux déconnexions du client."
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItY3JlYXRl.display_name": {
+          "source": "Create Consumer",
+          "message": "Créer un consommateur"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItY3JlYXRl.option.YWNrX3BvbGljeQ.allowed-value.aW50OjA.display_name": {
+          "source": "None",
+          "message": "Aucun"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItY3JlYXRl.option.YWNrX3BvbGljeQ.allowed-value.aW50OjA.short_desc": {
+          "source": "No acknowledgment required",
+          "message": "Aucun accusé de réception requis"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItY3JlYXRl.option.YWNrX3BvbGljeQ.allowed-value.aW50OjE.display_name": {
+          "source": "All",
+          "message": "Tous"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItY3JlYXRl.option.YWNrX3BvbGljeQ.allowed-value.aW50OjE.short_desc": {
+          "source": "Acknowledge all prior messages",
+          "message": "Accuser réception de tous les messages précédents"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItY3JlYXRl.option.YWNrX3BvbGljeQ.allowed-value.aW50OjI.display_name": {
+          "source": "Explicit",
+          "message": "Explicite"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItY3JlYXRl.option.YWNrX3BvbGljeQ.allowed-value.aW50OjI.short_desc": {
+          "source": "Each message must be individually acknowledged",
+          "message": "Chaque message doit faire l'objet d'un accusé de réception individuel"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItY3JlYXRl.option.YWNrX3BvbGljeQ.desc": {
+          "source": "Controls how the consumer acknowledges message delivery.\n\n- `0` (None): no acknowledgment required; messages are considered delivered immediately\n- `1` (All): acknowledging a message implicitly acknowledges all prior messages\n- `2` (Explicit): each message must be individually acknowledged\n\n**Default is `2` (Explicit) if not specified.**",
+          "message": "Contrôle la façon dont le consommateur accuse réception de la distribution des messages.\n\n- `0` (Aucun) : aucun accusé de réception requis ; les messages sont considérés comme distribués immédiatement\n- `1` (Tous) : accuser réception d'un message accuse implicitement réception de tous les messages précédents\n- `2` (Explicite) : chaque message doit faire l'objet d'un accusé de réception individuel\n\n**Par défaut, la valeur est `2` (Explicite) si elle n'est pas spécifiée.**"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItY3JlYXRl.option.YWNrX3BvbGljeQ.display_name": {
+          "source": "Ack Policy",
+          "message": "Politique d'accusé de réception"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItY3JlYXRl.option.YWNrX3BvbGljeQ.short_desc": {
+          "source": "Acknowledgment policy",
+          "message": "Politique d'accusé de réception"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItY3JlYXRl.option.YWNrX3dhaXQ.desc": {
+          "source": "Duration in milliseconds that the server will wait for an acknowledgment before considering a message unacknowledged and scheduling it for redelivery.\n\nFor example, `30000` sets a 30-second timeout. **If not specified, the server default of 30 seconds is used.** Set this value based on the expected processing time for your messages.",
+          "message": "Durée en millisecondes pendant laquelle le serveur attendra un accusé de réception avant de considérer un message comme non acquitté et de le planifier pour une nouvelle distribution.\n\nPar exemple, `30000` définit un délai d'expiration de 30 secondes. **S'il n'est pas spécifié, le délai par défaut du serveur de 30 secondes est utilisé.** Définissez cette valeur en fonction du temps de traitement prévu pour vos messages."
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItY3JlYXRl.option.YWNrX3dhaXQ.display_name": {
+          "source": "Ack Wait (ms)",
+          "message": "Attente d'accusé de réception (ms)"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItY3JlYXRl.option.YWNrX3dhaXQ.short_desc": {
+          "source": "Acknowledgment wait timeout in milliseconds",
+          "message": "Délai d'attente d'accusé de réception en millisecondes"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItY3JlYXRl.option.ZGVsaXZlcl9ncm91cA.desc": {
+          "source": "Queue group name for load-balanced message delivery across multiple consumer instances.\n\nWhen set, messages are distributed across all consumers sharing the same `deliver_group` value, ensuring each message is processed by only one consumer. **Only applicable in push mode** (when `deliver_subject` is set).",
+          "message": "Nom du groupe de files d'attente pour une distribution équilibrée des messages sur plusieurs instances de consommateurs.\n\nLorsqu'il est défini, les messages sont distribués sur tous les consommateurs partageant la même valeur `deliver_group`, ce qui garantit que chaque message n'est traité que par un seul consommateur. **S'applique uniquement en mode push** (lorsque `deliver_subject` est défini)."
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItY3JlYXRl.option.ZGVsaXZlcl9ncm91cA.display_name": {
+          "source": "Deliver Group",
+          "message": "Groupe de distribution"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItY3JlYXRl.option.ZGVsaXZlcl9ncm91cA.short_desc": {
+          "source": "Deliver group (queue group)",
+          "message": "Groupe de distribution (groupe de files d'attente)"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItY3JlYXRl.option.ZGVsaXZlcl9wb2xpY3k.allowed-value.aW50OjA.display_name": {
+          "source": "All",
+          "message": "Tous"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItY3JlYXRl.option.ZGVsaXZlcl9wb2xpY3k.allowed-value.aW50OjA.short_desc": {
+          "source": "Deliver all messages",
+          "message": "Distribuer tous les messages"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItY3JlYXRl.option.ZGVsaXZlcl9wb2xpY3k.allowed-value.aW50OjE.display_name": {
+          "source": "Last",
+          "message": "Dernier"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItY3JlYXRl.option.ZGVsaXZlcl9wb2xpY3k.allowed-value.aW50OjE.short_desc": {
+          "source": "Deliver starting with the last message",
+          "message": "Distribuer à partir du dernier message"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItY3JlYXRl.option.ZGVsaXZlcl9wb2xpY3k.allowed-value.aW50OjI.display_name": {
+          "source": "New",
+          "message": "Nouveau"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItY3JlYXRl.option.ZGVsaXZlcl9wb2xpY3k.allowed-value.aW50OjI.short_desc": {
+          "source": "Deliver only new messages",
+          "message": "Distribuer uniquement les nouveaux messages"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItY3JlYXRl.option.ZGVsaXZlcl9wb2xpY3k.allowed-value.aW50OjM.display_name": {
+          "source": "By Start Sequence",
+          "message": "Par séquence de début"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItY3JlYXRl.option.ZGVsaXZlcl9wb2xpY3k.allowed-value.aW50OjM.short_desc": {
+          "source": "Deliver starting at a specific sequence",
+          "message": "Distribuer à partir d'une séquence spécifique"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItY3JlYXRl.option.ZGVsaXZlcl9wb2xpY3k.allowed-value.aW50OjQ.display_name": {
+          "source": "By Start Time",
+          "message": "Par heure de début"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItY3JlYXRl.option.ZGVsaXZlcl9wb2xpY3k.allowed-value.aW50OjQ.short_desc": {
+          "source": "Deliver starting at a specific time",
+          "message": "Distribuer à partir d'une heure spécifique"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItY3JlYXRl.option.ZGVsaXZlcl9wb2xpY3k.allowed-value.aW50OjU.display_name": {
+          "source": "Last Per Subject",
+          "message": "Dernier par sujet"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItY3JlYXRl.option.ZGVsaXZlcl9wb2xpY3k.allowed-value.aW50OjU.short_desc": {
+          "source": "Deliver the last message per subject",
+          "message": "Distribuer le dernier message par sujet"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItY3JlYXRl.option.ZGVsaXZlcl9wb2xpY3k.desc": {
+          "source": "Determines the starting point for message delivery to the consumer.\n\n- `0` (All): deliver all available messages from the beginning of the stream\n- `1` (Last): start with the last message in the stream\n- `2` (New): deliver only messages published after the consumer is created\n- `3` (By Start Sequence): start at a specific sequence number\n- `4` (By Start Time): start at a specific timestamp\n- `5` (Last Per Subject): deliver the last message for each subject\n\n**Default is `0` (All) if not specified.**",
+          "message": "Détermine le point de départ de la distribution des messages au consommateur.\n\n- `0` (Tous) : distribuer tous les messages disponibles depuis le début du flux\n- `1` (Dernier) : commencer par le dernier message du flux\n- `2` (Nouveau) : distribuer uniquement les messages publiés après la création du consommateur\n- `3` (Par séquence de début) : commencer à un numéro de séquence spécifique\n- `4` (Par heure de début) : commencer à un horodatage spécifique\n- `5` (Dernier par sujet) : distribuer le dernier message pour chaque sujet\n\n**Par défaut, la valeur est `0` (Tous) si elle n'est pas spécifiée.**"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItY3JlYXRl.option.ZGVsaXZlcl9wb2xpY3k.display_name": {
+          "source": "Deliver Policy",
+          "message": "Politique de distribution"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItY3JlYXRl.option.ZGVsaXZlcl9wb2xpY3k.short_desc": {
+          "source": "Message delivery policy",
+          "message": "Politique de distribution des messages"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItY3JlYXRl.option.ZGVsaXZlcl9zdWJqZWN0.desc": {
+          "source": "The NATS subject where the server will push messages to the consumer.\n\nIf set, the consumer operates in **push mode** where the server actively delivers messages to this subject. If not set, the consumer operates in **pull mode** where clients must explicitly request messages.",
+          "message": "Sujet NATS vers lequel le serveur poussera les messages pour le consommateur.\n\nS'il est défini, le consommateur fonctionne en **mode push** où le serveur distribue activement les messages vers ce sujet. S'il n'est pas défini, le consommateur fonctionne en **mode pull** où les clients doivent demander explicitement les messages."
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItY3JlYXRl.option.ZGVsaXZlcl9zdWJqZWN0.display_name": {
+          "source": "Deliver Subject",
+          "message": "Sujet de distribution"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItY3JlYXRl.option.ZGVsaXZlcl9zdWJqZWN0.short_desc": {
+          "source": "Subject for push delivery",
+          "message": "Sujet pour la distribution push"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItY3JlYXRl.option.ZGVzY3JpcHRpb24.desc": {
+          "source": "Optional human-readable description for the consumer.\n\nThis is a free-form text field that can be used to document the consumer's purpose, the processing logic it implements, or any other relevant operational context.",
+          "message": "Description lisible par l'humain facultative pour le consommateur.\n\nIl s'agit d'un champ de texte libre pouvant être utilisé pour documenter le rôle du consommateur, la logique de traitement qu'il met en œuvre ou tout autre contexte opérationnel pertinent."
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItY3JlYXRl.option.ZGVzY3JpcHRpb24.display_name": {
+          "source": "Description",
+          "message": "Description"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItY3JlYXRl.option.ZGVzY3JpcHRpb24.short_desc": {
+          "source": "Consumer description",
+          "message": "Description du consommateur"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItY3JlYXRl.option.ZHVyYWJsZV9uYW1l.desc": {
+          "source": "A unique name that makes the consumer durable (persistent).\n\n**Important**: without a durable name, the consumer is ephemeral and will be automatically removed when it disconnects or becomes inactive. A durable consumer retains its state (delivery position, pending acknowledgments) across client disconnects and server restarts.",
+          "message": "Un nom unique qui rend le consommateur durable (persistant).\n\n**Important** : sans nom durable, le consommateur est éphémère et sera automatiquement supprimé lorsqu'il se déconnecte ou devient inactif. Un consommateur durable conserve son état (position de distribution, accusés de réception en attente) lors des déconnexions du client et des redémarrages du serveur."
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItY3JlYXRl.option.ZHVyYWJsZV9uYW1l.display_name": {
+          "source": "Durable Name",
+          "message": "Nom durable"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItY3JlYXRl.option.ZHVyYWJsZV9uYW1l.short_desc": {
+          "source": "Durable consumer name",
+          "message": "Nom du consommateur durable"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItY3JlYXRl.option.ZmlsdGVyX3N1YmplY3Q.desc": {
+          "source": "A subject filter that restricts the consumer to receiving only messages matching this pattern.\n\nThis allows a consumer to process a subset of the stream's messages. Supports NATS wildcard tokens (`*` and `>`). If not set, the consumer receives all messages from the stream.",
+          "message": "Un filtre de sujet qui limite le consommateur à la réception des seuls messages correspondant à ce motif.\n\nCela permet à un consommateur de traiter un sous-ensemble des messages du flux. Prend en charge les caractères génériques NATS (`*` et `>`). S'il n'est pas défini, le consommateur reçoit tous les messages du flux."
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItY3JlYXRl.option.ZmlsdGVyX3N1YmplY3Q.display_name": {
+          "source": "Filter Subject",
+          "message": "Sujet de filtrage"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItY3JlYXRl.option.ZmlsdGVyX3N1YmplY3Q.short_desc": {
+          "source": "Filter subject for the consumer",
+          "message": "Sujet de filtrage pour le consommateur"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItY3JlYXRl.option.bWF4X2Fja19wZW5kaW5n.desc": {
+          "source": "Maximum number of messages that can be delivered but not yet acknowledged.\n\nThis acts as a flow control mechanism to prevent the consumer from being overwhelmed. Once this limit is reached, the server pauses delivery until some messages are acknowledged. **Default is `1000` if not specified.**",
+          "message": "Nombre maximal de messages pouvant être distribués mais pas encore acquittés.\n\nCela sert de mécanisme de contrôle de flux pour éviter de submerger le consommateur. Une fois cette limite atteinte, le serveur suspend la distribution jusqu'à ce que certains messages soient acquittés. **Par défaut, la valeur est `1000` si elle n'est pas spécifiée.**"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItY3JlYXRl.option.bWF4X2Fja19wZW5kaW5n.display_name": {
+          "source": "Max Ack Pending",
+          "message": "Accusés de réception en attente max"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItY3JlYXRl.option.bWF4X2Fja19wZW5kaW5n.short_desc": {
+          "source": "Maximum pending acknowledgments",
+          "message": "Nombre maximal d'accusés de réception en attente"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItY3JlYXRl.option.bWF4X2RlbGl2ZXI.desc": {
+          "source": "Maximum number of times the server will attempt to deliver a message to the consumer.\n\nAfter this many failed delivery attempts, the message is dropped or sent to a dead-letter queue if configured. Set to `-1` for unlimited redelivery attempts. **A value of `5` is commonly used in production.**",
+          "message": "Nombre maximal de tentatives de distribution d'un message par le serveur au consommateur.\n\nAprès ce nombre d'échecs de distribution, le message est rejeté ou envoyé vers une file d'attente de messages d'erreur si configuré. Définissez sur `-1` pour un nombre illimité de tentatives de redistribution. **Une valeur de `5` est couramment utilisée en production.**"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItY3JlYXRl.option.bWF4X2RlbGl2ZXI.display_name": {
+          "source": "Max Deliver",
+          "message": "Distributions max"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItY3JlYXRl.option.bWF4X2RlbGl2ZXI.short_desc": {
+          "source": "Maximum delivery attempts",
+          "message": "Nombre maximal de tentatives de distribution"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItY3JlYXRl.option.c3RyZWFt.desc": {
+          "source": "The name of the JetStream stream that this consumer will read messages from.\n\nThe stream must already exist before the consumer can be created. Use the stream `name` value from the stream configuration.",
+          "message": "Le nom du flux JetStream à partir duquel ce consommateur lira les messages.\n\nLe flux doit déjà exister avant que le consommateur ne puisse être créé. Utilisez la valeur `name` du flux issue de la configuration du flux."
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItY3JlYXRl.option.c3RyZWFt.display_name": {
+          "source": "Stream Name",
+          "message": "Nom du flux"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItY3JlYXRl.option.c3RyZWFt.short_desc": {
+          "source": "Name of the stream",
+          "message": "Nom du flux"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItY3JlYXRl.option.cmVwbGF5X3BvbGljeQ.allowed-value.aW50OjA.display_name": {
+          "source": "Instant",
+          "message": "Instantané"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItY3JlYXRl.option.cmVwbGF5X3BvbGljeQ.allowed-value.aW50OjA.short_desc": {
+          "source": "Replay messages as fast as possible",
+          "message": "Rejouer les messages aussi vite que possible"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItY3JlYXRl.option.cmVwbGF5X3BvbGljeQ.allowed-value.aW50OjE.display_name": {
+          "source": "Original",
+          "message": "Original"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItY3JlYXRl.option.cmVwbGF5X3BvbGljeQ.allowed-value.aW50OjE.short_desc": {
+          "source": "Replay messages at the original rate",
+          "message": "Rejouer les messages au débit d'origine"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItY3JlYXRl.option.cmVwbGF5X3BvbGljeQ.desc": {
+          "source": "Controls the speed at which messages are replayed to the consumer when catching up on historical messages.\n\n- `0` (Instant): messages are delivered as fast as possible\n- `1` (Original): messages are delivered at the rate they were originally published, preserving the original timing\n\n**Default is `0` (Instant) if not specified.**",
+          "message": "Contrôle la vitesse à laquelle les messages sont rejoués pour le consommateur lors du rattrapage des messages historiques.\n\n- `0` (Instant) : les messages sont livrés aussi vite que possible\n- `1` (Original) : les messages sont livrés au débit auquel ils ont été publiés à l'origine, en préservant le séquencement d'origine\n\n**La valeur par défaut est `0` (Instant) si non spécifiée.**"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItY3JlYXRl.option.cmVwbGF5X3BvbGljeQ.display_name": {
+          "source": "Replay Policy",
+          "message": "Politique de rejeu"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItY3JlYXRl.option.cmVwbGF5X3BvbGljeQ.short_desc": {
+          "source": "Message replay policy",
+          "message": "Politique de rejeu des messages"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItY3JlYXRl.short_desc": {
+          "source": "Create a consumer for stream message processing",
+          "message": "Créer un consommateur pour le traitement des messages de flux"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItZGVsZXRl.desc": {
+          "source": "Deletes a consumer from a JetStream stream.\n\n**Warning**: this permanently removes the consumer and its tracking state. Unacknowledged messages will not be redelivered.",
+          "message": "Supprime un consommateur d'un flux JetStream.\n\n**Avertissement** : ceci supprime définitivement le consommateur et son état de suivi. Les messages non acquittés ne seront pas redistribués."
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItZGVsZXRl.display_name": {
+          "source": "Delete Consumer",
+          "message": "Supprimer le consommateur"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItZGVsZXRl.option.Y29uc3VtZXI.desc": {
+          "source": "The name of the consumer to delete from the stream.\n\n**Warning**: deleting a consumer discards its tracking state, including the last acknowledged sequence position. If the consumer is re-created, it will start from the configured delivery policy, not from where it left off.",
+          "message": "Le nom du consommateur à supprimer du flux.\n\n**Avertissement** : la suppression d'un consommateur abandonne son état de suivi, y compris la dernière position de séquence acquittée. Si le consommateur est recréé, il redémarrera à partir de la politique de livraison configurée, et non de là où il s'était arrêté."
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItZGVsZXRl.option.Y29uc3VtZXI.display_name": {
+          "source": "Consumer Name",
+          "message": "Nom du consommateur"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItZGVsZXRl.option.Y29uc3VtZXI.short_desc": {
+          "source": "Consumer name to delete",
+          "message": "Nom du consommateur à supprimer"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItZGVsZXRl.option.c3RyZWFt.desc": {
+          "source": "The name of the JetStream stream that owns the consumer to delete.\n\nThe stream must exist and contain the specified consumer.",
+          "message": "Le nom du flux JetStream propriétaire du consommateur à supprimer.\n\nLe flux doit exister et contenir le consommateur spécifié."
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItZGVsZXRl.option.c3RyZWFt.display_name": {
+          "source": "Stream Name",
+          "message": "Nom du flux"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItZGVsZXRl.option.c3RyZWFt.short_desc": {
+          "source": "Stream name containing the consumer",
+          "message": "Nom du flux contenant le consommateur"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItZGVsZXRl.short_desc": {
+          "source": "Delete a consumer from a JetStream stream",
+          "message": "Supprimer un consommateur d'un flux JetStream"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItaW5mbw.desc": {
+          "source": "Retrieves configuration and delivery state for a JetStream consumer.\n\nReturns the consumer's ack policy, deliver policy, filter subject, and current state including pending messages and processing progress.",
+          "message": "Récupère la configuration et l'état de livraison d'un consommateur JetStream.\n\nRenvoie la politique d'acquittement (ack policy), la politique de livraison (deliver policy), le sujet de filtrage et l'état actuel du consommateur, y compris les messages en attente et l'avancement du traitement."
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItaW5mbw.display_name": {
+          "source": "Consumer Info",
+          "message": "Informations sur le consommateur"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItaW5mbw.option.Y29uc3VtZXI.desc": {
+          "source": "The name of the consumer to retrieve information for.\n\nThe consumer must exist on the specified stream; an error is raised if not found.",
+          "message": "Le nom du consommateur pour lequel récupérer les informations.\n\nLe consommateur doit exister sur le flux spécifié ; une erreur est levée s'il n'est pas trouvé."
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItaW5mbw.option.Y29uc3VtZXI.display_name": {
+          "source": "Consumer Name",
+          "message": "Nom du consommateur"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItaW5mbw.option.Y29uc3VtZXI.short_desc": {
+          "source": "Consumer name to get info for",
+          "message": "Nom du consommateur dont obtenir les informations"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItaW5mbw.option.c3RyZWFt.desc": {
+          "source": "The name of the JetStream stream that owns the consumer.\n\nThe stream must exist; an error is raised if not found.",
+          "message": "Le nom du flux JetStream propriétaire du consommateur.\n\nLe flux doit exister ; une erreur est levée s'il n'est pas trouvé."
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItaW5mbw.option.c3RyZWFt.display_name": {
+          "source": "Stream Name",
+          "message": "Nom du flux"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItaW5mbw.option.c3RyZWFt.short_desc": {
+          "source": "Stream name containing the consumer",
+          "message": "Nom du flux contenant le consommateur"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItaW5mbw.short_desc": {
+          "source": "Get consumer configuration and delivery state",
+          "message": "Obtenir la configuration et l'état de livraison du consommateur"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItbGlzdA.desc": {
+          "source": "Lists all consumers for a JetStream stream with their configuration and delivery state.\n\nReturns detailed information for each consumer including delivery policy, acknowledgment settings, and processing progress.",
+          "message": "Liste tous les consommateurs d'un flux JetStream avec leur configuration et leur état de livraison.\n\nRenvoie des informations détaillées pour chaque consommateur, notamment la politique de livraison, les paramètres d'acquittement et l'avancement du traitement."
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItbGlzdA.display_name": {
+          "source": "List Consumers",
+          "message": "Lister les consommateurs"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItbGlzdA.option.c3RyZWFt.desc": {
+          "source": "The name of the JetStream stream to list consumers for.\n\nThe stream must already exist; an error is raised if the stream is not found.",
+          "message": "Le nom du flux JetStream dont il faut lister les consommateurs.\n\nLe flux doit déjà exister ; une erreur est levée si le flux n'est pas trouvé."
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItbGlzdA.option.c3RyZWFt.display_name": {
+          "source": "Stream Name",
+          "message": "Nom du flux"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItbGlzdA.option.c3RyZWFt.short_desc": {
+          "source": "Stream name to list consumers for",
+          "message": "Nom du flux dont lister les consommateurs"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItbGlzdA.short_desc": {
+          "source": "List all consumers for a JetStream stream",
+          "message": "Lister tous les consommateurs d'un flux JetStream"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItbmFtZXM.desc": {
+          "source": "Lists all consumer names for a JetStream stream without full configuration or state details.\n\nUse this for lightweight enumeration when you only need to check which consumers exist.",
+          "message": "Liste tous les noms de consommateurs d'un flux JetStream sans la configuration complète ni les détails d'état.\n\nUtilisez cette option pour une énumération légère lorsque vous devez seulement vérifier quels consommateurs existent."
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItbmFtZXM.display_name": {
+          "source": "Consumer Names",
+          "message": "Noms des consommateurs"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItbmFtZXM.option.c3RyZWFt.desc": {
+          "source": "The name of the JetStream stream to list consumer names for.\n\nThe stream must already exist; an error is raised if the stream is not found.",
+          "message": "Le nom du flux JetStream dont il faut lister les noms de consommateurs.\n\nLe flux doit déjà exister ; une erreur est levée si le flux n'est pas trouvé."
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItbmFtZXM.option.c3RyZWFt.display_name": {
+          "source": "Stream Name",
+          "message": "Nom du flux"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItbmFtZXM.option.c3RyZWFt.short_desc": {
+          "source": "Stream name to list consumer names for",
+          "message": "Nom du flux dont lister les noms de consommateurs"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItbmFtZXM.short_desc": {
+          "source": "List all consumer names for a JetStream stream",
+          "message": "Lister tous les noms de consommateurs d'un flux JetStream"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItcGF1c2U.desc": {
+          "source": "Pauses a JetStream consumer until a specified time.\n\nA paused consumer stops receiving messages until the specified time, at which point delivery automatically resumes. Use this for maintenance windows or rate limiting.",
+          "message": "Met en pause un consommateur JetStream jusqu'à un moment spécifié.\n\nUn consommateur en pause cesse de recevoir des messages jusqu'à l'heure spécifiée, moment auquel la livraison reprend automatiquement. Utilisez cette option pour les fenêtres de maintenance ou la limitation de débit."
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItcGF1c2U.display_name": {
+          "source": "Pause Consumer",
+          "message": "Mettre le consommateur en pause"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItcGF1c2U.option.Y29uc3VtZXI.desc": {
+          "source": "The name of the consumer to pause.\n\nThe consumer must already exist on the specified stream; an error is raised if not found.",
+          "message": "Le nom du consommateur à mettre en pause.\n\nLe consommateur doit déjà exister sur le flux spécifié ; une erreur est levée s'il n'est pas trouvé."
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItcGF1c2U.option.Y29uc3VtZXI.display_name": {
+          "source": "Consumer Name",
+          "message": "Nom du consommateur"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItcGF1c2U.option.Y29uc3VtZXI.short_desc": {
+          "source": "Consumer name to pause",
+          "message": "Nom du consommateur à mettre en pause"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItcGF1c2U.option.c3RyZWFt.desc": {
+          "source": "The name of the JetStream stream that the consumer belongs to.\n\nThe stream must already exist; an error is raised if the stream is not found.",
+          "message": "Le nom du flux JetStream auquel appartient le consommateur.\n\nLe flux doit déjà exister ; une erreur est levée si le flux n'est pas trouvé."
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItcGF1c2U.option.c3RyZWFt.display_name": {
+          "source": "Stream Name",
+          "message": "Nom du flux"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItcGF1c2U.option.c3RyZWFt.short_desc": {
+          "source": "Stream name containing the consumer",
+          "message": "Nom du flux contenant le consommateur"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItcGF1c2U.option.cGF1c2VfdW50aWw.desc": {
+          "source": "The date/time until which the consumer should be paused.\n\nThe consumer will stop receiving messages until this time is reached, at which point it will automatically resume delivery. Use this for scheduled maintenance windows or rate limiting.",
+          "message": "La date/heure jusqu'à laquelle le consommateur doit être mis en pause.\n\nLe consommateur cessera de recevoir des messages jusqu'à ce que ce moment soit atteint, à partir duquel il reprendra automatiquement la livraison. Utilisez cette option pour les fenêtres de maintenance planifiées ou la limitation de débit."
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItcGF1c2U.option.cGF1c2VfdW50aWw.display_name": {
+          "source": "Pause Until",
+          "message": "Mettre en pause jusqu'à"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItcGF1c2U.option.cGF1c2VfdW50aWw.short_desc": {
+          "source": "When the consumer should automatically resume",
+          "message": "Moment auquel le consommateur doit reprendre automatiquement"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItcGF1c2U.short_desc": {
+          "source": "Pause a JetStream consumer until a specified time",
+          "message": "Mettre en pause un consommateur JetStream jusqu'à un moment spécifié"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItdXBkYXRl.desc": {
+          "source": "Updates the configuration of an existing JetStream consumer.\n\nModifies consumer settings such as acknowledgment policy, delivery policy, filter subject, and retry behavior. Not all settings can be changed after creation.",
+          "message": "Met à jour la configuration d'un consommateur JetStream existant.\n\nModifie les paramètres du consommateur tels que la politique d'acquittement, la politique de livraison, le sujet de filtrage et le comportement de rétentative. Tous les paramètres ne peuvent pas être modifiés après la création."
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItdXBkYXRl.display_name": {
+          "source": "Update Consumer",
+          "message": "Mettre à jour le consommateur"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItdXBkYXRl.option.YWNrX3BvbGljeQ.allowed-value.aW50OjA.display_name": {
+          "source": "None",
+          "message": "Aucun"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItdXBkYXRl.option.YWNrX3BvbGljeQ.allowed-value.aW50OjA.short_desc": {
+          "source": "No acknowledgment required",
+          "message": "Aucun accusé de réception requis"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItdXBkYXRl.option.YWNrX3BvbGljeQ.allowed-value.aW50OjE.display_name": {
+          "source": "All",
+          "message": "Tous"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItdXBkYXRl.option.YWNrX3BvbGljeQ.allowed-value.aW50OjE.short_desc": {
+          "source": "Acknowledge all prior messages",
+          "message": "Accuser réception de tous les messages précédents"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItdXBkYXRl.option.YWNrX3BvbGljeQ.allowed-value.aW50OjI.display_name": {
+          "source": "Explicit",
+          "message": "Explicite"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItdXBkYXRl.option.YWNrX3BvbGljeQ.allowed-value.aW50OjI.short_desc": {
+          "source": "Each message must be individually acknowledged",
+          "message": "Chaque message doit faire l'objet d'un accusé de réception individuel"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItdXBkYXRl.option.YWNrX3BvbGljeQ.desc": {
+          "source": "Controls how the consumer acknowledges message delivery.\n\n- `0` (None): no acknowledgment required; messages are considered delivered immediately\n- `1` (All): acknowledging a message implicitly acknowledges all prior messages\n- `2` (Explicit): each message must be individually acknowledged\n\n**Default is `2` (Explicit) if not specified.**",
+          "message": "Contrôle la façon dont le consommateur accuse réception de la distribution des messages.\n\n- `0` (Aucun) : aucun accusé de réception requis ; les messages sont considérés comme distribués immédiatement\n- `1` (Tous) : accuser réception d'un message accuse implicitement réception de tous les messages précédents\n- `2` (Explicite) : chaque message doit faire l'objet d'un accusé de réception individuel\n\n**Par défaut, la valeur est `2` (Explicite) si elle n'est pas spécifiée.**"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItdXBkYXRl.option.YWNrX3BvbGljeQ.display_name": {
+          "source": "Ack Policy",
+          "message": "Politique d'accusé de réception"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItdXBkYXRl.option.YWNrX3BvbGljeQ.short_desc": {
+          "source": "Acknowledgment policy",
+          "message": "Politique d'accusé de réception"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItdXBkYXRl.option.YWNrX3dhaXQ.desc": {
+          "source": "Duration in milliseconds that the server will wait for an acknowledgment before considering a message unacknowledged and scheduling it for redelivery.\n\nFor example, `30000` sets a 30-second timeout. **If not specified, the server default of 30 seconds is used.** Set this value based on the expected processing time for your messages.",
+          "message": "Durée en millisecondes pendant laquelle le serveur attendra un accusé de réception avant de considérer un message comme non acquitté et de le planifier pour une nouvelle distribution.\n\nPar exemple, `30000` définit un délai d'expiration de 30 secondes. **S'il n'est pas spécifié, le délai par défaut du serveur de 30 secondes est utilisé.** Définissez cette valeur en fonction du temps de traitement prévu pour vos messages."
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItdXBkYXRl.option.YWNrX3dhaXQ.display_name": {
+          "source": "Ack Wait (ms)",
+          "message": "Attente d'accusé de réception (ms)"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItdXBkYXRl.option.YWNrX3dhaXQ.short_desc": {
+          "source": "Acknowledgment wait timeout in milliseconds",
+          "message": "Délai d'attente d'accusé de réception en millisecondes"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItdXBkYXRl.option.ZGVsaXZlcl9ncm91cA.desc": {
+          "source": "Queue group name for load-balanced message delivery across multiple consumer instances.\n\nWhen set, messages are distributed across all consumers sharing the same `deliver_group` value, ensuring each message is processed by only one consumer. **Only applicable in push mode** (when `deliver_subject` is set).",
+          "message": "Nom du groupe de files d'attente pour une distribution équilibrée des messages sur plusieurs instances de consommateurs.\n\nLorsqu'il est défini, les messages sont distribués sur tous les consommateurs partageant la même valeur `deliver_group`, ce qui garantit que chaque message n'est traité que par un seul consommateur. **S'applique uniquement en mode push** (lorsque `deliver_subject` est défini)."
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItdXBkYXRl.option.ZGVsaXZlcl9ncm91cA.display_name": {
+          "source": "Deliver Group",
+          "message": "Groupe de distribution"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItdXBkYXRl.option.ZGVsaXZlcl9ncm91cA.short_desc": {
+          "source": "Deliver group (queue group)",
+          "message": "Groupe de distribution (groupe de files d'attente)"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItdXBkYXRl.option.ZGVsaXZlcl9wb2xpY3k.allowed-value.aW50OjA.display_name": {
+          "source": "All",
+          "message": "Tous"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItdXBkYXRl.option.ZGVsaXZlcl9wb2xpY3k.allowed-value.aW50OjA.short_desc": {
+          "source": "Deliver all messages",
+          "message": "Distribuer tous les messages"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItdXBkYXRl.option.ZGVsaXZlcl9wb2xpY3k.allowed-value.aW50OjE.display_name": {
+          "source": "Last",
+          "message": "Dernier"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItdXBkYXRl.option.ZGVsaXZlcl9wb2xpY3k.allowed-value.aW50OjE.short_desc": {
+          "source": "Deliver starting with the last message",
+          "message": "Distribuer à partir du dernier message"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItdXBkYXRl.option.ZGVsaXZlcl9wb2xpY3k.allowed-value.aW50OjI.display_name": {
+          "source": "New",
+          "message": "Nouveau"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItdXBkYXRl.option.ZGVsaXZlcl9wb2xpY3k.allowed-value.aW50OjI.short_desc": {
+          "source": "Deliver only new messages",
+          "message": "Distribuer uniquement les nouveaux messages"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItdXBkYXRl.option.ZGVsaXZlcl9wb2xpY3k.allowed-value.aW50OjM.display_name": {
+          "source": "By Start Sequence",
+          "message": "Par séquence de début"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItdXBkYXRl.option.ZGVsaXZlcl9wb2xpY3k.allowed-value.aW50OjM.short_desc": {
+          "source": "Deliver starting at a specific sequence",
+          "message": "Distribuer à partir d'une séquence spécifique"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItdXBkYXRl.option.ZGVsaXZlcl9wb2xpY3k.allowed-value.aW50OjQ.display_name": {
+          "source": "By Start Time",
+          "message": "Par heure de début"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItdXBkYXRl.option.ZGVsaXZlcl9wb2xpY3k.allowed-value.aW50OjQ.short_desc": {
+          "source": "Deliver starting at a specific time",
+          "message": "Distribuer à partir d'une heure spécifique"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItdXBkYXRl.option.ZGVsaXZlcl9wb2xpY3k.allowed-value.aW50OjU.display_name": {
+          "source": "Last Per Subject",
+          "message": "Dernier par sujet"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItdXBkYXRl.option.ZGVsaXZlcl9wb2xpY3k.allowed-value.aW50OjU.short_desc": {
+          "source": "Deliver the last message per subject",
+          "message": "Distribuer le dernier message par sujet"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItdXBkYXRl.option.ZGVsaXZlcl9wb2xpY3k.desc": {
+          "source": "Determines the starting point for message delivery to the consumer.\n\n- `0` (All): deliver all available messages from the beginning of the stream\n- `1` (Last): start with the last message in the stream\n- `2` (New): deliver only messages published after the consumer is created\n- `3` (By Start Sequence): start at a specific sequence number\n- `4` (By Start Time): start at a specific timestamp\n- `5` (Last Per Subject): deliver the last message for each subject\n\n**Default is `0` (All) if not specified.**",
+          "message": "Détermine le point de départ de la distribution des messages au consommateur.\n\n- `0` (Tous) : distribuer tous les messages disponibles depuis le début du flux\n- `1` (Dernier) : commencer par le dernier message du flux\n- `2` (Nouveau) : distribuer uniquement les messages publiés après la création du consommateur\n- `3` (Par séquence de début) : commencer à un numéro de séquence spécifique\n- `4` (Par heure de début) : commencer à un horodatage spécifique\n- `5` (Dernier par sujet) : distribuer le dernier message pour chaque sujet\n\n**Par défaut, la valeur est `0` (Tous) si elle n'est pas spécifiée.**"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItdXBkYXRl.option.ZGVsaXZlcl9wb2xpY3k.display_name": {
+          "source": "Deliver Policy",
+          "message": "Politique de distribution"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItdXBkYXRl.option.ZGVsaXZlcl9wb2xpY3k.short_desc": {
+          "source": "Message delivery policy",
+          "message": "Politique de distribution des messages"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItdXBkYXRl.option.ZGVsaXZlcl9zdWJqZWN0.desc": {
+          "source": "The NATS subject where the server will push messages to the consumer.\n\nIf set, the consumer operates in **push mode** where the server actively delivers messages to this subject. If not set, the consumer operates in **pull mode** where clients must explicitly request messages.",
+          "message": "Sujet NATS vers lequel le serveur poussera les messages pour le consommateur.\n\nS'il est défini, le consommateur fonctionne en **mode push** où le serveur distribue activement les messages vers ce sujet. S'il n'est pas défini, le consommateur fonctionne en **mode pull** où les clients doivent demander explicitement les messages."
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItdXBkYXRl.option.ZGVsaXZlcl9zdWJqZWN0.display_name": {
+          "source": "Deliver Subject",
+          "message": "Sujet de distribution"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItdXBkYXRl.option.ZGVsaXZlcl9zdWJqZWN0.short_desc": {
+          "source": "Subject for push delivery",
+          "message": "Sujet pour la distribution push"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItdXBkYXRl.option.ZGVzY3JpcHRpb24.desc": {
+          "source": "Optional human-readable description for the consumer.\n\nThis is a free-form text field that can be used to document the consumer's purpose, the processing logic it implements, or any other relevant operational context.",
+          "message": "Description lisible par l'humain facultative pour le consommateur.\n\nIl s'agit d'un champ de texte libre pouvant être utilisé pour documenter le rôle du consommateur, la logique de traitement qu'il met en œuvre ou tout autre contexte opérationnel pertinent."
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItdXBkYXRl.option.ZGVzY3JpcHRpb24.display_name": {
+          "source": "Description",
+          "message": "Description"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItdXBkYXRl.option.ZGVzY3JpcHRpb24.short_desc": {
+          "source": "Consumer description",
+          "message": "Description du consommateur"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItdXBkYXRl.option.ZHVyYWJsZV9uYW1l.desc": {
+          "source": "A unique name that makes the consumer durable (persistent).\n\n**Important**: without a durable name, the consumer is ephemeral and will be automatically removed when it disconnects or becomes inactive. A durable consumer retains its state (delivery position, pending acknowledgments) across client disconnects and server restarts.",
+          "message": "Un nom unique qui rend le consommateur durable (persistant).\n\n**Important** : sans nom durable, le consommateur est éphémère et sera automatiquement supprimé lorsqu'il se déconnecte ou devient inactif. Un consommateur durable conserve son état (position de distribution, accusés de réception en attente) lors des déconnexions du client et des redémarrages du serveur."
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItdXBkYXRl.option.ZHVyYWJsZV9uYW1l.display_name": {
+          "source": "Durable Name",
+          "message": "Nom durable"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItdXBkYXRl.option.ZHVyYWJsZV9uYW1l.short_desc": {
+          "source": "Durable consumer name",
+          "message": "Nom du consommateur durable"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItdXBkYXRl.option.ZmlsdGVyX3N1YmplY3Q.desc": {
+          "source": "A subject filter that restricts the consumer to receiving only messages matching this pattern.\n\nThis allows a consumer to process a subset of the stream's messages. Supports NATS wildcard tokens (`*` and `>`). If not set, the consumer receives all messages from the stream.",
+          "message": "Un filtre de sujet qui limite le consommateur à la réception des seuls messages correspondant à ce motif.\n\nCela permet à un consommateur de traiter un sous-ensemble des messages du flux. Prend en charge les caractères génériques NATS (`*` et `>`). S'il n'est pas défini, le consommateur reçoit tous les messages du flux."
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItdXBkYXRl.option.ZmlsdGVyX3N1YmplY3Q.display_name": {
+          "source": "Filter Subject",
+          "message": "Sujet de filtrage"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItdXBkYXRl.option.ZmlsdGVyX3N1YmplY3Q.short_desc": {
+          "source": "Filter subject for the consumer",
+          "message": "Sujet de filtrage pour le consommateur"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItdXBkYXRl.option.bWF4X2Fja19wZW5kaW5n.desc": {
+          "source": "Maximum number of messages that can be delivered but not yet acknowledged.\n\nThis acts as a flow control mechanism to prevent the consumer from being overwhelmed. Once this limit is reached, the server pauses delivery until some messages are acknowledged. **Default is `1000` if not specified.**",
+          "message": "Nombre maximal de messages pouvant être distribués mais pas encore acquittés.\n\nCela sert de mécanisme de contrôle de flux pour éviter de submerger le consommateur. Une fois cette limite atteinte, le serveur suspend la distribution jusqu'à ce que certains messages soient acquittés. **Par défaut, la valeur est `1000` si elle n'est pas spécifiée.**"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItdXBkYXRl.option.bWF4X2Fja19wZW5kaW5n.display_name": {
+          "source": "Max Ack Pending",
+          "message": "Accusés de réception en attente max"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItdXBkYXRl.option.bWF4X2Fja19wZW5kaW5n.short_desc": {
+          "source": "Maximum pending acknowledgments",
+          "message": "Nombre maximal d'accusés de réception en attente"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItdXBkYXRl.option.bWF4X2RlbGl2ZXI.desc": {
+          "source": "Maximum number of times the server will attempt to deliver a message to the consumer.\n\nAfter this many failed delivery attempts, the message is dropped or sent to a dead-letter queue if configured. Set to `-1` for unlimited redelivery attempts. **A value of `5` is commonly used in production.**",
+          "message": "Nombre maximal de tentatives de distribution d'un message par le serveur au consommateur.\n\nAprès ce nombre d'échecs de distribution, le message est rejeté ou envoyé vers une file d'attente de messages d'erreur si configuré. Définissez sur `-1` pour un nombre illimité de tentatives de redistribution. **Une valeur de `5` est couramment utilisée en production.**"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItdXBkYXRl.option.bWF4X2RlbGl2ZXI.display_name": {
+          "source": "Max Deliver",
+          "message": "Distributions max"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItdXBkYXRl.option.bWF4X2RlbGl2ZXI.short_desc": {
+          "source": "Maximum delivery attempts",
+          "message": "Nombre maximal de tentatives de distribution"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItdXBkYXRl.option.c3RyZWFt.desc": {
+          "source": "The name of the JetStream stream that this consumer will read messages from.\n\nThe stream must already exist before the consumer can be created. Use the stream `name` value from the stream configuration.",
+          "message": "Le nom du flux JetStream à partir duquel ce consommateur lira les messages.\n\nLe flux doit déjà exister avant que le consommateur ne puisse être créé. Utilisez la valeur `name` du flux issue de la configuration du flux."
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItdXBkYXRl.option.c3RyZWFt.display_name": {
+          "source": "Stream Name",
+          "message": "Nom du flux"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItdXBkYXRl.option.c3RyZWFt.short_desc": {
+          "source": "Name of the stream",
+          "message": "Nom du flux"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItdXBkYXRl.option.cmVwbGF5X3BvbGljeQ.allowed-value.aW50OjA.display_name": {
+          "source": "Instant",
+          "message": "Instantané"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItdXBkYXRl.option.cmVwbGF5X3BvbGljeQ.allowed-value.aW50OjA.short_desc": {
+          "source": "Replay messages as fast as possible",
+          "message": "Rejouer les messages aussi vite que possible"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItdXBkYXRl.option.cmVwbGF5X3BvbGljeQ.allowed-value.aW50OjE.display_name": {
+          "source": "Original",
+          "message": "Original"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItdXBkYXRl.option.cmVwbGF5X3BvbGljeQ.allowed-value.aW50OjE.short_desc": {
+          "source": "Replay messages at the original rate",
+          "message": "Rejouer les messages au débit d'origine"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItdXBkYXRl.option.cmVwbGF5X3BvbGljeQ.desc": {
+          "source": "Controls the speed at which messages are replayed to the consumer when catching up on historical messages.\n\n- `0` (Instant): messages are delivered as fast as possible\n- `1` (Original): messages are delivered at the rate they were originally published, preserving the original timing\n\n**Default is `0` (Instant) if not specified.**",
+          "message": "Contrôle la vitesse à laquelle les messages sont rejoués pour le consommateur lors du rattrapage des messages historiques.\n\n- `0` (Instant) : les messages sont livrés aussi vite que possible\n- `1` (Original) : les messages sont livrés au débit auquel ils ont été publiés à l'origine, en préservant le séquencement d'origine\n\n**La valeur par défaut est `0` (Instant) si non spécifiée.**"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItdXBkYXRl.option.cmVwbGF5X3BvbGljeQ.display_name": {
+          "source": "Replay Policy",
+          "message": "Politique de rejeu"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItdXBkYXRl.option.cmVwbGF5X3BvbGljeQ.short_desc": {
+          "source": "Message replay policy",
+          "message": "Politique de rejeu des messages"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItdXBkYXRl.short_desc": {
+          "source": "Update a JetStream consumer configuration",
+          "message": "Mettre à jour la configuration d'un consommateur JetStream"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.YWNjb3VudC1pbmZv.desc": {
+          "source": "Retrieves JetStream account information including resource usage and API statistics.\n\nReturns memory and storage usage, stream and consumer counts, and API request totals. Use this for capacity planning and monitoring.",
+          "message": "Récupère les informations du compte JetStream, y compris l'utilisation des ressources et les statistiques de l'API.\n\nRenvoie l'utilisation de la mémoire et du stockage, le nombre de flux et de consommateurs, ainsi que le total des requêtes API. Utilisez cette option pour la planification de la capacité et la surveillance."
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.YWNjb3VudC1pbmZv.display_name": {
+          "source": "Account Info",
+          "message": "Informations sur le compte"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.YWNjb3VudC1pbmZv.short_desc": {
+          "source": "Get JetStream account resource usage and API statistics",
+          "message": "Obtenir l'utilisation des ressources du compte JetStream et les statistiques d'API"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.a3YtY3JlYXRlLWJ1Y2tldA.desc": {
+          "source": "Creates a new JetStream Key-Value store bucket.\n\nCreates a bucket with the specified configuration including history depth, TTL, storage type, and replication. Returns the initial bucket status.",
+          "message": "Crée un nouveau bucket de stockage Clé-Valeur JetStream.\n\nCrée un bucket avec la configuration spécifiée, notamment la profondeur d'historique, le TTL, le type de stockage et la réplication. Renvoie le statut initial du bucket."
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.a3YtY3JlYXRlLWJ1Y2tldA.display_name": {
+          "source": "KV Create Bucket",
+          "message": "Créer un bucket KV"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.a3YtY3JlYXRlLWJ1Y2tldA.option.YnVja2V0.desc": {
+          "source": "The name for the new KV bucket.\n\nBucket names must be alphanumeric and may include dashes or underscores. The name must be unique within the JetStream account.",
+          "message": "Le nom du nouveau bucket KV.\n\nLes noms de buckets doivent être alphanumériques et peuvent inclure des tirets ou des tirets bas. Le nom doit être unique au sein du compte JetStream."
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.a3YtY3JlYXRlLWJ1Y2tldA.option.YnVja2V0.display_name": {
+          "source": "Bucket Name",
+          "message": "Nom du bucket"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.a3YtY3JlYXRlLWJ1Y2tldA.option.YnVja2V0.short_desc": {
+          "source": "Bucket name to create",
+          "message": "Nom du bucket à créer"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.a3YtY3JlYXRlLWJ1Y2tldA.option.ZGVzY3JpcHRpb24.desc": {
+          "source": "Optional human-readable description for the bucket.\n\nThis is a free-form text field that can be used to document the bucket's purpose and the types of data it stores.",
+          "message": "Description lisible par l'homme optionnelle pour le bucket.\n\nIl s'agit d'un champ de texte libre pouvant être utilisé pour documenter l'objectif du bucket et les types de données qu'il stocke."
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.a3YtY3JlYXRlLWJ1Y2tldA.option.ZGVzY3JpcHRpb24.display_name": {
+          "source": "Description",
+          "message": "Description"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.a3YtY3JlYXRlLWJ1Y2tldA.option.ZGVzY3JpcHRpb24.short_desc": {
+          "source": "Bucket description",
+          "message": "Description du bucket"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.a3YtY3JlYXRlLWJ1Y2tldA.option.aGlzdG9yeQ.desc": {
+          "source": "The number of historical revisions to retain for each key.\n\nAllows retrieving previous values via the history API. A value of `1` means only the latest revision is kept. **Default is `1` if not specified.**",
+          "message": "Le nombre de révisions historiques à conserver pour chaque clé.\n\nPermet de récupérer les valeurs précédentes via l'API d'historique. Une valeur de `1` signifie que seule la dernière révision est conservée. **La valeur par défaut est `1` si non spécifiée.**"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.a3YtY3JlYXRlLWJ1Y2tldA.option.aGlzdG9yeQ.display_name": {
+          "source": "History",
+          "message": "Historique"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.a3YtY3JlYXRlLWJ1Y2tldA.option.aGlzdG9yeQ.short_desc": {
+          "source": "Number of historical values to keep per key",
+          "message": "Nombre de valeurs historiques à conserver par clé"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.a3YtY3JlYXRlLWJ1Y2tldA.option.bWF4X2J5dGVz.desc": {
+          "source": "Maximum total storage in bytes for all keys and revisions in the bucket.\n\nWhen this limit is reached, old revisions are removed to make room. If not set, the server default is used.",
+          "message": "Stockage total maximum en octets pour toutes les clés et révisions du bucket.\n\nLorsque cette limite est atteinte, les anciennes révisions sont supprimées pour faire de la place. Si ce champ n'est pas défini, la valeur par défaut du serveur est utilisée."
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.a3YtY3JlYXRlLWJ1Y2tldA.option.bWF4X2J5dGVz.display_name": {
+          "source": "Max Bytes",
+          "message": "Octets max"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.a3YtY3JlYXRlLWJ1Y2tldA.option.bWF4X2J5dGVz.short_desc": {
+          "source": "Maximum total bytes in the bucket",
+          "message": "Nombre maximal d'octets au total dans le bucket"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.a3YtY3JlYXRlLWJ1Y2tldA.option.bWF4X3ZhbHVlX3NpemU.desc": {
+          "source": "Maximum size in bytes for any individual value stored in the bucket.\n\nValues exceeding this size will be rejected. If not set, the server default is used.",
+          "message": "Taille maximale en octets de toute valeur individuelle stockée dans le bucket.\n\nLes valeurs dépassant cette taille seront rejetées. Si ce champ n'est pas défini, la valeur par défaut du serveur est utilisée."
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.a3YtY3JlYXRlLWJ1Y2tldA.option.bWF4X3ZhbHVlX3NpemU.display_name": {
+          "source": "Max Value Size",
+          "message": "Taille max de valeur"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.a3YtY3JlYXRlLWJ1Y2tldA.option.bWF4X3ZhbHVlX3NpemU.short_desc": {
+          "source": "Maximum value size in bytes",
+          "message": "Taille maximale de la valeur en octets"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.a3YtY3JlYXRlLWJ1Y2tldA.option.bnVtX3JlcGxpY2Fz.desc": {
+          "source": "Number of copies of the bucket data to maintain across a NATS cluster for high availability.\n\nA value of `1` means no replication (single copy). **Must be an odd number and cannot exceed the number of servers in the cluster.**",
+          "message": "Nombre de copies des données du bucket à maintenir au sein d'un cluster NATS pour une haute disponibilité.\n\nUne valeur de `1` signifie aucune réplication (copie unique). **Doit être un nombre impair et ne peut pas dépasser le nombre de serveurs dans le cluster.**"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.a3YtY3JlYXRlLWJ1Y2tldA.option.bnVtX3JlcGxpY2Fz.display_name": {
+          "source": "Replicas",
+          "message": "Répliques"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.a3YtY3JlYXRlLWJ1Y2tldA.option.bnVtX3JlcGxpY2Fz.short_desc": {
+          "source": "Number of replicas",
+          "message": "Nombre de répliques"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.a3YtY3JlYXRlLWJ1Y2tldA.option.c3RvcmFnZQ.allowed-value.aW50OjA.display_name": {
+          "source": "File",
+          "message": "Fichier"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.a3YtY3JlYXRlLWJ1Y2tldA.option.c3RvcmFnZQ.allowed-value.aW50OjA.short_desc": {
+          "source": "Store data on disk",
+          "message": "Stocker les données sur le disque"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.a3YtY3JlYXRlLWJ1Y2tldA.option.c3RvcmFnZQ.allowed-value.aW50OjE.display_name": {
+          "source": "Memory",
+          "message": "Mémoire"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.a3YtY3JlYXRlLWJ1Y2tldA.option.c3RvcmFnZQ.allowed-value.aW50OjE.short_desc": {
+          "source": "Store data in memory",
+          "message": "Stocker les données en mémoire"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.a3YtY3JlYXRlLWJ1Y2tldA.option.c3RvcmFnZQ.desc": {
+          "source": "Controls where bucket data is persisted.\n\n- `0` (File): data is stored on disk for durability across server restarts\n- `1` (Memory): data is stored in memory for higher throughput but is lost on server restart\n\n**Default is `0` (File) if not specified.**",
+          "message": "Contrôle l'endroit où les données du bucket sont persistées.\n\n- `0` (Fichier) : les données sont stockées sur le disque pour une durabilité entre les redémarrages du serveur\n- `1` (Mémoire) : les données sont stockées en mémoire pour un débit plus élevé, mais sont perdues au redémarrage du serveur\n\n**Par défaut, `0` (Fichier) si non spécifié.**"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.a3YtY3JlYXRlLWJ1Y2tldA.option.c3RvcmFnZQ.display_name": {
+          "source": "Storage Type",
+          "message": "Type de stockage"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.a3YtY3JlYXRlLWJ1Y2tldA.option.c3RvcmFnZQ.short_desc": {
+          "source": "Storage type",
+          "message": "Type de stockage"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.a3YtY3JlYXRlLWJ1Y2tldA.option.dHRs.desc": {
+          "source": "Time-to-live for values in the bucket, in milliseconds.\n\nValues older than this duration are automatically removed. Set to `0` or omit for no TTL (values persist indefinitely).",
+          "message": "Durée de vie (TTL) des valeurs dans le bucket, en millisecondes.\n\nLes valeurs plus anciennes que cette durée sont automatiquement supprimées. Définissez sur `0` ou omettez pour ne pas avoir de TTL (les valeurs persistent indéfiniment)."
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.a3YtY3JlYXRlLWJ1Y2tldA.option.dHRs.display_name": {
+          "source": "TTL (ms)",
+          "message": "TTL (ms)"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.a3YtY3JlYXRlLWJ1Y2tldA.option.dHRs.short_desc": {
+          "source": "Time-to-live for values in milliseconds",
+          "message": "Durée de vie des valeurs en millisecondes"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.a3YtY3JlYXRlLWJ1Y2tldA.short_desc": {
+          "source": "Create a new KV store bucket",
+          "message": "Créer un nouveau bucket de stockage KV"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.a3YtZ2V0.desc": {
+          "source": "Retrieves the current value and metadata for a key from a JetStream KV bucket.\n\nReturns the latest revision including `value`, `revision`, `created` timestamp, and `operation` type.",
+          "message": "Récupère la valeur actuelle et les métadonnées d'une clé à partir d'un bucket KV JetStream.\n\nRenvoie la dernière révision, y compris `value`, `revision`, l'horodatage `created` et le type `operation`."
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.a3YtZ2V0.display_name": {
+          "source": "KV Get",
+          "message": "KV Get"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.a3YtZ2V0.option.YnVja2V0.desc": {
+          "source": "The name of the JetStream KV bucket to read from.\n\nThe bucket must already exist; an error is raised if not found.",
+          "message": "Le nom du bucket KV JetStream à partir duquel lire.\n\nLe bucket doit déjà exister ; une erreur est levée s'il n'est pas trouvé."
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.a3YtZ2V0.option.YnVja2V0.display_name": {
+          "source": "Bucket",
+          "message": "Bucket"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.a3YtZ2V0.option.YnVja2V0.short_desc": {
+          "source": "KV bucket name",
+          "message": "Nom du bucket KV"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.a3YtZ2V0.option.a2V5.desc": {
+          "source": "The key name to retrieve the current value for.\n\nReturns the latest revision of the key. If the key does not exist or has been deleted, an error is raised.",
+          "message": "Le nom de la clé dont il faut récupérer la valeur actuelle.\n\nRenvoie la dernière révision de la clé. Si la clé n'existe pas ou a été supprimée, une erreur est levée."
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.a3YtZ2V0.option.a2V5.display_name": {
+          "source": "Key",
+          "message": "Clé"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.a3YtZ2V0.option.a2V5.short_desc": {
+          "source": "Key name to retrieve",
+          "message": "Nom de la clé à récupérer"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.a3YtZ2V0.short_desc": {
+          "source": "Retrieve a value and metadata for a key",
+          "message": "Récupérer une valeur et des métadonnées pour une clé"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.a3YtZGVsZXRl.desc": {
+          "source": "Soft-deletes a key from a JetStream KV bucket.\n\nPlaces a delete marker so the key no longer appears in listings or get operations. The key's revision history is preserved.",
+          "message": "Effectue une suppression logique (soft-delete) d'une clé dans un bucket KV JetStream.\n\nPlace un marqueur de suppression afin que la clé n'apparaisse plus dans les listes ou les opérations get. L'historique des révisions de la clé est conservé."
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.a3YtZGVsZXRl.display_name": {
+          "source": "KV Delete",
+          "message": "KV Delete"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.a3YtZGVsZXRl.option.YnVja2V0.desc": {
+          "source": "The name of the JetStream KV bucket containing the key.\n\nThe bucket must already exist; an error is raised if not found.",
+          "message": "Le nom du bucket KV JetStream contenant la clé.\n\nLe bucket doit déjà exister ; une erreur est levée s'il n'est pas trouvé."
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.a3YtZGVsZXRl.option.YnVja2V0.display_name": {
+          "source": "Bucket",
+          "message": "Bucket"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.a3YtZGVsZXRl.option.YnVja2V0.short_desc": {
+          "source": "KV bucket name",
+          "message": "Nom du bucket KV"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.a3YtZGVsZXRl.option.a2V5.desc": {
+          "source": "The key name to delete from the bucket.\n\nA delete operation creates a delete marker in the key's history rather than physically removing it. The key will no longer appear in `keys` listings, but its history remains accessible via the history action.",
+          "message": "Le nom de la clé à supprimer du bucket.\n\nUne opération de suppression crée un marqueur de suppression dans l'historique de la clé plutôt que de la supprimer physiquement. La clé n'apparaîtra plus dans les listes `keys`, mais son historique reste accessible via l'action d'historique."
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.a3YtZGVsZXRl.option.a2V5.display_name": {
+          "source": "Key",
+          "message": "Clé"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.a3YtZGVsZXRl.option.a2V5.short_desc": {
+          "source": "Key name to delete",
+          "message": "Nom de la clé à supprimer"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.a3YtZGVsZXRl.short_desc": {
+          "source": "Soft-delete a key from a KV bucket",
+          "message": "Supprimer logiquement une clé d'un bucket KV"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.a3YtZGVsZXRlLWJ1Y2tldA.desc": {
+          "source": "Permanently deletes a JetStream Key-Value store bucket.\n\n**Warning**: this removes the bucket, all stored keys, and all revision history. This action cannot be undone.",
+          "message": "Supprime définitivement un bucket de stockage Key-Value JetStream.\n\n**Avertissement** : ceci supprime le bucket, toutes les clés stockées et tout l'historique des révisions. Cette action est irréversible."
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.a3YtZGVsZXRlLWJ1Y2tldA.display_name": {
+          "source": "KV Delete Bucket",
+          "message": "KV Delete Bucket"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.a3YtZGVsZXRlLWJ1Y2tldA.option.YnVja2V0.desc": {
+          "source": "The name of the JetStream KV bucket to delete.\n\n**Warning**: this permanently removes the bucket, all its keys, and all revision history. This operation cannot be undone.",
+          "message": "Le nom du bucket KV JetStream à supprimer.\n\n**Avertissement** : ceci supprime définitivement le bucket, toutes ses clés et tout l'historique des révisions. Cette opération est irréversible."
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.a3YtZGVsZXRlLWJ1Y2tldA.option.YnVja2V0.display_name": {
+          "source": "Bucket Name",
+          "message": "Nom du bucket"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.a3YtZGVsZXRlLWJ1Y2tldA.option.YnVja2V0.short_desc": {
+          "source": "Bucket name to delete",
+          "message": "Nom du bucket à supprimer"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.a3YtZGVsZXRlLWJ1Y2tldA.short_desc": {
+          "source": "Permanently delete a KV store bucket",
+          "message": "Supprimer définitivement un bucket de stockage KV"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.a3Yta2V5cw.desc": {
+          "source": "Lists all active keys in a JetStream KV bucket.\n\nReturns key names with current (non-deleted) values. Deleted or purged keys are excluded from the listing.",
+          "message": "Liste toutes les clés actives dans un bucket KV JetStream.\n\nRenvoie les noms de clés avec des valeurs actuelles (non supprimées). Les clés supprimées ou purgées sont exclues de la liste."
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.a3Yta2V5cw.display_name": {
+          "source": "KV Keys",
+          "message": "KV Keys"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.a3Yta2V5cw.option.YnVja2V0.desc": {
+          "source": "The name of the JetStream KV bucket to list keys for.\n\nThe bucket must already exist; an error is raised if not found.",
+          "message": "Le nom du bucket KV JetStream dont il faut lister les clés.\n\nLe bucket doit déjà exister ; une erreur est levée s'il n'est pas trouvé."
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.a3Yta2V5cw.option.YnVja2V0.display_name": {
+          "source": "Bucket",
+          "message": "Bucket"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.a3Yta2V5cw.option.YnVja2V0.short_desc": {
+          "source": "KV bucket name to list keys for",
+          "message": "Nom du bucket KV dont lister les clés"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.a3Yta2V5cw.short_desc": {
+          "source": "List all active keys in a KV bucket",
+          "message": "Lister toutes les clés actives dans un bucket KV"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.a3YtaGlzdG9yeQ.desc": {
+          "source": "Retrieves the complete revision history for a key in a JetStream KV bucket.\n\nReturns all revisions ordered from oldest to newest, including put, delete, and purge operations. Use this for audit trails and debugging configuration changes.",
+          "message": "Récupère l'historique complet des révisions pour une clé dans un bucket KV JetStream.\n\nRenvoie toutes les révisions de la plus ancienne à la plus récente, y compris les opérations put, delete et purge. Utilisez ceci pour les pistes d'audit et le débogage des modifications de configuration."
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.a3YtaGlzdG9yeQ.display_name": {
+          "source": "KV History",
+          "message": "KV History"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.a3YtaGlzdG9yeQ.option.YnVja2V0.desc": {
+          "source": "The name of the JetStream KV bucket containing the key.\n\nThe bucket must already exist; an error is raised if not found.",
+          "message": "Le nom du bucket KV JetStream contenant la clé.\n\nLe bucket doit déjà exister ; une erreur est levée s'il n'est pas trouvé."
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.a3YtaGlzdG9yeQ.option.YnVja2V0.display_name": {
+          "source": "Bucket",
+          "message": "Bucket"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.a3YtaGlzdG9yeQ.option.YnVja2V0.short_desc": {
+          "source": "KV bucket name",
+          "message": "Nom du bucket KV"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.a3YtaGlzdG9yeQ.option.a2V5.desc": {
+          "source": "The key name to retrieve the complete revision history for.\n\nReturns all revisions including put, delete, and purge operations, providing a complete audit trail of changes to the key.",
+          "message": "Le nom de la clé dont il faut récupérer l'historique complet des révisions.\n\nRenvoie toutes les révisions, y compris les opérations put, delete et purge, fournissant une piste d'audit complète des modifications apportées à la clé."
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.a3YtaGlzdG9yeQ.option.a2V5.display_name": {
+          "source": "Key",
+          "message": "Clé"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.a3YtaGlzdG9yeQ.option.a2V5.short_desc": {
+          "source": "Key name to get history for",
+          "message": "Nom de la clé dont récupérer l'historique"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.a3YtaGlzdG9yeQ.short_desc": {
+          "source": "Get the complete revision history for a KV key",
+          "message": "Obtenir l'historique complet des révisions pour une clé KV"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.a3Ytc3RhdHVz.desc": {
+          "source": "Retrieves status information for a JetStream KV bucket.\n\nReturns the bucket's key count, history depth, TTL, replica count, and total storage usage.",
+          "message": "Récupère les informations de statut d'un bucket KV JetStream.\n\nRenvoie le nombre de clés du bucket, la profondeur d'historique, le TTL, le nombre de répliques et l'utilisation totale du stockage."
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.a3Ytc3RhdHVz.display_name": {
+          "source": "KV Bucket Status",
+          "message": "KV Bucket Status"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.a3Ytc3RhdHVz.option.YnVja2V0.desc": {
+          "source": "The name of the JetStream KV bucket to retrieve status for.\n\nThe bucket must already exist; an error is raised if not found.",
+          "message": "Le nom du bucket KV JetStream dont il faut récupérer le statut.\n\nLe bucket doit déjà exister ; une erreur est levée s'il n'est pas trouvé."
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.a3Ytc3RhdHVz.option.YnVja2V0.display_name": {
+          "source": "Bucket Name",
+          "message": "Nom du bucket"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.a3Ytc3RhdHVz.option.YnVja2V0.short_desc": {
+          "source": "Bucket name to get status for",
+          "message": "Nom du bucket dont récupérer le statut"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.a3Ytc3RhdHVz.short_desc": {
+          "source": "Get status information for a KV bucket",
+          "message": "Obtenir les informations de statut d'un bucket KV"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.a3YtcHV0.desc": {
+          "source": "Stores a value for a key in a JetStream KV bucket.\n\nCreates the key if it does not exist, or updates it with a new revision. Returns the new `revision` number for optimistic concurrency control.",
+          "message": "Stocke une valeur pour une clé dans un bucket KV JetStream.\n\nCrée la clé si elle n'existe pas, ou la met à jour avec une nouvelle révision. Renvoie le nouveau numéro `revision` pour le contrôle de concurrence optimiste."
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.a3YtcHV0.display_name": {
+          "source": "KV Put",
+          "message": "KV Put"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.a3YtcHV0.option.YnVja2V0.desc": {
+          "source": "The name of the JetStream KV bucket to store the value in.\n\nThe bucket must already exist. Use dot-separated naming conventions for organization (e.g. `config`, `cache`, `feature-flags`).",
+          "message": "Le nom du bucket KV JetStream dans lequel stocker la valeur.\n\nLe bucket doit déjà exister. Utilisez des conventions de nommage séparées par des points pour l'organisation (par ex. `config`, `cache`, `feature-flags`)."
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.a3YtcHV0.option.YnVja2V0.display_name": {
+          "source": "Bucket",
+          "message": "Bucket"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.a3YtcHV0.option.YnVja2V0.short_desc": {
+          "source": "KV bucket name",
+          "message": "Nom du bucket KV"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.a3YtcHV0.option.ZGF0YQ.desc": {
+          "source": "The binary value to store; use either `data` or `string_data`.\n\nBinary data is stored as-is without encoding. If both `data` and `string_data` are provided, `data` takes precedence.",
+          "message": "La valeur binaire à stocker ; utilisez soit `data` soit `string_data`.\n\nLes données binaires sont stockées telles quelles sans encodage. Si `data` et `string_data` sont tous deux fournis, `data` prévaut."
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.a3YtcHV0.option.ZGF0YQ.display_name": {
+          "source": "Binary Data",
+          "message": "Données binaires"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.a3YtcHV0.option.ZGF0YQ.short_desc": {
+          "source": "Binary value to store",
+          "message": "Valeur binaire à stocker"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.a3YtcHV0.option.a2V5.desc": {
+          "source": "The key name to store the value under.\n\nKeys can use dot-separated hierarchies (e.g. `app.database.host`). If the key already exists, its value is updated and a new revision is created.",
+          "message": "Le nom de la clé sous lequel stocker la valeur.\n\nLes clés peuvent utiliser des hiérarchies séparées par des points (par ex. `app.database.host`). Si la clé existe déjà, sa valeur est mise à jour et une nouvelle révision est créée."
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.a3YtcHV0.option.a2V5.display_name": {
+          "source": "Key",
+          "message": "Clé"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.a3YtcHV0.option.a2V5.short_desc": {
+          "source": "Key name to store the value under",
+          "message": "Nom de la clé sous lequel stocker la valeur"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.a3YtcHV0.option.c3RyaW5nX2RhdGE.desc": {
+          "source": "The string value to store (alternative to `data`).\n\nUse this for configuration values, JSON, or other text content. The string is converted to binary before storage.",
+          "message": "La valeur sous forme de chaîne à stocker (alternative à `data`).\n\nUtilisez ceci pour les valeurs de configuration, JSON ou tout autre contenu textuel. La chaîne est convertie en binaire avant d'être stockée."
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.a3YtcHV0.option.c3RyaW5nX2RhdGE.display_name": {
+          "source": "String Data",
+          "message": "Données de chaîne"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.a3YtcHV0.option.c3RyaW5nX2RhdGE.short_desc": {
+          "source": "String value to store",
+          "message": "Valeur de chaîne à stocker"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.a3YtcHV0.short_desc": {
+          "source": "Store a value for a key in a KV bucket",
+          "message": "Stocker une valeur pour une clé dans un bucket KV"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.anMtcHVibGlzaA.desc": {
+          "source": "Publishes a message to a JetStream subject with guaranteed delivery.\n\nUnlike basic NATS publish, the message is persisted to a stream and a publish acknowledgment is returned confirming storage with the `stream` name and `sequence` number.",
+          "message": "Publie un message sur un sujet JetStream avec livraison garantie.\n\nContrairement à la publication NATS de base, le message est persisté dans un flux et un accusé de réception de publication est renvoyé confirmant le stockage avec le nom `stream` et le numéro `sequence`."
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.anMtcHVibGlzaA.display_name": {
+          "source": "JetStream Publish",
+          "message": "JetStream Publish"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.anMtcHVibGlzaA.option.ZGF0YQ.desc": {
+          "source": "The binary message payload; use either `data` or `string_data`.\n\nBinary data is stored as-is in the stream without encoding.",
+          "message": "La charge utile du message binaire ; utilisez soit `data` soit `string_data`.\n\nLes données binaires sont stockées telles quelles dans le flux sans encodage."
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.anMtcHVibGlzaA.option.ZGF0YQ.display_name": {
+          "source": "Binary Data",
+          "message": "Données binaires"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.anMtcHVibGlzaA.option.ZGF0YQ.short_desc": {
+          "source": "Binary message payload",
+          "message": "Charge utile du message binaire"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.anMtcHVibGlzaA.option.ZXhwZWN0X25vX21lc3NhZ2U.desc": {
+          "source": "When set to `True`, the publish will fail if any message already exists for the subject.\n\nUse this to ensure that only the first message for a subject is accepted, implementing a create-only semantic.",
+          "message": "Lorsqu'il est défini sur `True`, la publication échouera si un message existe déjà pour le sujet.\n\nUtilisez ceci pour vous assurer que seul le premier message pour un sujet est accepté, implémentant une sémantique de création uniquement."
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.anMtcHVibGlzaA.option.ZXhwZWN0X25vX21lc3NhZ2U.display_name": {
+          "source": "Expect No Message",
+          "message": "Attendre aucun message"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.anMtcHVibGlzaA.option.ZXhwZWN0X25vX21lc3NhZ2U.short_desc": {
+          "source": "Expect no existing messages for subject",
+          "message": "Attendre aucun message existant pour le sujet"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.anMtcHVibGlzaA.option.ZXhwZWN0X2xhc3RfbXNnX2lk.desc": {
+          "source": "The expected message ID of the last message in the stream.\n\nIf the last message's ID does not match, the publish fails. Use this for sequence integrity checks.",
+          "message": "L'ID de message attendu du dernier message dans le flux.\n\nSi l'ID du dernier message ne correspond pas, la publication échoue. Utilisez ceci pour les vérifications d'intégrité de séquence."
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.anMtcHVibGlzaA.option.ZXhwZWN0X2xhc3RfbXNnX2lk.display_name": {
+          "source": "Expected Last Message ID",
+          "message": "ID du dernier message attendu"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.anMtcHVibGlzaA.option.ZXhwZWN0X2xhc3RfbXNnX2lk.short_desc": {
+          "source": "Expected last message ID",
+          "message": "ID du dernier message attendu"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.anMtcHVibGlzaA.option.ZXhwZWN0X2xhc3Rfc2Vx.desc": {
+          "source": "The expected sequence number of the last message in the stream.\n\nIf the stream's last sequence number does not match, the publish fails. Use this for optimistic concurrency control to ensure no messages have been published between reads.",
+          "message": "Le numéro de séquence attendu du dernier message dans le flux.\n\nSi le dernier numéro de séquence du flux ne correspond pas, la publication échoue. Utilisez cette option pour le contrôle de concurrence optimiste afin de vous assurer qu'aucun message n'a été publié entre les lectures."
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.anMtcHVibGlzaA.option.ZXhwZWN0X2xhc3Rfc2Vx.display_name": {
+          "source": "Expected Last Sequence",
+          "message": "Dernière séquence attendue"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.anMtcHVibGlzaA.option.ZXhwZWN0X2xhc3Rfc2Vx.short_desc": {
+          "source": "Expected last sequence number",
+          "message": "Numéro de la dernière séquence attendu"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.anMtcHVibGlzaA.option.ZXhwZWN0X2xhc3Rfc3ViamVjdF9zZXE.desc": {
+          "source": "The expected sequence number of the last message for this specific subject.\n\nIf the last message on the subject does not have this sequence number, the publish fails. Use this for subject-level optimistic concurrency.",
+          "message": "Le numéro de séquence attendu du dernier message pour ce sujet spécifique.\n\nSi le dernier message du sujet n'a pas ce numéro de séquence, la publication échoue. Utilisez cette option pour la concurrence optimiste au niveau du sujet."
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.anMtcHVibGlzaA.option.ZXhwZWN0X2xhc3Rfc3ViamVjdF9zZXE.display_name": {
+          "source": "Expected Last Subject Sequence",
+          "message": "Dernière séquence du sujet attendue"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.anMtcHVibGlzaA.option.ZXhwZWN0X2xhc3Rfc3ViamVjdF9zZXE.short_desc": {
+          "source": "Expected last subject sequence",
+          "message": "Dernière séquence du sujet attendue"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.anMtcHVibGlzaA.option.ZXhwZWN0X3N0cmVhbQ.desc": {
+          "source": "The expected stream name that the message should be published to.\n\nIf the message would be stored in a different stream, the publish fails with an error. Use this for safety when publishing to subjects captured by multiple streams.",
+          "message": "Le nom de flux attendu dans lequel le message doit être publié.\n\nSi le message devait être stocké dans un flux différent, la publication échoue avec une erreur. Utilisez cette option par sécurité lors de la publication sur des sujets capturés par plusieurs flux."
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.anMtcHVibGlzaA.option.ZXhwZWN0X3N0cmVhbQ.display_name": {
+          "source": "Expected Stream",
+          "message": "Flux attendu"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.anMtcHVibGlzaA.option.ZXhwZWN0X3N0cmVhbQ.short_desc": {
+          "source": "Expected stream name",
+          "message": "Nom du flux attendu"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.anMtcHVibGlzaA.option.bXNnX2lk.desc": {
+          "source": "A unique message identifier for idempotent publishing.\n\nJetStream tracks message IDs within a configurable deduplication window. If a message with the same ID is published again within the window, the server returns the original `sequence` number and sets `duplicate` to `True`.",
+          "message": "Un identifiant de message unique pour la publication idempotente.\n\nJetStream suit les ID de message dans une fenêtre de déduplication configurable. Si un message avec le même ID est publié à nouveau dans cette fenêtre, le serveur renvoie le numéro `sequence` d'origine et définit `duplicate` sur `True`."
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.anMtcHVibGlzaA.option.bXNnX2lk.display_name": {
+          "source": "Message ID",
+          "message": "ID de message"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.anMtcHVibGlzaA.option.bXNnX2lk.short_desc": {
+          "source": "Message ID for idempotent publishing",
+          "message": "ID de message pour publication idempotente"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.anMtcHVibGlzaA.option.c3RyaW5nX2RhdGE.desc": {
+          "source": "The string message payload (alternative to `data`).\n\nThe string is converted to binary before publishing. Use this for JSON, XML, or other text-based payloads.",
+          "message": "La charge utile du message sous forme de chaîne (alternative à `data`).\n\nLa chaîne est convertie en binaire avant la publication. Utilisez ceci pour les charges utiles JSON, XML ou d'autres formats texte."
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.anMtcHVibGlzaA.option.c3RyaW5nX2RhdGE.display_name": {
+          "source": "String Data",
+          "message": "Données de chaîne"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.anMtcHVibGlzaA.option.c3RyaW5nX2RhdGE.short_desc": {
+          "source": "String message payload",
+          "message": "Charge utile du message sous forme de chaîne"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.anMtcHVibGlzaA.option.c3ViamVjdA.desc": {
+          "source": "The JetStream subject to publish the message to.\n\nThe subject must match at least one stream's subject filter for the message to be persisted. If no stream captures the subject, the publish will fail with a \"no responders\" error.",
+          "message": "Le sujet JetStream auquel publier le message.\n\nLe sujet doit correspondre au filtre de sujet d'au moins un flux pour que le message soit persistant. Si aucun flux ne capture le sujet, la publication échouera avec une erreur « no responders »."
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.anMtcHVibGlzaA.option.c3ViamVjdA.display_name": {
+          "source": "Subject",
+          "message": "Sujet"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.anMtcHVibGlzaA.option.c3ViamVjdA.short_desc": {
+          "source": "JetStream subject to publish to",
+          "message": "Sujet JetStream auquel publier"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.anMtcHVibGlzaA.short_desc": {
+          "source": "Publish with guaranteed delivery and acknowledgment",
+          "message": "Publier avec livraison garantie et accusé de réception"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.bWVzc2FnZS1kZWxldGU.desc": {
+          "source": "Deletes a message from a JetStream stream by sequence number.\n\nThe message data may still be recoverable from storage. For guaranteed data removal, use the erase action instead.",
+          "message": "Supprime un message d'un flux JetStream par son numéro de séquence.\n\nLes données du message peuvent toujours être récupérables à partir du stockage. Pour la suppression garantie des données, utilisez plutôt l'action effacer."
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.bWVzc2FnZS1kZWxldGU.display_name": {
+          "source": "Delete Message",
+          "message": "Supprimer le message"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.bWVzc2FnZS1kZWxldGU.option.c2Vx.desc": {
+          "source": "The sequence number of the message to retrieve.\n\nSequence numbers are assigned monotonically by the stream. Use stream info to determine the valid range (`first_seq` to `last_seq`).",
+          "message": "Le numéro de séquence du message à récupérer.\n\nLes numéros de séquence sont attribués de manière monotone par le flux. Utilisez les informations du flux pour déterminer la plage valide (`first_seq` à `last_seq`)."
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.bWVzc2FnZS1kZWxldGU.option.c2Vx.display_name": {
+          "source": "Sequence Number",
+          "message": "Numéro de séquence"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.bWVzc2FnZS1kZWxldGU.option.c2Vx.short_desc": {
+          "source": "Message sequence number",
+          "message": "Numéro de séquence du message"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.bWVzc2FnZS1kZWxldGU.option.c3RyZWFt.desc": {
+          "source": "The name of the JetStream stream to retrieve the message from.\n\nThe stream must already exist; an error is raised if the stream is not found.",
+          "message": "Le nom du flux JetStream à partir duquel récupérer le message.\n\nLe flux doit déjà exister ; une erreur est levée si le flux n'est pas trouvé."
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.bWVzc2FnZS1kZWxldGU.option.c3RyZWFt.display_name": {
+          "source": "Stream Name",
+          "message": "Nom du flux"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.bWVzc2FnZS1kZWxldGU.option.c3RyZWFt.short_desc": {
+          "source": "Stream name",
+          "message": "Nom du flux"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.bWVzc2FnZS1kZWxldGU.short_desc": {
+          "source": "Delete a message from a stream by sequence number",
+          "message": "Supprimer un message d'un flux par son numéro de séquence"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.bWVzc2FnZS1lcmFzZQ.desc": {
+          "source": "Securely erases a message from a JetStream stream by sequence number.\n\nUnlike delete, this overwrites the message data in storage for compliance with data protection regulations.",
+          "message": "Efface de manière sécurisée un message d'un flux JetStream par son numéro de séquence.\n\nContrairement à la suppression, cela écrase les données du message dans le stockage à des fins de conformité avec la réglementation sur la protection des données."
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.bWVzc2FnZS1lcmFzZQ.display_name": {
+          "source": "Erase Message",
+          "message": "Effacer le message"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.bWVzc2FnZS1lcmFzZQ.option.c2Vx.desc": {
+          "source": "The sequence number of the message to retrieve.\n\nSequence numbers are assigned monotonically by the stream. Use stream info to determine the valid range (`first_seq` to `last_seq`).",
+          "message": "Le numéro de séquence du message à récupérer.\n\nLes numéros de séquence sont attribués de manière monotone par le flux. Utilisez les informations du flux pour déterminer la plage valide (`first_seq` à `last_seq`)."
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.bWVzc2FnZS1lcmFzZQ.option.c2Vx.display_name": {
+          "source": "Sequence Number",
+          "message": "Numéro de séquence"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.bWVzc2FnZS1lcmFzZQ.option.c2Vx.short_desc": {
+          "source": "Message sequence number",
+          "message": "Numéro de séquence du message"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.bWVzc2FnZS1lcmFzZQ.option.c3RyZWFt.desc": {
+          "source": "The name of the JetStream stream to retrieve the message from.\n\nThe stream must already exist; an error is raised if the stream is not found.",
+          "message": "Le nom du flux JetStream à partir duquel récupérer le message.\n\nLe flux doit déjà exister ; une erreur est levée si le flux n'est pas trouvé."
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.bWVzc2FnZS1lcmFzZQ.option.c3RyZWFt.display_name": {
+          "source": "Stream Name",
+          "message": "Nom du flux"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.bWVzc2FnZS1lcmFzZQ.option.c3RyZWFt.short_desc": {
+          "source": "Stream name",
+          "message": "Nom du flux"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.bWVzc2FnZS1lcmFzZQ.short_desc": {
+          "source": "Securely erase a message from a stream",
+          "message": "Effacer de manière sécurisée un message d'un flux"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.bWVzc2FnZS1nZXQ.desc": {
+          "source": "Retrieves a message from a JetStream stream by sequence number.\n\nReturns the message payload, subject, and headers. Returns nothing if no message exists at the given sequence.",
+          "message": "Récupère un message d'un flux JetStream par son numéro de séquence.\n\nRenvoie la charge utile du message, le sujet et les en-têtes. Ne renvoie rien si aucun message n'existe à la séquence donnée."
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.bWVzc2FnZS1nZXQ.display_name": {
+          "source": "Get Message",
+          "message": "Obtenir le message"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.bWVzc2FnZS1nZXQ.option.c2Vx.desc": {
+          "source": "The sequence number of the message to retrieve.\n\nSequence numbers are assigned monotonically by the stream. Use stream info to determine the valid range (`first_seq` to `last_seq`).",
+          "message": "Le numéro de séquence du message à récupérer.\n\nLes numéros de séquence sont attribués de manière monotone par le flux. Utilisez les informations du flux pour déterminer la plage valide (`first_seq` à `last_seq`)."
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.bWVzc2FnZS1nZXQ.option.c2Vx.display_name": {
+          "source": "Sequence Number",
+          "message": "Numéro de séquence"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.bWVzc2FnZS1nZXQ.option.c2Vx.short_desc": {
+          "source": "Message sequence number",
+          "message": "Numéro de séquence du message"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.bWVzc2FnZS1nZXQ.option.c3RyZWFt.desc": {
+          "source": "The name of the JetStream stream to retrieve the message from.\n\nThe stream must already exist; an error is raised if the stream is not found.",
+          "message": "Le nom du flux JetStream à partir duquel récupérer le message.\n\nLe flux doit déjà exister ; une erreur est levée si le flux n'est pas trouvé."
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.bWVzc2FnZS1nZXQ.option.c3RyZWFt.display_name": {
+          "source": "Stream Name",
+          "message": "Nom du flux"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.bWVzc2FnZS1nZXQ.option.c3RyZWFt.short_desc": {
+          "source": "Stream name",
+          "message": "Nom du flux"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.bWVzc2FnZS1nZXQ.short_desc": {
+          "source": "Retrieve a message from a stream by sequence number",
+          "message": "Récupérer un message d'un flux par son numéro de séquence"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.bWVzc2FnZS1nZXQtbGFzdA.desc": {
+          "source": "Retrieves the last message for a subject from a JetStream stream.\n\nReturns the most recently published message on the specified subject. Returns nothing if no message exists for the subject.",
+          "message": "Récupère le dernier message pour un sujet à partir d'un flux JetStream.\n\nRenvoie le message publié le plus récemment sur le sujet spécifié. Ne renvoie rien si aucun message n'existe pour le sujet."
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.bWVzc2FnZS1nZXQtbGFzdA.display_name": {
+          "source": "Get Last Message",
+          "message": "Obtenir le dernier message"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.bWVzc2FnZS1nZXQtbGFzdA.option.c3RyZWFt.desc": {
+          "source": "The name of the JetStream stream to retrieve the message from.\n\nThe stream must already exist; an error is raised if the stream is not found.",
+          "message": "Le nom du flux JetStream à partir duquel récupérer le message.\n\nLe flux doit déjà exister ; une erreur est levée si le flux n'est pas trouvé."
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.bWVzc2FnZS1nZXQtbGFzdA.option.c3RyZWFt.display_name": {
+          "source": "Stream Name",
+          "message": "Nom du flux"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.bWVzc2FnZS1nZXQtbGFzdA.option.c3RyZWFt.short_desc": {
+          "source": "Stream name",
+          "message": "Nom du flux"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.bWVzc2FnZS1nZXQtbGFzdA.option.c3ViamVjdA.desc": {
+          "source": "The subject to retrieve the last message for.\n\nReturns the most recently published message on this subject within the stream. The subject must match one of the stream's configured subject filters.",
+          "message": "Le sujet pour lequel récupérer le dernier message.\n\nRenvoie le message le plus récemment publié sur ce sujet dans le flux. Le sujet doit correspondre à l'un des filtres de sujet configurés du flux."
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.bWVzc2FnZS1nZXQtbGFzdA.option.c3ViamVjdA.display_name": {
+          "source": "Subject",
+          "message": "Sujet"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.bWVzc2FnZS1nZXQtbGFzdA.option.c3ViamVjdA.short_desc": {
+          "source": "Subject to get last message for",
+          "message": "Sujet pour lequel obtenir le dernier message"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.bWVzc2FnZS1nZXQtbGFzdA.short_desc": {
+          "source": "Get the last message for a subject from a stream",
+          "message": "Obtenir le dernier message pour un sujet à partir d'un flux"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.c3RyZWFtLW5hbWVz.desc": {
+          "source": "Lists all JetStream stream names without full configuration or state details.\n\nUse this for lightweight enumeration when you only need to check which streams exist.",
+          "message": "Liste tous les noms de flux JetStream sans la configuration complète ni les détails d'état.\n\nUtilisez ceci pour une énumération légère lorsque vous devez seulement vérifier quels flux existent."
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.c3RyZWFtLW5hbWVz.display_name": {
+          "source": "Stream Names",
+          "message": "Noms des flux"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.c3RyZWFtLW5hbWVz.short_desc": {
+          "source": "List all JetStream stream names",
+          "message": "Lister tous les noms de flux JetStream"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.c3RyZWFtLWNyZWF0ZQ.desc": {
+          "source": "Creates a new JetStream stream for durable message storage.\n\nStreams capture messages published to matching subjects and persist them according to configured retention policies. Use streams for message replay, audit trails, and guaranteed delivery.",
+          "message": "Crée un nouveau flux JetStream pour le stockage durable des messages.\n\nLes flux capturent les messages publiés sur les sujets correspondants et les persistent conformément aux politiques de rétention configurées. Utilisez des flux pour le rejeu de messages, les pistes d'audit et la livraison garantie."
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.c3RyZWFtLWNyZWF0ZQ.display_name": {
+          "source": "Create Stream",
+          "message": "Créer un flux"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.c3RyZWFtLWNyZWF0ZQ.option.ZGVzY3JpcHRpb24.desc": {
+          "source": "Optional human-readable description for the stream.\n\nThis is a free-form text field that can be used to document the stream's purpose, the types of messages it contains, or any other relevant operational context.",
+          "message": "Description optionnelle lisible par l'utilisateur pour le flux.\n\nIl s'agit d'un champ de texte libre qui peut être utilisé pour documenter le but du flux, les types de messages qu'il contient ou tout autre contexte opérationnel pertinent."
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.c3RyZWFtLWNyZWF0ZQ.option.ZGVzY3JpcHRpb24.display_name": {
+          "source": "Description",
+          "message": "Description"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.c3RyZWFtLWNyZWF0ZQ.option.ZGVzY3JpcHRpb24.short_desc": {
+          "source": "Stream description",
+          "message": "Description du flux"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.c3RyZWFtLWNyZWF0ZQ.option.ZGlzY2FyZA.allowed-value.aW50OjA.display_name": {
+          "source": "Old",
+          "message": "Ancien"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.c3RyZWFtLWNyZWF0ZQ.option.ZGlzY2FyZA.allowed-value.aW50OjA.short_desc": {
+          "source": "Discard old messages when limits are reached",
+          "message": "Ignorer les anciens messages lorsque les limites sont atteintes"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.c3RyZWFtLWNyZWF0ZQ.option.ZGlzY2FyZA.allowed-value.aW50OjE.display_name": {
+          "source": "New",
+          "message": "Nouveau"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.c3RyZWFtLWNyZWF0ZQ.option.ZGlzY2FyZA.allowed-value.aW50OjE.short_desc": {
+          "source": "Reject new messages when limits are reached",
+          "message": "Rejeter les nouveaux messages lorsque les limites sont atteintes"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.c3RyZWFtLWNyZWF0ZQ.option.ZGlzY2FyZA.desc": {
+          "source": "Controls which messages are removed when stream limits (`max_msgs`, `max_bytes`, or `max_age`) are reached.\n\n- `0` (Old): the oldest messages are removed to make room\n- `1` (New): new messages are rejected with an error\n\n**Default is `0` (Old) if not specified.**",
+          "message": "Contrôle quels messages sont supprimés lorsque les limites du flux (`max_msgs`, `max_bytes` ou `max_age`) sont atteintes.\n\n- `0` (Ancien) : les messages les plus anciens sont supprimés pour faire de la place\n- `1` (Nouveau) : les nouveaux messages sont rejetés avec une erreur\n\n**Par défaut, `0` (Ancien) si non spécifié.**"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.c3RyZWFtLWNyZWF0ZQ.option.ZGlzY2FyZA.display_name": {
+          "source": "Discard Policy",
+          "message": "Politique d'abandon"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.c3RyZWFtLWNyZWF0ZQ.option.ZGlzY2FyZA.short_desc": {
+          "source": "Discard policy when limits are reached",
+          "message": "Politique d'abandon lorsque les limites sont atteintes"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.c3RyZWFtLWNyZWF0ZQ.option.bWF4X21zZ19zaXpl.desc": {
+          "source": "Maximum size in bytes for any individual message published to the stream.\n\nMessages exceeding this size will be rejected by the server. Set to `-1` to use the server's default maximum (typically 1 MB). For example, `1048576` sets a 1 MB limit.",
+          "message": "Taille maximale en octets pour tout message individuel publié sur le flux.\n\nLes messages dépassant cette taille seront rejetés par le serveur. Définissez sur `-1` pour utiliser le maximum par défaut du serveur (généralement 1 Mo). Par exemple, `1048576` définit une limite de 1 Mo."
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.c3RyZWFtLWNyZWF0ZQ.option.bWF4X21zZ19zaXpl.display_name": {
+          "source": "Max Message Size",
+          "message": "Taille maximale de message"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.c3RyZWFtLWNyZWF0ZQ.option.bWF4X21zZ19zaXpl.short_desc": {
+          "source": "Maximum message size in bytes",
+          "message": "Taille maximale de message en octets"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.c3RyZWFtLWNyZWF0ZQ.option.bWF4X21zZ3M.desc": {
+          "source": "Maximum number of messages the stream will retain.\n\nWhen this limit is reached, older messages are discarded according to the `discard` policy. Set to `-1` for unlimited messages.\n\n**Only applies when the `retention` policy is set to Limits (`0`).**",
+          "message": "Nombre maximal de messages que le flux conservera.\n\nLorsque cette limite est atteinte, les messages plus anciens sont supprimés selon la politique `discard`. Définissez sur `-1` pour un nombre illimité de messages.\n\n**S'applique uniquement lorsque la politique `retention` est définie sur Limites (`0`).**"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.c3RyZWFtLWNyZWF0ZQ.option.bWF4X21zZ3M.display_name": {
+          "source": "Max Messages",
+          "message": "Messages max"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.c3RyZWFtLWNyZWF0ZQ.option.bWF4X21zZ3M.short_desc": {
+          "source": "Maximum number of messages",
+          "message": "Nombre maximal de messages"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.c3RyZWFtLWNyZWF0ZQ.option.bWF4X2FnZQ.desc": {
+          "source": "Maximum age of any message in the stream, specified in milliseconds.\n\nMessages older than this value are automatically removed. Set to `0` for no age limit. For example, `86400000` sets a 24-hour retention window.\n\n**Only applies when the `retention` policy is set to Limits (`0`).**",
+          "message": "Âge maximal de tout message dans le flux, spécifié en millisecondes.\n\nLes messages plus anciens que cette valeur sont automatiquement supprimés. Définissez sur `0` pour aucune limite d'âge. Par exemple, `86400000` définit une fenêtre de rétention de 24 heures.\n\n**S'applique uniquement lorsque la politique `retention` est définie sur Limites (`0`).**"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.c3RyZWFtLWNyZWF0ZQ.option.bWF4X2FnZQ.display_name": {
+          "source": "Max Age (ms)",
+          "message": "Âge max (ms)"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.c3RyZWFtLWNyZWF0ZQ.option.bWF4X2FnZQ.short_desc": {
+          "source": "Maximum message age in milliseconds",
+          "message": "Âge maximal des messages en millisecondes"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.c3RyZWFtLWNyZWF0ZQ.option.bWF4X2J5dGVz.desc": {
+          "source": "Maximum total storage in bytes for all messages in the stream.\n\nWhen this limit is reached, older messages are discarded according to the `discard` policy. Set to `-1` for unlimited storage.\n\n**Only applies when the `retention` policy is set to Limits (`0`).**",
+          "message": "Stockage total maximal en octets pour tous les messages dans le flux.\n\nLorsque cette limite est atteinte, les messages plus anciens sont supprimés selon la politique `discard`. Définissez sur `-1` pour un stockage illimité.\n\n**S'applique uniquement lorsque la politique `retention` est définie sur Limites (`0`).**"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.c3RyZWFtLWNyZWF0ZQ.option.bWF4X2J5dGVz.display_name": {
+          "source": "Max Bytes",
+          "message": "Octets max"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.c3RyZWFtLWNyZWF0ZQ.option.bWF4X2J5dGVz.short_desc": {
+          "source": "Maximum total bytes",
+          "message": "Octets totaux maximaux"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.c3RyZWFtLWNyZWF0ZQ.option.bmFtZQ.desc": {
+          "source": "Unique identifier for the JetStream stream.\n\nStream names are used to reference the stream in all JetStream operations such as publishing, subscribing, and management. **Names must be alphanumeric and may include dashes or underscores but not periods or spaces.**",
+          "message": "Identifiant unique pour le flux JetStream.\n\nLes noms de flux sont utilisés pour faire référence au flux dans toutes les opérations JetStream telles que la publication, l'abonnement et la gestion. **Les noms doivent être alphanumériques et peuvent inclure des tirets ou des tirets bas, mais pas de points ni d'espaces.**"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.c3RyZWFtLWNyZWF0ZQ.option.bmFtZQ.display_name": {
+          "source": "Stream Name",
+          "message": "Nom du flux"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.c3RyZWFtLWNyZWF0ZQ.option.bmFtZQ.short_desc": {
+          "source": "Name of the stream",
+          "message": "Nom du flux"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.c3RyZWFtLWNyZWF0ZQ.option.bnVtX3JlcGxpY2Fz.desc": {
+          "source": "Number of copies of the stream data to maintain across a NATS cluster for high availability.\n\nA value of `1` means no replication (single copy). Values of `3` or `5` are common for production clusters. **Must be an odd number and cannot exceed the number of servers in the cluster.**",
+          "message": "Nombre de copies des données du flux à maintenir à travers un cluster NATS pour une haute disponibilité.\n\nUne valeur de `1` signifie aucune réplication (copie unique). Les valeurs `3` ou `5` sont courantes pour les clusters de production. **Doit être un nombre impair et ne peut pas dépasser le nombre de serveurs dans le cluster.**"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.c3RyZWFtLWNyZWF0ZQ.option.bnVtX3JlcGxpY2Fz.display_name": {
+          "source": "Replicas",
+          "message": "Répliques"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.c3RyZWFtLWNyZWF0ZQ.option.bnVtX3JlcGxpY2Fz.short_desc": {
+          "source": "Number of replicas",
+          "message": "Nombre de répliques"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.c3RyZWFtLWNyZWF0ZQ.option.c3RvcmFnZQ.allowed-value.aW50OjA.display_name": {
+          "source": "File",
+          "message": "Fichier"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.c3RyZWFtLWNyZWF0ZQ.option.c3RvcmFnZQ.allowed-value.aW50OjA.short_desc": {
+          "source": "Store messages on disk",
+          "message": "Stocker les messages sur disque"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.c3RyZWFtLWNyZWF0ZQ.option.c3RvcmFnZQ.allowed-value.aW50OjE.display_name": {
+          "source": "Memory",
+          "message": "Mémoire"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.c3RyZWFtLWNyZWF0ZQ.option.c3RvcmFnZQ.allowed-value.aW50OjE.short_desc": {
+          "source": "Store messages in memory",
+          "message": "Stocker les messages en mémoire"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.c3RyZWFtLWNyZWF0ZQ.option.c3RvcmFnZQ.desc": {
+          "source": "Controls where stream messages are persisted.\n\n- `0` (File): messages are stored on disk for durability across server restarts\n- `1` (Memory): messages are stored in memory for higher throughput but are lost on server restart\n\n**Default is `0` (File) if not specified.**",
+          "message": "Contrôle où les messages du flux sont persistés.\n\n- `0` (Fichier) : les messages sont stockés sur disque pour la durabilité au fil des redémarrages du serveur\n- `1` (Mémoire) : les messages sont stockés en mémoire pour un débit plus élevé, mais sont perdus lors du redémarrage du serveur\n\n**Par défaut, `0` (Fichier) si non spécifié.**"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.c3RyZWFtLWNyZWF0ZQ.option.c3RvcmFnZQ.display_name": {
+          "source": "Storage Type",
+          "message": "Type de stockage"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.c3RyZWFtLWNyZWF0ZQ.option.c3RvcmFnZQ.short_desc": {
+          "source": "Message storage type",
+          "message": "Type de stockage des messages"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.c3RyZWFtLWNyZWF0ZQ.option.c3ViamVjdHM.desc": {
+          "source": "List of NATS subjects that this stream will capture messages from.\n\nSupports wildcards:\n- `*` matches a single token (e.g. `orders.*`)\n- `>` matches one or more tokens (e.g. `orders.>`)\n\nMultiple subjects can be specified to aggregate messages from different topic hierarchies into a single stream.",
+          "message": "Liste des sujets NATS dont ce flux capturera les messages.\n\nPrend en charge les caractères génériques :\n- `*` correspond à un seul jeton (par ex. `orders.*`)\n- `>` correspond à un ou plusieurs jetons (par ex. `orders.>`)\n\nPlusieurs sujets peuvent être spécifiés pour agréger les messages de différentes hiérarchies de thèmes dans un flux unique."
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.c3RyZWFtLWNyZWF0ZQ.option.c3ViamVjdHM.display_name": {
+          "source": "Subjects",
+          "message": "Sujets"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.c3RyZWFtLWNyZWF0ZQ.option.c3ViamVjdHM.short_desc": {
+          "source": "Subjects the stream listens to",
+          "message": "Sujets écoutés par le flux"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.c3RyZWFtLWNyZWF0ZQ.option.cmV0ZW50aW9u.allowed-value.aW50OjA.display_name": {
+          "source": "Limits",
+          "message": "Limites"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.c3RyZWFtLWNyZWF0ZQ.option.cmV0ZW50aW9u.allowed-value.aW50OjA.short_desc": {
+          "source": "Retain based on limits (max_msgs, max_bytes, max_age)",
+          "message": "Conserver en fonction des limites (max_msgs, max_bytes, max_age)"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.c3RyZWFtLWNyZWF0ZQ.option.cmV0ZW50aW9u.allowed-value.aW50OjE.display_name": {
+          "source": "Interest",
+          "message": "Intérêt"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.c3RyZWFtLWNyZWF0ZQ.option.cmV0ZW50aW9u.allowed-value.aW50OjE.short_desc": {
+          "source": "Remove when all known consumers have acknowledged",
+          "message": "Supprimer lorsque tous les consommateurs connus ont acquitté"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.c3RyZWFtLWNyZWF0ZQ.option.cmV0ZW50aW9u.allowed-value.aW50OjI.display_name": {
+          "source": "Work Queue",
+          "message": "File de travail"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.c3RyZWFtLWNyZWF0ZQ.option.cmV0ZW50aW9u.allowed-value.aW50OjI.short_desc": {
+          "source": "Remove when any consumer acknowledges",
+          "message": "Supprimer dès qu'un consommateur acquitte"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.c3RyZWFtLWNyZWF0ZQ.option.cmV0ZW50aW9u.desc": {
+          "source": "Controls how messages are retained or removed from the stream.\n\n- `0` (Limits): messages are kept until stream limits (`max_msgs`, `max_bytes`, `max_age`) are reached\n- `1` (Interest): messages are removed once all known consumers have acknowledged them\n- `2` (Work Queue): messages are removed as soon as any consumer acknowledges them\n\n**Default is `0` (Limits) if not specified.**",
+          "message": "Contrôle la façon dont les messages sont conservés ou supprimés du flux.\n\n- `0` (Limites) : les messages sont conservés jusqu'à ce que les limites du flux (`max_msgs`, `max_bytes`, `max_age`) soient atteintes\n- `1` (Intérêt) : les messages sont supprimés une fois que tous les consommateurs connus les ont acquittés\n- `2` (File de travail) : les messages sont supprimés dès qu'un consommateur les acquitte\n\n**Par défaut, il s'agit de `0` (Limites) s'il n'est pas spécifié.**"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.c3RyZWFtLWNyZWF0ZQ.option.cmV0ZW50aW9u.display_name": {
+          "source": "Retention Policy",
+          "message": "Politique de rétention"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.c3RyZWFtLWNyZWF0ZQ.option.cmV0ZW50aW9u.short_desc": {
+          "source": "Stream retention policy",
+          "message": "Politique de rétention du flux"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.c3RyZWFtLWNyZWF0ZQ.short_desc": {
+          "source": "Create a JetStream stream for durable message storage",
+          "message": "Créer un flux JetStream pour le stockage durable des messages"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.c3RyZWFtLWRlbGV0ZQ.desc": {
+          "source": "Permanently deletes a JetStream stream and all its messages.\n\n**Warning**: this removes the stream, all stored messages, and all associated consumers. This action cannot be undone.",
+          "message": "Supprime définitivement un flux JetStream et tous ses messages.\n\n**Avertissement** : ceci supprime le flux, tous les messages stockés et tous les consommateurs associés. Cette action est irréversible."
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.c3RyZWFtLWRlbGV0ZQ.display_name": {
+          "source": "Delete Stream",
+          "message": "Supprimer le flux"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.c3RyZWFtLWRlbGV0ZQ.option.bmFtZQ.desc": {
+          "source": "The name of the JetStream stream to delete.\n\n**Warning**: this permanently removes the stream and all its stored messages. Any consumers attached to the stream will also be deleted. This operation cannot be undone.",
+          "message": "Le nom du flux JetStream à supprimer.\n\n**Avertissement** : ceci supprime définitivement le flux et tous ses messages stockés. Tous les consommateurs rattachés au flux seront également supprimés. Cette opération est irréversible."
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.c3RyZWFtLWRlbGV0ZQ.option.bmFtZQ.display_name": {
+          "source": "Stream Name",
+          "message": "Nom du flux"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.c3RyZWFtLWRlbGV0ZQ.option.bmFtZQ.short_desc": {
+          "source": "Stream name to delete",
+          "message": "Nom du flux à supprimer"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.c3RyZWFtLWRlbGV0ZQ.short_desc": {
+          "source": "Permanently delete a JetStream stream",
+          "message": "Supprimer définitivement un flux JetStream"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.c3RyZWFtLWluZm8.desc": {
+          "source": "Retrieves configuration and state information for a JetStream stream.\n\nReturns the stream's subject filters, retention policy, storage limits, and current state including message count and byte size.",
+          "message": "Récupère les informations de configuration et d'état d'un flux JetStream.\n\nRenvoie les filtres de sujet, la politique de rétention, les limites de stockage et l'état actuel du flux, y compris le nombre de messages et la taille en octets."
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.c3RyZWFtLWluZm8.display_name": {
+          "source": "Stream Info",
+          "message": "Informations du flux"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.c3RyZWFtLWluZm8.option.bmFtZQ.desc": {
+          "source": "The name of the JetStream stream to retrieve information for.\n\nThe stream must already exist; an error is raised if the stream is not found.",
+          "message": "Le nom du flux JetStream dont il faut récupérer les informations.\n\nLe flux doit déjà exister ; une erreur est levée si le flux n'est pas trouvé."
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.c3RyZWFtLWluZm8.option.bmFtZQ.display_name": {
+          "source": "Stream Name",
+          "message": "Nom du flux"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.c3RyZWFtLWluZm8.option.bmFtZQ.short_desc": {
+          "source": "Stream name to get info for",
+          "message": "Nom du flux dont obtenir les informations"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.c3RyZWFtLWluZm8.short_desc": {
+          "source": "Get stream configuration and state information",
+          "message": "Obtenir la configuration et les informations d'état du flux"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.c3RyZWFtLWxpc3Q.desc": {
+          "source": "Lists all JetStream streams with their configuration and current state.\n\nReturns detailed information for each stream including subject filters, retention policy, storage limits, message count, and consumer count.",
+          "message": "Liste tous les flux JetStream avec leur configuration et leur état actuel.\n\nRenvoie des informations détaillées pour chaque flux, y compris les filtres de sujet, la politique de rétention, les limites de stockage, le nombre de messages et le nombre de consommateurs."
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.c3RyZWFtLWxpc3Q.display_name": {
+          "source": "List Streams",
+          "message": "Lister les flux"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.c3RyZWFtLWxpc3Q.short_desc": {
+          "source": "List all JetStream streams with configuration and state",
+          "message": "Lister tous les flux JetStream avec leur configuration et leur état"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.c3RyZWFtLXB1cmdl.desc": {
+          "source": "Removes all messages from a JetStream stream while preserving its configuration.\n\n**Warning**: this permanently deletes all messages in the stream. The stream configuration and consumers are preserved, but consumer sequence positions are reset.",
+          "message": "Supprime tous les messages d'un flux JetStream tout en conservant sa configuration.\n\n**Avertissement** : ceci supprime définitivement tous les messages du flux. La configuration du flux et les consommateurs sont conservés, mais les positions de séquence des consommateurs sont réinitialisées."
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.c3RyZWFtLXB1cmdl.display_name": {
+          "source": "Purge Stream",
+          "message": "Purger le flux"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.c3RyZWFtLXB1cmdl.option.bmFtZQ.desc": {
+          "source": "The name of the JetStream stream to purge.\n\n**Warning**: purging removes all messages from the stream while preserving the stream configuration and consumers. Consumer sequence tracking is reset. This operation cannot be undone.",
+          "message": "Le nom du flux JetStream à purger.\n\n**Avertissement** : la purge supprime tous les messages du flux tout en conservant la configuration du flux et les consommateurs. Le suivi de séquence des consommateurs est réinitialisé. Cette opération est irréversible."
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.c3RyZWFtLXB1cmdl.option.bmFtZQ.display_name": {
+          "source": "Stream Name",
+          "message": "Nom du flux"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.c3RyZWFtLXB1cmdl.option.bmFtZQ.short_desc": {
+          "source": "Stream name to purge",
+          "message": "Nom du flux à purger"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.c3RyZWFtLXB1cmdl.short_desc": {
+          "source": "Purge all messages from a stream",
+          "message": "Purger tous les messages d'un flux"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.c3RyZWFtLXVwZGF0ZQ.desc": {
+          "source": "Updates the configuration of an existing JetStream stream.\n\nModifies stream settings such as subject filters, retention policy, storage limits, and replication. Not all settings can be changed after creation.",
+          "message": "Met à jour la configuration d'un flux JetStream existant.\n\nModifie les paramètres du flux tels que les filtres de sujet, la politique de rétention, les limites de stockage et la réplication. Tous les paramètres ne peuvent pas être modifiés après la création."
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.c3RyZWFtLXVwZGF0ZQ.display_name": {
+          "source": "Update Stream",
+          "message": "Mettre à jour le flux"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.c3RyZWFtLXVwZGF0ZQ.option.ZGVzY3JpcHRpb24.desc": {
+          "source": "Optional human-readable description for the stream.\n\nThis is a free-form text field that can be used to document the stream's purpose, the types of messages it contains, or any other relevant operational context.",
+          "message": "Description optionnelle lisible par l'utilisateur pour le flux.\n\nIl s'agit d'un champ de texte libre qui peut être utilisé pour documenter le but du flux, les types de messages qu'il contient ou tout autre contexte opérationnel pertinent."
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.c3RyZWFtLXVwZGF0ZQ.option.ZGVzY3JpcHRpb24.display_name": {
+          "source": "Description",
+          "message": "Description"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.c3RyZWFtLXVwZGF0ZQ.option.ZGVzY3JpcHRpb24.short_desc": {
+          "source": "Stream description",
+          "message": "Description du flux"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.c3RyZWFtLXVwZGF0ZQ.option.ZGlzY2FyZA.allowed-value.aW50OjA.display_name": {
+          "source": "Old",
+          "message": "Ancien"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.c3RyZWFtLXVwZGF0ZQ.option.ZGlzY2FyZA.allowed-value.aW50OjA.short_desc": {
+          "source": "Discard old messages when limits are reached",
+          "message": "Ignorer les anciens messages lorsque les limites sont atteintes"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.c3RyZWFtLXVwZGF0ZQ.option.ZGlzY2FyZA.allowed-value.aW50OjE.display_name": {
+          "source": "New",
+          "message": "Nouveau"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.c3RyZWFtLXVwZGF0ZQ.option.ZGlzY2FyZA.allowed-value.aW50OjE.short_desc": {
+          "source": "Reject new messages when limits are reached",
+          "message": "Rejeter les nouveaux messages lorsque les limites sont atteintes"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.c3RyZWFtLXVwZGF0ZQ.option.ZGlzY2FyZA.desc": {
+          "source": "Controls which messages are removed when stream limits (`max_msgs`, `max_bytes`, or `max_age`) are reached.\n\n- `0` (Old): the oldest messages are removed to make room\n- `1` (New): new messages are rejected with an error\n\n**Default is `0` (Old) if not specified.**",
+          "message": "Contrôle quels messages sont supprimés lorsque les limites du flux (`max_msgs`, `max_bytes` ou `max_age`) sont atteintes.\n\n- `0` (Ancien) : les messages les plus anciens sont supprimés pour faire de la place\n- `1` (Nouveau) : les nouveaux messages sont rejetés avec une erreur\n\n**Par défaut, `0` (Ancien) si non spécifié.**"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.c3RyZWFtLXVwZGF0ZQ.option.ZGlzY2FyZA.display_name": {
+          "source": "Discard Policy",
+          "message": "Politique d'abandon"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.c3RyZWFtLXVwZGF0ZQ.option.ZGlzY2FyZA.short_desc": {
+          "source": "Discard policy when limits are reached",
+          "message": "Politique d'abandon lorsque les limites sont atteintes"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.c3RyZWFtLXVwZGF0ZQ.option.bWF4X21zZ19zaXpl.desc": {
+          "source": "Maximum size in bytes for any individual message published to the stream.\n\nMessages exceeding this size will be rejected by the server. Set to `-1` to use the server's default maximum (typically 1 MB). For example, `1048576` sets a 1 MB limit.",
+          "message": "Taille maximale en octets pour tout message individuel publié sur le flux.\n\nLes messages dépassant cette taille seront rejetés par le serveur. Définissez sur `-1` pour utiliser le maximum par défaut du serveur (généralement 1 Mo). Par exemple, `1048576` définit une limite de 1 Mo."
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.c3RyZWFtLXVwZGF0ZQ.option.bWF4X21zZ19zaXpl.display_name": {
+          "source": "Max Message Size",
+          "message": "Taille maximale de message"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.c3RyZWFtLXVwZGF0ZQ.option.bWF4X21zZ19zaXpl.short_desc": {
+          "source": "Maximum message size in bytes",
+          "message": "Taille maximale de message en octets"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.c3RyZWFtLXVwZGF0ZQ.option.bWF4X21zZ3M.desc": {
+          "source": "Maximum number of messages the stream will retain.\n\nWhen this limit is reached, older messages are discarded according to the `discard` policy. Set to `-1` for unlimited messages.\n\n**Only applies when the `retention` policy is set to Limits (`0`).**",
+          "message": "Nombre maximal de messages que le flux conservera.\n\nLorsque cette limite est atteinte, les messages plus anciens sont supprimés selon la politique `discard`. Définissez sur `-1` pour un nombre illimité de messages.\n\n**S'applique uniquement lorsque la politique `retention` est définie sur Limites (`0`).**"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.c3RyZWFtLXVwZGF0ZQ.option.bWF4X21zZ3M.display_name": {
+          "source": "Max Messages",
+          "message": "Messages max"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.c3RyZWFtLXVwZGF0ZQ.option.bWF4X21zZ3M.short_desc": {
+          "source": "Maximum number of messages",
+          "message": "Nombre maximal de messages"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.c3RyZWFtLXVwZGF0ZQ.option.bWF4X2FnZQ.desc": {
+          "source": "Maximum age of any message in the stream, specified in milliseconds.\n\nMessages older than this value are automatically removed. Set to `0` for no age limit. For example, `86400000` sets a 24-hour retention window.\n\n**Only applies when the `retention` policy is set to Limits (`0`).**",
+          "message": "Âge maximal de tout message dans le flux, spécifié en millisecondes.\n\nLes messages plus anciens que cette valeur sont automatiquement supprimés. Définissez sur `0` pour aucune limite d'âge. Par exemple, `86400000` définit une fenêtre de rétention de 24 heures.\n\n**S'applique uniquement lorsque la politique `retention` est définie sur Limites (`0`).**"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.c3RyZWFtLXVwZGF0ZQ.option.bWF4X2FnZQ.display_name": {
+          "source": "Max Age (ms)",
+          "message": "Âge max (ms)"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.c3RyZWFtLXVwZGF0ZQ.option.bWF4X2FnZQ.short_desc": {
+          "source": "Maximum message age in milliseconds",
+          "message": "Âge maximal des messages en millisecondes"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.c3RyZWFtLXVwZGF0ZQ.option.bWF4X2J5dGVz.desc": {
+          "source": "Maximum total storage in bytes for all messages in the stream.\n\nWhen this limit is reached, older messages are discarded according to the `discard` policy. Set to `-1` for unlimited storage.\n\n**Only applies when the `retention` policy is set to Limits (`0`).**",
+          "message": "Stockage total maximal en octets pour tous les messages dans le flux.\n\nLorsque cette limite est atteinte, les messages plus anciens sont supprimés selon la politique `discard`. Définissez sur `-1` pour un stockage illimité.\n\n**S'applique uniquement lorsque la politique `retention` est définie sur Limites (`0`).**"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.c3RyZWFtLXVwZGF0ZQ.option.bWF4X2J5dGVz.display_name": {
+          "source": "Max Bytes",
+          "message": "Octets max"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.c3RyZWFtLXVwZGF0ZQ.option.bWF4X2J5dGVz.short_desc": {
+          "source": "Maximum total bytes",
+          "message": "Octets totaux maximaux"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.c3RyZWFtLXVwZGF0ZQ.option.bmFtZQ.desc": {
+          "source": "Unique identifier for the JetStream stream.\n\nStream names are used to reference the stream in all JetStream operations such as publishing, subscribing, and management. **Names must be alphanumeric and may include dashes or underscores but not periods or spaces.**",
+          "message": "Identifiant unique pour le flux JetStream.\n\nLes noms de flux sont utilisés pour faire référence au flux dans toutes les opérations JetStream telles que la publication, l'abonnement et la gestion. **Les noms doivent être alphanumériques et peuvent inclure des tirets ou des tirets bas, mais pas de points ni d'espaces.**"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.c3RyZWFtLXVwZGF0ZQ.option.bmFtZQ.display_name": {
+          "source": "Stream Name",
+          "message": "Nom du flux"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.c3RyZWFtLXVwZGF0ZQ.option.bmFtZQ.short_desc": {
+          "source": "Name of the stream",
+          "message": "Nom du flux"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.c3RyZWFtLXVwZGF0ZQ.option.bnVtX3JlcGxpY2Fz.desc": {
+          "source": "Number of copies of the stream data to maintain across a NATS cluster for high availability.\n\nA value of `1` means no replication (single copy). Values of `3` or `5` are common for production clusters. **Must be an odd number and cannot exceed the number of servers in the cluster.**",
+          "message": "Nombre de copies des données du flux à maintenir à travers un cluster NATS pour une haute disponibilité.\n\nUne valeur de `1` signifie aucune réplication (copie unique). Les valeurs `3` ou `5` sont courantes pour les clusters de production. **Doit être un nombre impair et ne peut pas dépasser le nombre de serveurs dans le cluster.**"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.c3RyZWFtLXVwZGF0ZQ.option.bnVtX3JlcGxpY2Fz.display_name": {
+          "source": "Replicas",
+          "message": "Répliques"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.c3RyZWFtLXVwZGF0ZQ.option.bnVtX3JlcGxpY2Fz.short_desc": {
+          "source": "Number of replicas",
+          "message": "Nombre de répliques"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.c3RyZWFtLXVwZGF0ZQ.option.c3RvcmFnZQ.allowed-value.aW50OjA.display_name": {
+          "source": "File",
+          "message": "Fichier"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.c3RyZWFtLXVwZGF0ZQ.option.c3RvcmFnZQ.allowed-value.aW50OjA.short_desc": {
+          "source": "Store messages on disk",
+          "message": "Stocker les messages sur disque"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.c3RyZWFtLXVwZGF0ZQ.option.c3RvcmFnZQ.allowed-value.aW50OjE.display_name": {
+          "source": "Memory",
+          "message": "Mémoire"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.c3RyZWFtLXVwZGF0ZQ.option.c3RvcmFnZQ.allowed-value.aW50OjE.short_desc": {
+          "source": "Store messages in memory",
+          "message": "Stocker les messages en mémoire"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.c3RyZWFtLXVwZGF0ZQ.option.c3RvcmFnZQ.desc": {
+          "source": "Controls where stream messages are persisted.\n\n- `0` (File): messages are stored on disk for durability across server restarts\n- `1` (Memory): messages are stored in memory for higher throughput but are lost on server restart\n\n**Default is `0` (File) if not specified.**",
+          "message": "Contrôle où les messages du flux sont persistés.\n\n- `0` (Fichier) : les messages sont stockés sur disque pour la durabilité au fil des redémarrages du serveur\n- `1` (Mémoire) : les messages sont stockés en mémoire pour un débit plus élevé, mais sont perdus lors du redémarrage du serveur\n\n**Par défaut, `0` (Fichier) si non spécifié.**"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.c3RyZWFtLXVwZGF0ZQ.option.c3RvcmFnZQ.display_name": {
+          "source": "Storage Type",
+          "message": "Type de stockage"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.c3RyZWFtLXVwZGF0ZQ.option.c3RvcmFnZQ.short_desc": {
+          "source": "Message storage type",
+          "message": "Type de stockage des messages"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.c3RyZWFtLXVwZGF0ZQ.option.c3ViamVjdHM.desc": {
+          "source": "List of NATS subjects that this stream will capture messages from.\n\nSupports wildcards:\n- `*` matches a single token (e.g. `orders.*`)\n- `>` matches one or more tokens (e.g. `orders.>`)\n\nMultiple subjects can be specified to aggregate messages from different topic hierarchies into a single stream.",
+          "message": "Liste des sujets NATS dont ce flux capturera les messages.\n\nPrend en charge les caractères génériques :\n- `*` correspond à un seul jeton (par ex. `orders.*`)\n- `>` correspond à un ou plusieurs jetons (par ex. `orders.>`)\n\nPlusieurs sujets peuvent être spécifiés pour agréger les messages de différentes hiérarchies de thèmes dans un flux unique."
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.c3RyZWFtLXVwZGF0ZQ.option.c3ViamVjdHM.display_name": {
+          "source": "Subjects",
+          "message": "Sujets"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.c3RyZWFtLXVwZGF0ZQ.option.c3ViamVjdHM.short_desc": {
+          "source": "Subjects the stream listens to",
+          "message": "Sujets écoutés par le flux"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.c3RyZWFtLXVwZGF0ZQ.option.cmV0ZW50aW9u.allowed-value.aW50OjA.display_name": {
+          "source": "Limits",
+          "message": "Limites"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.c3RyZWFtLXVwZGF0ZQ.option.cmV0ZW50aW9u.allowed-value.aW50OjA.short_desc": {
+          "source": "Retain based on limits (max_msgs, max_bytes, max_age)",
+          "message": "Conserver en fonction des limites (max_msgs, max_bytes, max_age)"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.c3RyZWFtLXVwZGF0ZQ.option.cmV0ZW50aW9u.allowed-value.aW50OjE.display_name": {
+          "source": "Interest",
+          "message": "Intérêt"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.c3RyZWFtLXVwZGF0ZQ.option.cmV0ZW50aW9u.allowed-value.aW50OjE.short_desc": {
+          "source": "Remove when all known consumers have acknowledged",
+          "message": "Supprimer lorsque tous les consommateurs connus ont acquitté"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.c3RyZWFtLXVwZGF0ZQ.option.cmV0ZW50aW9u.allowed-value.aW50OjI.display_name": {
+          "source": "Work Queue",
+          "message": "File de travail"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.c3RyZWFtLXVwZGF0ZQ.option.cmV0ZW50aW9u.allowed-value.aW50OjI.short_desc": {
+          "source": "Remove when any consumer acknowledges",
+          "message": "Supprimer dès qu'un consommateur acquitte"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.c3RyZWFtLXVwZGF0ZQ.option.cmV0ZW50aW9u.desc": {
+          "source": "Controls how messages are retained or removed from the stream.\n\n- `0` (Limits): messages are kept until stream limits (`max_msgs`, `max_bytes`, `max_age`) are reached\n- `1` (Interest): messages are removed once all known consumers have acknowledged them\n- `2` (Work Queue): messages are removed as soon as any consumer acknowledges them\n\n**Default is `0` (Limits) if not specified.**",
+          "message": "Contrôle la façon dont les messages sont conservés ou supprimés du flux.\n\n- `0` (Limites) : les messages sont conservés jusqu'à ce que les limites du flux (`max_msgs`, `max_bytes`, `max_age`) soient atteintes\n- `1` (Intérêt) : les messages sont supprimés une fois que tous les consommateurs connus les ont acquittés\n- `2` (File de travail) : les messages sont supprimés dès qu'un consommateur les acquitte\n\n**Par défaut, il s'agit de `0` (Limites) s'il n'est pas spécifié.**"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.c3RyZWFtLXVwZGF0ZQ.option.cmV0ZW50aW9u.display_name": {
+          "source": "Retention Policy",
+          "message": "Politique de rétention"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.c3RyZWFtLXVwZGF0ZQ.option.cmV0ZW50aW9u.short_desc": {
+          "source": "Stream retention policy",
+          "message": "Politique de rétention du flux"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.c3RyZWFtLXVwZGF0ZQ.short_desc": {
+          "source": "Update a JetStream stream configuration",
+          "message": "Mettre à jour la configuration d'un flux JetStream"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.c3Vic2NyaWJl.desc": {
+          "source": "Subscribes to JetStream messages with push-based delivery for real-time event processing.\n\nMessages are pushed to the subscriber as they arrive in the stream. Includes JetStream metadata such as stream sequence numbers and timestamps.",
+          "message": "S'abonne aux messages JetStream avec une livraison de type push pour le traitement d'événements en temps réel.\n\nLes messages sont poussés vers l'abonné au fur et à mesure qu'ils arrivent dans le flux. Inclut des métadonnées JetStream telles que les numéros de séquence de flux et les horodatages."
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.c3Vic2NyaWJl.display_name": {
+          "source": "JetStream Subscribe",
+          "message": "Abonnement JetStream"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.c3Vic2NyaWJl.option.c3ViamVjdA.desc": {
+          "source": "The JetStream subject to subscribe to.\n\nSupports NATS wildcard tokens: `*` matches a single token (e.g. `orders.*` matches `orders.created`) and `>` matches one or more tokens (e.g. `orders.>` matches `orders.created`, `orders.us.created`, etc.).",
+          "message": "Le sujet JetStream auquel s'abonner.\n\nPrend en charge les jetons génériques NATS : `*` correspond à un seul jeton (par ex. `orders.*` correspond à `orders.created`) et `>` correspond à un ou plusieurs jetons (par ex. `orders.>` correspond à `orders.created`, `orders.us.created`, etc.)."
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.c3Vic2NyaWJl.option.c3ViamVjdA.display_name": {
+          "source": "Subject",
+          "message": "Sujet"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.c3Vic2NyaWJl.option.c3ViamVjdA.short_desc": {
+          "source": "JetStream subject to subscribe to",
+          "message": "Sujet JetStream auquel s'abonner"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.c3Vic2NyaWJl.short_desc": {
+          "source": "Subscribe to JetStream messages with push delivery",
+          "message": "S'abonner aux messages JetStream avec livraison push"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.cHVsbC1zdWJzY3JpYmU.desc": {
+          "source": "Subscribes to JetStream messages with pull-based delivery using a durable consumer.\n\nThe client controls delivery rate by requesting message batches, providing natural backpressure. The `durable` consumer tracks the last acknowledged position across restarts.",
+          "message": "S'abonne aux messages JetStream avec une livraison de type pull à l'aide d'un consommateur durable.\n\nLe client contrôle le débit de livraison en demandant des lots de messages, offrant une contre-pression naturelle. Le consommateur `durable` suit la dernière position acquittée entre les redémarrages."
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.cHVsbC1zdWJzY3JpYmU.display_name": {
+          "source": "JetStream Pull Subscribe",
+          "message": "Abonnement JetStream Pull"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.cHVsbC1zdWJzY3JpYmU.option.ZHVyYWJsZQ.desc": {
+          "source": "The durable consumer name that persists the subscription state.\n\nDurable consumers survive client disconnects and server restarts. When the client reconnects with the same `durable` name, message delivery resumes from the last acknowledged position. The consumer must already exist on the stream or will be created automatically.",
+          "message": "Le nom du consommateur durable qui persiste l'état d'abonnement.\n\nLes consommateurs durables survivent aux déconnexions des clients et aux redémarrages du serveur. Lorsque le client se reconnecte avec le même nom `durable`, la livraison des messages reprend à partir de la dernière position acquittée. Le consommateur doit déjà exister sur le flux ou sera créé automatiquement."
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.cHVsbC1zdWJzY3JpYmU.option.ZHVyYWJsZQ.display_name": {
+          "source": "Durable Name",
+          "message": "Nom durable"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.cHVsbC1zdWJzY3JpYmU.option.ZHVyYWJsZQ.short_desc": {
+          "source": "Durable consumer name for pull subscription",
+          "message": "Nom de consommateur durable pour l'abonnement pull"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.cHVsbC1zdWJzY3JpYmU.option.c3ViamVjdA.desc": {
+          "source": "The JetStream subject to subscribe to.\n\nSupports NATS wildcard tokens: `*` matches a single token (e.g. `orders.*` matches `orders.created`) and `>` matches one or more tokens (e.g. `orders.>` matches `orders.created`, `orders.us.created`, etc.).",
+          "message": "Le sujet JetStream auquel s'abonner.\n\nPrend en charge les jetons génériques NATS : `*` correspond à un seul jeton (par ex. `orders.*` correspond à `orders.created`) et `>` correspond à un ou plusieurs jetons (par ex. `orders.>` correspond à `orders.created`, `orders.us.created`, etc.)."
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.cHVsbC1zdWJzY3JpYmU.option.c3ViamVjdA.display_name": {
+          "source": "Subject",
+          "message": "Sujet"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.cHVsbC1zdWJzY3JpYmU.option.c3ViamVjdA.short_desc": {
+          "source": "JetStream subject to subscribe to",
+          "message": "Sujet JetStream auquel s'abonner"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.cHVsbC1zdWJzY3JpYmU.short_desc": {
+          "source": "Pull subscribe with a durable consumer",
+          "message": "S'abonner en mode pull avec un consommateur durable"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.desc": {
+          "source": "NATS JetStream extends core NATS with persistent messaging, at-least-once delivery, and exactly-once semantics.\n\nProvides stream management for durable message storage, consumer management for delivery strategies, guaranteed publish with acknowledgments, and a distributed key-value store for configuration and shared state.",
+          "message": "NATS JetStream étend NATS core avec la messagerie persistante, la livraison au moins une fois et les sémantiques exactement une fois.\n\nFournit la gestion de flux pour le stockage durable des messages, la gestion des consommateurs pour les stratégies de livraison, la publication garantie avec acquittements et un magasin clé-valeur distribué pour la configuration et l'état partagé."
+        },
+        "app.TkFUU0pldFN0cmVhbQ.display_name": {
+          "source": "NATS JetStream",
+          "message": "NATS JetStream"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.short_desc": {
+          "source": "NATS JetStream streaming and KV store",
+          "message": "Streaming et magasin KV NATS JetStream"
+        }
+      }
+    }
+  }
+}

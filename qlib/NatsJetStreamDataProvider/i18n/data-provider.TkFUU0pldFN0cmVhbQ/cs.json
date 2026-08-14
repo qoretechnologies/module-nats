@@ -1,0 +1,1873 @@
+{
+  "schema_version": 1,
+  "locales": {
+    "cs": {
+      "messages": {
+        "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItY3JlYXRl.desc": {
+          "source": "Creates a new consumer on a JetStream stream for message processing.\n\nConsumers define how messages are delivered from a stream, including delivery policy, acknowledgment requirements, and retry behavior. Durable consumers survive client disconnects.",
+          "message": "Vytvoří nového odběratele na streamu JetStream pro zpracování zpráv.\n\nOdběratelé definují, jak jsou zprávy ze streamu doručovány, včetně zásad doručování, požadavků na potvrzení a chování při opakovaných pokusech. Trvalí odběratelé přežijí i odpojení klienta."
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItY3JlYXRl.display_name": {
+          "source": "Create Consumer",
+          "message": "Vytvořit odběratele"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItY3JlYXRl.option.YWNrX3BvbGljeQ.allowed-value.aW50OjA.display_name": {
+          "source": "None",
+          "message": "Žádné"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItY3JlYXRl.option.YWNrX3BvbGljeQ.allowed-value.aW50OjA.short_desc": {
+          "source": "No acknowledgment required",
+          "message": "Nevyžaduje se žádné potvrzení"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItY3JlYXRl.option.YWNrX3BvbGljeQ.allowed-value.aW50OjE.display_name": {
+          "source": "All",
+          "message": "Vše"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItY3JlYXRl.option.YWNrX3BvbGljeQ.allowed-value.aW50OjE.short_desc": {
+          "source": "Acknowledge all prior messages",
+          "message": "Potvrdit všechny předchozí zprávy"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItY3JlYXRl.option.YWNrX3BvbGljeQ.allowed-value.aW50OjI.display_name": {
+          "source": "Explicit",
+          "message": "Explicitní"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItY3JlYXRl.option.YWNrX3BvbGljeQ.allowed-value.aW50OjI.short_desc": {
+          "source": "Each message must be individually acknowledged",
+          "message": "Každá zpráva musí být potvrzena jednotlivě"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItY3JlYXRl.option.YWNrX3BvbGljeQ.desc": {
+          "source": "Controls how the consumer acknowledges message delivery.\n\n- `0` (None): no acknowledgment required; messages are considered delivered immediately\n- `1` (All): acknowledging a message implicitly acknowledges all prior messages\n- `2` (Explicit): each message must be individually acknowledged\n\n**Default is `2` (Explicit) if not specified.**",
+          "message": "Řídí, jak odběratel potvrzuje doručení zpráv.\n\n- `0` (None): nevyžaduje se žádné potvrzení; zprávy se považují za doručené okamžitě\n- `1` (All): potvrzení zprávy implicitně potvrdí všechny předchozí zprávy\n- `2` (Explicit): každá zpráva musí být potvrzena jednotlivě\n\n**Výchozí hodnota je `2` (Explicit), pokud není určeno jinak.**"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItY3JlYXRl.option.YWNrX3BvbGljeQ.display_name": {
+          "source": "Ack Policy",
+          "message": "Zásady potvrzování"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItY3JlYXRl.option.YWNrX3BvbGljeQ.short_desc": {
+          "source": "Acknowledgment policy",
+          "message": "Zásady potvrzování"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItY3JlYXRl.option.YWNrX3dhaXQ.desc": {
+          "source": "Duration in milliseconds that the server will wait for an acknowledgment before considering a message unacknowledged and scheduling it for redelivery.\n\nFor example, `30000` sets a 30-second timeout. **If not specified, the server default of 30 seconds is used.** Set this value based on the expected processing time for your messages.",
+          "message": "Doba v milisekundách, po kterou bude server čekat na potvrzení, než začne zprávu považovat za nepotvrzenou a naplánuje její opakované doručení.\n\nNapříklad `30000` nastaví časový limit 30 sekund. **Pokud není uvedeno jinak, použije se výchozí hodnota serveru 30 sekund.** Tuto hodnotu nastavte na základě předpokládané doby zpracování vašich zpráv."
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItY3JlYXRl.option.YWNrX3dhaXQ.display_name": {
+          "source": "Ack Wait (ms)",
+          "message": "Čekání na potvrzení (ms)"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItY3JlYXRl.option.YWNrX3dhaXQ.short_desc": {
+          "source": "Acknowledgment wait timeout in milliseconds",
+          "message": "Časový limit čekání na potvrzení v milisekundách"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItY3JlYXRl.option.ZGVsaXZlcl9ncm91cA.desc": {
+          "source": "Queue group name for load-balanced message delivery across multiple consumer instances.\n\nWhen set, messages are distributed across all consumers sharing the same `deliver_group` value, ensuring each message is processed by only one consumer. **Only applicable in push mode** (when `deliver_subject` is set).",
+          "message": "Název skupiny fronty pro vyvažované doručování zpráv napříč více instancemi odběratelů.\n\nPokud je nastaveno, zprávy jsou distribuovány mezi všechny odběratele sdílející stejnou hodnotu `deliver_group`, což zajišťuje, že každá zpráva bude zpracována pouze jedním odběratelem. **Platí pouze v režimu push** (když je nastaveno `deliver_subject`)."
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItY3JlYXRl.option.ZGVsaXZlcl9ncm91cA.display_name": {
+          "source": "Deliver Group",
+          "message": "Doručovací skupina"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItY3JlYXRl.option.ZGVsaXZlcl9ncm91cA.short_desc": {
+          "source": "Deliver group (queue group)",
+          "message": "Doručovací skupina (skupina fronty)"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItY3JlYXRl.option.ZGVsaXZlcl9wb2xpY3k.allowed-value.aW50OjA.display_name": {
+          "source": "All",
+          "message": "Vše"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItY3JlYXRl.option.ZGVsaXZlcl9wb2xpY3k.allowed-value.aW50OjA.short_desc": {
+          "source": "Deliver all messages",
+          "message": "Doručit všechny zprávy"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItY3JlYXRl.option.ZGVsaXZlcl9wb2xpY3k.allowed-value.aW50OjE.display_name": {
+          "source": "Last",
+          "message": "Poslední"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItY3JlYXRl.option.ZGVsaXZlcl9wb2xpY3k.allowed-value.aW50OjE.short_desc": {
+          "source": "Deliver starting with the last message",
+          "message": "Doručit počínaje poslední zprávou"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItY3JlYXRl.option.ZGVsaXZlcl9wb2xpY3k.allowed-value.aW50OjI.display_name": {
+          "source": "New",
+          "message": "Nové"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItY3JlYXRl.option.ZGVsaXZlcl9wb2xpY3k.allowed-value.aW50OjI.short_desc": {
+          "source": "Deliver only new messages",
+          "message": "Doručit pouze nové zprávy"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItY3JlYXRl.option.ZGVsaXZlcl9wb2xpY3k.allowed-value.aW50OjM.display_name": {
+          "source": "By Start Sequence",
+          "message": "Podle počáteční sekvence"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItY3JlYXRl.option.ZGVsaXZlcl9wb2xpY3k.allowed-value.aW50OjM.short_desc": {
+          "source": "Deliver starting at a specific sequence",
+          "message": "Doručit počínaje konkrétní sekvencí"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItY3JlYXRl.option.ZGVsaXZlcl9wb2xpY3k.allowed-value.aW50OjQ.display_name": {
+          "source": "By Start Time",
+          "message": "Podle počátečního času"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItY3JlYXRl.option.ZGVsaXZlcl9wb2xpY3k.allowed-value.aW50OjQ.short_desc": {
+          "source": "Deliver starting at a specific time",
+          "message": "Doručit počínaje konkrétním časem"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItY3JlYXRl.option.ZGVsaXZlcl9wb2xpY3k.allowed-value.aW50OjU.display_name": {
+          "source": "Last Per Subject",
+          "message": "Poslední podle předmětu"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItY3JlYXRl.option.ZGVsaXZlcl9wb2xpY3k.allowed-value.aW50OjU.short_desc": {
+          "source": "Deliver the last message per subject",
+          "message": "Doručit poslední zprávu pro každý předmět"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItY3JlYXRl.option.ZGVsaXZlcl9wb2xpY3k.desc": {
+          "source": "Determines the starting point for message delivery to the consumer.\n\n- `0` (All): deliver all available messages from the beginning of the stream\n- `1` (Last): start with the last message in the stream\n- `2` (New): deliver only messages published after the consumer is created\n- `3` (By Start Sequence): start at a specific sequence number\n- `4` (By Start Time): start at a specific timestamp\n- `5` (Last Per Subject): deliver the last message for each subject\n\n**Default is `0` (All) if not specified.**",
+          "message": "Určuje počáteční bod pro doručování zpráv odběrateli.\n\n- `0` (All): doručit všechny dostupné zprávy od začátku streamu\n- `1` (Last): začít od poslední zprávy ve streamu\n- `2` (New): doručit pouze zprávy publikované po vytvoření odběratele\n- `3` (By Start Sequence): začít na konkrétním sekvenčním čísle\n- `4` (By Start Time): začít v konkrétním časovém razítku\n- `5` (Last Per Subject): doručit poslední zprávu pro každý předmět\n\n**Výchozí hodnota je `0` (All), pokud není určeno jinak.**"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItY3JlYXRl.option.ZGVsaXZlcl9wb2xpY3k.display_name": {
+          "source": "Deliver Policy",
+          "message": "Zásady doručování"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItY3JlYXRl.option.ZGVsaXZlcl9wb2xpY3k.short_desc": {
+          "source": "Message delivery policy",
+          "message": "Zásady doručování zpráv"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItY3JlYXRl.option.ZGVsaXZlcl9zdWJqZWN0.desc": {
+          "source": "The NATS subject where the server will push messages to the consumer.\n\nIf set, the consumer operates in **push mode** where the server actively delivers messages to this subject. If not set, the consumer operates in **pull mode** where clients must explicitly request messages.",
+          "message": "Předmět NATS, na který bude server odběrateli posílat zprávy.\n\nPokud je nastaven, odběratel pracuje v **režimu push**, kdy server aktivně doručuje zprávy na tento předmět. Pokud nastaven není, odběratel pracuje v **režimu pull**, kdy klienti musí o zprávy výslovně žádat."
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItY3JlYXRl.option.ZGVsaXZlcl9zdWJqZWN0.display_name": {
+          "source": "Deliver Subject",
+          "message": "Doručovací předmět"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItY3JlYXRl.option.ZGVsaXZlcl9zdWJqZWN0.short_desc": {
+          "source": "Subject for push delivery",
+          "message": "Předmět pro doručování v režimu push"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItY3JlYXRl.option.ZGVzY3JpcHRpb24.desc": {
+          "source": "Optional human-readable description for the consumer.\n\nThis is a free-form text field that can be used to document the consumer's purpose, the processing logic it implements, or any other relevant operational context.",
+          "message": "Volitelný čitelný popis odběratele.\n\nJedná se o volný textový popis, který lze použít k dokumentování účelu odběratele, logiky zpracování, kterou implementuje, nebo jakéhokoli jiného relevantního provozního kontextu."
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItY3JlYXRl.option.ZGVzY3JpcHRpb24.display_name": {
+          "source": "Description",
+          "message": "Popis"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItY3JlYXRl.option.ZGVzY3JpcHRpb24.short_desc": {
+          "source": "Consumer description",
+          "message": "Popis odběratele"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItY3JlYXRl.option.ZHVyYWJsZV9uYW1l.desc": {
+          "source": "A unique name that makes the consumer durable (persistent).\n\n**Important**: without a durable name, the consumer is ephemeral and will be automatically removed when it disconnects or becomes inactive. A durable consumer retains its state (delivery position, pending acknowledgments) across client disconnects and server restarts.",
+          "message": "Unikátní název, díky kterému je odběratel trvalý (durable).\n\n**Důležité**: bez trvalého názvu je odběratel chvilkový (ephemerální) a bude automaticky odstraněn, jakmile se odpojí nebo se stane neaktivním. Trvalý odběratel si zachovává svůj stav (pozici doručení, čekající potvrzení) i při odpojení klienta a restartu serveru."
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItY3JlYXRl.option.ZHVyYWJsZV9uYW1l.display_name": {
+          "source": "Durable Name",
+          "message": "Trvalý název"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItY3JlYXRl.option.ZHVyYWJsZV9uYW1l.short_desc": {
+          "source": "Durable consumer name",
+          "message": "Název trvalého odběratele"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItY3JlYXRl.option.ZmlsdGVyX3N1YmplY3Q.desc": {
+          "source": "A subject filter that restricts the consumer to receiving only messages matching this pattern.\n\nThis allows a consumer to process a subset of the stream's messages. Supports NATS wildcard tokens (`*` and `>`). If not set, the consumer receives all messages from the stream.",
+          "message": "Filtr předmětu, který odběratele omezuje pouze na příjem zpráv odpovídajících tomuto vzoru.\n\nTo umožňuje odběrateli zpracovávat podmnožinu zpráv streamu. Podporuje žolíkové znaky NATS (`*` a `>`). Pokud není nastaveno, odběratel přijímá všechny zprávy ze streamu."
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItY3JlYXRl.option.ZmlsdGVyX3N1YmplY3Q.display_name": {
+          "source": "Filter Subject",
+          "message": "Filtr předmětu"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItY3JlYXRl.option.ZmlsdGVyX3N1YmplY3Q.short_desc": {
+          "source": "Filter subject for the consumer",
+          "message": "Filtr předmětu pro odběratele"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItY3JlYXRl.option.bWF4X2Fja19wZW5kaW5n.desc": {
+          "source": "Maximum number of messages that can be delivered but not yet acknowledged.\n\nThis acts as a flow control mechanism to prevent the consumer from being overwhelmed. Once this limit is reached, the server pauses delivery until some messages are acknowledged. **Default is `1000` if not specified.**",
+          "message": "Maximální počet zpráv, které mohou být doručeny, ale ještě nebyly potvrzeny.\n\nToto funguje jako mechanismus řízení toku, který zabraňuje přetížení odběratele. Jakmile je tohoto limitu dosaženo, server pozastaví doručování, dokud nebudou některé zprávy potvrzeny. **Výchozí hodnota je `1000`, pokud není určeno jinak.**"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItY3JlYXRl.option.bWF4X2Fja19wZW5kaW5n.display_name": {
+          "source": "Max Ack Pending",
+          "message": "Max. čekajících potvrzení"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItY3JlYXRl.option.bWF4X2Fja19wZW5kaW5n.short_desc": {
+          "source": "Maximum pending acknowledgments",
+          "message": "Maximální počet čekajících potvrzení"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItY3JlYXRl.option.bWF4X2RlbGl2ZXI.desc": {
+          "source": "Maximum number of times the server will attempt to deliver a message to the consumer.\n\nAfter this many failed delivery attempts, the message is dropped or sent to a dead-letter queue if configured. Set to `-1` for unlimited redelivery attempts. **A value of `5` is commonly used in production.**",
+          "message": "Maximální počet pokusů serveru o doručení zprávy odběrateli.\n\nPo tomto počtu neúspěšných pokusů o doručení je zpráva zahozena nebo odeslána do fronty neplatných zpráv (dead-letter queue), pokud je nakonfigurována. Nastavte na `-1` pro neomezený počet pokusů o doručení. **V produkci se běžně používá hodnota `5`.**"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItY3JlYXRl.option.bWF4X2RlbGl2ZXI.display_name": {
+          "source": "Max Deliver",
+          "message": "Max. doručení"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItY3JlYXRl.option.bWF4X2RlbGl2ZXI.short_desc": {
+          "source": "Maximum delivery attempts",
+          "message": "Maximální počet pokusů o doručení"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItY3JlYXRl.option.c3RyZWFt.desc": {
+          "source": "The name of the JetStream stream that this consumer will read messages from.\n\nThe stream must already exist before the consumer can be created. Use the stream `name` value from the stream configuration.",
+          "message": "Název streamu JetStream, ze kterého bude tento odběratel číst zprávy.\n\nStream musí existovat ještě před vytvořením odběratele. Použijte hodnotu streamu `name` z konfigurace streamu."
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItY3JlYXRl.option.c3RyZWFt.display_name": {
+          "source": "Stream Name",
+          "message": "Název streamu"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItY3JlYXRl.option.c3RyZWFt.short_desc": {
+          "source": "Name of the stream",
+          "message": "Název streamu"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItY3JlYXRl.option.cmVwbGF5X3BvbGljeQ.allowed-value.aW50OjA.display_name": {
+          "source": "Instant",
+          "message": "Okamžitě"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItY3JlYXRl.option.cmVwbGF5X3BvbGljeQ.allowed-value.aW50OjA.short_desc": {
+          "source": "Replay messages as fast as possible",
+          "message": "Přehrávat zprávy co nejrychleji"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItY3JlYXRl.option.cmVwbGF5X3BvbGljeQ.allowed-value.aW50OjE.display_name": {
+          "source": "Original",
+          "message": "Původní"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItY3JlYXRl.option.cmVwbGF5X3BvbGljeQ.allowed-value.aW50OjE.short_desc": {
+          "source": "Replay messages at the original rate",
+          "message": "Přehrát zprávy původní rychlostí"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItY3JlYXRl.option.cmVwbGF5X3BvbGljeQ.desc": {
+          "source": "Controls the speed at which messages are replayed to the consumer when catching up on historical messages.\n\n- `0` (Instant): messages are delivered as fast as possible\n- `1` (Original): messages are delivered at the rate they were originally published, preserving the original timing\n\n**Default is `0` (Instant) if not specified.**",
+          "message": "Řídí rychlost, jakou jsou zprávy přehrávány spotřebiteli při dohánění historických zpráv.\n\n- `0` (Instant): zprávy jsou doručovány co nejrychleji\n- `1` (Original): zprávy jsou doručovány v rychlosti, v jaké byly původně publikovány, se zachováním původního časování\n\n**Výchozí hodnota je `0` (Instant), pokud není určeno jinak.**"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItY3JlYXRl.option.cmVwbGF5X3BvbGljeQ.display_name": {
+          "source": "Replay Policy",
+          "message": "Pravidlo přehrávání"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItY3JlYXRl.option.cmVwbGF5X3BvbGljeQ.short_desc": {
+          "source": "Message replay policy",
+          "message": "Pravidlo přehrávání zpráv"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItY3JlYXRl.short_desc": {
+          "source": "Create a consumer for stream message processing",
+          "message": "Vytvořit spotřebitele pro zpracování zpráv ze streamu"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItZGVsZXRl.desc": {
+          "source": "Deletes a consumer from a JetStream stream.\n\n**Warning**: this permanently removes the consumer and its tracking state. Unacknowledged messages will not be redelivered.",
+          "message": "Odstraní spotřebitele ze streamu JetStream.\n\n**Varování**: tímto trvale odeberete spotřebitele a jeho stav sledování. Nepotvrzené zprávy nebudou znovu doručeny."
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItZGVsZXRl.display_name": {
+          "source": "Delete Consumer",
+          "message": "Odstranit spotřebitele"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItZGVsZXRl.option.Y29uc3VtZXI.desc": {
+          "source": "The name of the consumer to delete from the stream.\n\n**Warning**: deleting a consumer discards its tracking state, including the last acknowledged sequence position. If the consumer is re-created, it will start from the configured delivery policy, not from where it left off.",
+          "message": "Název spotřebitele, který má být odstraněn ze streamu.\n\n**Varování**: odstraněním spotřebitele se zahodí jeho stav sledování, včetně naposledy potvrzené pozice sekvence. Pokud bude spotřebitel znovu vytvořen, začne podle nakonfigurovaných pravidel doručování, nikoli tam, kde skončil."
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItZGVsZXRl.option.Y29uc3VtZXI.display_name": {
+          "source": "Consumer Name",
+          "message": "Název spotřebitele"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItZGVsZXRl.option.Y29uc3VtZXI.short_desc": {
+          "source": "Consumer name to delete",
+          "message": "Název spotřebitele k odstranění"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItZGVsZXRl.option.c3RyZWFt.desc": {
+          "source": "The name of the JetStream stream that owns the consumer to delete.\n\nThe stream must exist and contain the specified consumer.",
+          "message": "Název streamu JetStream, který vlastní spotřebitele k odstranění.\n\nStream musí existovat a obsahovat zadaného spotřebitele."
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItZGVsZXRl.option.c3RyZWFt.display_name": {
+          "source": "Stream Name",
+          "message": "Název streamu"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItZGVsZXRl.option.c3RyZWFt.short_desc": {
+          "source": "Stream name containing the consumer",
+          "message": "Název streamu obsahujícího spotřebitele"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItZGVsZXRl.short_desc": {
+          "source": "Delete a consumer from a JetStream stream",
+          "message": "Odstranit spotřebitele ze streamu JetStream"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItaW5mbw.desc": {
+          "source": "Retrieves configuration and delivery state for a JetStream consumer.\n\nReturns the consumer's ack policy, deliver policy, filter subject, and current state including pending messages and processing progress.",
+          "message": "Získává konfiguraci a stav doručování pro spotřebitele JetStream.\n\nVrací pravidlo potvrzování spotřebitele (ack policy), pravidlo doručování (deliver policy), předmět filtru (filter subject) a aktuální stav včetně čekajících zpráv a postupu zpracování."
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItaW5mbw.display_name": {
+          "source": "Consumer Info",
+          "message": "Informace o spotřebiteli"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItaW5mbw.option.Y29uc3VtZXI.desc": {
+          "source": "The name of the consumer to retrieve information for.\n\nThe consumer must exist on the specified stream; an error is raised if not found.",
+          "message": "Název spotřebitele, pro kterého mají být získány informace.\n\nSpotřebitel musí ve specifikovaném streamu existovat; pokud není nalezen, dojde k chybě."
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItaW5mbw.option.Y29uc3VtZXI.display_name": {
+          "source": "Consumer Name",
+          "message": "Název spotřebitele"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItaW5mbw.option.Y29uc3VtZXI.short_desc": {
+          "source": "Consumer name to get info for",
+          "message": "Název spotřebitele pro získání informací"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItaW5mbw.option.c3RyZWFt.desc": {
+          "source": "The name of the JetStream stream that owns the consumer.\n\nThe stream must exist; an error is raised if not found.",
+          "message": "Název streamu JetStream, který vlastní spotřebitele.\n\nStream musí existovat; pokud není nalezen, dojde k chybě."
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItaW5mbw.option.c3RyZWFt.display_name": {
+          "source": "Stream Name",
+          "message": "Název streamu"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItaW5mbw.option.c3RyZWFt.short_desc": {
+          "source": "Stream name containing the consumer",
+          "message": "Název streamu obsahujícího spotřebitele"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItaW5mbw.short_desc": {
+          "source": "Get consumer configuration and delivery state",
+          "message": "Získat konfiguraci a stav doručování spotřebitele"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItbGlzdA.desc": {
+          "source": "Lists all consumers for a JetStream stream with their configuration and delivery state.\n\nReturns detailed information for each consumer including delivery policy, acknowledgment settings, and processing progress.",
+          "message": "Seznam všech spotřebitelů pro stream JetStream s jejich konfigurací a stavem doručování.\n\nVrací podrobné informace pro každého spotřebitele včetně pravidel doručování, nastavení potvrzování a postupu zpracování."
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItbGlzdA.display_name": {
+          "source": "List Consumers",
+          "message": "Seznam spotřebitelů"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItbGlzdA.option.c3RyZWFt.desc": {
+          "source": "The name of the JetStream stream to list consumers for.\n\nThe stream must already exist; an error is raised if the stream is not found.",
+          "message": "Název streamu JetStream, pro který mají být vypsáni spotřebitelé.\n\nStream již musí existovat; pokud není nalezen, dojde k chybě."
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItbGlzdA.option.c3RyZWFt.display_name": {
+          "source": "Stream Name",
+          "message": "Název streamu"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItbGlzdA.option.c3RyZWFt.short_desc": {
+          "source": "Stream name to list consumers for",
+          "message": "Název streamu pro výpis spotřebitelů"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItbGlzdA.short_desc": {
+          "source": "List all consumers for a JetStream stream",
+          "message": "Vypsat všechny spotřebitele pro stream JetStream"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItbmFtZXM.desc": {
+          "source": "Lists all consumer names for a JetStream stream without full configuration or state details.\n\nUse this for lightweight enumeration when you only need to check which consumers exist.",
+          "message": "Vypíše všechny názvy spotřebitelů pro stream JetStream bez úplných podrobností o konfiguraci nebo stavu.\n\nToto použijte pro rychlé výčty, pokud potřebujete pouze zkontrolovat, kteří spotřebitelé existují."
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItbmFtZXM.display_name": {
+          "source": "Consumer Names",
+          "message": "Názvy spotřebitelů"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItbmFtZXM.option.c3RyZWFt.desc": {
+          "source": "The name of the JetStream stream to list consumer names for.\n\nThe stream must already exist; an error is raised if the stream is not found.",
+          "message": "Název streamu JetStream, pro který mají být vypsány názvy spotřebitelů.\n\nStream již musí existovat; pokud není nalezen, dojde k chybě."
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItbmFtZXM.option.c3RyZWFt.display_name": {
+          "source": "Stream Name",
+          "message": "Název streamu"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItbmFtZXM.option.c3RyZWFt.short_desc": {
+          "source": "Stream name to list consumer names for",
+          "message": "Název streamu pro výpis názvů spotřebitelů"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItbmFtZXM.short_desc": {
+          "source": "List all consumer names for a JetStream stream",
+          "message": "Vypsat všechny názvy spotřebitelů pro stream JetStream"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItcGF1c2U.desc": {
+          "source": "Pauses a JetStream consumer until a specified time.\n\nA paused consumer stops receiving messages until the specified time, at which point delivery automatically resumes. Use this for maintenance windows or rate limiting.",
+          "message": "Pozastaví spotřebitele JetStream do zadaného času.\n\nPozastavený spotřebitel přestane přijímat zprávy až do zadaného času, kdy se doručování automaticky obnoví. Použijte pro okna údržby nebo omezení rychlosti."
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItcGF1c2U.display_name": {
+          "source": "Pause Consumer",
+          "message": "Pozastavit spotřebitele"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItcGF1c2U.option.Y29uc3VtZXI.desc": {
+          "source": "The name of the consumer to pause.\n\nThe consumer must already exist on the specified stream; an error is raised if not found.",
+          "message": "Název spotřebitele, který má být pozastaven.\n\nSpotřebitel již musí v určeném streamu existovat; pokud není nalezen, dojde k chybě."
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItcGF1c2U.option.Y29uc3VtZXI.display_name": {
+          "source": "Consumer Name",
+          "message": "Název spotřebitele"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItcGF1c2U.option.Y29uc3VtZXI.short_desc": {
+          "source": "Consumer name to pause",
+          "message": "Název spotřebitele k pozastavení"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItcGF1c2U.option.c3RyZWFt.desc": {
+          "source": "The name of the JetStream stream that the consumer belongs to.\n\nThe stream must already exist; an error is raised if the stream is not found.",
+          "message": "Název streamu JetStream, do kterého spotřebitel patří.\n\nStream již musí existovat; pokud není nalezen, dojde k chybě."
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItcGF1c2U.option.c3RyZWFt.display_name": {
+          "source": "Stream Name",
+          "message": "Název streamu"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItcGF1c2U.option.c3RyZWFt.short_desc": {
+          "source": "Stream name containing the consumer",
+          "message": "Název streamu obsahujícího spotřebitele"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItcGF1c2U.option.cGF1c2VfdW50aWw.desc": {
+          "source": "The date/time until which the consumer should be paused.\n\nThe consumer will stop receiving messages until this time is reached, at which point it will automatically resume delivery. Use this for scheduled maintenance windows or rate limiting.",
+          "message": "Datum/čas, do kterého má být spotřebitel pozastaven.\n\nSpotřebitel přestane přijímat zprávy, dokud nenastane tento čas, kdy se doručování automaticky obnoví. Použijte pro plánovaná okna údržby nebo omezení rychlosti."
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItcGF1c2U.option.cGF1c2VfdW50aWw.display_name": {
+          "source": "Pause Until",
+          "message": "Pozastavit do"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItcGF1c2U.option.cGF1c2VfdW50aWw.short_desc": {
+          "source": "When the consumer should automatically resume",
+          "message": "Kdy by měl spotřebitel automaticky pokračovat"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItcGF1c2U.short_desc": {
+          "source": "Pause a JetStream consumer until a specified time",
+          "message": "Pozastavit spotřebitele JetStream do zadaného času"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItdXBkYXRl.desc": {
+          "source": "Updates the configuration of an existing JetStream consumer.\n\nModifies consumer settings such as acknowledgment policy, delivery policy, filter subject, and retry behavior. Not all settings can be changed after creation.",
+          "message": "Aktualizuje konfiguraci stávajícího spotřebitele JetStream.\n\nMění nastavení spotřebitele, jako jsou pravidla potvrzování, pravidla doručování, předmět filtru a chování při opakovaných pokusech. Ne všechna nastavení lze po vytvoření změnit."
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItdXBkYXRl.display_name": {
+          "source": "Update Consumer",
+          "message": "Aktualizovat spotřebitele"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItdXBkYXRl.option.YWNrX3BvbGljeQ.allowed-value.aW50OjA.display_name": {
+          "source": "None",
+          "message": "Žádné"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItdXBkYXRl.option.YWNrX3BvbGljeQ.allowed-value.aW50OjA.short_desc": {
+          "source": "No acknowledgment required",
+          "message": "Nevyžaduje se žádné potvrzení"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItdXBkYXRl.option.YWNrX3BvbGljeQ.allowed-value.aW50OjE.display_name": {
+          "source": "All",
+          "message": "Vše"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItdXBkYXRl.option.YWNrX3BvbGljeQ.allowed-value.aW50OjE.short_desc": {
+          "source": "Acknowledge all prior messages",
+          "message": "Potvrdit všechny předchozí zprávy"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItdXBkYXRl.option.YWNrX3BvbGljeQ.allowed-value.aW50OjI.display_name": {
+          "source": "Explicit",
+          "message": "Explicitní"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItdXBkYXRl.option.YWNrX3BvbGljeQ.allowed-value.aW50OjI.short_desc": {
+          "source": "Each message must be individually acknowledged",
+          "message": "Každá zpráva musí být potvrzena jednotlivě"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItdXBkYXRl.option.YWNrX3BvbGljeQ.desc": {
+          "source": "Controls how the consumer acknowledges message delivery.\n\n- `0` (None): no acknowledgment required; messages are considered delivered immediately\n- `1` (All): acknowledging a message implicitly acknowledges all prior messages\n- `2` (Explicit): each message must be individually acknowledged\n\n**Default is `2` (Explicit) if not specified.**",
+          "message": "Řídí, jak odběratel potvrzuje doručení zpráv.\n\n- `0` (None): nevyžaduje se žádné potvrzení; zprávy se považují za doručené okamžitě\n- `1` (All): potvrzení zprávy implicitně potvrdí všechny předchozí zprávy\n- `2` (Explicit): každá zpráva musí být potvrzena jednotlivě\n\n**Výchozí hodnota je `2` (Explicit), pokud není určeno jinak.**"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItdXBkYXRl.option.YWNrX3BvbGljeQ.display_name": {
+          "source": "Ack Policy",
+          "message": "Zásady potvrzování"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItdXBkYXRl.option.YWNrX3BvbGljeQ.short_desc": {
+          "source": "Acknowledgment policy",
+          "message": "Zásady potvrzování"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItdXBkYXRl.option.YWNrX3dhaXQ.desc": {
+          "source": "Duration in milliseconds that the server will wait for an acknowledgment before considering a message unacknowledged and scheduling it for redelivery.\n\nFor example, `30000` sets a 30-second timeout. **If not specified, the server default of 30 seconds is used.** Set this value based on the expected processing time for your messages.",
+          "message": "Doba v milisekundách, po kterou bude server čekat na potvrzení, než začne zprávu považovat za nepotvrzenou a naplánuje její opakované doručení.\n\nNapříklad `30000` nastaví časový limit 30 sekund. **Pokud není uvedeno jinak, použije se výchozí hodnota serveru 30 sekund.** Tuto hodnotu nastavte na základě předpokládané doby zpracování vašich zpráv."
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItdXBkYXRl.option.YWNrX3dhaXQ.display_name": {
+          "source": "Ack Wait (ms)",
+          "message": "Čekání na potvrzení (ms)"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItdXBkYXRl.option.YWNrX3dhaXQ.short_desc": {
+          "source": "Acknowledgment wait timeout in milliseconds",
+          "message": "Časový limit čekání na potvrzení v milisekundách"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItdXBkYXRl.option.ZGVsaXZlcl9ncm91cA.desc": {
+          "source": "Queue group name for load-balanced message delivery across multiple consumer instances.\n\nWhen set, messages are distributed across all consumers sharing the same `deliver_group` value, ensuring each message is processed by only one consumer. **Only applicable in push mode** (when `deliver_subject` is set).",
+          "message": "Název skupiny fronty pro vyvažované doručování zpráv napříč více instancemi odběratelů.\n\nPokud je nastaveno, zprávy jsou distribuovány mezi všechny odběratele sdílející stejnou hodnotu `deliver_group`, což zajišťuje, že každá zpráva bude zpracována pouze jedním odběratelem. **Platí pouze v režimu push** (když je nastaveno `deliver_subject`)."
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItdXBkYXRl.option.ZGVsaXZlcl9ncm91cA.display_name": {
+          "source": "Deliver Group",
+          "message": "Doručovací skupina"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItdXBkYXRl.option.ZGVsaXZlcl9ncm91cA.short_desc": {
+          "source": "Deliver group (queue group)",
+          "message": "Doručovací skupina (skupina fronty)"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItdXBkYXRl.option.ZGVsaXZlcl9wb2xpY3k.allowed-value.aW50OjA.display_name": {
+          "source": "All",
+          "message": "Vše"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItdXBkYXRl.option.ZGVsaXZlcl9wb2xpY3k.allowed-value.aW50OjA.short_desc": {
+          "source": "Deliver all messages",
+          "message": "Doručit všechny zprávy"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItdXBkYXRl.option.ZGVsaXZlcl9wb2xpY3k.allowed-value.aW50OjE.display_name": {
+          "source": "Last",
+          "message": "Poslední"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItdXBkYXRl.option.ZGVsaXZlcl9wb2xpY3k.allowed-value.aW50OjE.short_desc": {
+          "source": "Deliver starting with the last message",
+          "message": "Doručit počínaje poslední zprávou"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItdXBkYXRl.option.ZGVsaXZlcl9wb2xpY3k.allowed-value.aW50OjI.display_name": {
+          "source": "New",
+          "message": "Nové"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItdXBkYXRl.option.ZGVsaXZlcl9wb2xpY3k.allowed-value.aW50OjI.short_desc": {
+          "source": "Deliver only new messages",
+          "message": "Doručit pouze nové zprávy"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItdXBkYXRl.option.ZGVsaXZlcl9wb2xpY3k.allowed-value.aW50OjM.display_name": {
+          "source": "By Start Sequence",
+          "message": "Podle počáteční sekvence"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItdXBkYXRl.option.ZGVsaXZlcl9wb2xpY3k.allowed-value.aW50OjM.short_desc": {
+          "source": "Deliver starting at a specific sequence",
+          "message": "Doručit počínaje konkrétní sekvencí"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItdXBkYXRl.option.ZGVsaXZlcl9wb2xpY3k.allowed-value.aW50OjQ.display_name": {
+          "source": "By Start Time",
+          "message": "Podle počátečního času"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItdXBkYXRl.option.ZGVsaXZlcl9wb2xpY3k.allowed-value.aW50OjQ.short_desc": {
+          "source": "Deliver starting at a specific time",
+          "message": "Doručit počínaje konkrétním časem"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItdXBkYXRl.option.ZGVsaXZlcl9wb2xpY3k.allowed-value.aW50OjU.display_name": {
+          "source": "Last Per Subject",
+          "message": "Poslední podle předmětu"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItdXBkYXRl.option.ZGVsaXZlcl9wb2xpY3k.allowed-value.aW50OjU.short_desc": {
+          "source": "Deliver the last message per subject",
+          "message": "Doručit poslední zprávu pro každý předmět"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItdXBkYXRl.option.ZGVsaXZlcl9wb2xpY3k.desc": {
+          "source": "Determines the starting point for message delivery to the consumer.\n\n- `0` (All): deliver all available messages from the beginning of the stream\n- `1` (Last): start with the last message in the stream\n- `2` (New): deliver only messages published after the consumer is created\n- `3` (By Start Sequence): start at a specific sequence number\n- `4` (By Start Time): start at a specific timestamp\n- `5` (Last Per Subject): deliver the last message for each subject\n\n**Default is `0` (All) if not specified.**",
+          "message": "Určuje počáteční bod pro doručování zpráv odběrateli.\n\n- `0` (All): doručit všechny dostupné zprávy od začátku streamu\n- `1` (Last): začít od poslední zprávy ve streamu\n- `2` (New): doručit pouze zprávy publikované po vytvoření odběratele\n- `3` (By Start Sequence): začít na konkrétním sekvenčním čísle\n- `4` (By Start Time): začít v konkrétním časovém razítku\n- `5` (Last Per Subject): doručit poslední zprávu pro každý předmět\n\n**Výchozí hodnota je `0` (All), pokud není určeno jinak.**"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItdXBkYXRl.option.ZGVsaXZlcl9wb2xpY3k.display_name": {
+          "source": "Deliver Policy",
+          "message": "Zásady doručování"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItdXBkYXRl.option.ZGVsaXZlcl9wb2xpY3k.short_desc": {
+          "source": "Message delivery policy",
+          "message": "Zásady doručování zpráv"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItdXBkYXRl.option.ZGVsaXZlcl9zdWJqZWN0.desc": {
+          "source": "The NATS subject where the server will push messages to the consumer.\n\nIf set, the consumer operates in **push mode** where the server actively delivers messages to this subject. If not set, the consumer operates in **pull mode** where clients must explicitly request messages.",
+          "message": "Předmět NATS, na který bude server odběrateli posílat zprávy.\n\nPokud je nastaven, odběratel pracuje v **režimu push**, kdy server aktivně doručuje zprávy na tento předmět. Pokud nastaven není, odběratel pracuje v **režimu pull**, kdy klienti musí o zprávy výslovně žádat."
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItdXBkYXRl.option.ZGVsaXZlcl9zdWJqZWN0.display_name": {
+          "source": "Deliver Subject",
+          "message": "Doručovací předmět"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItdXBkYXRl.option.ZGVsaXZlcl9zdWJqZWN0.short_desc": {
+          "source": "Subject for push delivery",
+          "message": "Předmět pro doručování v režimu push"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItdXBkYXRl.option.ZGVzY3JpcHRpb24.desc": {
+          "source": "Optional human-readable description for the consumer.\n\nThis is a free-form text field that can be used to document the consumer's purpose, the processing logic it implements, or any other relevant operational context.",
+          "message": "Volitelný čitelný popis odběratele.\n\nJedná se o volný textový popis, který lze použít k dokumentování účelu odběratele, logiky zpracování, kterou implementuje, nebo jakéhokoli jiného relevantního provozního kontextu."
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItdXBkYXRl.option.ZGVzY3JpcHRpb24.display_name": {
+          "source": "Description",
+          "message": "Popis"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItdXBkYXRl.option.ZGVzY3JpcHRpb24.short_desc": {
+          "source": "Consumer description",
+          "message": "Popis odběratele"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItdXBkYXRl.option.ZHVyYWJsZV9uYW1l.desc": {
+          "source": "A unique name that makes the consumer durable (persistent).\n\n**Important**: without a durable name, the consumer is ephemeral and will be automatically removed when it disconnects or becomes inactive. A durable consumer retains its state (delivery position, pending acknowledgments) across client disconnects and server restarts.",
+          "message": "Unikátní název, díky kterému je odběratel trvalý (durable).\n\n**Důležité**: bez trvalého názvu je odběratel chvilkový (ephemerální) a bude automaticky odstraněn, jakmile se odpojí nebo se stane neaktivním. Trvalý odběratel si zachovává svůj stav (pozici doručení, čekající potvrzení) i při odpojení klienta a restartu serveru."
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItdXBkYXRl.option.ZHVyYWJsZV9uYW1l.display_name": {
+          "source": "Durable Name",
+          "message": "Trvalý název"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItdXBkYXRl.option.ZHVyYWJsZV9uYW1l.short_desc": {
+          "source": "Durable consumer name",
+          "message": "Název trvalého odběratele"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItdXBkYXRl.option.ZmlsdGVyX3N1YmplY3Q.desc": {
+          "source": "A subject filter that restricts the consumer to receiving only messages matching this pattern.\n\nThis allows a consumer to process a subset of the stream's messages. Supports NATS wildcard tokens (`*` and `>`). If not set, the consumer receives all messages from the stream.",
+          "message": "Filtr předmětu, který odběratele omezuje pouze na příjem zpráv odpovídajících tomuto vzoru.\n\nTo umožňuje odběrateli zpracovávat podmnožinu zpráv streamu. Podporuje žolíkové znaky NATS (`*` a `>`). Pokud není nastaveno, odběratel přijímá všechny zprávy ze streamu."
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItdXBkYXRl.option.ZmlsdGVyX3N1YmplY3Q.display_name": {
+          "source": "Filter Subject",
+          "message": "Filtr předmětu"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItdXBkYXRl.option.ZmlsdGVyX3N1YmplY3Q.short_desc": {
+          "source": "Filter subject for the consumer",
+          "message": "Filtr předmětu pro odběratele"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItdXBkYXRl.option.bWF4X2Fja19wZW5kaW5n.desc": {
+          "source": "Maximum number of messages that can be delivered but not yet acknowledged.\n\nThis acts as a flow control mechanism to prevent the consumer from being overwhelmed. Once this limit is reached, the server pauses delivery until some messages are acknowledged. **Default is `1000` if not specified.**",
+          "message": "Maximální počet zpráv, které mohou být doručeny, ale ještě nebyly potvrzeny.\n\nToto funguje jako mechanismus řízení toku, který zabraňuje přetížení odběratele. Jakmile je tohoto limitu dosaženo, server pozastaví doručování, dokud nebudou některé zprávy potvrzeny. **Výchozí hodnota je `1000`, pokud není určeno jinak.**"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItdXBkYXRl.option.bWF4X2Fja19wZW5kaW5n.display_name": {
+          "source": "Max Ack Pending",
+          "message": "Max. čekajících potvrzení"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItdXBkYXRl.option.bWF4X2Fja19wZW5kaW5n.short_desc": {
+          "source": "Maximum pending acknowledgments",
+          "message": "Maximální počet čekajících potvrzení"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItdXBkYXRl.option.bWF4X2RlbGl2ZXI.desc": {
+          "source": "Maximum number of times the server will attempt to deliver a message to the consumer.\n\nAfter this many failed delivery attempts, the message is dropped or sent to a dead-letter queue if configured. Set to `-1` for unlimited redelivery attempts. **A value of `5` is commonly used in production.**",
+          "message": "Maximální počet pokusů serveru o doručení zprávy odběrateli.\n\nPo tomto počtu neúspěšných pokusů o doručení je zpráva zahozena nebo odeslána do fronty neplatných zpráv (dead-letter queue), pokud je nakonfigurována. Nastavte na `-1` pro neomezený počet pokusů o doručení. **V produkci se běžně používá hodnota `5`.**"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItdXBkYXRl.option.bWF4X2RlbGl2ZXI.display_name": {
+          "source": "Max Deliver",
+          "message": "Max. doručení"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItdXBkYXRl.option.bWF4X2RlbGl2ZXI.short_desc": {
+          "source": "Maximum delivery attempts",
+          "message": "Maximální počet pokusů o doručení"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItdXBkYXRl.option.c3RyZWFt.desc": {
+          "source": "The name of the JetStream stream that this consumer will read messages from.\n\nThe stream must already exist before the consumer can be created. Use the stream `name` value from the stream configuration.",
+          "message": "Název streamu JetStream, ze kterého bude tento odběratel číst zprávy.\n\nStream musí existovat ještě před vytvořením odběratele. Použijte hodnotu streamu `name` z konfigurace streamu."
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItdXBkYXRl.option.c3RyZWFt.display_name": {
+          "source": "Stream Name",
+          "message": "Název streamu"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItdXBkYXRl.option.c3RyZWFt.short_desc": {
+          "source": "Name of the stream",
+          "message": "Název streamu"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItdXBkYXRl.option.cmVwbGF5X3BvbGljeQ.allowed-value.aW50OjA.display_name": {
+          "source": "Instant",
+          "message": "Okamžitě"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItdXBkYXRl.option.cmVwbGF5X3BvbGljeQ.allowed-value.aW50OjA.short_desc": {
+          "source": "Replay messages as fast as possible",
+          "message": "Přehrávat zprávy co nejrychleji"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItdXBkYXRl.option.cmVwbGF5X3BvbGljeQ.allowed-value.aW50OjE.display_name": {
+          "source": "Original",
+          "message": "Původní"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItdXBkYXRl.option.cmVwbGF5X3BvbGljeQ.allowed-value.aW50OjE.short_desc": {
+          "source": "Replay messages at the original rate",
+          "message": "Přehrát zprávy původní rychlostí"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItdXBkYXRl.option.cmVwbGF5X3BvbGljeQ.desc": {
+          "source": "Controls the speed at which messages are replayed to the consumer when catching up on historical messages.\n\n- `0` (Instant): messages are delivered as fast as possible\n- `1` (Original): messages are delivered at the rate they were originally published, preserving the original timing\n\n**Default is `0` (Instant) if not specified.**",
+          "message": "Řídí rychlost, jakou jsou zprávy přehrávány spotřebiteli při dohánění historických zpráv.\n\n- `0` (Instant): zprávy jsou doručovány co nejrychleji\n- `1` (Original): zprávy jsou doručovány v rychlosti, v jaké byly původně publikovány, se zachováním původního časování\n\n**Výchozí hodnota je `0` (Instant), pokud není určeno jinak.**"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItdXBkYXRl.option.cmVwbGF5X3BvbGljeQ.display_name": {
+          "source": "Replay Policy",
+          "message": "Pravidlo přehrávání"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItdXBkYXRl.option.cmVwbGF5X3BvbGljeQ.short_desc": {
+          "source": "Message replay policy",
+          "message": "Pravidlo přehrávání zpráv"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItdXBkYXRl.short_desc": {
+          "source": "Update a JetStream consumer configuration",
+          "message": "Aktualizovat konfiguraci spotřebitele JetStream"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.YWNjb3VudC1pbmZv.desc": {
+          "source": "Retrieves JetStream account information including resource usage and API statistics.\n\nReturns memory and storage usage, stream and consumer counts, and API request totals. Use this for capacity planning and monitoring.",
+          "message": "Získává informace o účtu JetStream včetně využití prostředků a statistik API.\n\nVrací využití paměti a úložiště, počty streamů a spotřebitelů a celkové počty požadavků API. Použijte pro plánování kapacity a monitorování."
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.YWNjb3VudC1pbmZv.display_name": {
+          "source": "Account Info",
+          "message": "Informace o účtu"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.YWNjb3VudC1pbmZv.short_desc": {
+          "source": "Get JetStream account resource usage and API statistics",
+          "message": "Získat informace o využití prostředků účtu JetStream a statistiky API"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.a3YtY3JlYXRlLWJ1Y2tldA.desc": {
+          "source": "Creates a new JetStream Key-Value store bucket.\n\nCreates a bucket with the specified configuration including history depth, TTL, storage type, and replication. Returns the initial bucket status.",
+          "message": "Vytvoří nový bucket pro uložení klíč-hodnota (Key-Value) v JetStream.\n\nVytvoří bucket se zadanou konfigurací včetně hloubky historie, TTL, typu úložiště a replikace. Vrací počáteční stav bucketu."
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.a3YtY3JlYXRlLWJ1Y2tldA.display_name": {
+          "source": "KV Create Bucket",
+          "message": "KV vytvořit bucket"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.a3YtY3JlYXRlLWJ1Y2tldA.option.YnVja2V0.desc": {
+          "source": "The name for the new KV bucket.\n\nBucket names must be alphanumeric and may include dashes or underscores. The name must be unique within the JetStream account.",
+          "message": "Název pro nový KV bucket.\n\nNázvy bucketů musí být alfanumerické a mohou obsahovat pomlčky nebo podtržítka. Název musí být v rámci účtu JetStream unikátní."
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.a3YtY3JlYXRlLWJ1Y2tldA.option.YnVja2V0.display_name": {
+          "source": "Bucket Name",
+          "message": "Název bucketu"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.a3YtY3JlYXRlLWJ1Y2tldA.option.YnVja2V0.short_desc": {
+          "source": "Bucket name to create",
+          "message": "Název bucketu k vytvoření"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.a3YtY3JlYXRlLWJ1Y2tldA.option.ZGVzY3JpcHRpb24.desc": {
+          "source": "Optional human-readable description for the bucket.\n\nThis is a free-form text field that can be used to document the bucket's purpose and the types of data it stores.",
+          "message": "Volitelný čitelný popis bucketu.\n\nToto je volné textové pole, které lze použít k dokumentování účelu bucketu a typů dat, které ukládá."
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.a3YtY3JlYXRlLWJ1Y2tldA.option.ZGVzY3JpcHRpb24.display_name": {
+          "source": "Description",
+          "message": "Popis"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.a3YtY3JlYXRlLWJ1Y2tldA.option.ZGVzY3JpcHRpb24.short_desc": {
+          "source": "Bucket description",
+          "message": "Popis bucketu"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.a3YtY3JlYXRlLWJ1Y2tldA.option.aGlzdG9yeQ.desc": {
+          "source": "The number of historical revisions to retain for each key.\n\nAllows retrieving previous values via the history API. A value of `1` means only the latest revision is kept. **Default is `1` if not specified.**",
+          "message": "Počet historických revizí, které se mají zachovat pro každý klíč.\n\nUmožňuje načítat předchozí hodnoty prostřednictvím historie API. Hodnota `1` znamená, že se uchovává pouze nejnovější revize. **Výchozí hodnota je `1`, pokud není určeno jinak.**"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.a3YtY3JlYXRlLWJ1Y2tldA.option.aGlzdG9yeQ.display_name": {
+          "source": "History",
+          "message": "Historie"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.a3YtY3JlYXRlLWJ1Y2tldA.option.aGlzdG9yeQ.short_desc": {
+          "source": "Number of historical values to keep per key",
+          "message": "Počet historických hodnot k uchování pro každý klíč"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.a3YtY3JlYXRlLWJ1Y2tldA.option.bWF4X2J5dGVz.desc": {
+          "source": "Maximum total storage in bytes for all keys and revisions in the bucket.\n\nWhen this limit is reached, old revisions are removed to make room. If not set, the server default is used.",
+          "message": "Maximální celková velikost úložiště v bajtech pro všechny klíče a revize v bucketu.\n\nPři dosažení tohoto limitu jsou staré revize odstraněny, aby se uvolnilo místo. Pokud není nastaveno, použije se výchozí hodnota serveru."
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.a3YtY3JlYXRlLWJ1Y2tldA.option.bWF4X2J5dGVz.display_name": {
+          "source": "Max Bytes",
+          "message": "Maximálně bajtů"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.a3YtY3JlYXRlLWJ1Y2tldA.option.bWF4X2J5dGVz.short_desc": {
+          "source": "Maximum total bytes in the bucket",
+          "message": "Maximální celkový počet bajtů v bucketu"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.a3YtY3JlYXRlLWJ1Y2tldA.option.bWF4X3ZhbHVlX3NpemU.desc": {
+          "source": "Maximum size in bytes for any individual value stored in the bucket.\n\nValues exceeding this size will be rejected. If not set, the server default is used.",
+          "message": "Maximální velikost v bajtech pro jakoukoli jednotlivou hodnotu uloženou v bucketu.\n\nHodnoty překračující tuto velikost budou odmítnuty. Pokud není nastaveno, použije se výchozí hodnota serveru."
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.a3YtY3JlYXRlLWJ1Y2tldA.option.bWF4X3ZhbHVlX3NpemU.display_name": {
+          "source": "Max Value Size",
+          "message": "Maximální velikost hodnoty"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.a3YtY3JlYXRlLWJ1Y2tldA.option.bWF4X3ZhbHVlX3NpemU.short_desc": {
+          "source": "Maximum value size in bytes",
+          "message": "Maximální velikost hodnoty v bajtech"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.a3YtY3JlYXRlLWJ1Y2tldA.option.bnVtX3JlcGxpY2Fz.desc": {
+          "source": "Number of copies of the bucket data to maintain across a NATS cluster for high availability.\n\nA value of `1` means no replication (single copy). **Must be an odd number and cannot exceed the number of servers in the cluster.**",
+          "message": "Počet kopií dat bucketu, které mají být udržovány v clusteru NATS pro vysokou dostupnost.\n\nHodnota `1` znamená bez replikace (jediná kopie). **Musí se jednat o liché číslo a nesmí překročit počet serverů v clusteru.**"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.a3YtY3JlYXRlLWJ1Y2tldA.option.bnVtX3JlcGxpY2Fz.display_name": {
+          "source": "Replicas",
+          "message": "Repliky"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.a3YtY3JlYXRlLWJ1Y2tldA.option.bnVtX3JlcGxpY2Fz.short_desc": {
+          "source": "Number of replicas",
+          "message": "Počet replik"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.a3YtY3JlYXRlLWJ1Y2tldA.option.c3RvcmFnZQ.allowed-value.aW50OjA.display_name": {
+          "source": "File",
+          "message": "Soubor"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.a3YtY3JlYXRlLWJ1Y2tldA.option.c3RvcmFnZQ.allowed-value.aW50OjA.short_desc": {
+          "source": "Store data on disk",
+          "message": "Uložit data na disk"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.a3YtY3JlYXRlLWJ1Y2tldA.option.c3RvcmFnZQ.allowed-value.aW50OjE.display_name": {
+          "source": "Memory",
+          "message": "Paměť"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.a3YtY3JlYXRlLWJ1Y2tldA.option.c3RvcmFnZQ.allowed-value.aW50OjE.short_desc": {
+          "source": "Store data in memory",
+          "message": "Uložit data v paměti"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.a3YtY3JlYXRlLWJ1Y2tldA.option.c3RvcmFnZQ.desc": {
+          "source": "Controls where bucket data is persisted.\n\n- `0` (File): data is stored on disk for durability across server restarts\n- `1` (Memory): data is stored in memory for higher throughput but is lost on server restart\n\n**Default is `0` (File) if not specified.**",
+          "message": "Řídí, kde jsou data bucketu uchovávána.\n\n- `0` (Soubor): data jsou uložena na disku pro zachování i po restartování serveru\n- `1` (Paměť): data jsou uložena v paměti pro vyšší propustnost, ale při restartu serveru se ztratí\n\n**Výchozí hodnota je `0` (Soubor), pokud není určeno jinak.**"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.a3YtY3JlYXRlLWJ1Y2tldA.option.c3RvcmFnZQ.display_name": {
+          "source": "Storage Type",
+          "message": "Typ úložiště"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.a3YtY3JlYXRlLWJ1Y2tldA.option.c3RvcmFnZQ.short_desc": {
+          "source": "Storage type",
+          "message": "Typ úložiště"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.a3YtY3JlYXRlLWJ1Y2tldA.option.dHRs.desc": {
+          "source": "Time-to-live for values in the bucket, in milliseconds.\n\nValues older than this duration are automatically removed. Set to `0` or omit for no TTL (values persist indefinitely).",
+          "message": "Doba životnosti (TTL) pro hodnoty v bucketu v milisekundách.\n\nHodnoty starší než tato doba jsou automaticky odstraněny. Nastavte na `0` nebo vynechte, pokud nechcete žádné TTL (hodnoty zůstanou zachovány na dobu neurčitou)."
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.a3YtY3JlYXRlLWJ1Y2tldA.option.dHRs.display_name": {
+          "source": "TTL (ms)",
+          "message": "TTL (ms)"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.a3YtY3JlYXRlLWJ1Y2tldA.option.dHRs.short_desc": {
+          "source": "Time-to-live for values in milliseconds",
+          "message": "Doba životnosti (TTL) pro hodnoty v milisekundách"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.a3YtY3JlYXRlLWJ1Y2tldA.short_desc": {
+          "source": "Create a new KV store bucket",
+          "message": "Vytvořit nový bucket KV úložiště"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.a3YtZ2V0.desc": {
+          "source": "Retrieves the current value and metadata for a key from a JetStream KV bucket.\n\nReturns the latest revision including `value`, `revision`, `created` timestamp, and `operation` type.",
+          "message": "Získá aktuální hodnotu a metadata pro klíč z JetStream KV bucketu.\n\nVrací nejnovější revizi včetně `value`, `revision`, časového razítka `created` a typu `operation`."
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.a3YtZ2V0.display_name": {
+          "source": "KV Get",
+          "message": "KV Get"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.a3YtZ2V0.option.YnVja2V0.desc": {
+          "source": "The name of the JetStream KV bucket to read from.\n\nThe bucket must already exist; an error is raised if not found.",
+          "message": "Název JetStream KV bucketu, ze kterého se má číst.\n\nBucket již musí existovat; pokud nebyl nalezen, dojde k chybě."
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.a3YtZ2V0.option.YnVja2V0.display_name": {
+          "source": "Bucket",
+          "message": "Bucket"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.a3YtZ2V0.option.YnVja2V0.short_desc": {
+          "source": "KV bucket name",
+          "message": "Název KV bucketu"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.a3YtZ2V0.option.a2V5.desc": {
+          "source": "The key name to retrieve the current value for.\n\nReturns the latest revision of the key. If the key does not exist or has been deleted, an error is raised.",
+          "message": "Název klíče, pro který má být získána aktuální hodnota.\n\nVrací nejnovější revizi klíče. Pokud klíč neexistuje nebo byl smazán, dojde k chybě."
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.a3YtZ2V0.option.a2V5.display_name": {
+          "source": "Key",
+          "message": "Klíč"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.a3YtZ2V0.option.a2V5.short_desc": {
+          "source": "Key name to retrieve",
+          "message": "Název klíče k získání"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.a3YtZ2V0.short_desc": {
+          "source": "Retrieve a value and metadata for a key",
+          "message": "Získat hodnotu a metadata pro klíč"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.a3YtZGVsZXRl.desc": {
+          "source": "Soft-deletes a key from a JetStream KV bucket.\n\nPlaces a delete marker so the key no longer appears in listings or get operations. The key's revision history is preserved.",
+          "message": "Provede měkké smazání (soft-delete) klíče z JetStream KV bucketu.\n\nVloží značku smazání (delete marker), takže se klíč již neobjevuje v seznamech ani při operacích get. Historie revizí klíče zůstane zachována."
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.a3YtZGVsZXRl.display_name": {
+          "source": "KV Delete",
+          "message": "KV Delete"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.a3YtZGVsZXRl.option.YnVja2V0.desc": {
+          "source": "The name of the JetStream KV bucket containing the key.\n\nThe bucket must already exist; an error is raised if not found.",
+          "message": "Název JetStream KV bucketu obsahujícího klíč.\n\nBucket již musí existovat; pokud nebyl nalezen, dojde k chybě."
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.a3YtZGVsZXRl.option.YnVja2V0.display_name": {
+          "source": "Bucket",
+          "message": "Bucket"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.a3YtZGVsZXRl.option.YnVja2V0.short_desc": {
+          "source": "KV bucket name",
+          "message": "Název KV bucketu"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.a3YtZGVsZXRl.option.a2V5.desc": {
+          "source": "The key name to delete from the bucket.\n\nA delete operation creates a delete marker in the key's history rather than physically removing it. The key will no longer appear in `keys` listings, but its history remains accessible via the history action.",
+          "message": "Název klíče ke smazání z bucketu.\n\nOperace smazání vytvoří v historii klíče značku smazání, místo aby jej fyzicky odstranila. Klíč se již nebude zobrazovat ve výpisech `keys`, ale jeho historie zůstává přístupná pomocí akce history."
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.a3YtZGVsZXRl.option.a2V5.display_name": {
+          "source": "Key",
+          "message": "Klíč"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.a3YtZGVsZXRl.option.a2V5.short_desc": {
+          "source": "Key name to delete",
+          "message": "Název klíče ke smazání"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.a3YtZGVsZXRl.short_desc": {
+          "source": "Soft-delete a key from a KV bucket",
+          "message": "Měkce smazat klíč z KV bucketu"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.a3YtZGVsZXRlLWJ1Y2tldA.desc": {
+          "source": "Permanently deletes a JetStream Key-Value store bucket.\n\n**Warning**: this removes the bucket, all stored keys, and all revision history. This action cannot be undone.",
+          "message": "Trvale smaže JetStream Key-Value bucket úložiště.\n\n**Varování**: tímto se odstraní bucket, všechny uložené klíče i veškerá historie revizí. Tuto akci nelze vrátit zpět."
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.a3YtZGVsZXRlLWJ1Y2tldA.display_name": {
+          "source": "KV Delete Bucket",
+          "message": "KV Delete Bucket"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.a3YtZGVsZXRlLWJ1Y2tldA.option.YnVja2V0.desc": {
+          "source": "The name of the JetStream KV bucket to delete.\n\n**Warning**: this permanently removes the bucket, all its keys, and all revision history. This operation cannot be undone.",
+          "message": "Název JetStream KV bucketu ke smazání.\n\n**Varování**: tímto se trvale odstraní bucket, všechny jeho klíče i veškerá historie revizí. Tuto operaci nelze vrátit zpět."
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.a3YtZGVsZXRlLWJ1Y2tldA.option.YnVja2V0.display_name": {
+          "source": "Bucket Name",
+          "message": "Název bucketu"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.a3YtZGVsZXRlLWJ1Y2tldA.option.YnVja2V0.short_desc": {
+          "source": "Bucket name to delete",
+          "message": "Název bucketu ke smazání"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.a3YtZGVsZXRlLWJ1Y2tldA.short_desc": {
+          "source": "Permanently delete a KV store bucket",
+          "message": "Trvale smazat bucket KV úložiště"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.a3Yta2V5cw.desc": {
+          "source": "Lists all active keys in a JetStream KV bucket.\n\nReturns key names with current (non-deleted) values. Deleted or purged keys are excluded from the listing.",
+          "message": "Vypíše všechny aktivní klíče v JetStream KV bucketu.\n\nVrací názvy klíčů s aktuálními (nesmazanými) hodnotami. Smazané nebo vyčištěné klíče jsou z výpisu vyloučeny."
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.a3Yta2V5cw.display_name": {
+          "source": "KV Keys",
+          "message": "KV Keys"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.a3Yta2V5cw.option.YnVja2V0.desc": {
+          "source": "The name of the JetStream KV bucket to list keys for.\n\nThe bucket must already exist; an error is raised if not found.",
+          "message": "Název JetStream KV bucketu, jehož klíče mají být vypsány.\n\nBucket již musí existovat; pokud nebyl nalezen, dojde k chybě."
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.a3Yta2V5cw.option.YnVja2V0.display_name": {
+          "source": "Bucket",
+          "message": "Bucket"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.a3Yta2V5cw.option.YnVja2V0.short_desc": {
+          "source": "KV bucket name to list keys for",
+          "message": "Název KV bucketu, pro který se mají vypsat klíče"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.a3Yta2V5cw.short_desc": {
+          "source": "List all active keys in a KV bucket",
+          "message": "Vypsat všechny aktivní klíče v KV bucketu"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.a3YtaGlzdG9yeQ.desc": {
+          "source": "Retrieves the complete revision history for a key in a JetStream KV bucket.\n\nReturns all revisions ordered from oldest to newest, including put, delete, and purge operations. Use this for audit trails and debugging configuration changes.",
+          "message": "Získá kompletní historii revizí pro klíč v JetStream KV bucketu.\n\nVrací všechny revize seřazené od nejstarší po nejnovější, včetně operací put, delete a purge. Použijte toto pro auditní stopy a ladění změn konfigurace."
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.a3YtaGlzdG9yeQ.display_name": {
+          "source": "KV History",
+          "message": "KV History"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.a3YtaGlzdG9yeQ.option.YnVja2V0.desc": {
+          "source": "The name of the JetStream KV bucket containing the key.\n\nThe bucket must already exist; an error is raised if not found.",
+          "message": "Název JetStream KV bucketu obsahujícího klíč.\n\nBucket již musí existovat; pokud nebyl nalezen, dojde k chybě."
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.a3YtaGlzdG9yeQ.option.YnVja2V0.display_name": {
+          "source": "Bucket",
+          "message": "Bucket"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.a3YtaGlzdG9yeQ.option.YnVja2V0.short_desc": {
+          "source": "KV bucket name",
+          "message": "Název KV bucketu"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.a3YtaGlzdG9yeQ.option.a2V5.desc": {
+          "source": "The key name to retrieve the complete revision history for.\n\nReturns all revisions including put, delete, and purge operations, providing a complete audit trail of changes to the key.",
+          "message": "Název klíče, pro který má být získána kompletní historie revizí.\n\nVrací všechny revize včetně operací put, delete a purge, čímž poskytuje kompletní auditní stopu změn klíče."
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.a3YtaGlzdG9yeQ.option.a2V5.display_name": {
+          "source": "Key",
+          "message": "Klíč"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.a3YtaGlzdG9yeQ.option.a2V5.short_desc": {
+          "source": "Key name to get history for",
+          "message": "Název klíče pro získání historie"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.a3YtaGlzdG9yeQ.short_desc": {
+          "source": "Get the complete revision history for a KV key",
+          "message": "Získat kompletní historii revizí pro KV klíč"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.a3Ytc3RhdHVz.desc": {
+          "source": "Retrieves status information for a JetStream KV bucket.\n\nReturns the bucket's key count, history depth, TTL, replica count, and total storage usage.",
+          "message": "Získá informace o stavu JetStream KV bucketu.\n\nVrací počet klíčů v bucketu, hloubku historie, TTL, počet replik a celkové využití úložiště."
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.a3Ytc3RhdHVz.display_name": {
+          "source": "KV Bucket Status",
+          "message": "KV Bucket Status"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.a3Ytc3RhdHVz.option.YnVja2V0.desc": {
+          "source": "The name of the JetStream KV bucket to retrieve status for.\n\nThe bucket must already exist; an error is raised if not found.",
+          "message": "Název JetStream KV bucketu, pro který má být získán stav.\n\nBucket již musí existovat; pokud nebyl nalezen, dojde k chybě."
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.a3Ytc3RhdHVz.option.YnVja2V0.display_name": {
+          "source": "Bucket Name",
+          "message": "Název bucketu"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.a3Ytc3RhdHVz.option.YnVja2V0.short_desc": {
+          "source": "Bucket name to get status for",
+          "message": "Název bucketu pro získání stavu"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.a3Ytc3RhdHVz.short_desc": {
+          "source": "Get status information for a KV bucket",
+          "message": "Získat informace o stavu pro KV bucket"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.a3YtcHV0.desc": {
+          "source": "Stores a value for a key in a JetStream KV bucket.\n\nCreates the key if it does not exist, or updates it with a new revision. Returns the new `revision` number for optimistic concurrency control.",
+          "message": "Uloží hodnotu pro klíč v JetStream KV bucketu.\n\nVytvoří klíč, pokud neexistuje, nebo jej aktualizuje novou revizí. Vrací nové číslo `revision` pro optimistické řízení souběhu."
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.a3YtcHV0.display_name": {
+          "source": "KV Put",
+          "message": "KV Put"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.a3YtcHV0.option.YnVja2V0.desc": {
+          "source": "The name of the JetStream KV bucket to store the value in.\n\nThe bucket must already exist. Use dot-separated naming conventions for organization (e.g. `config`, `cache`, `feature-flags`).",
+          "message": "Název JetStream KV bucketu, do kterého se má hodnota uložit.\n\nBucket již musí existovat. Pro organizaci používejte konvence pojmenování oddělené tečkami (např. `config`, `cache`, `feature-flags`)."
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.a3YtcHV0.option.YnVja2V0.display_name": {
+          "source": "Bucket",
+          "message": "Bucket"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.a3YtcHV0.option.YnVja2V0.short_desc": {
+          "source": "KV bucket name",
+          "message": "Název KV bucketu"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.a3YtcHV0.option.ZGF0YQ.desc": {
+          "source": "The binary value to store; use either `data` or `string_data`.\n\nBinary data is stored as-is without encoding. If both `data` and `string_data` are provided, `data` takes precedence.",
+          "message": "Binární hodnota k uložení; použijte buď `data` nebo `string_data`.\n\nBinární data se ukládají tak, jak jsou, bez kódování. Pokud jsou zadány jak `data`, tak `string_data`, má přednost `data`."
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.a3YtcHV0.option.ZGF0YQ.display_name": {
+          "source": "Binary Data",
+          "message": "Binární data"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.a3YtcHV0.option.ZGF0YQ.short_desc": {
+          "source": "Binary value to store",
+          "message": "Binární hodnota k uložení"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.a3YtcHV0.option.a2V5.desc": {
+          "source": "The key name to store the value under.\n\nKeys can use dot-separated hierarchies (e.g. `app.database.host`). If the key already exists, its value is updated and a new revision is created.",
+          "message": "Název klíče, pod kterým má být hodnota uložena.\n\nKlíče mohou používat hierarchie oddělené tečkami (např. `app.database.host`). Pokud klíč již existuje, jeho hodnota se aktualizuje a vytvoří se nová revize."
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.a3YtcHV0.option.a2V5.display_name": {
+          "source": "Key",
+          "message": "Klíč"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.a3YtcHV0.option.a2V5.short_desc": {
+          "source": "Key name to store the value under",
+          "message": "Název klíče, pod kterým má být hodnota uložena"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.a3YtcHV0.option.c3RyaW5nX2RhdGE.desc": {
+          "source": "The string value to store (alternative to `data`).\n\nUse this for configuration values, JSON, or other text content. The string is converted to binary before storage.",
+          "message": "Řetězcová hodnota k uložení (alternativa k `data`).\n\nPoužijte toto pro konfigurační hodnoty, JSON nebo jiný textový obsah. Řetězec je před uložením převeden na binární data."
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.a3YtcHV0.option.c3RyaW5nX2RhdGE.display_name": {
+          "source": "String Data",
+          "message": "Řetězcová data"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.a3YtcHV0.option.c3RyaW5nX2RhdGE.short_desc": {
+          "source": "String value to store",
+          "message": "Řetězcová hodnota k uložení"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.a3YtcHV0.short_desc": {
+          "source": "Store a value for a key in a KV bucket",
+          "message": "Uložit hodnotu pro klíč v KV bucketu"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.anMtcHVibGlzaA.desc": {
+          "source": "Publishes a message to a JetStream subject with guaranteed delivery.\n\nUnlike basic NATS publish, the message is persisted to a stream and a publish acknowledgment is returned confirming storage with the `stream` name and `sequence` number.",
+          "message": "Publikuje zprávu do JetStream subjectu se zaručeným doručením.\n\nNa rozdíl od základního NATS publish je zpráva uložena do streamu a je vráceno potvrzení o publikování potvrzující uložení s názvem `stream` a číslem `sequence`."
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.anMtcHVibGlzaA.display_name": {
+          "source": "JetStream Publish",
+          "message": "JetStream Publish"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.anMtcHVibGlzaA.option.ZGF0YQ.desc": {
+          "source": "The binary message payload; use either `data` or `string_data`.\n\nBinary data is stored as-is in the stream without encoding.",
+          "message": "Binární užitečné zatížení (payload) zprávy; použijte buď `data` nebo `string_data`.\n\nBinární data jsou ve streamu uložena tak, jak jsou, bez kódování."
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.anMtcHVibGlzaA.option.ZGF0YQ.display_name": {
+          "source": "Binary Data",
+          "message": "Binární data"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.anMtcHVibGlzaA.option.ZGF0YQ.short_desc": {
+          "source": "Binary message payload",
+          "message": "Binární datová část zprávy"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.anMtcHVibGlzaA.option.ZXhwZWN0X25vX21lc3NhZ2U.desc": {
+          "source": "When set to `True`, the publish will fail if any message already exists for the subject.\n\nUse this to ensure that only the first message for a subject is accepted, implementing a create-only semantic.",
+          "message": "Pokud je nastaveno na `True`, publikování selže, pokud pro daný subject již jakákoli zpráva existuje.\n\nPoužijte toto k zajištění, že bude přijata pouze první zpráva pro subject, čímž se implementuje sémantika vytvoření pouze jednoho záznamu (create-only)."
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.anMtcHVibGlzaA.option.ZXhwZWN0X25vX21lc3NhZ2U.display_name": {
+          "source": "Expect No Message",
+          "message": "Očekávat žádnou zprávu"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.anMtcHVibGlzaA.option.ZXhwZWN0X25vX21lc3NhZ2U.short_desc": {
+          "source": "Expect no existing messages for subject",
+          "message": "Očekávat, že pro subject neexistují žádné zprávy"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.anMtcHVibGlzaA.option.ZXhwZWN0X2xhc3RfbXNnX2lk.desc": {
+          "source": "The expected message ID of the last message in the stream.\n\nIf the last message's ID does not match, the publish fails. Use this for sequence integrity checks.",
+          "message": "Očekávané ID zprávy poslední zprávy ve streamu.\n\nPokud ID poslední zprávy neodpovídá, publikování selže. Použijte toto pro kontroly integrity sekvence."
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.anMtcHVibGlzaA.option.ZXhwZWN0X2xhc3RfbXNnX2lk.display_name": {
+          "source": "Expected Last Message ID",
+          "message": "Očekávané ID poslední zprávy"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.anMtcHVibGlzaA.option.ZXhwZWN0X2xhc3RfbXNnX2lk.short_desc": {
+          "source": "Expected last message ID",
+          "message": "Očekávané ID poslední zprávy"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.anMtcHVibGlzaA.option.ZXhwZWN0X2xhc3Rfc2Vx.desc": {
+          "source": "The expected sequence number of the last message in the stream.\n\nIf the stream's last sequence number does not match, the publish fails. Use this for optimistic concurrency control to ensure no messages have been published between reads.",
+          "message": "Očekávané sekvenční číslo poslední zprávy ve streamu.\n\nPokud se poslední sekvenční číslo streamu neshoduje, publikování selže. Použijte pro optimistické řízení souběhu k zajištění, že mezi čteními nebyly publikovány žádné zprávy."
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.anMtcHVibGlzaA.option.ZXhwZWN0X2xhc3Rfc2Vx.display_name": {
+          "source": "Expected Last Sequence",
+          "message": "Očekávaná poslední sekvence"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.anMtcHVibGlzaA.option.ZXhwZWN0X2xhc3Rfc2Vx.short_desc": {
+          "source": "Expected last sequence number",
+          "message": "Očekávané poslední sekvenční číslo"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.anMtcHVibGlzaA.option.ZXhwZWN0X2xhc3Rfc3ViamVjdF9zZXE.desc": {
+          "source": "The expected sequence number of the last message for this specific subject.\n\nIf the last message on the subject does not have this sequence number, the publish fails. Use this for subject-level optimistic concurrency.",
+          "message": "Očekávané sekvenční číslo poslední zprávy pro tento konkrétní subjekt.\n\nPokud poslední zpráva na daném subjektu nemá toto sekvenční číslo, publikování selže. Použijte pro optimistické řízení souběhu na úrovni subjektu."
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.anMtcHVibGlzaA.option.ZXhwZWN0X2xhc3Rfc3ViamVjdF9zZXE.display_name": {
+          "source": "Expected Last Subject Sequence",
+          "message": "Očekávaná poslední sekvence subjektu"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.anMtcHVibGlzaA.option.ZXhwZWN0X2xhc3Rfc3ViamVjdF9zZXE.short_desc": {
+          "source": "Expected last subject sequence",
+          "message": "Očekávaná poslední sekvence subjektu"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.anMtcHVibGlzaA.option.ZXhwZWN0X3N0cmVhbQ.desc": {
+          "source": "The expected stream name that the message should be published to.\n\nIf the message would be stored in a different stream, the publish fails with an error. Use this for safety when publishing to subjects captured by multiple streams.",
+          "message": "Očekávaný název streamu, do kterého má být zpráva publikována.\n\nPokud by měla být zpráva uložena v jiném streamu, publikování selže s chybou. Použijte pro bezpečnost při publikování na subjekty zachycené více streamy."
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.anMtcHVibGlzaA.option.ZXhwZWN0X3N0cmVhbQ.display_name": {
+          "source": "Expected Stream",
+          "message": "Očekávaný stream"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.anMtcHVibGlzaA.option.ZXhwZWN0X3N0cmVhbQ.short_desc": {
+          "source": "Expected stream name",
+          "message": "Očekávaný název streamu"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.anMtcHVibGlzaA.option.bXNnX2lk.desc": {
+          "source": "A unique message identifier for idempotent publishing.\n\nJetStream tracks message IDs within a configurable deduplication window. If a message with the same ID is published again within the window, the server returns the original `sequence` number and sets `duplicate` to `True`.",
+          "message": "Unikátní identifikátor zprávy pro idempotentní publikování.\n\nJetStream sleduje ID zpráv v rámci konfigurovatelného okna deduplikace. Pokud je zpráva se stejným ID publikována znovu v rámci tohoto okna, server vrátí původní číslo `sequence` a nastaví `duplicate` na `True`."
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.anMtcHVibGlzaA.option.bXNnX2lk.display_name": {
+          "source": "Message ID",
+          "message": "ID zprávy"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.anMtcHVibGlzaA.option.bXNnX2lk.short_desc": {
+          "source": "Message ID for idempotent publishing",
+          "message": "ID zprávy pro idempotentní publikování"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.anMtcHVibGlzaA.option.c3RyaW5nX2RhdGE.desc": {
+          "source": "The string message payload (alternative to `data`).\n\nThe string is converted to binary before publishing. Use this for JSON, XML, or other text-based payloads.",
+          "message": "Textový obsah zprávy (alternativa k `data`).\n\nŘetězec je před publikováním převeden na binární data. Použijte pro JSON, XML nebo jiné textové obsahy."
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.anMtcHVibGlzaA.option.c3RyaW5nX2RhdGE.display_name": {
+          "source": "String Data",
+          "message": "Řetězcová data"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.anMtcHVibGlzaA.option.c3RyaW5nX2RhdGE.short_desc": {
+          "source": "String message payload",
+          "message": "Řetězcová datová část zprávy"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.anMtcHVibGlzaA.option.c3ViamVjdA.desc": {
+          "source": "The JetStream subject to publish the message to.\n\nThe subject must match at least one stream's subject filter for the message to be persisted. If no stream captures the subject, the publish will fail with a \"no responders\" error.",
+          "message": "Subjekt JetStream, do kterého má být zpráva publikována.\n\nSubjekt musí odpovídat alespoň jedné filtraci subjektů streamu, aby byla zpráva uložena. Pokud žádný stream subjekt nezachytí, publikování selže s chybou „no responders“."
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.anMtcHVibGlzaA.option.c3ViamVjdA.display_name": {
+          "source": "Subject",
+          "message": "Předmět"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.anMtcHVibGlzaA.option.c3ViamVjdA.short_desc": {
+          "source": "JetStream subject to publish to",
+          "message": "Subjekt JetStream k publikování"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.anMtcHVibGlzaA.short_desc": {
+          "source": "Publish with guaranteed delivery and acknowledgment",
+          "message": "Publikovat s garantovaným doručením a potvrzením"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.bWVzc2FnZS1kZWxldGU.desc": {
+          "source": "Deletes a message from a JetStream stream by sequence number.\n\nThe message data may still be recoverable from storage. For guaranteed data removal, use the erase action instead.",
+          "message": "Smaže zprávu ze streamu JetStream podle sekvenčního čísla.\n\nData zprávy mohou být stále obnovitelná z úložiště. Pro garantované odstranění dat použijte místo toho akci erase."
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.bWVzc2FnZS1kZWxldGU.display_name": {
+          "source": "Delete Message",
+          "message": "Smazat zprávu"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.bWVzc2FnZS1kZWxldGU.option.c2Vx.desc": {
+          "source": "The sequence number of the message to retrieve.\n\nSequence numbers are assigned monotonically by the stream. Use stream info to determine the valid range (`first_seq` to `last_seq`).",
+          "message": "Sekvenční číslo zprávy, která má být načtena.\n\nSekvenční čísla jsou streamem přidělována monotonicky. Pro určení platného rozsahu (`first_seq` až `last_seq`) použijte informace o streamu."
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.bWVzc2FnZS1kZWxldGU.option.c2Vx.display_name": {
+          "source": "Sequence Number",
+          "message": "Sekvenční číslo"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.bWVzc2FnZS1kZWxldGU.option.c2Vx.short_desc": {
+          "source": "Message sequence number",
+          "message": "Sekvenční číslo zprávy"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.bWVzc2FnZS1kZWxldGU.option.c3RyZWFt.desc": {
+          "source": "The name of the JetStream stream to retrieve the message from.\n\nThe stream must already exist; an error is raised if the stream is not found.",
+          "message": "Název streamu JetStream, ze kterého má být zpráva načtena.\n\nStream musí již existovat; pokud stream nebyl nalezen, vyvolá se chyba."
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.bWVzc2FnZS1kZWxldGU.option.c3RyZWFt.display_name": {
+          "source": "Stream Name",
+          "message": "Název streamu"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.bWVzc2FnZS1kZWxldGU.option.c3RyZWFt.short_desc": {
+          "source": "Stream name",
+          "message": "Název streamu"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.bWVzc2FnZS1kZWxldGU.short_desc": {
+          "source": "Delete a message from a stream by sequence number",
+          "message": "Smazat zprávu ze streamu podle sekvenčního čísla"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.bWVzc2FnZS1lcmFzZQ.desc": {
+          "source": "Securely erases a message from a JetStream stream by sequence number.\n\nUnlike delete, this overwrites the message data in storage for compliance with data protection regulations.",
+          "message": "Bezpečně vymaže zprávu ze streamu JetStream podle sekvenčního čísla.\n\nNa rozdíl od smazání přepíše data zprávy v úložišti kvůli dodržení předpisů o ochraně osobních údajů."
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.bWVzc2FnZS1lcmFzZQ.display_name": {
+          "source": "Erase Message",
+          "message": "Vymazat zprávu"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.bWVzc2FnZS1lcmFzZQ.option.c2Vx.desc": {
+          "source": "The sequence number of the message to retrieve.\n\nSequence numbers are assigned monotonically by the stream. Use stream info to determine the valid range (`first_seq` to `last_seq`).",
+          "message": "Sekvenční číslo zprávy, která má být načtena.\n\nSekvenční čísla jsou streamem přidělována monotonicky. Pro určení platného rozsahu (`first_seq` až `last_seq`) použijte informace o streamu."
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.bWVzc2FnZS1lcmFzZQ.option.c2Vx.display_name": {
+          "source": "Sequence Number",
+          "message": "Sekvenční číslo"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.bWVzc2FnZS1lcmFzZQ.option.c2Vx.short_desc": {
+          "source": "Message sequence number",
+          "message": "Sekvenční číslo zprávy"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.bWVzc2FnZS1lcmFzZQ.option.c3RyZWFt.desc": {
+          "source": "The name of the JetStream stream to retrieve the message from.\n\nThe stream must already exist; an error is raised if the stream is not found.",
+          "message": "Název streamu JetStream, ze kterého má být zpráva načtena.\n\nStream musí již existovat; pokud stream nebyl nalezen, vyvolá se chyba."
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.bWVzc2FnZS1lcmFzZQ.option.c3RyZWFt.display_name": {
+          "source": "Stream Name",
+          "message": "Název streamu"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.bWVzc2FnZS1lcmFzZQ.option.c3RyZWFt.short_desc": {
+          "source": "Stream name",
+          "message": "Název streamu"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.bWVzc2FnZS1lcmFzZQ.short_desc": {
+          "source": "Securely erase a message from a stream",
+          "message": "Bezpečně vymazat zprávu ze streamu"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.bWVzc2FnZS1nZXQ.desc": {
+          "source": "Retrieves a message from a JetStream stream by sequence number.\n\nReturns the message payload, subject, and headers. Returns nothing if no message exists at the given sequence.",
+          "message": "Načte zprávu ze streamu JetStream podle sekvenčního čísla.\n\nVrací obsah zprávy, subjekt a hlavičky. Nevrací nic, pokud na dané sekvenci žádná zpráva neexistuje."
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.bWVzc2FnZS1nZXQ.display_name": {
+          "source": "Get Message",
+          "message": "Získat zprávu"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.bWVzc2FnZS1nZXQ.option.c2Vx.desc": {
+          "source": "The sequence number of the message to retrieve.\n\nSequence numbers are assigned monotonically by the stream. Use stream info to determine the valid range (`first_seq` to `last_seq`).",
+          "message": "Sekvenční číslo zprávy, která má být načtena.\n\nSekvenční čísla jsou streamem přidělována monotonicky. Pro určení platného rozsahu (`first_seq` až `last_seq`) použijte informace o streamu."
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.bWVzc2FnZS1nZXQ.option.c2Vx.display_name": {
+          "source": "Sequence Number",
+          "message": "Sekvenční číslo"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.bWVzc2FnZS1nZXQ.option.c2Vx.short_desc": {
+          "source": "Message sequence number",
+          "message": "Sekvenční číslo zprávy"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.bWVzc2FnZS1nZXQ.option.c3RyZWFt.desc": {
+          "source": "The name of the JetStream stream to retrieve the message from.\n\nThe stream must already exist; an error is raised if the stream is not found.",
+          "message": "Název streamu JetStream, ze kterého má být zpráva načtena.\n\nStream musí již existovat; pokud stream nebyl nalezen, vyvolá se chyba."
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.bWVzc2FnZS1nZXQ.option.c3RyZWFt.display_name": {
+          "source": "Stream Name",
+          "message": "Název streamu"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.bWVzc2FnZS1nZXQ.option.c3RyZWFt.short_desc": {
+          "source": "Stream name",
+          "message": "Název streamu"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.bWVzc2FnZS1nZXQ.short_desc": {
+          "source": "Retrieve a message from a stream by sequence number",
+          "message": "Načíst zprávu ze streamu podle sekvenčního čísla"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.bWVzc2FnZS1nZXQtbGFzdA.desc": {
+          "source": "Retrieves the last message for a subject from a JetStream stream.\n\nReturns the most recently published message on the specified subject. Returns nothing if no message exists for the subject.",
+          "message": "Načte poslední zprávu pro daný subjekt ze streamu JetStream.\n\nVrací nejnověji publikovanou zprávu na zadaném subjektu. Nevrací nic, pokud pro daný subjekt žádná zpráva neexistuje."
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.bWVzc2FnZS1nZXQtbGFzdA.display_name": {
+          "source": "Get Last Message",
+          "message": "Získat poslední zprávu"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.bWVzc2FnZS1nZXQtbGFzdA.option.c3RyZWFt.desc": {
+          "source": "The name of the JetStream stream to retrieve the message from.\n\nThe stream must already exist; an error is raised if the stream is not found.",
+          "message": "Název streamu JetStream, ze kterého má být zpráva načtena.\n\nStream musí již existovat; pokud stream nebyl nalezen, vyvolá se chyba."
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.bWVzc2FnZS1nZXQtbGFzdA.option.c3RyZWFt.display_name": {
+          "source": "Stream Name",
+          "message": "Název streamu"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.bWVzc2FnZS1nZXQtbGFzdA.option.c3RyZWFt.short_desc": {
+          "source": "Stream name",
+          "message": "Název streamu"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.bWVzc2FnZS1nZXQtbGFzdA.option.c3ViamVjdA.desc": {
+          "source": "The subject to retrieve the last message for.\n\nReturns the most recently published message on this subject within the stream. The subject must match one of the stream's configured subject filters.",
+          "message": "Subjekt, pro který se má načíst poslední zpráva.\n\nVrací nejnověji publikovanou zprávu na tomto subjektu v rámci streamu. Subjekt musí odpovídat jedné z nakonfigurovaných filtrací subjektů streamu."
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.bWVzc2FnZS1nZXQtbGFzdA.option.c3ViamVjdA.display_name": {
+          "source": "Subject",
+          "message": "Předmět"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.bWVzc2FnZS1nZXQtbGFzdA.option.c3ViamVjdA.short_desc": {
+          "source": "Subject to get last message for",
+          "message": "Subjekt pro získání poslední zprávy"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.bWVzc2FnZS1nZXQtbGFzdA.short_desc": {
+          "source": "Get the last message for a subject from a stream",
+          "message": "Získat poslední zprávu pro subjekt ze streamu"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.c3RyZWFtLW5hbWVz.desc": {
+          "source": "Lists all JetStream stream names without full configuration or state details.\n\nUse this for lightweight enumeration when you only need to check which streams exist.",
+          "message": "Vypíše všechny názvy streamů JetStream bez úplné konfigurace nebo podrobností o stavu.\n\nPoužijte pro lehký výčet, když potřebujete pouze zkontrolovat, které streamy existují."
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.c3RyZWFtLW5hbWVz.display_name": {
+          "source": "Stream Names",
+          "message": "Názvy streamů"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.c3RyZWFtLW5hbWVz.short_desc": {
+          "source": "List all JetStream stream names",
+          "message": "Vypsat všechny názvy streamů JetStream"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.c3RyZWFtLWNyZWF0ZQ.desc": {
+          "source": "Creates a new JetStream stream for durable message storage.\n\nStreams capture messages published to matching subjects and persist them according to configured retention policies. Use streams for message replay, audit trails, and guaranteed delivery.",
+          "message": "Vytvoří nový stream JetStream pro trvalé ukládání zpráv.\n\nStreamy zachycují zprávy publikované na odpovídající subjekty a uchovávají je podle nakonfigurovaných zásad uchovávání. Streamy použijte pro opakované přehrávání zpráv, auditní stopy a garantované doručení."
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.c3RyZWFtLWNyZWF0ZQ.display_name": {
+          "source": "Create Stream",
+          "message": "Vytvořit stream"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.c3RyZWFtLWNyZWF0ZQ.option.ZGVzY3JpcHRpb24.desc": {
+          "source": "Optional human-readable description for the stream.\n\nThis is a free-form text field that can be used to document the stream's purpose, the types of messages it contains, or any other relevant operational context.",
+          "message": "Volitelný lidsky čitelný popis streamu.\n\nToto je volné textové pole, které lze použít k dokumentování účelu streamu, typů zpráv, které obsahuje, nebo jakéhokoli jiného relevantního provozního kontextu."
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.c3RyZWFtLWNyZWF0ZQ.option.ZGVzY3JpcHRpb24.display_name": {
+          "source": "Description",
+          "message": "Popis"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.c3RyZWFtLWNyZWF0ZQ.option.ZGVzY3JpcHRpb24.short_desc": {
+          "source": "Stream description",
+          "message": "Popis streamu"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.c3RyZWFtLWNyZWF0ZQ.option.ZGlzY2FyZA.allowed-value.aW50OjA.display_name": {
+          "source": "Old",
+          "message": "Staré"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.c3RyZWFtLWNyZWF0ZQ.option.ZGlzY2FyZA.allowed-value.aW50OjA.short_desc": {
+          "source": "Discard old messages when limits are reached",
+          "message": "Zahodit staré zprávy při dosažení limitů"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.c3RyZWFtLWNyZWF0ZQ.option.ZGlzY2FyZA.allowed-value.aW50OjE.display_name": {
+          "source": "New",
+          "message": "Nové"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.c3RyZWFtLWNyZWF0ZQ.option.ZGlzY2FyZA.allowed-value.aW50OjE.short_desc": {
+          "source": "Reject new messages when limits are reached",
+          "message": "Odmítnout nové zprávy při dosažení limitů"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.c3RyZWFtLWNyZWF0ZQ.option.ZGlzY2FyZA.desc": {
+          "source": "Controls which messages are removed when stream limits (`max_msgs`, `max_bytes`, or `max_age`) are reached.\n\n- `0` (Old): the oldest messages are removed to make room\n- `1` (New): new messages are rejected with an error\n\n**Default is `0` (Old) if not specified.**",
+          "message": "Řídí, které zprávy budou odstraněny při dosažení limitů streamu (`max_msgs`, `max_bytes` nebo `max_age`).\n\n- `0` (Old): nejstarší zprávy se odstraní, aby se uvolnilo místo\n- `1` (New): nové zprávy se odmítnou s chybou\n\n**Výchozí hodnota je `0` (Old), pokud není určeno jinak.**"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.c3RyZWFtLWNyZWF0ZQ.option.ZGlzY2FyZA.display_name": {
+          "source": "Discard Policy",
+          "message": "Zásady zahazování"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.c3RyZWFtLWNyZWF0ZQ.option.ZGlzY2FyZA.short_desc": {
+          "source": "Discard policy when limits are reached",
+          "message": "Zásady zahazování při dosažení limitů"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.c3RyZWFtLWNyZWF0ZQ.option.bWF4X21zZ19zaXpl.desc": {
+          "source": "Maximum size in bytes for any individual message published to the stream.\n\nMessages exceeding this size will be rejected by the server. Set to `-1` to use the server's default maximum (typically 1 MB). For example, `1048576` sets a 1 MB limit.",
+          "message": "Maximální velikost v bajtech pro jakoukoli jednotlivou zprávu publikovanou do streamu.\n\nZprávy překračující tuto velikost server odmítne. Nastavte na `-1` pro použití výchozího maxima serveru (obvykle 1 MB). Například `1048576` nastaví limit 1 MB."
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.c3RyZWFtLWNyZWF0ZQ.option.bWF4X21zZ19zaXpl.display_name": {
+          "source": "Max Message Size",
+          "message": "Maximální velikost zprávy"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.c3RyZWFtLWNyZWF0ZQ.option.bWF4X21zZ19zaXpl.short_desc": {
+          "source": "Maximum message size in bytes",
+          "message": "Maximální velikost zprávy v bajtech"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.c3RyZWFtLWNyZWF0ZQ.option.bWF4X21zZ3M.desc": {
+          "source": "Maximum number of messages the stream will retain.\n\nWhen this limit is reached, older messages are discarded according to the `discard` policy. Set to `-1` for unlimited messages.\n\n**Only applies when the `retention` policy is set to Limits (`0`).**",
+          "message": "Maximální počet zpráv, které stream uchová.\n\nPři dosažení tohoto limitu budou starší zprávy zahazovány podle zásady `discard`. Nastavte na `-1` pro neomezený počet zpráv.\n\n**Platí pouze tehdy, když je zásada `retention` nastavena na Limits (`0`).**"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.c3RyZWFtLWNyZWF0ZQ.option.bWF4X21zZ3M.display_name": {
+          "source": "Max Messages",
+          "message": "Maximální počet zpráv"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.c3RyZWFtLWNyZWF0ZQ.option.bWF4X21zZ3M.short_desc": {
+          "source": "Maximum number of messages",
+          "message": "Maximální počet zpráv"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.c3RyZWFtLWNyZWF0ZQ.option.bWF4X2FnZQ.desc": {
+          "source": "Maximum age of any message in the stream, specified in milliseconds.\n\nMessages older than this value are automatically removed. Set to `0` for no age limit. For example, `86400000` sets a 24-hour retention window.\n\n**Only applies when the `retention` policy is set to Limits (`0`).**",
+          "message": "Maximální stáří jakékoli zprávy ve streamu uvedené v milisekundách.\n\nZprávy starší než tato hodnota se automaticky odstraní. Nastavte na `0` pro žádný limit stáří. Například `86400000` nastaví 24hodinové okno uchovávání.\n\n**Platí pouze tehdy, když je zásada `retention` nastavena na Limits (`0`).**"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.c3RyZWFtLWNyZWF0ZQ.option.bWF4X2FnZQ.display_name": {
+          "source": "Max Age (ms)",
+          "message": "Maximální stáří (ms)"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.c3RyZWFtLWNyZWF0ZQ.option.bWF4X2FnZQ.short_desc": {
+          "source": "Maximum message age in milliseconds",
+          "message": "Maximální stáří zprávy v milisekundách"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.c3RyZWFtLWNyZWF0ZQ.option.bWF4X2J5dGVz.desc": {
+          "source": "Maximum total storage in bytes for all messages in the stream.\n\nWhen this limit is reached, older messages are discarded according to the `discard` policy. Set to `-1` for unlimited storage.\n\n**Only applies when the `retention` policy is set to Limits (`0`).**",
+          "message": "Maximální celkové úložiště v bajtech pro všechny zprávy ve streamu.\n\nPři dosažení tohoto limitu budou starší zprávy zahazovány podle zásady `discard`. Nastavte na `-1` pro neomezené úložiště.\n\n**Platí pouze tehdy, když je zásada `retention` nastavena na Limits (`0`).**"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.c3RyZWFtLWNyZWF0ZQ.option.bWF4X2J5dGVz.display_name": {
+          "source": "Max Bytes",
+          "message": "Maximálně bajtů"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.c3RyZWFtLWNyZWF0ZQ.option.bWF4X2J5dGVz.short_desc": {
+          "source": "Maximum total bytes",
+          "message": "Maximální celkový počet bajtů"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.c3RyZWFtLWNyZWF0ZQ.option.bmFtZQ.desc": {
+          "source": "Unique identifier for the JetStream stream.\n\nStream names are used to reference the stream in all JetStream operations such as publishing, subscribing, and management. **Names must be alphanumeric and may include dashes or underscores but not periods or spaces.**",
+          "message": "Unikátní identifikátor pro stream JetStream.\n\nNázvy streamů se používají k odkazování na stream ve všech operacích JetStream, jako je publikování, přihlášení k odběru a správa. **Názvy musí být alfanumerické a mohou obsahovat pomlčky nebo podtržítka, ale ne tečky nebo mezery.**"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.c3RyZWFtLWNyZWF0ZQ.option.bmFtZQ.display_name": {
+          "source": "Stream Name",
+          "message": "Název streamu"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.c3RyZWFtLWNyZWF0ZQ.option.bmFtZQ.short_desc": {
+          "source": "Name of the stream",
+          "message": "Název streamu"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.c3RyZWFtLWNyZWF0ZQ.option.bnVtX3JlcGxpY2Fz.desc": {
+          "source": "Number of copies of the stream data to maintain across a NATS cluster for high availability.\n\nA value of `1` means no replication (single copy). Values of `3` or `5` are common for production clusters. **Must be an odd number and cannot exceed the number of servers in the cluster.**",
+          "message": "Počet kopií dat streamu, které mají být udržovány v clusteru NATS pro vysokou dostupnost.\n\nHodnota `1` znamená žádnou replikaci (jediná kopie). Hodnoty `3` nebo `5` jsou běžné pro produkční clustery. **Musí se jednat o liché číslo a nesmí překročit počet serverů v clusteru.**"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.c3RyZWFtLWNyZWF0ZQ.option.bnVtX3JlcGxpY2Fz.display_name": {
+          "source": "Replicas",
+          "message": "Repliky"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.c3RyZWFtLWNyZWF0ZQ.option.bnVtX3JlcGxpY2Fz.short_desc": {
+          "source": "Number of replicas",
+          "message": "Počet replik"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.c3RyZWFtLWNyZWF0ZQ.option.c3RvcmFnZQ.allowed-value.aW50OjA.display_name": {
+          "source": "File",
+          "message": "Soubor"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.c3RyZWFtLWNyZWF0ZQ.option.c3RvcmFnZQ.allowed-value.aW50OjA.short_desc": {
+          "source": "Store messages on disk",
+          "message": "Ukládat zprávy na disk"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.c3RyZWFtLWNyZWF0ZQ.option.c3RvcmFnZQ.allowed-value.aW50OjE.display_name": {
+          "source": "Memory",
+          "message": "Paměť"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.c3RyZWFtLWNyZWF0ZQ.option.c3RvcmFnZQ.allowed-value.aW50OjE.short_desc": {
+          "source": "Store messages in memory",
+          "message": "Ukládat zprávy v paměti"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.c3RyZWFtLWNyZWF0ZQ.option.c3RvcmFnZQ.desc": {
+          "source": "Controls where stream messages are persisted.\n\n- `0` (File): messages are stored on disk for durability across server restarts\n- `1` (Memory): messages are stored in memory for higher throughput but are lost on server restart\n\n**Default is `0` (File) if not specified.**",
+          "message": "Řídí, kde jsou zprávy streamu trvale ukládány.\n\n- `0` (File): zprávy se ukládají na disk pro zachování trvanlivosti i po restartu serveru\n- `1` (Memory): zprávy se ukládají v paměti pro vyšší propustnost, ale při restartu serveru se ztratí\n\n**Výchozí hodnota je `0` (File), pokud není určeno jinak.**"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.c3RyZWFtLWNyZWF0ZQ.option.c3RvcmFnZQ.display_name": {
+          "source": "Storage Type",
+          "message": "Typ úložiště"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.c3RyZWFtLWNyZWF0ZQ.option.c3RvcmFnZQ.short_desc": {
+          "source": "Message storage type",
+          "message": "Typ úložiště zpráv"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.c3RyZWFtLWNyZWF0ZQ.option.c3ViamVjdHM.desc": {
+          "source": "List of NATS subjects that this stream will capture messages from.\n\nSupports wildcards:\n- `*` matches a single token (e.g. `orders.*`)\n- `>` matches one or more tokens (e.g. `orders.>`)\n\nMultiple subjects can be specified to aggregate messages from different topic hierarchies into a single stream.",
+          "message": "Seznam NATS subjectů, ze kterých bude tento stream zachytávat zprávy.\n\nPodporuje zástupné znaky:\n- `*` odpovídá jednomu tokenu (např. `orders.*`)\n- `>` odpovídá jednomu nebo více tokenům (např. `orders.>`)\n\nLze zadat více subjectů pro agregaci zpráv z různých hierarchií témat do jednoho streamu."
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.c3RyZWFtLWNyZWF0ZQ.option.c3ViamVjdHM.display_name": {
+          "source": "Subjects",
+          "message": "Subjecty"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.c3RyZWFtLWNyZWF0ZQ.option.c3ViamVjdHM.short_desc": {
+          "source": "Subjects the stream listens to",
+          "message": "Subjecty, které stream naslouchá"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.c3RyZWFtLWNyZWF0ZQ.option.cmV0ZW50aW9u.allowed-value.aW50OjA.display_name": {
+          "source": "Limits",
+          "message": "Limity"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.c3RyZWFtLWNyZWF0ZQ.option.cmV0ZW50aW9u.allowed-value.aW50OjA.short_desc": {
+          "source": "Retain based on limits (max_msgs, max_bytes, max_age)",
+          "message": "Uchovávat na základě limitů (max_msgs, max_bytes, max_age)"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.c3RyZWFtLWNyZWF0ZQ.option.cmV0ZW50aW9u.allowed-value.aW50OjE.display_name": {
+          "source": "Interest",
+          "message": "Zájem"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.c3RyZWFtLWNyZWF0ZQ.option.cmV0ZW50aW9u.allowed-value.aW50OjE.short_desc": {
+          "source": "Remove when all known consumers have acknowledged",
+          "message": "Odebrat, jakmile všichni známí konzumenti potvrdí doručení"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.c3RyZWFtLWNyZWF0ZQ.option.cmV0ZW50aW9u.allowed-value.aW50OjI.display_name": {
+          "source": "Work Queue",
+          "message": "Pracovní fronta"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.c3RyZWFtLWNyZWF0ZQ.option.cmV0ZW50aW9u.allowed-value.aW50OjI.short_desc": {
+          "source": "Remove when any consumer acknowledges",
+          "message": "Odebrat, jakmile jakýkoli konzument potvrdí doručení"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.c3RyZWFtLWNyZWF0ZQ.option.cmV0ZW50aW9u.desc": {
+          "source": "Controls how messages are retained or removed from the stream.\n\n- `0` (Limits): messages are kept until stream limits (`max_msgs`, `max_bytes`, `max_age`) are reached\n- `1` (Interest): messages are removed once all known consumers have acknowledged them\n- `2` (Work Queue): messages are removed as soon as any consumer acknowledges them\n\n**Default is `0` (Limits) if not specified.**",
+          "message": "Řídí způsob uchovávání nebo odebírání zpráv ze streamu.\n\n- `0` (Limits): zprávy jsou uchovávány, dokud není dosaženo limitů streamu (`max_msgs`, `max_bytes`, `max_age`)\n- `1` (Interest): zprávy jsou odebrány, jakmile je potvrdí všichni známí konzumenti\n- `2` (Work Queue): zprávy jsou odebrány, jakmile je potvrdí jakýkoli konzument\n\n**Výchozí hodnota je `0` (Limits), pokud není určeno jinak.**"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.c3RyZWFtLWNyZWF0ZQ.option.cmV0ZW50aW9u.display_name": {
+          "source": "Retention Policy",
+          "message": "Pravidla uchovávání"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.c3RyZWFtLWNyZWF0ZQ.option.cmV0ZW50aW9u.short_desc": {
+          "source": "Stream retention policy",
+          "message": "Pravidla uchovávání streamu"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.c3RyZWFtLWNyZWF0ZQ.short_desc": {
+          "source": "Create a JetStream stream for durable message storage",
+          "message": "Vytvořit JetStream stream pro trvalé úložiště zpráv"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.c3RyZWFtLWRlbGV0ZQ.desc": {
+          "source": "Permanently deletes a JetStream stream and all its messages.\n\n**Warning**: this removes the stream, all stored messages, and all associated consumers. This action cannot be undone.",
+          "message": "Trvale smaže JetStream stream a všechny jeho zprávy.\n\n**Varování**: tímto odeberete stream, všechny uložené zprávy a všechny související konzumenty. Tuto akci nelze vzít zpět."
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.c3RyZWFtLWRlbGV0ZQ.display_name": {
+          "source": "Delete Stream",
+          "message": "Smazat stream"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.c3RyZWFtLWRlbGV0ZQ.option.bmFtZQ.desc": {
+          "source": "The name of the JetStream stream to delete.\n\n**Warning**: this permanently removes the stream and all its stored messages. Any consumers attached to the stream will also be deleted. This operation cannot be undone.",
+          "message": "Název JetStream streamu, který má být smazán.\n\n**Varování**: tímto trvale odeberete stream a všechny jeho uložené zprávy. Všichni konzumenti připojení k tomuto streamu budou také smazáni. Tuto operaci nelze vzít zpět."
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.c3RyZWFtLWRlbGV0ZQ.option.bmFtZQ.display_name": {
+          "source": "Stream Name",
+          "message": "Název streamu"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.c3RyZWFtLWRlbGV0ZQ.option.bmFtZQ.short_desc": {
+          "source": "Stream name to delete",
+          "message": "Název streamu ke smazání"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.c3RyZWFtLWRlbGV0ZQ.short_desc": {
+          "source": "Permanently delete a JetStream stream",
+          "message": "Trvale smazat JetStream stream"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.c3RyZWFtLWluZm8.desc": {
+          "source": "Retrieves configuration and state information for a JetStream stream.\n\nReturns the stream's subject filters, retention policy, storage limits, and current state including message count and byte size.",
+          "message": "Získat informace o konfiguraci a stavu JetStream streamu.\n\nVrací filtry subjectů streamu, pravidla uchovávání, limity úložiště a aktuální stav včetně počtu zpráv a velikosti v bajtech."
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.c3RyZWFtLWluZm8.display_name": {
+          "source": "Stream Info",
+          "message": "Informace o streamu"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.c3RyZWFtLWluZm8.option.bmFtZQ.desc": {
+          "source": "The name of the JetStream stream to retrieve information for.\n\nThe stream must already exist; an error is raised if the stream is not found.",
+          "message": "Název JetStream streamu, pro který mají být získány informace.\n\nStream již musí existovat; pokud stream nebyl nalezen, dojde k chybě."
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.c3RyZWFtLWluZm8.option.bmFtZQ.display_name": {
+          "source": "Stream Name",
+          "message": "Název streamu"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.c3RyZWFtLWluZm8.option.bmFtZQ.short_desc": {
+          "source": "Stream name to get info for",
+          "message": "Název streamu pro získání informací"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.c3RyZWFtLWluZm8.short_desc": {
+          "source": "Get stream configuration and state information",
+          "message": "Získat informace o konfiguraci a stavu streamu"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.c3RyZWFtLWxpc3Q.desc": {
+          "source": "Lists all JetStream streams with their configuration and current state.\n\nReturns detailed information for each stream including subject filters, retention policy, storage limits, message count, and consumer count.",
+          "message": "Zobrazí seznam všech JetStream streamů s jejich konfigurací a aktuálním stavem.\n\nVrací podrobné informace pro každý stream včetně filtrů subjectů, правил uchovávání, limitů úložiště, počtu zpráv a počtu konzumentů."
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.c3RyZWFtLWxpc3Q.display_name": {
+          "source": "List Streams",
+          "message": "Seznam streamů"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.c3RyZWFtLWxpc3Q.short_desc": {
+          "source": "List all JetStream streams with configuration and state",
+          "message": "Zobrazit seznam všech JetStream streamů s konfigurací a stavem"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.c3RyZWFtLXB1cmdl.desc": {
+          "source": "Removes all messages from a JetStream stream while preserving its configuration.\n\n**Warning**: this permanently deletes all messages in the stream. The stream configuration and consumers are preserved, but consumer sequence positions are reset.",
+          "message": "Odebere všechny zprávy z JetStream streamu při zachování jeho konfigurace.\n\n**Varování**: tímto trvale smažete všechny zprávy ve streamu. Konfigurace streamu a konzumenti zůstanou zachováni, ale sekvenční pozice konzumentů budou resetovány."
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.c3RyZWFtLXB1cmdl.display_name": {
+          "source": "Purge Stream",
+          "message": "Vyprázdnit stream"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.c3RyZWFtLXB1cmdl.option.bmFtZQ.desc": {
+          "source": "The name of the JetStream stream to purge.\n\n**Warning**: purging removes all messages from the stream while preserving the stream configuration and consumers. Consumer sequence tracking is reset. This operation cannot be undone.",
+          "message": "Název JetStream streamu k vyprázdnění.\n\n**Varování**: vyprázdnění odebere všechny zprávy ze streamu při zachování konfigurace streamu a konzumentů. Sledování sekvence konzumentů bude resetováno. Tuto operaci nelze vzít zpět."
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.c3RyZWFtLXB1cmdl.option.bmFtZQ.display_name": {
+          "source": "Stream Name",
+          "message": "Název streamu"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.c3RyZWFtLXB1cmdl.option.bmFtZQ.short_desc": {
+          "source": "Stream name to purge",
+          "message": "Název streamu k vyprázdnění"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.c3RyZWFtLXB1cmdl.short_desc": {
+          "source": "Purge all messages from a stream",
+          "message": "Vyprázdnit všechny zprávy ze streamu"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.c3RyZWFtLXVwZGF0ZQ.desc": {
+          "source": "Updates the configuration of an existing JetStream stream.\n\nModifies stream settings such as subject filters, retention policy, storage limits, and replication. Not all settings can be changed after creation.",
+          "message": "Aktualizuje konfiguraci existujícího JetStream streamu.\n\nMění nastavení streamu, jako jsou filtry subjectů, pravidla uchovávání, limity úložiště a replikace. Některá nastavení nelze po vytvoření změnit."
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.c3RyZWFtLXVwZGF0ZQ.display_name": {
+          "source": "Update Stream",
+          "message": "Aktualizovat stream"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.c3RyZWFtLXVwZGF0ZQ.option.ZGVzY3JpcHRpb24.desc": {
+          "source": "Optional human-readable description for the stream.\n\nThis is a free-form text field that can be used to document the stream's purpose, the types of messages it contains, or any other relevant operational context.",
+          "message": "Volitelný lidsky čitelný popis streamu.\n\nToto je volné textové pole, které lze použít k dokumentování účelu streamu, typů zpráv, které obsahuje, nebo jakéhokoli jiného relevantního provozního kontextu."
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.c3RyZWFtLXVwZGF0ZQ.option.ZGVzY3JpcHRpb24.display_name": {
+          "source": "Description",
+          "message": "Popis"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.c3RyZWFtLXVwZGF0ZQ.option.ZGVzY3JpcHRpb24.short_desc": {
+          "source": "Stream description",
+          "message": "Popis streamu"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.c3RyZWFtLXVwZGF0ZQ.option.ZGlzY2FyZA.allowed-value.aW50OjA.display_name": {
+          "source": "Old",
+          "message": "Staré"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.c3RyZWFtLXVwZGF0ZQ.option.ZGlzY2FyZA.allowed-value.aW50OjA.short_desc": {
+          "source": "Discard old messages when limits are reached",
+          "message": "Zahodit staré zprávy při dosažení limitů"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.c3RyZWFtLXVwZGF0ZQ.option.ZGlzY2FyZA.allowed-value.aW50OjE.display_name": {
+          "source": "New",
+          "message": "Nové"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.c3RyZWFtLXVwZGF0ZQ.option.ZGlzY2FyZA.allowed-value.aW50OjE.short_desc": {
+          "source": "Reject new messages when limits are reached",
+          "message": "Odmítnout nové zprávy při dosažení limitů"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.c3RyZWFtLXVwZGF0ZQ.option.ZGlzY2FyZA.desc": {
+          "source": "Controls which messages are removed when stream limits (`max_msgs`, `max_bytes`, or `max_age`) are reached.\n\n- `0` (Old): the oldest messages are removed to make room\n- `1` (New): new messages are rejected with an error\n\n**Default is `0` (Old) if not specified.**",
+          "message": "Řídí, které zprávy budou odstraněny při dosažení limitů streamu (`max_msgs`, `max_bytes` nebo `max_age`).\n\n- `0` (Old): nejstarší zprávy se odstraní, aby se uvolnilo místo\n- `1` (New): nové zprávy se odmítnou s chybou\n\n**Výchozí hodnota je `0` (Old), pokud není určeno jinak.**"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.c3RyZWFtLXVwZGF0ZQ.option.ZGlzY2FyZA.display_name": {
+          "source": "Discard Policy",
+          "message": "Zásady zahazování"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.c3RyZWFtLXVwZGF0ZQ.option.ZGlzY2FyZA.short_desc": {
+          "source": "Discard policy when limits are reached",
+          "message": "Zásady zahazování při dosažení limitů"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.c3RyZWFtLXVwZGF0ZQ.option.bWF4X21zZ19zaXpl.desc": {
+          "source": "Maximum size in bytes for any individual message published to the stream.\n\nMessages exceeding this size will be rejected by the server. Set to `-1` to use the server's default maximum (typically 1 MB). For example, `1048576` sets a 1 MB limit.",
+          "message": "Maximální velikost v bajtech pro jakoukoli jednotlivou zprávu publikovanou do streamu.\n\nZprávy překračující tuto velikost server odmítne. Nastavte na `-1` pro použití výchozího maxima serveru (obvykle 1 MB). Například `1048576` nastaví limit 1 MB."
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.c3RyZWFtLXVwZGF0ZQ.option.bWF4X21zZ19zaXpl.display_name": {
+          "source": "Max Message Size",
+          "message": "Maximální velikost zprávy"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.c3RyZWFtLXVwZGF0ZQ.option.bWF4X21zZ19zaXpl.short_desc": {
+          "source": "Maximum message size in bytes",
+          "message": "Maximální velikost zprávy v bajtech"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.c3RyZWFtLXVwZGF0ZQ.option.bWF4X21zZ3M.desc": {
+          "source": "Maximum number of messages the stream will retain.\n\nWhen this limit is reached, older messages are discarded according to the `discard` policy. Set to `-1` for unlimited messages.\n\n**Only applies when the `retention` policy is set to Limits (`0`).**",
+          "message": "Maximální počet zpráv, které stream uchová.\n\nPři dosažení tohoto limitu budou starší zprávy zahazovány podle zásady `discard`. Nastavte na `-1` pro neomezený počet zpráv.\n\n**Platí pouze tehdy, když je zásada `retention` nastavena na Limits (`0`).**"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.c3RyZWFtLXVwZGF0ZQ.option.bWF4X21zZ3M.display_name": {
+          "source": "Max Messages",
+          "message": "Maximální počet zpráv"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.c3RyZWFtLXVwZGF0ZQ.option.bWF4X21zZ3M.short_desc": {
+          "source": "Maximum number of messages",
+          "message": "Maximální počet zpráv"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.c3RyZWFtLXVwZGF0ZQ.option.bWF4X2FnZQ.desc": {
+          "source": "Maximum age of any message in the stream, specified in milliseconds.\n\nMessages older than this value are automatically removed. Set to `0` for no age limit. For example, `86400000` sets a 24-hour retention window.\n\n**Only applies when the `retention` policy is set to Limits (`0`).**",
+          "message": "Maximální stáří jakékoli zprávy ve streamu uvedené v milisekundách.\n\nZprávy starší než tato hodnota se automaticky odstraní. Nastavte na `0` pro žádný limit stáří. Například `86400000` nastaví 24hodinové okno uchovávání.\n\n**Platí pouze tehdy, když je zásada `retention` nastavena na Limits (`0`).**"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.c3RyZWFtLXVwZGF0ZQ.option.bWF4X2FnZQ.display_name": {
+          "source": "Max Age (ms)",
+          "message": "Maximální stáří (ms)"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.c3RyZWFtLXVwZGF0ZQ.option.bWF4X2FnZQ.short_desc": {
+          "source": "Maximum message age in milliseconds",
+          "message": "Maximální stáří zprávy v milisekundách"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.c3RyZWFtLXVwZGF0ZQ.option.bWF4X2J5dGVz.desc": {
+          "source": "Maximum total storage in bytes for all messages in the stream.\n\nWhen this limit is reached, older messages are discarded according to the `discard` policy. Set to `-1` for unlimited storage.\n\n**Only applies when the `retention` policy is set to Limits (`0`).**",
+          "message": "Maximální celkové úložiště v bajtech pro všechny zprávy ve streamu.\n\nPři dosažení tohoto limitu budou starší zprávy zahazovány podle zásady `discard`. Nastavte na `-1` pro neomezené úložiště.\n\n**Platí pouze tehdy, když je zásada `retention` nastavena na Limits (`0`).**"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.c3RyZWFtLXVwZGF0ZQ.option.bWF4X2J5dGVz.display_name": {
+          "source": "Max Bytes",
+          "message": "Maximálně bajtů"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.c3RyZWFtLXVwZGF0ZQ.option.bWF4X2J5dGVz.short_desc": {
+          "source": "Maximum total bytes",
+          "message": "Maximální celkový počet bajtů"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.c3RyZWFtLXVwZGF0ZQ.option.bmFtZQ.desc": {
+          "source": "Unique identifier for the JetStream stream.\n\nStream names are used to reference the stream in all JetStream operations such as publishing, subscribing, and management. **Names must be alphanumeric and may include dashes or underscores but not periods or spaces.**",
+          "message": "Unikátní identifikátor pro stream JetStream.\n\nNázvy streamů se používají k odkazování na stream ve všech operacích JetStream, jako je publikování, přihlášení k odběru a správa. **Názvy musí být alfanumerické a mohou obsahovat pomlčky nebo podtržítka, ale ne tečky nebo mezery.**"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.c3RyZWFtLXVwZGF0ZQ.option.bmFtZQ.display_name": {
+          "source": "Stream Name",
+          "message": "Název streamu"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.c3RyZWFtLXVwZGF0ZQ.option.bmFtZQ.short_desc": {
+          "source": "Name of the stream",
+          "message": "Název streamu"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.c3RyZWFtLXVwZGF0ZQ.option.bnVtX3JlcGxpY2Fz.desc": {
+          "source": "Number of copies of the stream data to maintain across a NATS cluster for high availability.\n\nA value of `1` means no replication (single copy). Values of `3` or `5` are common for production clusters. **Must be an odd number and cannot exceed the number of servers in the cluster.**",
+          "message": "Počet kopií dat streamu, které mají být udržovány v clusteru NATS pro vysokou dostupnost.\n\nHodnota `1` znamená žádnou replikaci (jediná kopie). Hodnoty `3` nebo `5` jsou běžné pro produkční clustery. **Musí se jednat o liché číslo a nesmí překročit počet serverů v clusteru.**"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.c3RyZWFtLXVwZGF0ZQ.option.bnVtX3JlcGxpY2Fz.display_name": {
+          "source": "Replicas",
+          "message": "Repliky"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.c3RyZWFtLXVwZGF0ZQ.option.bnVtX3JlcGxpY2Fz.short_desc": {
+          "source": "Number of replicas",
+          "message": "Počet replik"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.c3RyZWFtLXVwZGF0ZQ.option.c3RvcmFnZQ.allowed-value.aW50OjA.display_name": {
+          "source": "File",
+          "message": "Soubor"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.c3RyZWFtLXVwZGF0ZQ.option.c3RvcmFnZQ.allowed-value.aW50OjA.short_desc": {
+          "source": "Store messages on disk",
+          "message": "Ukládat zprávy na disk"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.c3RyZWFtLXVwZGF0ZQ.option.c3RvcmFnZQ.allowed-value.aW50OjE.display_name": {
+          "source": "Memory",
+          "message": "Paměť"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.c3RyZWFtLXVwZGF0ZQ.option.c3RvcmFnZQ.allowed-value.aW50OjE.short_desc": {
+          "source": "Store messages in memory",
+          "message": "Ukládat zprávy v paměti"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.c3RyZWFtLXVwZGF0ZQ.option.c3RvcmFnZQ.desc": {
+          "source": "Controls where stream messages are persisted.\n\n- `0` (File): messages are stored on disk for durability across server restarts\n- `1` (Memory): messages are stored in memory for higher throughput but are lost on server restart\n\n**Default is `0` (File) if not specified.**",
+          "message": "Řídí, kde jsou zprávy streamu trvale ukládány.\n\n- `0` (File): zprávy se ukládají na disk pro zachování trvanlivosti i po restartu serveru\n- `1` (Memory): zprávy se ukládají v paměti pro vyšší propustnost, ale při restartu serveru se ztratí\n\n**Výchozí hodnota je `0` (File), pokud není určeno jinak.**"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.c3RyZWFtLXVwZGF0ZQ.option.c3RvcmFnZQ.display_name": {
+          "source": "Storage Type",
+          "message": "Typ úložiště"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.c3RyZWFtLXVwZGF0ZQ.option.c3RvcmFnZQ.short_desc": {
+          "source": "Message storage type",
+          "message": "Typ úložiště zpráv"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.c3RyZWFtLXVwZGF0ZQ.option.c3ViamVjdHM.desc": {
+          "source": "List of NATS subjects that this stream will capture messages from.\n\nSupports wildcards:\n- `*` matches a single token (e.g. `orders.*`)\n- `>` matches one or more tokens (e.g. `orders.>`)\n\nMultiple subjects can be specified to aggregate messages from different topic hierarchies into a single stream.",
+          "message": "Seznam NATS subjectů, ze kterých bude tento stream zachytávat zprávy.\n\nPodporuje zástupné znaky:\n- `*` odpovídá jednomu tokenu (např. `orders.*`)\n- `>` odpovídá jednomu nebo více tokenům (např. `orders.>`)\n\nLze zadat více subjectů pro agregaci zpráv z různých hierarchií témat do jednoho streamu."
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.c3RyZWFtLXVwZGF0ZQ.option.c3ViamVjdHM.display_name": {
+          "source": "Subjects",
+          "message": "Subjecty"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.c3RyZWFtLXVwZGF0ZQ.option.c3ViamVjdHM.short_desc": {
+          "source": "Subjects the stream listens to",
+          "message": "Subjecty, které stream naslouchá"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.c3RyZWFtLXVwZGF0ZQ.option.cmV0ZW50aW9u.allowed-value.aW50OjA.display_name": {
+          "source": "Limits",
+          "message": "Limity"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.c3RyZWFtLXVwZGF0ZQ.option.cmV0ZW50aW9u.allowed-value.aW50OjA.short_desc": {
+          "source": "Retain based on limits (max_msgs, max_bytes, max_age)",
+          "message": "Uchovávat na základě limitů (max_msgs, max_bytes, max_age)"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.c3RyZWFtLXVwZGF0ZQ.option.cmV0ZW50aW9u.allowed-value.aW50OjE.display_name": {
+          "source": "Interest",
+          "message": "Zájem"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.c3RyZWFtLXVwZGF0ZQ.option.cmV0ZW50aW9u.allowed-value.aW50OjE.short_desc": {
+          "source": "Remove when all known consumers have acknowledged",
+          "message": "Odebrat, jakmile všichni známí konzumenti potvrdí doručení"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.c3RyZWFtLXVwZGF0ZQ.option.cmV0ZW50aW9u.allowed-value.aW50OjI.display_name": {
+          "source": "Work Queue",
+          "message": "Pracovní fronta"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.c3RyZWFtLXVwZGF0ZQ.option.cmV0ZW50aW9u.allowed-value.aW50OjI.short_desc": {
+          "source": "Remove when any consumer acknowledges",
+          "message": "Odebrat, jakmile jakýkoli konzument potvrdí doručení"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.c3RyZWFtLXVwZGF0ZQ.option.cmV0ZW50aW9u.desc": {
+          "source": "Controls how messages are retained or removed from the stream.\n\n- `0` (Limits): messages are kept until stream limits (`max_msgs`, `max_bytes`, `max_age`) are reached\n- `1` (Interest): messages are removed once all known consumers have acknowledged them\n- `2` (Work Queue): messages are removed as soon as any consumer acknowledges them\n\n**Default is `0` (Limits) if not specified.**",
+          "message": "Řídí způsob uchovávání nebo odebírání zpráv ze streamu.\n\n- `0` (Limits): zprávy jsou uchovávány, dokud není dosaženo limitů streamu (`max_msgs`, `max_bytes`, `max_age`)\n- `1` (Interest): zprávy jsou odebrány, jakmile je potvrdí všichni známí konzumenti\n- `2` (Work Queue): zprávy jsou odebrány, jakmile je potvrdí jakýkoli konzument\n\n**Výchozí hodnota je `0` (Limits), pokud není určeno jinak.**"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.c3RyZWFtLXVwZGF0ZQ.option.cmV0ZW50aW9u.display_name": {
+          "source": "Retention Policy",
+          "message": "Pravidla uchovávání"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.c3RyZWFtLXVwZGF0ZQ.option.cmV0ZW50aW9u.short_desc": {
+          "source": "Stream retention policy",
+          "message": "Pravidla uchovávání streamu"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.c3RyZWFtLXVwZGF0ZQ.short_desc": {
+          "source": "Update a JetStream stream configuration",
+          "message": "Aktualizovat konfiguraci JetStream streamu"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.c3Vic2NyaWJl.desc": {
+          "source": "Subscribes to JetStream messages with push-based delivery for real-time event processing.\n\nMessages are pushed to the subscriber as they arrive in the stream. Includes JetStream metadata such as stream sequence numbers and timestamps.",
+          "message": "Odebírá zprávy z JetStreamu pomocí doručování typu push pro zpracování událostí v reálném čase.\n\nZprávy jsou odesílány odběrateli, jakmile dorazí do streamu. Obsahuje metadata JetStreamu, jako jsou sekvenční čísla streamu a časová razítka."
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.c3Vic2NyaWJl.display_name": {
+          "source": "JetStream Subscribe",
+          "message": "Odběr z JetStreamu"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.c3Vic2NyaWJl.option.c3ViamVjdA.desc": {
+          "source": "The JetStream subject to subscribe to.\n\nSupports NATS wildcard tokens: `*` matches a single token (e.g. `orders.*` matches `orders.created`) and `>` matches one or more tokens (e.g. `orders.>` matches `orders.created`, `orders.us.created`, etc.).",
+          "message": "JetStream subject k odběru.\n\nPodporuje zástupné znaky NATS: `*` odpovídá jednomu tokenu (např. `orders.*` odpovídá `orders.created`) a `>` odpovídá jednomu nebo více tokenům (např. `orders.>` odpovídá `orders.created`, `orders.us.created` atd.)."
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.c3Vic2NyaWJl.option.c3ViamVjdA.display_name": {
+          "source": "Subject",
+          "message": "Předmět"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.c3Vic2NyaWJl.option.c3ViamVjdA.short_desc": {
+          "source": "JetStream subject to subscribe to",
+          "message": "JetStream subject k odběru"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.c3Vic2NyaWJl.short_desc": {
+          "source": "Subscribe to JetStream messages with push delivery",
+          "message": "Odebírat zprávy z JetStreamu s doručováním typu push"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.cHVsbC1zdWJzY3JpYmU.desc": {
+          "source": "Subscribes to JetStream messages with pull-based delivery using a durable consumer.\n\nThe client controls delivery rate by requesting message batches, providing natural backpressure. The `durable` consumer tracks the last acknowledged position across restarts.",
+          "message": "Odebírá zprávy z JetStreamu pomocí doručování typu pull s využitím trvalého (durable) konzumenta.\n\nKlient řídí rychlost doručování vyžadováním dávek zpráv, což poskytuje přirozenou zpětnou vazbu (backpressure). Konzument `durable` sleduje poslední potvrzenou pozici i po restartu."
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.cHVsbC1zdWJzY3JpYmU.display_name": {
+          "source": "JetStream Pull Subscribe",
+          "message": "Pull odběr z JetStreamu"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.cHVsbC1zdWJzY3JpYmU.option.ZHVyYWJsZQ.desc": {
+          "source": "The durable consumer name that persists the subscription state.\n\nDurable consumers survive client disconnects and server restarts. When the client reconnects with the same `durable` name, message delivery resumes from the last acknowledged position. The consumer must already exist on the stream or will be created automatically.",
+          "message": "Název trvalého (durable) konzumenta, který uchovává stav odběru.\n\nTrvalí konzumenti přežijí odpojení klienta i restart serveru. Když se klient znovu připojí se stejným názvem `durable`, doručování zpráv pokračuje od poslední potvrzené pozice. Konzument již musí ve streamu existovat, nebo bude vytvořen automaticky."
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.cHVsbC1zdWJzY3JpYmU.option.ZHVyYWJsZQ.display_name": {
+          "source": "Durable Name",
+          "message": "Trvalý název"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.cHVsbC1zdWJzY3JpYmU.option.ZHVyYWJsZQ.short_desc": {
+          "source": "Durable consumer name for pull subscription",
+          "message": "Název trvalého konzumenta pro pull odběr"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.cHVsbC1zdWJzY3JpYmU.option.c3ViamVjdA.desc": {
+          "source": "The JetStream subject to subscribe to.\n\nSupports NATS wildcard tokens: `*` matches a single token (e.g. `orders.*` matches `orders.created`) and `>` matches one or more tokens (e.g. `orders.>` matches `orders.created`, `orders.us.created`, etc.).",
+          "message": "JetStream subject k odběru.\n\nPodporuje zástupné znaky NATS: `*` odpovídá jednomu tokenu (např. `orders.*` odpovídá `orders.created`) a `>` odpovídá jednomu nebo více tokenům (např. `orders.>` odpovídá `orders.created`, `orders.us.created` atd.)."
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.cHVsbC1zdWJzY3JpYmU.option.c3ViamVjdA.display_name": {
+          "source": "Subject",
+          "message": "Předmět"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.cHVsbC1zdWJzY3JpYmU.option.c3ViamVjdA.short_desc": {
+          "source": "JetStream subject to subscribe to",
+          "message": "JetStream subject k odběru"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.cHVsbC1zdWJzY3JpYmU.short_desc": {
+          "source": "Pull subscribe with a durable consumer",
+          "message": "Pull odběr s trvalým konzumentem"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.desc": {
+          "source": "NATS JetStream extends core NATS with persistent messaging, at-least-once delivery, and exactly-once semantics.\n\nProvides stream management for durable message storage, consumer management for delivery strategies, guaranteed publish with acknowledgments, and a distributed key-value store for configuration and shared state.",
+          "message": "NATS JetStream rozšiřuje základní NATS o trvalé zasílání zpráv, doručení alespoň jednou (at-least-once) a sémantiku právě jednou (exactly-once).\n\nPoskytuje správu streamů pro trvalé úložiště zpráv, správu konzumentů pro strategie doručování, garantované publikování s potvrzením a distribuované úložiště klíč-hodnota pro konfiguraci a sdílený stav."
+        },
+        "app.TkFUU0pldFN0cmVhbQ.display_name": {
+          "source": "NATS JetStream",
+          "message": "NATS JetStream"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.short_desc": {
+          "source": "NATS JetStream streaming and KV store",
+          "message": "Streamování a KV úložiště NATS JetStream"
+        }
+      }
+    }
+  }
+}
