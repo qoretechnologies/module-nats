@@ -1,0 +1,11 @@
+qore-nats-module (1.0.0~git20260928.1-0qore1~ubuntu26.04) resolute; urgency=medium
+
+  * Package native bindings, three compiled/source user modules, metadata,
+    resources/translations, API docs, test examples and debug symbols.
+  * Use distribution libnats 3.12 and an isolated local broker for tests.
+  * Remove the obsolete upstream error-counter patch already in nats.c 3.12.
+  * Match the CMake minimum to COPY_FILE and declare NatsUtil dependencies.
+  * Record an explicit QUnit skip when the optional NATS CLI is unavailable.
+  * Add installed runtime/compiler tests and reproducible offline profiles.
+
+ -- David Nichols <david@qore.org>  Tue, 29 Sep 2026 02:55:59 -0000

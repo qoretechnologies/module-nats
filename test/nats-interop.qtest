@@ -31,6 +31,7 @@
 */
 
 %modern
+%prepend-module-path "${SCRIPT_DIR}/../qlib"
 
 %requires QUnit
 %requires nats
@@ -44,15 +45,17 @@ public class NatsInteropTest inherits QUnit::Test {
         string url;
         *int nats_pid;
         string pid_file;
+        bool cli_available = False;
     }
 
     constructor() : QUnit::Test("NatsInteropTest", "1.0") {
         # Verify the nats CLI is available before registering tests
-        if (system("which nats > /dev/null 2>&1")) {
-            printf("SKIP: nats CLI not found, skipping interop tests\n");
-            set_return_value(0);
+        if (system("command -v nats > /dev/null 2>&1")) {
+            addTestCase("NATS CLI dependency", \missingCli());
+            set_return_value(main());
             return;
         }
+        cli_available = True;
 
         # --- Core NATS interop ---
         addTestCase("cli pub qore sub", \cliPubQoreSubTest());
@@ -112,11 +115,19 @@ public class NatsInteropTest inherits QUnit::Test {
     }
 
     globalSetUp() {
-        startServer();
+        if (cli_available) {
+            startServer();
+        }
     }
 
     globalTearDown() {
-        stopServer();
+        if (cli_available) {
+            stopServer();
+        }
+    }
+
+    private nothing missingCli() {
+        testSkip("nats CLI not available");
     }
 
     private string natsCmd(string args) {

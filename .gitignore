@@ -6,3 +6,15 @@ build*
 *.pyc
 __pycache__
 .DS_Store
+
+# Debian package build products
+/obj-*/
+/debian/.debhelper/
+/debian/debhelper-build-stamp
+/debian/files
+/debian/*.substvars
+/debian/*.debhelper
+/debian/qore-nats-module/
+/debian/qore-nats-module-doc/
+/debian/tmp/
+**/__pycache__/

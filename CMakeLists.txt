@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.11.0)
+cmake_minimum_required(VERSION 3.21)
 
 project(qore-nats-module)
 
@@ -28,7 +28,7 @@ find_package(Qore 2.0 REQUIRED)
 find_path(NATS_INCLUDE_DIR nats/nats.h)
 find_library(NATS_LIBRARY NAMES nats)
 if(NOT NATS_INCLUDE_DIR OR NOT NATS_LIBRARY)
-    message(STATUS "nats.c not found locally — fetching v3.10.0 from GitHub")
+    message(STATUS "nats.c not found locally — fetching v3.12.0 from GitHub")
     include(FetchContent)
     set(NATS_BUILD_STREAMING OFF CACHE BOOL "" FORCE)
     set(NATS_BUILD_EXAMPLES OFF CACHE BOOL "" FORCE)
@@ -46,15 +46,7 @@ if(NOT NATS_INCLUDE_DIR OR NOT NATS_LIBRARY)
     )
     FetchContent_MakeAvailable(nats_c)
 
-    # Patch nats.c bug: _update_last_error() called unconditionally even when
-    # err is NULL, causing NumErrors to increment on every successful request.
-    # See: https://github.com/nats-io/nats.c/issues/XXX
-    file(READ "${nats_c_SOURCE_DIR}/src/micro_endpoint.c" _micro_ep_src)
-    string(REPLACE
-        "    _update_last_error(ep, err);\n    micro_unlock_endpoint(ep);\n\n    microError_Destroy(err);"
-        "    if (err != NULL)\n        _update_last_error(ep, err);\n    micro_unlock_endpoint(ep);\n\n    microError_Destroy(err);"
-        _micro_ep_src "${_micro_ep_src}")
-    file(WRITE "${nats_c_SOURCE_DIR}/src/micro_endpoint.c" "${_micro_ep_src}")
+    # v3.12.0 already guards the microservice error counter against NULL errors.
     # nats.c source puts headers in src/nats.h, but installed layout is nats/nats.h.
     # Create a symlink so #include <nats/nats.h> works from the source tree.
     file(MAKE_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/nats_include")
@@ -143,8 +135,8 @@ qore_dist(${PROJECT_VERSION})
 
 qore_user_modules("${QMOD}")
 qore_external_user_module("qlib/NatsUtil" "")
-qore_external_user_module("qlib/NatsDataProvider" "")
-qore_external_user_module("qlib/NatsJetStreamDataProvider" "")
+qore_external_user_module("qlib/NatsDataProvider" "NatsUtil")
+qore_external_user_module("qlib/NatsJetStreamDataProvider" "NatsUtil")
 
 # Reconcile the installed i18n catalog root against the fragments these modules
 # currently own.  Installing catalogs is otherwise additive: a fragment installed by

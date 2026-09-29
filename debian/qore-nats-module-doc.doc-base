@@ -1,0 +1,9 @@
+Document: qore-nats-module
+Title: Qore NATS Module Reference
+Author: Qore Technologies, s.r.o.
+Abstract: API reference for NATS messaging, JetStream and key-value providers.
+Section: Programming
+
+Format: HTML
+Index: /usr/share/doc/qore-nats-module-doc/docs/nats/html/index.html
+Files: /usr/share/doc/qore-nats-module-doc/docs/*/html/*.html

@@ -1,0 +1,7 @@
+Tests: runtime
+Depends: qore-nats-module, nats-server
+Restrictions: allow-stderr
+
+Tests: compiler
+Depends: qore-nats-module, libqore-dev, nats-server
+Restrictions: allow-stderr

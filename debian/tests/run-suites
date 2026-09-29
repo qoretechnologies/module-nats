@@ -1,0 +1,13 @@
+#!/bin/sh
+# Copyright (C) 2026 David Nichols
+# SPDX-License-Identifier: MIT
+set -eu
+command -v nats-server >/dev/null
+for suite in test/*.qtest; do
+    timeout 600 /usr/bin/qore --enable-debug \
+        -l "$QORE_NATS_TEST_MODULE_DIR/nats-api-$(/usr/bin/qore --latest-module-api).qmod" \
+        -l "$QORE_NATS_TEST_QMOD_DIR/NatsUtil/NatsUtil.qmod" \
+        -l "$QORE_NATS_TEST_QMOD_DIR/NatsDataProvider/NatsDataProvider.qmod" \
+        -l "$QORE_NATS_TEST_QMOD_DIR/NatsJetStreamDataProvider/NatsJetStreamDataProvider.qmod" \
+        "$suite" -v
+done

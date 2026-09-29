@@ -1,0 +1,9 @@
+usr/lib/*/qore-modules/nats-api-*.qmod
+usr/lib/*/qore-modules/NatsUtil/
+usr/share/qore-modules/NatsUtil/
+usr/lib/*/qore-modules/NatsDataProvider/
+usr/share/qore-modules/NatsDataProvider/
+usr/lib/*/qore-modules/NatsJetStreamDataProvider/
+usr/share/qore-modules/NatsJetStreamDataProvider/
+usr/share/qore/metadata/nats/*.meta.json
+usr/share/qore/i18n/

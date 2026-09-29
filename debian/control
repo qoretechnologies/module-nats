@@ -1,0 +1,41 @@
+Source: qore-nats-module
+Section: interpreters
+Priority: optional
+Maintainer: David Nichols <david@qore.org>
+Build-Depends: debhelper-compat (= 13),
+               cmake (>= 3.21),
+               libnats-dev (>= 3.12.0),
+               libqore-dev (>= 3.0.0~),
+               qore (>= 3.0.0~),
+               qore-misc-tools (>= 3.0.0~) <!nocheck>,
+               python3,
+               nats-server <!nocheck>
+Build-Depends-Indep: doxygen <!nodoc>
+Standards-Version: 4.7.4
+Rules-Requires-Root: no
+Homepage: https://qore.org
+Vcs-Git: https://github.com/qoretechnologies/module-nats.git
+Vcs-Browser: https://github.com/qoretechnologies/module-nats
+
+Package: qore-nats-module
+Architecture: any
+Depends: ${qore:Depends},
+         ${shlibs:Depends},
+         ${misc:Depends}
+Suggests: qore-nats-module-doc
+Description: NATS messaging, JetStream and key-value providers for Qore
+ This package provides native NATS bindings and source/compiled user modules
+ for messaging, JetStream streams/consumers and key-value storage.
+ Compiler metadata, provider resources and translations are included.
+ The distribution NATS C client library supplies the native implementation.
+
+Package: qore-nats-module-doc
+Section: doc
+Architecture: all
+Multi-Arch: foreign
+Build-Profiles: <!nodoc>
+Depends: ${misc:Depends}
+Suggests: qore-nats-module
+Description: documentation and examples for Qore's NATS modules
+ This package contains four HTML API references and local-broker test
+ fixtures for the NATS messaging and data provider modules.

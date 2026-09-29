@@ -1,0 +1,52 @@
+#!/bin/sh
+# Copyright (C) 2026 David Nichols
+# SPDX-License-Identifier: MIT
+set -eu
+unset QORE_MODULE_DIR QORE_MODULE_DIR_ONLY QORE_INCLUDE_DIR LD_LIBRARY_PATH LD_PRELOAD
+cd "$AUTOPKGTEST_TMP"
+cat > nats-smoke.q <<'EOF'
+%modern
+%requires nats
+%requires NatsUtil
+%requires NatsDataProvider
+%requires NatsJetStreamDataProvider
+%requires DataProvider
+%requires FsUtil
+
+sub test() {
+    # The shell command below uses only this fixed path and generated characters.
+    TmpDir work("nats-qcc-", NOTHING, "/tmp");
+    string pid_file = work.path + "/server.pid";
+    int port = 10000 + rand() % 50000;
+    int status = system(sprintf("nats-server -p %d -a 127.0.0.1 --pid %s > %s 2>&1 &",
+        port, pid_file, work.path + "/server.log"));
+    if (status) throw "PACKAGE-TEST-ERROR", "Cannot start broker";
+    *int pid;
+    on_exit {
+        if (pid) kill(pid, SIGTERM);
+    }
+    for (int i = 0; i < 100; ++i) {
+        if (is_file(pid_file)) {
+            pid = trim(ReadOnlyFile::readTextFile(pid_file)).toInt();
+            break;
+        }
+        usleep(50000);
+    }
+    if (!pid) throw "PACKAGE-TEST-ERROR", "Broker did not start";
+    NatsConnection conn(url: sprintf("nats://127.0.0.1:%d", port));
+    NatsSubscription subscription = conn.subscribe(subject: "package.test");
+    conn.flush(timeout_ms: 5s);
+    conn.publishString(subject: "package.test", data: "installed compiler");
+    hash<NatsMsgInfo> msg = subscription.nextMsg(timeout_ms: 5s);
+    if (msg.data.toString() != "installed compiler"
+            || DataProvider::getFactory("nats").getInfo().name != "nats"
+            || DataProvider::getFactory("natsjetstream").getInfo().name != "natsjetstream") {
+        throw "PACKAGE-TEST-ERROR", "Installed messaging or provider registration failed";
+    }
+    subscription.unsubscribe();
+    conn.close();
+}
+test();
+EOF
+/usr/bin/qcc -o nats-smoke nats-smoke.q
+timeout 60 ./nats-smoke

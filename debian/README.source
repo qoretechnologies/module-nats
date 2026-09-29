@@ -1,0 +1,35 @@
+Qore NATS module packages
+========================
+
+This is a development snapshot for qore-testing, not a final release.
+The runtime contains the native NATS bindings, three source/AOT user modules,
+compiler metadata, provider resources and all translation catalogs. The doc
+package contains four API references and test fixtures. No broker is installed
+or started by the runtime package.
+
+Build with dpkg-buildpackage -us -uc and the matching Qore 3 SDK. Distribution
+libnats-dev >= 3.12.0 is required; no build-time downloads or private client
+library are used. Upstream nats.c 3.12 already fixes microservice error counts;
+the obsolete FetchContent string patch is removed. The microservice suite
+checks both successful requests and errors against the distribution library.
+
+Full, arch-only, indep-only, nocheck and nodoc profiles are supported. Fixed
+qcc partitioning, declared sibling-module dependencies and preserved AOT
+trailers support deterministic builds and installed compilation. Cross builds
+need a separate host SDK and are rejected.
+
+Build and installed tests start local loopback nats-server processes; they
+exercise messaging, JetStream, key-value stores, microservices and providers.
+Consumer-pause tests skip explicitly with broker versions that lack that API;
+qualify those cases separately with a newer broker.
+The NATS CLI interoperability suite reports an explicit QUnit skip if the CLI
+is absent (it is not supplied by the distribution). Qualify it separately
+before claiming cross-client coverage. Installed compiler tests compile and
+run a fresh messaging client; fixture module paths exclude the checkout.
+No external account is required. TLS/authentication deployment combinations
+and multi-node broker clusters require separate qualification.
+
+Before general publication, qualify other Debian/Ubuntu releases and
+architectures, freeze the Qore ABI and test relevant upgrades. No older module
+package is available for upgrade testing. PPA publication requires the matching
+Qore SDK, source signing and upload.
