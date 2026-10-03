@@ -2,6 +2,8 @@
 # Copyright (C) 2026 David Nichols
 # SPDX-License-Identifier: MIT
 set -eu
+# Debian installs the broker in /usr/sbin, outside an unprivileged user's PATH.
+export PATH=/usr/bin:/bin:/usr/sbin:/sbin
 command -v nats-server >/dev/null
 for suite in test/*.qtest; do
     timeout 600 /usr/bin/qore --enable-debug \

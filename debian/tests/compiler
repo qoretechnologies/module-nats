@@ -2,6 +2,8 @@
 # Copyright (C) 2026 David Nichols
 # SPDX-License-Identifier: MIT
 set -eu
+# Debian installs the broker in /usr/sbin, outside an unprivileged user's PATH.
+export PATH=/usr/bin:/bin:/usr/sbin:/sbin
 unset QORE_MODULE_DIR QORE_MODULE_DIR_ONLY QORE_INCLUDE_DIR LD_LIBRARY_PATH LD_PRELOAD
 cd "$AUTOPKGTEST_TMP"
 cat > nats-smoke.q <<'EOF'

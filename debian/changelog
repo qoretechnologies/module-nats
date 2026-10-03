@@ -1,3 +1,10 @@
+qore-nats-module (1.0.0~git20260930.1-0qore2~ubuntu26.04) UNRELEASED; urgency=medium
+
+  * Include the distribution's system binary paths when running broker tests
+    as an unprivileged user.
+
+ -- David Nichols <david@qore.org>  Thu, 01 Oct 2026 14:05:00 +0000
+
 qore-nats-module (1.0.0~git20260930.1-0qore1~ubuntu26.04) resolute; urgency=medium
 
   * Run documentation postprocessing through cmake -E env so quoted build
