@@ -4,6 +4,8 @@
 
     @section natsintro nats Module Introduction
 
+    <img src="nats-logo.svg" width="96" alt="nats module logo"/>
+
     The \c nats module provides NATS messaging support for %Qore, wrapping the
     <a href="https://github.com/nats-io/nats.c">nats.c</a> client library. It supports
     core NATS publish/subscribe and request/reply messaging, JetStream persistent messaging
@@ -13,81 +15,32 @@
     and \c "%requires NatsUtil" for high-level convenience classes including channel-based
     async subscriptions.
 
-    @section natsreqs Requirements
+    @section natsqlibmodules Qore User Modules
 
-    @subpage natsreqsguide
+    - @ref natsdataproviderintro "NatsDataProvider" — a data provider API for NATS messaging
+    - @ref natsjetstreamdataproviderintro "NatsJetStreamDataProvider" — a data provider API for NATS JetStream
+    - @ref natsutilintro "NatsUtil" — Qore NATS utility module
 
+    @section natsdocumentation Documentation
 
-    @section natsbuilding Building
-
-    @subpage natsbuildingguide
-
-
-    @section natsarch Architecture
-
-    @subpage natsarchguide
-
-
-    @section natscorequickstart Core NATS
-
-    @subpage natscorequickstartguide
-
-
-    @section natsjetstream JetStream
-
-    @subpage natsjetstreamguide
-
-
-    @section natskv Key-Value Store
-
-    @subpage natskvguide
-
-
-    @section natstls TLS Connections
-
-    @subpage natstlsguide
-
-
-    @section natsauth Authentication
-
-    @subpage natsauthguide
-
-
-    @section natsdp NatsDataProvider Module
-
-    @subpage natsdpguide
-
-
-    @section natsjetdp NatsJetStreamDataProvider Module
-
-    @subpage natsjetdpguide
-
-
-    @section natshashdecls Hashdecl Reference
-
-    @subpage natshashdeclsguide
-
-
-    @section natsconstants Constants
-
-    @subpage natsconstantsguide
-
-
-    @section natsrelnotes Release Notes
-
-    @subpage natsrelnotesguide
-
+    - @anchor natsreqs @subpage natsreqsguide
+    - @anchor natsbuilding @subpage natsbuildingguide
+    - @anchor natsarch @subpage natsarchguide
+    - @anchor natscorequickstart @subpage natscorequickstartguide
+    - @anchor natsjetstream @subpage natsjetstreamguide
+    - @anchor natskv @subpage natskvguide
+    - @anchor natstls @subpage natstlsguide
+    - @anchor natsauth @subpage natsauthguide
+    - @anchor natsdp @subpage natsdpguide
+    - @anchor natsjetdp @subpage natsjetdpguide
+    - @anchor natshashdecls @subpage natshashdeclsguide
+    - @anchor natsconstants @subpage natsconstantsguide
+    - @anchor natsrelnotes @subpage natsrelnotesguide
 
     @section natslicense License
 
     The nats module is released under the MIT license.
 
     Copyright (C) 2026 Qore Technologies, s.r.o.
-
-    @section natsqlibmodules Qore User Modules
-
-    - <img src="nats-logo.svg" width="28" height="28" alt="NatsDataProvider app icon"/> @ref natsdataproviderintro "NatsDataProvider" — a data provider API for NATS messaging
-    - <img src="nats-logo.svg" width="28" height="28" alt="NatsJetStreamDataProvider app icon"/> @ref natsjetstreamdataproviderintro "NatsJetStreamDataProvider" — a data provider API for NATS JetStream
-    - @ref natsutilintro "NatsUtil" — Qore NATS utility module
 
 */

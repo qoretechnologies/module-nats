@@ -168,6 +168,8 @@ module NatsDataProvider {
 
     @section natsdataproviderintro NatsDataProvider Module Introduction
 
+    <img src="nats-logo.svg" width="96" alt="NatsDataProvider module logo"/>
+
     The %NatsDataProvider module integrates NATS messaging into Qore's data provider
     framework, enabling publish/subscribe, request/reply, and queue group messaging
     through a uniform API.

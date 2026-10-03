@@ -124,10 +124,5 @@ client.subscribe("events.>", sub (hash<NatsMsgInfo> msg) {
     @section natsutilrelnotes Release Notes
 
     @subsection natsutil_v1_0 NatsUtil Module Version 1.0
-
     - initial release
-    - @ref Nats::NatsClient "NatsClient": high-level client with convenience methods
-    - @ref Nats::NatsChannelSubscription "NatsChannelSubscription": channel-based
-      async subscription with iterator and multiplexing support
-    - @ref Nats::NatsHelper "NatsHelper": subject validation and URL parsing
 */

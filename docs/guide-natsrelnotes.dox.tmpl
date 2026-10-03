@@ -5,33 +5,5 @@
     @tableofcontents
 
     @section nats_v1_0 nats Module Version 1.0
-
-    <b>Dependencies</b>: \c libnats (nats.c client library)
-
-    <b>Features</b>:
     - initial release
-    - @ref Qore::Nats::NatsConnection "NatsConnection": connect to NATS servers with
-      URL or options hash; supports token, username/password, NKey, and credentials
-      file authentication; supports TLS
-    - @ref Qore::Nats::NatsSubscription "NatsSubscription": subscribe to subjects with
-      wildcard support (\c * and \c >); queue group subscriptions for load balancing;
-      auto-unsubscribe and drain support
-    - @ref Qore::Nats::JetStreamContext "JetStreamContext": stream and consumer CRUD;
-      JetStream publish with acknowledgment; push and pull subscriptions
-    - @ref Qore::Nats::NatsKeyValueStore "NatsKeyValueStore": put, get, create, update
-      (CAS), delete, purge, keys, and history operations
-    - hashdecls for all configuration and result types
-    - constants for JetStream retention, storage, discard, ack, deliver, and replay policies
-    - @ref Nats::NatsClient "NatsClient": high-level client with string publish/request,
-      channel-based async subscriptions, and callback-based subscriptions
-    - @ref Nats::NatsChannelSubscription "NatsChannelSubscription": channel-based async
-      subscription with iterator support, timeout receive, and \c channel_select()
-      multiplexing
-    - @ref Nats::NatsHelper "NatsHelper": subject validation and URL parsing utilities
-    - \c NatsDataProvider module: data provider API for core NATS publish, request,
-      subscribe, and queue-subscribe; connection schemes \c nats:// and \c tls://;
-      action catalog registration
-    - \c NatsJetStreamDataProvider module: data provider API for JetStream streams,
-      consumers, publish, push/pull subscribe, and Key-Value store operations;
-      action catalog registration
 */
