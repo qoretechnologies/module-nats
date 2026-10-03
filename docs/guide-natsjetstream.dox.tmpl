@@ -1,0 +1,93 @@
+/* Copyright (C) 2026 Qore Technologies, s.r.o. */
+
+/** @page natsjetstreamguide JetStream
+
+    @tableofcontents
+
+    JetStream provides persistent messaging with at-least-once and exactly-once delivery
+    guarantees, stream management, consumer management, and replay capabilities.
+
+    @section natsjsstreams Stream Management
+
+    Streams capture and store messages published to matching subjects.
+
+    @code{.py}
+%requires nats
+
+NatsConnection conn("nats://localhost:4222");
+JetStreamContext js = conn.jetStream();
+
+# Create a stream
+hash<NatsStreamInfo> info = js.addStream(<NatsStreamConfig>{
+    "name": "ORDERS",
+    "subjects": ("orders.>",),
+    "retention": NATS_RETENTION_LIMITS,
+    "storage": NATS_STORAGE_FILE,
+    "max_msgs": 1000000,
+});
+
+# Get stream info
+info = js.getStreamInfo("ORDERS");
+printf("Messages: %d, Bytes: %d\n", info.messages, info.bytes);
+
+# Purge all messages
+js.purgeStream("ORDERS");
+
+# Delete the stream
+js.deleteStream("ORDERS");
+    @endcode
+
+    @section natsjsconsumers Consumer Management
+
+    Consumers track message delivery state for subscribers.
+
+    @code{.py}
+hash<NatsConsumerInfo> ci = js.addConsumer("ORDERS", <NatsConsumerConfig>{
+    "durable_name": "order-processor",
+    "ack_policy": NATS_ACK_EXPLICIT,
+    "deliver_policy": NATS_DELIVER_ALL,
+});
+
+ci = js.getConsumerInfo("ORDERS", "order-processor");
+printf("Pending: %d\n", ci.num_pending);
+
+js.deleteConsumer("ORDERS", "order-processor");
+    @endcode
+
+    @section natsjspubsub JetStream Publish and Subscribe
+
+    JetStream publish returns an acknowledgment confirming the message was persisted.
+    JetStream subscriptions support push and pull delivery modes with explicit
+    message acknowledgment.
+
+    @code{.py}
+# Publish with acknowledgment
+hash<NatsPubAck> ack = js.publish("orders.new", binary("order-123"));
+printf("Published to stream %s, seq %d\n", ack.stream, ack.sequence);
+
+# Push subscribe
+NatsSubscription sub = js.subscribe("orders.>");
+*hash<NatsMsgInfo> msg = sub.nextMsg(5s);
+if (msg) {
+    printf("Received: %s\n", msg.data.toString());
+    sub.ack();
+}
+
+# Pull subscribe (durable consumer)
+NatsSubscription pull_sub = js.pullSubscribe("orders.>", "order-processor");
+*hash<NatsMsgInfo> pull_msg = pull_sub.nextMsg(5s);
+if (pull_msg) {
+    pull_sub.ack();
+}
+    @endcode
+
+    @section natsjsacknowledgment Message Acknowledgment
+
+    JetStream subscriptions support several acknowledgment operations:
+
+    |!Method|!Description
+    |@ref Qore::Nats::NatsSubscription::ack() "ack()"|Acknowledge successful processing
+    |@ref Qore::Nats::NatsSubscription::nak() "nak()"|Negative acknowledgment (request redelivery)
+    |@ref Qore::Nats::NatsSubscription::inProgress() "inProgress()"|Signal processing is ongoing (reset redelivery timer)
+    |@ref Qore::Nats::NatsSubscription::term() "term()"|Terminate delivery (message will not be redelivered)
+*/

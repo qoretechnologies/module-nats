@@ -1,0 +1,47 @@
+/* Copyright (C) 2026 Qore Technologies, s.r.o. */
+
+/** @page natskvguide Key-Value Store
+
+    @tableofcontents
+
+    JetStream provides a distributed Key-Value store built on streams.
+
+    @code{.py}
+NatsConnection conn("nats://localhost:4222");
+JetStreamContext js = conn.jetStream();
+
+# Create a KV bucket
+NatsKeyValueStore kv = js.createKeyValue(<NatsKVConfig>{
+    "bucket": "config",
+    "history": 5,
+    "ttl": 3600000,
+});
+
+# Put values
+int rev1 = kv.putString("app.name", "MyApp");
+int rev2 = kv.putString("app.version", "1.0");
+
+# Get a value
+*hash<NatsKVEntry> entry = kv.get("app.name");
+if (entry) {
+    printf("Key: %s, Value: %s, Rev: %d\n",
+        entry.key, entry.value.toString(), entry.revision);
+}
+
+# Compare-and-swap update
+int rev3 = kv.update("app.name", binary("NewApp"), rev1);
+
+# List all keys
+list<string> keys = kv.keys();
+
+# Get revision history
+list<hash<NatsKVEntry>> hist = kv.history("app.name");
+
+# Soft-delete and purge
+kv.delete("app.version");
+kv.purge("app.version");
+
+# Delete the bucket
+js.deleteKeyValue("config");
+    @endcode
+*/

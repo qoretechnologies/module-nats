@@ -1,0 +1,20 @@
+/* Copyright (C) 2026 Qore Technologies, s.r.o. */
+
+/** @page natstlsguide TLS Connections
+
+    @tableofcontents
+
+    The module supports TLS-encrypted connections using the @ref Qore::Nats::NatsTlsOptions
+    "NatsTlsOptions" hashdecl.
+
+    @code{.py}
+NatsConnection conn(<NatsConnectionOptions>{
+    "url": "tls://nats.example.com:4222",
+    "tls": <NatsTlsOptions>{
+        "ca_cert": "/path/to/ca.crt",
+        "client_cert": "/path/to/client.crt",
+        "client_key": "/path/to/client.key",
+    },
+});
+    @endcode
+*/

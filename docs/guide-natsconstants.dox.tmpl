@@ -1,0 +1,55 @@
+/* Copyright (C) 2026 Qore Technologies, s.r.o. */
+
+/** @page natsconstantsguide Constants
+
+    @tableofcontents
+
+    @section natsretentionpolicies Retention Policies
+
+    |!Constant|!Value|!Description
+    |@ref Qore::Nats::NATS_RETENTION_LIMITS|0|Retain based on limits (max messages, bytes, age)
+    |@ref Qore::Nats::NATS_RETENTION_INTEREST|1|Retain until acknowledged by all consumers
+    |@ref Qore::Nats::NATS_RETENTION_WORKQUEUE|2|Retain until acknowledged (work queue)
+
+    @section natsstoragetypes Storage Types
+
+    |!Constant|!Value|!Description
+    |@ref Qore::Nats::NATS_STORAGE_FILE|0|File-based storage
+    |@ref Qore::Nats::NATS_STORAGE_MEMORY|1|Memory-based storage
+
+    @section natsdiscardpolicies Discard Policies
+
+    |!Constant|!Value|!Description
+    |@ref Qore::Nats::NATS_DISCARD_OLD|0|Discard old messages when full
+    |@ref Qore::Nats::NATS_DISCARD_NEW|1|Reject new messages when full
+
+    @section natsackpolicies Ack Policies
+
+    |!Constant|!Value|!Description
+    |@ref Qore::Nats::NATS_ACK_NONE|0|No acknowledgment required
+    |@ref Qore::Nats::NATS_ACK_ALL|1|All messages must be acknowledged
+    |@ref Qore::Nats::NATS_ACK_EXPLICIT|2|Each message acknowledged individually
+
+    @section natsdeliverpolicies Deliver Policies
+
+    |!Constant|!Value|!Description
+    |@ref Qore::Nats::NATS_DELIVER_ALL|0|Deliver all available messages
+    |@ref Qore::Nats::NATS_DELIVER_LAST|1|Start with the last message
+    |@ref Qore::Nats::NATS_DELIVER_NEW|2|Deliver only new messages
+    |@ref Qore::Nats::NATS_DELIVER_BY_START_SEQUENCE|3|Start from a specific sequence
+    |@ref Qore::Nats::NATS_DELIVER_BY_START_TIME|4|Start from a specific time
+    |@ref Qore::Nats::NATS_DELIVER_LAST_PER_SUBJECT|5|Last message per subject
+
+    @section natsreplaypolicies Replay Policies
+
+    |!Constant|!Value|!Description
+    |@ref Qore::Nats::NATS_REPLAY_INSTANT|0|Replay as fast as possible
+    |@ref Qore::Nats::NATS_REPLAY_ORIGINAL|1|Replay at original delivery rate
+
+    @section natskvoperations Key-Value Operations
+
+    |!Constant|!Value|!Description
+    |@ref Qore::Nats::NATS_KV_OP_PUT|1|Put or update operation
+    |@ref Qore::Nats::NATS_KV_OP_DELETE|2|Delete operation
+    |@ref Qore::Nats::NATS_KV_OP_PURGE|3|Purge operation
+*/

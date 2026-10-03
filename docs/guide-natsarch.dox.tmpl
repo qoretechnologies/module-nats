@@ -1,0 +1,19 @@
+/* Copyright (C) 2026 Qore Technologies, s.r.o. */
+
+/** @page natsarchguide Architecture
+
+    @tableofcontents
+
+    The module has three layers:
+
+    - <b>Binary module (\c nats.so)</b>: C++ QPP wrapping \c libnats for connection
+      management, publish/subscribe, request/reply, JetStream, and Key-Value store.
+      Provides @ref Qore::Nats::NatsConnection, @ref Qore::Nats::NatsSubscription,
+      @ref Qore::Nats::JetStreamContext, and @ref Qore::Nats::NatsKeyValueStore.
+    - <b>Qore module (\c NatsUtil)</b>: Pure %Qore providing high-level convenience
+      classes. Provides @ref Nats::NatsClient, @ref Nats::NatsChannelSubscription,
+      and @ref Nats::NatsHelper.
+    - <b>Data provider modules</b>: @ref natsdataproviderintro "NatsDataProvider" and
+      @ref natsjetstreamdataproviderintro "NatsJetStreamDataProvider" for integration with Qore's data
+      provider framework.
+*/

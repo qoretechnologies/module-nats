@@ -1,0 +1,35 @@
+/* Copyright (C) 2026 Qore Technologies, s.r.o. */
+
+/** @page natsdpguide NatsDataProvider Module
+
+    @tableofcontents
+
+    The \c NatsDataProvider module integrates core NATS messaging into Qore's data provider
+    framework. Use \c "%requires NatsDataProvider" to load the module.
+
+    @section natsdp_hierarchy Provider Hierarchy
+
+    @verbatim
+<root>
+  +-- publish          (NatsPublishDataProvider -- DPAT_API)
+  +-- request          (NatsRequestDataProvider -- DPAT_API)
+  +-- subscribe        (NatsSubscribeEventDataProvider -- DPAT_EVENT)
+  +-- queue-subscribe  (NatsQueueSubscribeEventDataProvider -- DPAT_EVENT)
+    @endverbatim
+
+    @section natsdp_connections Connection Schemes
+
+    |!Scheme|!Transport|!Example URL
+    |\c nats://|Plaintext NATS|\c nats://localhost:4222
+    |\c tls://|TLS-encrypted NATS|\c tls://nats.example.com:4222
+
+    @section natsdp_cli Command Line Usage
+
+    @verbatim
+# Publish a message
+qdp 'nats{url=nats://localhost:4222}/publish' dor subject=events.log,data=hello
+
+# Send a request
+qdp 'nats{url=nats://localhost:4222}/request' dor subject=service.echo,data=hello
+    @endverbatim
+*/

@@ -1,0 +1,196 @@
+/* Copyright (C) 2026 Qore Technologies, s.r.o. */
+
+/** @page natscorequickstartguide Core NATS
+
+    @tableofcontents
+
+    @section natspubsub Publish / Subscribe
+
+    The fundamental NATS messaging pattern. Publishers send messages to subjects;
+    subscribers receive messages on matching subjects.
+
+    @code{.py}
+%requires NatsUtil
+
+NatsClient client("nats://localhost:4222");
+
+# Subscribe using channel-based async subscription
+NatsChannelSubscription sub = client.channelSubscribe("events.>");
+
+# Publish a message
+client.publishString("events.log", "Hello NATS!");
+
+# Receive the message
+*hash<NatsMsgInfo> msg = sub.recv(5s);
+if (msg) {
+    printf("Received on %s: %s\n", msg.subject, msg.data.toString());
+}
+
+sub.close();
+client.close();
+    @endcode
+
+    @section natsreqrep Request / Reply
+
+    Synchronous request/reply using the @ref Nats::NatsClient::requestString()
+    "NatsClient::requestString()" method.
+
+    @code{.py}
+%requires NatsUtil
+
+NatsClient client("nats://localhost:4222");
+
+# Set up a responder in the background
+NatsChannelSubscription sub = client.channelSubscribe("service.echo");
+background sub () {
+    foreach hash<NatsMsgInfo> msg in (sub) {
+        if (msg.reply) {
+            client.publishString(msg.reply, "Echo: " + msg.data.toString());
+        }
+    }
+}();
+
+# Send a request and wait for the reply
+string reply = client.requestString("service.echo", "Hello!", 5s);
+printf("Reply: %s\n", reply);
+
+sub.close();
+client.close();
+    @endcode
+
+    @section natsqueuegroups Queue Groups
+
+    Messages published to a subject are load-balanced across subscribers in the same
+    queue group. Only one subscriber in the group receives each message.
+
+    @code{.py}
+NatsClient client("nats://localhost:4222");
+NatsChannelSubscription sub1 = client.channelQueueSubscribe("work.tasks", "workers");
+NatsChannelSubscription sub2 = client.channelQueueSubscribe("work.tasks", "workers");
+
+# Each published message goes to exactly one worker
+for (int i = 0; i < 10; ++i) {
+    client.publishString("work.tasks", sprintf("task-%d", i));
+}
+    @endcode
+
+    @section natswildcards Wildcard Subscriptions
+
+    NATS supports two wildcards in subject subscriptions:
+
+    - \c * matches a single token: \c "events.*" matches \c "events.log" but not
+      \c "events.log.error"
+    - \c > matches one or more tokens (must be last): \c "events.>" matches
+      \c "events.log", \c "events.log.error", etc.
+
+    @code{.py}
+# Match any single token
+NatsChannelSubscription sub1 = client.channelSubscribe("orders.*");
+
+# Match all tokens from this point
+NatsChannelSubscription sub2 = client.channelSubscribe("events.>");
+    @endcode
+
+    @section natscallbacksub Callback-Based Subscriptions
+
+    For simple message processing, use callback-based subscriptions that run in a
+    background thread:
+
+    @code{.py}
+%requires NatsUtil
+
+NatsClient client("nats://localhost:4222");
+
+# Subscribe with a callback — messages are delivered in a background thread
+NatsChannelSubscription sub = client.subscribe("events.>", sub (hash<NatsMsgInfo> msg) {
+    printf("Got %s: %s\n", msg.subject, msg.data.toString());
+});
+
+# Do other work while messages are processed in the background
+sleep(10s);
+
+sub.close();
+client.close();
+    @endcode
+
+    @section natserrorhandling Error Handling
+
+    NATS operations raise exceptions on failure. Exception codes follow the pattern
+    <tt>NATS-&lt;CATEGORY&gt;-ERROR</tt>:
+
+    |!Exception|!Description
+    |\c NATS-CONNECTION-ERROR|Connection or configuration failures
+    |\c NATS-PUBLISH-ERROR|Publish failures
+    |\c NATS-SUBSCRIBE-ERROR|Subscription failures
+    |\c NATS-REQUEST-ERROR|Request/reply failures
+    |\c NATS-TIMEOUT-ERROR|Operation timeouts (request, nextMsg)
+    |\c NATS-JETSTREAM-ERROR|JetStream operation failures (includes JetStream error code)
+    |\c NATS-KV-ERROR|Key-Value store failures
+    |\c NATS-AUTH-ERROR|Authentication failures
+    |\c NATS-TLS-ERROR|TLS/SSL failures
+
+    @code{.py}
+%requires NatsUtil
+
+try {
+    NatsClient client("nats://invalid-host:4222");
+} catch (hash<ExceptionInfo> ex) {
+    if (ex.err == "NATS-CONNECTION-ERROR") {
+        printf("Failed to connect: %s\n", ex.desc);
+    }
+}
+
+NatsClient client("nats://localhost:4222");
+try {
+    # Request with a short timeout
+    string reply = client.requestString("service.echo", "hello", 500ms);
+} catch (hash<ExceptionInfo> ex) {
+    if (ex.err == "NATS-TIMEOUT-ERROR") {
+        printf("Request timed out: %s\n", ex.desc);
+    }
+}
+
+JetStreamContext js = client.getConnection().jetStream();
+try {
+    # Try to get info on a non-existent stream
+    js.getStreamInfo("NONEXISTENT");
+} catch (hash<ExceptionInfo> ex) {
+    if (ex.err == "NATS-JETSTREAM-ERROR") {
+        printf("JetStream error: %s\n", ex.desc);
+    }
+}
+    @endcode
+
+    @section natsconnvsclient NatsConnection vs NatsClient
+
+    The module provides two levels of API:
+
+    - @ref Qore::Nats::NatsConnection "NatsConnection" (binary module): Low-level connection
+      providing binary publish/subscribe, request/reply, and access to JetStream and KV
+      contexts. Use this when you need direct control or when working with binary data.
+    - @ref Nats::NatsClient "NatsClient" (NatsUtil module): High-level client wrapping
+      \c NatsConnection with convenience methods for string operations, channel-based
+      async subscriptions, and callback-based subscriptions. Use this for most applications.
+
+    @code{.py}
+# Low-level: binary publish + sync poll
+NatsConnection conn("nats://localhost:4222");
+conn.publish("events.log", binary("hello"));
+NatsSubscription sub = conn.subscribe("events.>");
+*hash<NatsMsgInfo> msg = sub.nextMsg(5s);
+sub.unsubscribe();
+conn.close();
+
+# High-level: string publish + async channel subscription
+NatsClient client("nats://localhost:4222");
+client.publishString("events.log", "hello");
+NatsChannelSubscription csub = client.channelSubscribe("events.>");
+foreach hash<NatsMsgInfo> msg in (csub) {
+    process(msg);
+}
+client.close();
+    @endcode
+
+    @note \c NatsClient.getConnection() returns the underlying @ref Qore::Nats::NatsConnection
+    for accessing JetStream and KV store APIs.
+*/

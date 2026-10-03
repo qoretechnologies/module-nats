@@ -1,0 +1,41 @@
+/* Copyright (C) 2026 Qore Technologies, s.r.o. */
+
+/** @page natsauthguide Authentication
+
+    @tableofcontents
+
+    The module supports several authentication methods:
+
+    @section natsauthtokenauth Token Authentication
+    @code{.py}
+NatsConnection conn(<NatsConnectionOptions>{
+    "url": "nats://localhost:4222",
+    "token": "secret-token",
+});
+    @endcode
+
+    @section natsauthuserpass Username/Password Authentication
+    @code{.py}
+NatsConnection conn(<NatsConnectionOptions>{
+    "url": "nats://localhost:4222",
+    "username": "user",
+    "password": "pass",
+});
+    @endcode
+
+    @section natsauthnkey NKey Authentication
+    @code{.py}
+NatsConnection conn(<NatsConnectionOptions>{
+    "url": "nats://localhost:4222",
+    "nkey_seed": "/path/to/seed.nk",
+});
+    @endcode
+
+    @section natsauthcreds Credentials File Authentication
+    @code{.py}
+NatsConnection conn(<NatsConnectionOptions>{
+    "url": "nats://localhost:4222",
+    "credentials": "/path/to/creds.creds",
+});
+    @endcode
+*/

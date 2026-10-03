@@ -1,0 +1,49 @@
+/* Copyright (C) 2026 Qore Technologies, s.r.o. */
+
+/** @page natsjetdpguide NatsJetStreamDataProvider Module
+
+    @tableofcontents
+
+    The \c NatsJetStreamDataProvider module integrates NATS JetStream into Qore's data
+    provider framework. Use \c "%requires NatsJetStreamDataProvider" to load the module.
+
+    @section natsjetdp_hierarchy Provider Hierarchy
+
+    @verbatim
+<root>
+  +-- streams
+  |   +-- create     (NatsJSStreamCreateDataProvider -- DPAT_API)
+  |   +-- delete     (NatsJSStreamDeleteDataProvider -- DPAT_API)
+  |   +-- info       (NatsJSStreamInfoDataProvider -- DPAT_API)
+  |   +-- purge      (NatsJSStreamPurgeDataProvider -- DPAT_API)
+  +-- consumers
+  |   +-- create     (NatsJSConsumerCreateDataProvider -- DPAT_API)
+  |   +-- delete     (NatsJSConsumerDeleteDataProvider -- DPAT_API)
+  |   +-- info       (NatsJSConsumerInfoDataProvider -- DPAT_API)
+  +-- publish        (NatsJSPublishDataProvider -- DPAT_API)
+  +-- subscribe      (NatsJSSubscribeEventDataProvider -- DPAT_EVENT)
+  +-- pull-subscribe (NatsJSPullSubscribeEventDataProvider -- DPAT_EVENT)
+  +-- kv
+      +-- put        (NatsJSKVPutDataProvider -- DPAT_API)
+      +-- get        (NatsJSKVGetDataProvider -- DPAT_API)
+      +-- delete     (NatsJSKVDeleteDataProvider -- DPAT_API)
+      +-- keys       (NatsJSKVKeysDataProvider -- DPAT_API)
+      +-- history    (NatsJSKVHistoryDataProvider -- DPAT_API)
+    @endverbatim
+
+    @section natsjetdp_cli Command Line Usage
+
+    @verbatim
+# Create a stream
+qdp 'natsjetstream{url=nats://localhost:4222}/streams/create' dor name=ORDERS,subjects=orders.>
+
+# Publish to JetStream
+qdp 'natsjetstream{url=nats://localhost:4222}/publish' dor subject=orders.new,data=order-123
+
+# Put a KV value
+qdp 'natsjetstream{url=nats://localhost:4222}/kv/put' dor bucket=config,key=app.name,value=MyApp
+
+# Get a KV value
+qdp 'natsjetstream{url=nats://localhost:4222}/kv/get' dor bucket=config,key=app.name
+    @endverbatim
+*/

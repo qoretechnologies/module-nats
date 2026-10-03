@@ -108,6 +108,19 @@ set(QMOD
 
 set(QORE_DOX_TMPL_SRC
     docs/mainpage.dox.tmpl
+    docs/guide-natsarch.dox.tmpl
+    docs/guide-natsauth.dox.tmpl
+    docs/guide-natsbuilding.dox.tmpl
+    docs/guide-natsconstants.dox.tmpl
+    docs/guide-natscorequickstart.dox.tmpl
+    docs/guide-natsdp.dox.tmpl
+    docs/guide-natshashdecls.dox.tmpl
+    docs/guide-natsjetdp.dox.tmpl
+    docs/guide-natsjetstream.dox.tmpl
+    docs/guide-natskv.dox.tmpl
+    docs/guide-natsrelnotes.dox.tmpl
+    docs/guide-natsreqs.dox.tmpl
+    docs/guide-natstls.dox.tmpl
 )
 
 add_library(${module_name} MODULE ${CPP_SRC} ${QPP_SOURCES})
@@ -129,7 +142,24 @@ if (DEFINED ENV{DOXYGEN_EXECUTABLE})
     set(DOXYGEN_EXECUTABLE $ENV{DOXYGEN_EXECUTABLE})
 endif()
 
-set(MODULE_DOX_INPUT ${CMAKE_BINARY_DIR})
+list(APPEND MODULE_DOX_INPUT
+    ${CMAKE_CURRENT_BINARY_DIR}/guide-natsarch.dox
+    ${CMAKE_CURRENT_BINARY_DIR}/guide-natsauth.dox
+    ${CMAKE_CURRENT_BINARY_DIR}/guide-natsbuilding.dox
+    ${CMAKE_CURRENT_BINARY_DIR}/guide-natsconstants.dox
+    ${CMAKE_CURRENT_BINARY_DIR}/guide-natscorequickstart.dox
+    ${CMAKE_CURRENT_BINARY_DIR}/guide-natsdp.dox
+    ${CMAKE_CURRENT_BINARY_DIR}/guide-natshashdecls.dox
+    ${CMAKE_CURRENT_BINARY_DIR}/guide-natsjetdp.dox
+    ${CMAKE_CURRENT_BINARY_DIR}/guide-natsjetstream.dox
+    ${CMAKE_CURRENT_BINARY_DIR}/guide-natskv.dox
+    ${CMAKE_CURRENT_BINARY_DIR}/guide-natsrelnotes.dox
+    ${CMAKE_CURRENT_BINARY_DIR}/guide-natsreqs.dox
+    ${CMAKE_CURRENT_BINARY_DIR}/guide-natstls.dox
+)
+set(QORE_DOXYGEN_IMAGES
+    "${CMAKE_SOURCE_DIR}/qlib/NatsDataProvider/nats-logo.svg"
+)
 qore_external_binary_module(${module_name} ${PROJECT_VERSION})
 
 qore_dist(${PROJECT_VERSION})
@@ -169,57 +199,5 @@ if (DOXYGEN_FOUND)
     add_custom_target(QORE_MOD_DOX_FILES DEPENDS ${QORE_DOX_SRC})
     add_dependencies(docs-module QORE_MOD_DOX_FILES)
 
-    # Two-phase doc build: the initial pass (docs-module) generates nats.tag with empty
-    # TAGFILES. User module docs (docs-NatsUtil, docs-NatsDataProvider) are then built using
-    # nats.tag, generating their own tag files. The final pass (docs-module-final) rebuilds
-    # the binary module docs with user module tag files in TAGFILES, enabling @ref
-    # cross-references from the mainpage into user module symbols.
-
-    # Suppress unresolved cross-reference warnings in the initial pass
-    file(APPEND ${CMAKE_BINARY_DIR}/Doxyfile
-        "\n# Suppress warnings for initial pass (no user module TAGFILES available)\nWARN_IF_DOC_ERROR = NO\n")
-
-    # Create final-pass Doxyfile from the binary module's Doxyfile with user module tag files
-    string(CONCAT _tagfiles "${CMAKE_BINARY_DIR}/NatsUtil.tag=../../NatsUtil/html "
-        "${CMAKE_BINARY_DIR}/NatsDataProvider.tag=../../NatsDataProvider/html")
-    set(_doc_deps docs-NatsUtil docs-NatsDataProvider docs-NatsJetStreamDataProvider)
-    string(APPEND _tagfiles
-        " ${CMAKE_BINARY_DIR}/NatsJetStreamDataProvider.tag=../../NatsJetStreamDataProvider/html")
-
-    # NatsUtil links back to NatsDataProvider, whose initial docs depend on it.
-    # Resolve that link only after the provider index has been generated.
-    set(_util_doxyfile "${CMAKE_BINARY_DIR}/doxygen/Doxyfile.NatsUtil")
-    file(APPEND "${_util_doxyfile}" "\nWARN_IF_DOC_ERROR = NO\n")
-    configure_file("${_util_doxyfile}" "${_util_doxyfile}.final" COPYONLY)
-    file(APPEND "${_util_doxyfile}.final"
-        "\nTAGFILES += \"${CMAKE_BINARY_DIR}/NatsDataProvider.tag=../../NatsDataProvider/html\"\n"
-        "WARN_IF_DOC_ERROR = YES\n")
-    add_custom_target(docs-NatsUtil-final
-        COMMAND ${DOXYGEN_EXECUTABLE} "${_util_doxyfile}.final"
-        COMMAND ${CMAKE_COMMAND} -E env ${QORE_DOCS_ENV} ${QORE_QDX_COMMAND} --post
-            "${CMAKE_BINARY_DIR}/docs/NatsUtil/html"
-            "${CMAKE_BINARY_DIR}/docs/NatsUtil/html/search"
-        WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
-        VERBATIM
-    )
-    add_dependencies(docs-NatsUtil-final docs-NatsDataProvider docs-NatsJetStreamDataProvider)
-    list(APPEND _doc_deps docs-NatsUtil-final)
-
-    file(COPY_FILE ${CMAKE_BINARY_DIR}/Doxyfile ${CMAKE_BINARY_DIR}/Doxyfile.final)
-    file(APPEND ${CMAKE_BINARY_DIR}/Doxyfile.final
-        "\n# Final pass: enable user module cross-references and re-enable doc error warnings\n"
-        "TAGFILES += ${_tagfiles}\n"
-        "WARN_IF_DOC_ERROR = YES\n")
-
-    add_custom_target(docs-module-final
-        COMMAND ${DOXYGEN_EXECUTABLE} ${CMAKE_BINARY_DIR}/Doxyfile.final
-        COMMAND ${CMAKE_COMMAND} -E env ${QORE_DOCS_ENV} ${QORE_QDX_COMMAND} --post
-            ${CMAKE_BINARY_DIR}/docs/${module_name}/html
-            ${CMAKE_BINARY_DIR}/docs/${module_name}/html/search
-        WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
-        COMMENT "Generating API documentation with Doxygen (final pass with user module cross-references)"
-        VERBATIM
-    )
-    add_dependencies(docs-module-final ${_doc_deps})
-    add_dependencies(docs docs-module-final)
+    qore_binary_module_two_phase_docs(${module_name} "NatsDataProvider;NatsJetStreamDataProvider;NatsUtil")
 endif()
