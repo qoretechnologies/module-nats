@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.21)
+cmake_minimum_required(VERSION 3.21...3.31)
 
 project(qore-nats-module)
 
@@ -46,6 +46,8 @@ if(NOT NATS_INCLUDE_DIR OR NOT NATS_LIBRARY)
         GIT_SHALLOW    TRUE
     )
     FetchContent_MakeAvailable(nats_c)
+    include(cmake/PrepareNatsSources.cmake)
+    qore_prepare_nats_sources("${nats_c_SOURCE_DIR}")
 
     # v3.12.0 already guards the microservice error counter against NULL errors.
     # nats.c source puts headers in src/nats.h, but installed layout is nats/nats.h.

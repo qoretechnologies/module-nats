@@ -33,6 +33,16 @@ To install to a specific prefix:
 cmake -DCMAKE_INSTALL_PREFIX=/usr/local ..
 ```
 
+If libnats is unavailable, CMake builds the pinned nats.c 3.12.0 dependency.
+Four source files receive const-correctness fixes in private build-tree copies
+for compatibility with glibc's type-generic string functions. The downloaded
+sources remain unchanged; hash checks require reviewing these fixes when the
+dependency version changes. Verify source preparation with:
+
+```bash
+python3 test/test_nats_sources.py --source-dir build/_deps/nats_c-src -v
+```
+
 ## Quick Start
 
 ### Publish / Subscribe
