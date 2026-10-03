@@ -26,7 +26,7 @@
 public namespace Nats {
 
 #! Channel-based async subscription wrapper
-/** Wraps a @ref Qore::Nats::NatsSubscription with a @ref Channel for idiomatic
+/** Wraps a @ref Qore::Nats::NatsSubscription with a @ref Qore::Thread::Channel for idiomatic
     async message delivery following the Go/Rust/Python iterator pattern.
 
     A background thread calls \c nextMsg() in a loop and sends messages into a

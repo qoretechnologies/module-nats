@@ -22,6 +22,7 @@ if (UNIX AND NOT APPLE)
     set(LINUX TRUE)
 endif()
 
+list(APPEND QORE_DOXYGEN_MODULES DataProvider)
 find_package(Qore 2.0 REQUIRED)
 
 # Find nats.c library — if not installed, fetch and build from source
@@ -185,10 +186,29 @@ if (DOXYGEN_FOUND)
     string(APPEND _tagfiles
         " ${CMAKE_BINARY_DIR}/NatsJetStreamDataProvider.tag=../../NatsJetStreamDataProvider/html")
 
+    # NatsUtil links back to NatsDataProvider, whose initial docs depend on it.
+    # Resolve that link only after the provider index has been generated.
+    set(_util_doxyfile "${CMAKE_BINARY_DIR}/doxygen/Doxyfile.NatsUtil")
+    file(APPEND "${_util_doxyfile}" "\nWARN_IF_DOC_ERROR = NO\n")
+    configure_file("${_util_doxyfile}" "${_util_doxyfile}.final" COPYONLY)
+    file(APPEND "${_util_doxyfile}.final"
+        "\nTAGFILES += \"${CMAKE_BINARY_DIR}/NatsDataProvider.tag=../../NatsDataProvider/html\"\n"
+        "WARN_IF_DOC_ERROR = YES\n")
+    add_custom_target(docs-NatsUtil-final
+        COMMAND ${DOXYGEN_EXECUTABLE} "${_util_doxyfile}.final"
+        COMMAND ${CMAKE_COMMAND} -E env ${QORE_DOCS_ENV} ${QORE_QDX_COMMAND} --post
+            "${CMAKE_BINARY_DIR}/docs/NatsUtil/html"
+            "${CMAKE_BINARY_DIR}/docs/NatsUtil/html/search"
+        WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
+        VERBATIM
+    )
+    add_dependencies(docs-NatsUtil-final docs-NatsDataProvider docs-NatsJetStreamDataProvider)
+    list(APPEND _doc_deps docs-NatsUtil-final)
+
     file(COPY_FILE ${CMAKE_BINARY_DIR}/Doxyfile ${CMAKE_BINARY_DIR}/Doxyfile.final)
     file(APPEND ${CMAKE_BINARY_DIR}/Doxyfile.final
         "\n# Final pass: enable user module cross-references and re-enable doc error warnings\n"
-        "TAGFILES = ${_tagfiles}\n"
+        "TAGFILES += ${_tagfiles}\n"
         "WARN_IF_DOC_ERROR = YES\n")
 
     add_custom_target(docs-module-final

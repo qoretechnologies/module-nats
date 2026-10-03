@@ -30,6 +30,7 @@
     These constants define JetStream stream retention policies.
 */
 ///@{
+namespace Qore::Nats;
 //! Messages are retained based on limits (max messages, bytes, age)
 const NATS_RETENTION_LIMITS = 0;
 
@@ -44,6 +45,7 @@ const NATS_RETENTION_WORKQUEUE = 2;
     These constants define JetStream stream storage types.
 */
 ///@{
+namespace Qore::Nats;
 //! Store messages on disk
 const NATS_STORAGE_FILE = 0;
 
@@ -55,6 +57,7 @@ const NATS_STORAGE_MEMORY = 1;
     These constants define what happens when a stream reaches its limits.
 */
 ///@{
+namespace Qore::Nats;
 //! Discard old messages when the stream is full
 const NATS_DISCARD_OLD = 0;
 
@@ -66,6 +69,7 @@ const NATS_DISCARD_NEW = 1;
     These constants define consumer acknowledgment policies.
 */
 ///@{
+namespace Qore::Nats;
 //! No acknowledgment required
 const NATS_ACK_NONE = 0;
 
@@ -80,6 +84,7 @@ const NATS_ACK_EXPLICIT = 2;
     These constants define consumer delivery policies.
 */
 ///@{
+namespace Qore::Nats;
 //! Deliver all available messages
 const NATS_DELIVER_ALL = 0;
 
@@ -103,6 +108,7 @@ const NATS_DELIVER_LAST_PER_SUBJECT = 5;
     These constants define consumer replay policies.
 */
 ///@{
+namespace Qore::Nats;
 //! Replay messages as fast as possible
 const NATS_REPLAY_INSTANT = 0;
 
@@ -114,6 +120,7 @@ const NATS_REPLAY_ORIGINAL = 1;
     These constants define KV entry operation types.
 */
 ///@{
+namespace Qore::Nats;
 //! A put or update operation
 const NATS_KV_OP_PUT = 1;
 

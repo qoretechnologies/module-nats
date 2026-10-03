@@ -26,7 +26,7 @@
 public namespace Nats {
 
 #! Channel-based KV watcher for async iteration over KV changes
-/** Wraps a @ref Qore::Nats::NatsKeyValueWatcher with a @ref Channel for idiomatic
+/** Wraps a @ref Qore::Nats::NatsKeyValueWatcher with a @ref Qore::Thread::Channel for idiomatic
     async delivery of key-value change notifications following the Go/Rust/Python
     iterator pattern.
 

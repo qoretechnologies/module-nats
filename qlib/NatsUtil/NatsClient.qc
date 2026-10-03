@@ -57,7 +57,7 @@ public class NatsClient {
     }
 
     #! Creates a NatsClient from connection options
-    /** @param options connection options (see @ref NatsConnectionOptions)
+    /** @param options connection options (see @ref Qore::Nats::NatsConnectionOptions)
     */
     constructor(hash<NatsConnectionOptions> options) {
         conn = new NatsConnection(options);
@@ -153,14 +153,14 @@ public class NatsClient {
     }
 
     #! Returns connection statistics
-    /** @return a @ref NatsConnectionStats hash with message and byte counts
+    /** @return a @ref Qore::Nats::NatsConnectionStats hash with message and byte counts
     */
     hash<NatsConnectionStats> getStats() {
         return conn.getStats();
     }
 
     #! Returns comprehensive connection information
-    /** @return a @ref NatsConnectionInfo hash with all connection details
+    /** @return a @ref Qore::Nats::NatsConnectionInfo hash with all connection details
     */
     hash<NatsConnectionInfo> getConnectionInfo() {
         return conn.getConnectionInfo();

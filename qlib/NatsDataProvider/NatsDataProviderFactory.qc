@@ -43,7 +43,7 @@ public class NatsDataProviderFactory inherits DataProvider::AbstractDataProvider
     }
 
     #! Returns static factory information without \a provider_info
-    /** @return static factory information without \a provider_info which is provided by @ref getProviderInfo()
+    /** @return static factory information without \a provider_info which is provided by @ref DataProvider::AbstractDataProviderFactory::getProviderInfo()
     */
     private hash<DataProviderFactoryInfo> getInfoImpl() {
         return FactoryInfo;
