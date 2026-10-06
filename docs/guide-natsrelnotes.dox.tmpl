@@ -9,5 +9,7 @@
       selecting the matching nats.c policy; explicit acknowledgments no longer select cumulative acknowledgments
     - corrected consumer \c ack_pending to report the outstanding acknowledgment count rather than the
       acknowledged consumer sequence; invalid acknowledgment policies are rejected before a broker request
+    - existing server-side consumer policies are not rewritten by this fix; review intended acknowledgment
+      behavior and durable-consumer recovery position before adopting the corrected client
     - initial release
 */
