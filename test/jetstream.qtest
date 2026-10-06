@@ -31,6 +31,13 @@
 %requires QUnit
 %requires nats
 %requires NatsUtil
+%try-module json
+%define NoJson
+%endtry
+%ifdef NoJson
+printf("The external json module is required\n");
+exit(1);
+%else
 
 %exec-class JetStreamTest
 
@@ -40,9 +47,18 @@ public class JetStreamTest inherits QUnit::Test {
         string url;
         *int nats_pid;
         string pid_file;
+        NatsConnection conn;
+        JetStreamContext js;
+        string stream = "QORE_ACK_" + getpid();
+        string subject = "qore.ack." + getpid();
+        bool stream_created = False;
     }
 
     constructor() : QUnit::Test("JetStreamTest", "1.0") {
+        addTestCase("public policy values match the independent wire contract", \wirePolicies());
+        addTestCase("invalid policies cannot create or update a consumer", \invalidPolicies());
+        addTestCase("explicit acknowledgment preserves another worker's unacknowledged message", \recovery());
+
         # Stream CRUD tests
         addTestCase("stream create test", \streamCreateTest());
         addTestCase("named arguments test", \namedArgumentTest());
@@ -165,10 +181,22 @@ public class JetStreamTest inherits QUnit::Test {
 
     globalSetUp() {
         startServer();
+        conn = new NatsConnection(url);
+        js = conn.jetStream();
+        js.addStream(<NatsStreamConfig>{"name": stream, "subjects": (subject,), "storage": NATS_STORAGE_MEMORY});
+        stream_created = True;
     }
 
     globalTearDown() {
-        stopServer();
+        on_exit stopServer();
+        on_exit {
+            if (conn) {
+                conn.close();
+            }
+        }
+        if (stream_created) {
+            js.deleteStream(stream);
+        }
     }
 
     # Helper to create a unique stream name
@@ -1801,4 +1829,85 @@ public class JetStreamTest inherits QUnit::Test {
         js.deleteStream(stream);
         conn.close();
     }
+    private hash<auto> wire(string name) {
+        return parse_json(conn.request("$JS.API.CONSUMER.INFO." + stream + "." + name,
+            binary("{}"), 5s).data.toString());
+    }
+    private wirePolicies() {
+        list<int> policies = (NATS_ACK_NONE, NATS_ACK_ALL, NATS_ACK_EXPLICIT);
+        list<string> expected = ("none", "all", "explicit");
+        foreach int idx in (0..2) {
+            string name = "policy" + idx;
+            hash<NatsConsumerInfo> info = js.addConsumer(stream, <NatsConsumerConfig>{
+                "durable_name": name, "ack_policy": policies[idx]});
+            assertEq(expected[idx], wire(name).config.ack_policy);
+            assertEq(policies[idx], info.config.ack_policy);
+            assertEq(policies[idx], js.getConsumerInfo(stream, name).config.ack_policy);
+            assertEq(0, info.ack_pending);
+            js.deleteConsumer(stream, name);
+        }
+        js.addConsumer(stream, <NatsConsumerConfig>{"durable_name": "default"});
+        assertEq("explicit", wire("default").config.ack_policy);
+        assertEq(NATS_ACK_EXPLICIT, js.getConsumerInfo(stream, "default").config.ack_policy);
+        js.deleteConsumer(stream, "default");
+        # Read server-created policy values as well, independent of the outgoing conversion.
+        foreach int idx in (0..2) {
+            string name = "wire" + idx;
+            hash<auto> created = parse_json(conn.request("$JS.API.CONSUMER.DURABLE.CREATE." + stream + "." + name,
+                binary(make_json({"stream_name": stream, "config": {"durable_name": name,
+                    "ack_policy": expected[idx]}})), 5s).data.toString());
+            assertFalse(created.hasKey("error"));
+            assertEq(policies[idx], js.getConsumerInfo(stream, name).config.ack_policy);
+            js.deleteConsumer(stream, name);
+        }
+    }
+    private invalidPolicies() {
+        js.addConsumer(stream, <NatsConsumerConfig>{"durable_name": "valid", "ack_policy": NATS_ACK_EXPLICIT});
+        foreach int value in (-1, 3, 9223372036854775807) {
+            assertThrows("NATS-JETSTREAM-ERROR", sub() {
+                js.addConsumer(stream, <NatsConsumerConfig>{"durable_name": "invalid", "ack_policy": value});
+            });
+            assertTrue(wire("invalid").hasKey("error"));
+            assertThrows("NATS-JETSTREAM-ERROR", sub() {
+                js.updateConsumer(stream, <NatsConsumerConfig>{"durable_name": "valid", "ack_policy": value});
+            });
+            assertEq("explicit", wire("valid").config.ack_policy);
+        }
+        js.deleteConsumer(stream, "valid");
+    }
+    private recovery() {
+        js.addConsumer(stream, <NatsConsumerConfig>{"durable_name": "worker", "ack_policy": NATS_ACK_EXPLICIT,
+            "ack_wait": 1000});
+        js.publish(subject, binary("acknowledged"));
+        js.publish(subject, binary("unacknowledged"));
+        NatsConnection first(url);
+        on_exit first.close();
+        JetStreamContext first_js = first.jetStream();
+        NatsSubscription sub1 = first_js.pullSubscribe(subject, "worker");
+        assertEq(binary("acknowledged"), sub1.fetch(1, 5s)[0].data);
+        sub1.ack();
+        first.flush(5s);
+        assertEq(binary("unacknowledged"), sub1.fetch(1, 5s)[0].data);
+        assertEq(1, wire("worker").num_ack_pending);
+        assertEq(1, js.getConsumerInfo(stream, "worker").ack_pending);
+        first.close();
+        js.publish(subject, binary("later-work"));
+        NatsSubscription sub2 = js.pullSubscribe(subject, "worker");
+        list<string> delivered;
+        for (int i = 0; i < 2; ++i) {
+            list<hash<NatsMsgInfo>> batch = sub2.fetch(1, 5s);
+            assertEq(1, batch.size());
+            delivered += batch[0].data.toString();
+            sub2.ack();
+            conn.flush(5s);
+        }
+        assertEq(("later-work", "unacknowledged"), sort(delivered));
+        hash<auto> raw = wire("worker");
+        assertEq(0, raw.num_ack_pending);
+        assertEq(raw.num_ack_pending, js.getConsumerInfo(stream, "worker").ack_pending);
+        assertTrue(raw.ack_floor.consumer_seq > 0, "Count is distinct from the nonzero acknowledged sequence");
+        assertEq(0, js.getConsumerInfo(stream, "worker").num_pending);
+    }
 }
+
+%endif

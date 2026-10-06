@@ -73,7 +73,7 @@ namespace Qore::Nats;
 //! No acknowledgment required
 const NATS_ACK_NONE = 0;
 
-//! All messages must be acknowledged
+//! Acknowledging a message also acknowledges all earlier delivered messages
 const NATS_ACK_ALL = 1;
 
 //! Each message must be individually acknowledged

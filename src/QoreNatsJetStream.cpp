@@ -478,7 +478,16 @@ int QoreNatsJetStream::configureConsumerConfig(jsConsumerConfig* cfg,
 
     v = config->getKeyValue("ack_policy");
     if (v.getType() == NT_INT) {
-        cfg->AckPolicy = (jsAckPolicy)v.getAsBigInt();
+        // Keep the public Qore values stable; nats.c uses a different enum order.
+        switch (v.getAsBigInt()) {
+            case 0: cfg->AckPolicy = js_AckNone; break;
+            case 1: cfg->AckPolicy = js_AckAll; break;
+            case 2: cfg->AckPolicy = js_AckExplicit; break;
+            default:
+                xsink->raiseException("NATS-JETSTREAM-ERROR", "invalid acknowledgment policy: %lld",
+                    static_cast<long long>(v.getAsBigInt()));
+                return -1;
+        }
     }
 
     v = config->getKeyValue("ack_wait");
@@ -648,7 +657,16 @@ QoreHashNode* QoreNatsJetStream::consumerInfoToHash(jsConsumerInfo* info,
                 new QoreStringNode(info->Config->Description), xsink);
         }
         if (!*xsink) {
-            cfg->setKeyValue("ack_policy", (int64)info->Config->AckPolicy, xsink);
+            int64 policy;
+            switch (info->Config->AckPolicy) {
+                case js_AckNone: policy = 0; break;
+                case js_AckAll: policy = 1; break;
+                case js_AckExplicit: policy = 2; break;
+                default:
+                    xsink->raiseException("NATS-JETSTREAM-ERROR", "unknown server acknowledgment policy");
+                    return nullptr;
+            }
+            cfg->setKeyValue("ack_policy", policy, xsink);
         }
         if (!*xsink) {
             cfg->setKeyValue("ack_wait", (int64)(info->Config->AckWait / 1000000LL), xsink);
@@ -720,7 +738,7 @@ QoreHashNode* QoreNatsJetStream::consumerInfoToHash(jsConsumerInfo* info,
         h->setKeyValue("delivered", (int64)info->Delivered.Consumer, xsink);
     }
     if (!*xsink) {
-        h->setKeyValue("ack_pending", (int64)info->AckFloor.Consumer, xsink);
+        h->setKeyValue("ack_pending", static_cast<int64>(info->NumAckPending), xsink);
     }
     if (!*xsink) {
         h->setKeyValue("num_pending", (int64)info->NumPending, xsink);
