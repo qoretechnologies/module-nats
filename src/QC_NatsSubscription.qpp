@@ -47,13 +47,16 @@ sub.unsubscribe();
 qclass NatsSubscription [arg=QoreNatsSubscription* sub; ns=Qore::Nats; dom=NETWORK];
 
 //! Returns the next message from the subscription
-/** Polls with 500ms intervals to support cooperative cancellation.
-
-    @param timeout_ms timeout in milliseconds (default: 5000); -1 for infinite
+/** @param timeout_ms timeout in milliseconds (default: 5000); -1 for infinite
 
     @return a @ref NatsMsgInfo hash, or @ref nothing on timeout
 
     @throw NATS-SUBSCRIBE-ERROR if the subscription is invalid or a receive error occurs
+    @throw THREAD-CANCELLED the thread was cancelled while waiting
+    @throw PROGRAM-INTERRUPTED the \c Program was interrupted while waiting
+
+    @note The NATS C client offers no way to wake this wait, so it waits in slices of at most 500 ms: when the
+    thread is cancelled or its \c Program is interrupted while waiting, the call ends within about 500 ms
 
     @par Example:
     @code{.py}
@@ -76,6 +79,11 @@ if (msg) {
     @return a list of @ref NatsMsgInfo hashes (may be empty on timeout)
 
     @throw NATS-SUBSCRIBE-ERROR if the fetch fails
+    @throw THREAD-CANCELLED the thread was cancelled while waiting
+    @throw PROGRAM-INTERRUPTED the \c Program was interrupted while waiting
+
+    @note The NATS C client offers no way to wake this wait, so it waits in slices of at most 500 ms: when the
+    thread is cancelled or its \c Program is interrupted while waiting, the call ends within about 500 ms
 
     @par Example:
     @code{.py}
@@ -135,6 +143,11 @@ nothing NatsSubscription::drain() {
     @param timeout_ms maximum time to wait (default: 30 seconds)
 
     @throw NATS-SUBSCRIBE-ERROR if the wait fails or times out
+    @throw THREAD-CANCELLED the thread was cancelled while waiting
+    @throw PROGRAM-INTERRUPTED the \c Program was interrupted while waiting
+
+    @note The NATS C client offers no way to wake this wait, so it waits in slices of at most 500 ms: when the
+    thread is cancelled or its \c Program is interrupted while waiting, the call ends within about 500 ms
 
     @par Example:
     @code{.py}

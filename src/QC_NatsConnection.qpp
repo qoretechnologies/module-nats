@@ -276,6 +276,11 @@ nothing NatsConnection::close() {
 /** @param timeout_ms timeout in milliseconds (default: 5000)
 
     @throw NATS-CONNECTION-ERROR if the flush fails or times out
+    @throw THREAD-CANCELLED the thread was cancelled while waiting
+    @throw PROGRAM-INTERRUPTED the \c Program was interrupted while waiting
+
+    @note The NATS C client offers no way to wake this wait, so it waits in slices of at most 500 ms: when the
+    thread is cancelled or its \c Program is interrupted while waiting, the call ends within about 500 ms
 
     @since %nats 1.0
 */

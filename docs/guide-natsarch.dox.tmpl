@@ -16,4 +16,16 @@
     - <b>Data provider modules</b>: @ref natsdataproviderintro "NatsDataProvider" and
       @ref natsjetstreamdataproviderintro "NatsJetStreamDataProvider" for integration with Qore's data
       provider framework.
+
+    @section natscancellation Thread Cancellation
+
+    A blocking call ends with \c THREAD-CANCELLED when its thread is cancelled, or with \c PROGRAM-INTERRUPTED
+    when its \c Program is interrupted:
+    - @ref Qore::Nats::NatsConnection::request() "NatsConnection::request()" ends at once
+    - @ref Qore::Nats::NatsSubscription::nextMsg() "NatsSubscription::nextMsg()",
+      @ref Qore::Nats::NatsSubscription::fetch() "NatsSubscription::fetch()",
+      @ref Qore::Nats::NatsSubscription::waitForDrainCompletion() "NatsSubscription::waitForDrainCompletion()",
+      @ref Qore::Nats::NatsConnection::flush() "NatsConnection::flush()" and
+      @ref Qore::Nats::NatsKeyValueWatcher::next() "NatsKeyValueWatcher::next()" end within about 500 ms: the NATS
+      C client offers no way to wake these waits, so they wait in slices of at most 500 ms
 */

@@ -60,6 +60,11 @@ qclass NatsKeyValueWatcher [arg=QoreNatsKVWatcher* w; ns=Qore::Nats; dom=NETWORK
     @return a @ref NatsKVEntry hash, or @ref nothing on timeout
 
     @throw NATS-KV-WATCH-ERROR if the watcher is not valid or an error occurs
+    @throw THREAD-CANCELLED the thread was cancelled while waiting
+    @throw PROGRAM-INTERRUPTED the \c Program was interrupted while waiting
+
+    @note The NATS C client offers no way to wake this wait, so it waits in slices of at most 500 ms: when the
+    thread is cancelled or its \c Program is interrupted while waiting, the call ends within about 500 ms
 
     @since %nats 1.0
 */
