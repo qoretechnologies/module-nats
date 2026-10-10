@@ -37,18 +37,32 @@
 %requires nats
 %requires NatsUtil
 
+# the nats-server and nats CLI processes are run with the process module
+%try-module process >= 2.2
+%define NoProcess
+%endtry
+
 %exec-class NatsInteropTest
 
 public class NatsInteropTest inherits QUnit::Test {
     private {
         int port;
         string url;
-        *int nats_pid;
-        string pid_file;
         bool cli_available = False;
+%ifndef NoProcess
+        #! the nats-server process, run with protocol tracing so that its log shows each client's subscriptions
+        *Process server;
+%endif
+        #! output of the server received but not yet consumed by waitForServerLog()
+        string server_log = "";
     }
 
     constructor() : QUnit::Test("NatsInteropTest", "1.0") {
+%ifdef NoProcess
+        addTestCase("process module dependency", \missingProcessModule());
+        set_return_value(main());
+        return;
+%endif
         # Verify the nats CLI is available before registering tests
         if (system("command -v nats > /dev/null 2>&1")) {
             addTestCase("NATS CLI dependency", \missingCli());
@@ -77,42 +91,93 @@ public class NatsInteropTest inherits QUnit::Test {
     }
 
     private startServer() {
-        port = 10000 + (rand() % 50000);
-        pid_file = sprintf("/tmp/nats-interop-test-%d.pid", port);
-        string cmd = sprintf("nats-server -p %d -a 127.0.0.1 --pid %s -js &", port, pid_file);
-        system(cmd);
-        # Wait for pid file
-        for (int i = 0; i < 50; ++i) {
-            if (is_file(pid_file)) {
-                nats_pid = trim(ReadOnlyFile::readTextFile(pid_file)).toInt();
-                break;
-            }
-            usleep(100000);
+%ifndef NoProcess
+        # the server chooses a free port and logs it; it is ready for clients when it logs "Server is ready"
+        server = new Process("nats-server", ("-p", "-1", "-a", "127.0.0.1", "-js", "-V"));
+        string line = waitForServerLog("Listening for client connections on ");
+        *list<*string> m = (line =~ x/Listening for client connections on [^ ]*:([0-9]+)/);
+        if (!m[0]) {
+            throw "NATS-TEST-ERROR", sprintf("cannot find the port of nats-server in %y", line);
         }
-        if (!nats_pid) {
-            throw "NATS-TEST-ERROR", sprintf("nats-server failed to start on port %d", port);
-        }
+        port = m[0].toInt();
+        waitForServerLog("Server is ready");
         url = sprintf("nats://127.0.0.1:%d", port);
+%endif
     }
 
     private stopServer() {
-        if (nats_pid) {
-            kill(nats_pid, SIGTERM);
-            # Wait for process to exit — portable check via kill(pid, 0)
-            for (int i = 0; i < 50; ++i) {
-                try {
-                    kill(nats_pid, 0);
-                } catch () {
-                    break;
-                }
-                usleep(100000);
-            }
-            nats_pid = NOTHING;
+%ifndef NoProcess
+        if (server) {
+            server.terminate();
+            server.wait();
         }
-        if (is_file(pid_file)) {
-            unlink(pid_file);
-        }
+%endif
     }
+
+    #! Returns the next line of the server log that matches the given regular expression
+    /** The lines before it are consumed; the read returns as soon as the server writes output
+    */
+    private string waitForServerLog(string pattern, timeout timeout_ms = 10s) {
+%ifndef NoProcess
+        int deadline = clock_get_monotonic_us() + timeout_ms * 1000;
+        while (True) {
+            int eol;
+            while ((eol = server_log.find("\n")) >= 0) {
+                string line = server_log.substr(0, eol);
+                splice server_log, 0, eol + 1;
+                if (regex(line, pattern)) {
+                    return line;
+                }
+            }
+            int remaining_ms = (deadline - clock_get_monotonic_us()) / 1000;
+            if (remaining_ms <= 0) {
+                throw "NATS-TEST-ERROR", sprintf("nats-server did not log a line matching %y within %d ms",
+                    pattern, timeout_ms);
+            }
+            *string data = server.readStderr(65536, remaining_ms);
+            if (data) {
+                server_log += data;
+            }
+        }
+%else
+        throw "NATS-TEST-ERROR", "the process module is not available";
+%endif
+    }
+
+    #! Waits until the server has processed another client's subscription to the given subject
+    /** The server logs a SUB before it processes it, and processes a client's commands in order: the PONG that it
+        sends the same client for the PING that follows the subscription (the nats CLI flushes after subscribing)
+        shows that the subscription is active
+    */
+    private waitForSubscription(string subject) {
+        string subject_re = subject;
+        subject_re =~ s/\./\\./g;
+        string line = waitForServerLog("<<- \\[SUB " + subject_re + " ");
+        *list<*string> m = (line =~ x/ - (cid:[0-9]+) - /);
+        if (!m[0]) {
+            throw "NATS-TEST-ERROR", sprintf("cannot find the client ID in %y", line);
+        }
+        waitForServerLog(" - " + m[0] + " - ->> \\[PONG\\]");
+    }
+
+%ifndef NoProcess
+    #! Starts the nats CLI with the given arguments and the server URL
+    private Process startCli(list<string> args) {
+        return new Process("nats", args + ("-s", url));
+    }
+
+    #! Waits for a nats CLI process to exit and returns its standard output
+    /** If it does not exit in time, it is terminated, so that no test waits for it
+    */
+    private string waitCli(Process cli, timeout timeout_ms = 10s) {
+        if (!cli.wait(timeout_ms)) {
+            cli.terminate();
+            cli.wait();
+            throw "NATS-TEST-ERROR", sprintf("the nats CLI did not exit within %d ms", timeout_ms);
+        }
+        return cli.readStdout(1024 * 1024) ?? "";
+    }
+%endif
 
     globalSetUp() {
         if (cli_available) {
@@ -128,6 +193,10 @@ public class NatsInteropTest inherits QUnit::Test {
 
     private nothing missingCli() {
         testSkip("nats CLI not available");
+    }
+
+    private nothing missingProcessModule() {
+        testSkip("process module not available");
     }
 
     private string natsCmd(string args) {
@@ -162,14 +231,14 @@ public class NatsInteropTest inherits QUnit::Test {
     # Core NATS: Qore publishes, nats CLI subscribes (--raw --count=1)
     # ----------------------------------------------------------------
     qorePubCliSubTest() {
-        string output;
-        Counter cnt(1);
-
-        # Start CLI subscriber in a background thread
-        background cliSubHelper("interop.qore-to-cli", \output, cnt);
-
-        # Give the CLI subscriber time to connect
-        usleep(500000);
+%ifndef NoProcess
+        # Start the CLI subscriber and wait until its subscription is active
+        Process cli = startCli(("sub", "interop.qore-to-cli", "--count=1", "--raw", "--timeout=10s"));
+        on_exit if (cli.running()) {
+            cli.terminate();
+            cli.wait();
+        }
+        waitForSubscription("interop.qore-to-cli");
 
         # Qore publishes
         NatsConnection conn(url);
@@ -177,13 +246,8 @@ public class NatsInteropTest inherits QUnit::Test {
         conn.flush();
         conn.close();
 
-        cnt.waitForZero(10s);
-        assertEq("hello from qore", trim(output));
-    }
-
-    private cliSubHelper(string subject, reference<string> output, Counter cnt) {
-        on_exit cnt.dec();
-        output = backquote(natsCmd(sprintf("sub %s --count=1 --raw --timeout=10s 2>/dev/null", subject)));
+        assertEq("hello from qore", trim(waitCli(cli)));
+%endif
     }
 
     # ----------------------------------------------------------------
@@ -222,13 +286,14 @@ public class NatsInteropTest inherits QUnit::Test {
     # Core NATS: Qore sends request, nats CLI replies
     # ----------------------------------------------------------------
     qoreRequestCliReplyTest() {
-        Counter cli_cnt(1);
-
-        # Start CLI responder in background
-        background cliReplyHelper("interop.qore-request", "pong-from-cli", cli_cnt);
-
-        # Give CLI responder time to subscribe
-        usleep(500000);
+%ifndef NoProcess
+        # Start the CLI responder and wait until its subscription is active
+        Process cli = startCli(("reply", "interop.qore-request", "pong-from-cli", "--count=1"));
+        on_exit if (cli.running()) {
+            cli.terminate();
+            cli.wait();
+        }
+        waitForSubscription("interop.qore-request");
 
         # Qore sends request
         NatsConnection conn(url);
@@ -236,12 +301,8 @@ public class NatsInteropTest inherits QUnit::Test {
         assertEq("pong-from-cli", reply.data.toString());
 
         conn.close();
-        cli_cnt.waitForZero(10s);
-    }
-
-    private cliReplyHelper(string subject, string reply_body, Counter cnt) {
-        on_exit cnt.dec();
-        system(natsCmd(sprintf("reply %s '%s' --count=1 2>/dev/null", subject, reply_body)));
+        waitCli(cli);
+%endif
     }
 
     # ----------------------------------------------------------------
@@ -273,12 +334,14 @@ public class NatsInteropTest inherits QUnit::Test {
     # expected body via --raw
     # ----------------------------------------------------------------
     qoreHeadersCliSubTest() {
-        string output;
-        Counter cnt(1);
-
-        # Start CLI subscriber
-        background cliSubHelper("interop.qore-headers", \output, cnt);
-        usleep(500000);
+%ifndef NoProcess
+        # Start the CLI subscriber and wait until its subscription is active
+        Process cli = startCli(("sub", "interop.qore-headers", "--count=1", "--raw", "--timeout=10s"));
+        on_exit if (cli.running()) {
+            cli.terminate();
+            cli.wait();
+        }
+        waitForSubscription("interop.qore-headers");
 
         # Qore publishes with headers
         NatsConnection conn(url);
@@ -289,10 +352,10 @@ public class NatsInteropTest inherits QUnit::Test {
         conn.flush();
         conn.close();
 
-        cnt.waitForZero(10s);
         # --raw gives just the body; headers are part of the NATS protocol but
         # not shown in raw mode, so we verify the body arrived intact
-        assertEq("qore-header-msg", trim(output));
+        assertEq("qore-header-msg", trim(waitCli(cli)));
+%endif
     }
 
     # ----------------------------------------------------------------
@@ -342,11 +405,8 @@ public class NatsInteropTest inherits QUnit::Test {
             "storage": NATS_STORAGE_MEMORY,
         });
 
-        # CLI publishes to the stream subject
-        system(natsCmd(sprintf("pub %s 'js-from-cli'", subject)));
-
-        # Give the server a moment to persist
-        usleep(200000);
+        # CLI publishes to the stream subject; with --jetstream it returns when the stream has stored the message
+        assertEq(0, system(natsCmd(sprintf("pub %s 'js-from-cli' --jetstream", subject))));
 
         # Verify message count in stream
         hash<NatsStreamInfo> info = js.getStreamInfo(stream_name);
