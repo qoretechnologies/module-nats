@@ -157,14 +157,19 @@ nothing NatsConnection::publishMsg(string subject, *binary data, *hash<string, s
 }
 
 //! Sends a request and waits for a reply (request/reply pattern)
-/** @param subject the subject to send the request to
+/** The request is published once; the wait for its reply ends as soon as the thread is cancelled or its \c Program
+    is interrupted, and a reply that arrives after the request stopped waiting is dropped.
+
+    @param subject the subject to send the request to
     @param data optional binary payload
     @param timeout_ms timeout in milliseconds (default: 5000)
 
     @return a @ref NatsMsgInfo hash with the reply message
 
     @throw NATS-REQUEST-ERROR if the request fails
-    @throw NATS-TIMEOUT-ERROR if no reply is received within the timeout
+    @throw NATS-TIMEOUT-ERROR if no reply is received within the timeout, or if no responders are available
+    @throw THREAD-CANCELLED the thread was cancelled while waiting
+    @throw PROGRAM-INTERRUPTED the \c Program was interrupted while waiting
 
     @par Example:
     @code{.py}

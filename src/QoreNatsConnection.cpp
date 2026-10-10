@@ -29,6 +29,8 @@
 #include "QoreNatsJetStream.h"
 #include "QoreNatsMicroService.h"
 
+#include <chrono>
+#include <cstring>
 #include <string>
 #include <vector>
 
@@ -89,6 +91,12 @@ QoreNatsConnection::QoreNatsConnection(const QoreHashNode* options, QoreProgram*
 }
 
 QoreNatsConnection::~QoreNatsConnection() {
+    if (reply_sub) {
+        // the reply callback releases its reference to the replies when the subscription is complete
+        natsSubscription_Unsubscribe(reply_sub);
+        natsSubscription_Destroy(reply_sub);
+        reply_sub = nullptr;
+    }
     if (conn) {
         natsConnection_Destroy(conn);
         conn = nullptr;
@@ -756,6 +764,69 @@ int QoreNatsConnection::publishMsg(const char* subject, const void* data, int da
     return 0;
 }
 
+std::shared_ptr<QoreNatsConnection::ReplyMux> QoreNatsConnection::getReplyMux(ExceptionSink* xsink) {
+    AutoLocker al(reply_init_lock);
+    if (reply_mux) {
+        return reply_mux;
+    }
+
+    natsInbox* inbox = nullptr;
+    natsStatus s = natsInbox_Create(&inbox);
+    if (s != NATS_OK) {
+        nats_error(xsink, "NATS-REQUEST-ERROR", s, "failed to create the reply inbox");
+        return nullptr;
+    }
+    std::shared_ptr<ReplyMux> mux = std::make_shared<ReplyMux>();
+    mux->prefix = std::string(inbox) + ".";
+    natsInbox_Destroy(inbox);
+
+    // the callback keeps a reference to the replies until the subscription is complete
+    std::shared_ptr<ReplyMux>* closure = new std::shared_ptr<ReplyMux>(mux);
+    std::string subject = mux->prefix + "*";
+    s = natsConnection_Subscribe(&reply_sub, conn, subject.c_str(), replyHandler, closure);
+    if (s != NATS_OK) {
+        delete closure;
+        reply_sub = nullptr;
+        nats_error(xsink, "NATS-REQUEST-ERROR", s, "failed to subscribe to the reply inbox");
+        return nullptr;
+    }
+    s = natsSubscription_SetOnCompleteCB(reply_sub, replyComplete, closure);
+    if (s != NATS_OK) {
+        // the callback can still run until the subscription is complete, which is then not reported, so its closure
+        // is not freed
+        natsSubscription_Unsubscribe(reply_sub);
+        natsSubscription_Destroy(reply_sub);
+        reply_sub = nullptr;
+        nats_error(xsink, "NATS-REQUEST-ERROR", s, "failed to set up the reply subscription");
+        return nullptr;
+    }
+    reply_mux = mux;
+    return mux;
+}
+
+void QoreNatsConnection::replyHandler(natsConnection* nc, natsSubscription* sub, natsMsg* msg, void* closure) {
+    ReplyMux& mux = **static_cast<std::shared_ptr<ReplyMux>*>(closure);
+    const char* subject = natsMsg_GetSubject(msg);
+    if (!subject || strncmp(subject, mux.prefix.c_str(), mux.prefix.size())) {
+        natsMsg_Destroy(msg);
+        return;
+    }
+    std::string token(subject + mux.prefix.size());
+    AutoLocker al(mux.m);
+    auto i = mux.replies.find(token);
+    if (i == mux.replies.end() || i->second) {
+        // the request is no longer waiting (it timed out or was cancelled), or it already has its reply
+        natsMsg_Destroy(msg);
+        return;
+    }
+    i->second = msg;
+    mux.cond.broadcast();
+}
+
+void QoreNatsConnection::replyComplete(void* closure) {
+    delete static_cast<std::shared_ptr<ReplyMux>*>(closure);
+}
+
 QoreHashNode* QoreNatsConnection::request(const char* subject, const void* data,
         int data_len, int64 timeout_ms, ExceptionSink* xsink) {
     if (!conn) {
@@ -767,46 +838,79 @@ QoreHashNode* QoreNatsConnection::request(const char* subject, const void* data,
         return nullptr;
     }
 
-    int64 remaining_ms = timeout_ms;
+    // the request is published once; its reply is delivered by the reply subscription
+    std::shared_ptr<ReplyMux> mux = getReplyMux(xsink);
+    if (!mux) {
+        return nullptr;
+    }
+    std::string token = std::to_string(++reply_counter);
+    std::string reply_subject = mux->prefix + token;
+    {
+        AutoLocker al(mux->m);
+        mux->replies[token] = nullptr;
+    }
+    // the request stops waiting when this call returns: a later reply is dropped
+    struct WaitingRequest {
+        ReplyMux& mux;
+        const std::string& token;
 
-    while (true) {
-        if (qore_check_cancel(xsink)) {
-            return nullptr;
+        ~WaitingRequest() {
+            AutoLocker al(mux.m);
+            auto i = mux.replies.find(token);
+            if (i != mux.replies.end()) {
+                if (i->second) {
+                    natsMsg_Destroy(i->second);
+                }
+                mux.replies.erase(i);
+            }
         }
+    } waiting_request{*mux, token};
 
-        int64 effective_timeout = (remaining_ms > QORE_IO_POLL_INTERVAL_MS)
-            ? QORE_IO_POLL_INTERVAL_MS : remaining_ms;
+    natsStatus s = natsConnection_PublishRequest(conn, subject, reply_subject.c_str(), data, data_len);
+    if (s != NATS_OK) {
+        nats_error(xsink, "NATS-REQUEST-ERROR", s, "request to subject '%s' failed", subject);
+        return nullptr;
+    }
 
-        natsMsg* reply = nullptr;
-        natsStatus s = natsConnection_Request(&reply, conn, subject,
-            data, data_len, effective_timeout);
-
-        if (s == NATS_OK) {
-            NatsMsgHolder holder(reply);
-            return nats_msg_to_hash(reply, xsink);
-        }
-
-        if (s == NATS_NO_RESPONDERS) {
-            xsink->raiseException("NATS-TIMEOUT-ERROR",
-                "request to subject '%s': no responders available", subject);
-            return nullptr;
-        }
-
-        if (s == NATS_TIMEOUT) {
-            remaining_ms -= effective_timeout;
-            if (remaining_ms <= 0) {
+    // wait for the reply; the wait ends as soon as the thread is cancelled or its Program is interrupted
+    natsMsg* reply = nullptr;
+    {
+        auto deadline = std::chrono::steady_clock::now()
+            + std::chrono::milliseconds(timeout_ms > 0 ? timeout_ms : 0);
+        AutoLocker al(mux->m);
+        while (!(reply = mux->replies[token])) {
+            int64 remaining = std::chrono::duration_cast<std::chrono::microseconds>(
+                deadline - std::chrono::steady_clock::now()).count();
+            if (remaining <= 0) {
                 xsink->raiseException("NATS-TIMEOUT-ERROR",
                     "request to subject '%s' timed out after %lld ms",
                     subject, timeout_ms);
                 return nullptr;
             }
-            continue;
+            // rounded up, so that the wait does not end before the deadline
+            int64 wait_ms = (remaining + 999) / 1000;
+#ifdef _QORE_HAS_CANCELLABLE_POLL
+            if (mux->cond.waitWithInterrupt(&mux->m, wait_ms, xsink) == QORE_COND_RESULT_INTERRUPTED) {
+                return nullptr;
+            }
+#else
+            mux->cond.wait2(&mux->m, wait_ms > QORE_IO_POLL_INTERVAL_MS ? QORE_IO_POLL_INTERVAL_MS : wait_ms);
+            if (qore_check_cancel(xsink)) {
+                return nullptr;
+            }
+#endif
         }
+        // the reply is taken from the waiting request
+        mux->replies[token] = nullptr;
+    }
 
-        nats_error(xsink, "NATS-REQUEST-ERROR", s,
-            "request to subject '%s' failed", subject);
+    NatsMsgHolder holder(reply);
+    if (natsMsg_IsNoResponders(reply)) {
+        xsink->raiseException("NATS-TIMEOUT-ERROR",
+            "request to subject '%s': no responders available", subject);
         return nullptr;
     }
+    return nats_msg_to_hash(reply, xsink);
 }
 
 QoreNatsSubscription* QoreNatsConnection::subscribe(const char* subject,

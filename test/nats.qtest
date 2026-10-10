@@ -61,6 +61,10 @@ public class NatsTest inherits QUnit::Test {
         # Request/reply tests
         addTestCase("request reply test", \requestReplyTest());
         addTestCase("request timeout test", \requestTimeoutTest());
+        addTestCase("a request is published once", \requestPublishedOnceTest());
+        addTestCase("a late reply is not taken by the next request", \requestLateReplyTest());
+        addTestCase("a cancelled thread ends a request", \requestCancelTest());
+        addTestCase("an interrupted Program ends a request", \requestInterruptTest());
 
         # Queue group tests
         addTestCase("queue group test", \queueGroupTest());
@@ -402,6 +406,114 @@ public class NatsTest inherits QUnit::Test {
         });
 
         conn.close();
+    }
+
+    #! a request that waits for its reply is not published again
+    requestPublishedOnceTest() {
+        NatsConnection conn(url);
+        on_exit conn.close();
+        # a responder that never replies
+        NatsSubscription requests = conn.subscribe("test.once");
+        conn.flush();
+
+        assertThrows("NATS-TIMEOUT-ERROR", \conn.request(), ("test.once", binary("once"), 2s));
+        int count;
+        while (requests.nextMsg(0)) {
+            ++count;
+        }
+        assertEq(1, count, "the request is published once");
+    }
+
+    #! a reply that arrives after its request timed out is dropped
+    requestLateReplyTest() {
+        NatsConnection conn(url);
+        on_exit conn.close();
+        NatsSubscription requests = conn.subscribe("test.late");
+        conn.flush();
+
+        assertThrows("NATS-TIMEOUT-ERROR", \conn.request(), ("test.late", binary("first"), 500ms));
+        *hash<NatsMsgInfo> first = requests.nextMsg(5s);
+        assertEq(binary("first"), first.data);
+        # the late reply to the first request
+        conn.publish(first.reply, binary("late"));
+        conn.flush();
+
+        Queue results();
+        background sub () {
+            try {
+                results.push(conn.request("test.late", binary("second"), 10s));
+            } catch (hash<ExceptionInfo> ex) {
+                results.push(ex);
+            }
+        }();
+        *hash<NatsMsgInfo> second = requests.nextMsg(5s);
+        assertEq(binary("second"), second.data);
+        conn.publish(second.reply, binary("reply to second"));
+        auto rv = results.get();
+        assertEq(binary("reply to second"), rv.data, "the second request gets its own reply");
+    }
+
+    #! runs a request to a responder that never replies in a thread and cancels it
+    requestCancelTest() {
+        NatsConnection conn(url);
+        on_exit conn.close();
+        NatsSubscription requests = conn.subscribe("test.cancel");
+        conn.flush();
+
+        Queue done();
+        int tid = background sub () {
+            hash<auto> rv;
+            try {
+                conn.request("test.cancel", binary("cancel"), 30s);
+                rv.err = "NONE";
+            } catch (hash<ExceptionInfo> ex) {
+                rv.err = ex.err;
+                rv.desc = ex.desc;
+            }
+            rv.end = clock_get_monotonic_us();
+            done.push(rv);
+        }();
+        # the request is waiting for its reply once the responder has it
+        assertTrue(exists requests.nextMsg(10s), "the request is published");
+        int start = clock_get_monotonic_us();
+        cancel_thread(tid, "nats cancel test");
+        hash<auto> rv = done.get();
+        assertEq("THREAD-CANCELLED", rv.err, rv.desc);
+        assertLt(2000000, rv.end - start, "the cancellation ends the request at once");
+    }
+
+    requestInterruptTest() {
+        NatsConnection conn(url);
+        on_exit conn.close();
+        NatsSubscription requests = conn.subscribe("test.interrupt");
+        conn.flush();
+
+        SandboxManager sm();
+        sm.setNetworkDefaultPolicy(True);
+        Program p(PO_NEW_STYLE);
+        p.setSandboxManager(sm);
+        p.loadModule("nats");
+        p.parse("sub run(string url) { NatsConnection conn(url); on_exit conn.close(); "
+            "conn.request(\"test.interrupt\", binary(\"interrupt\"), 30s); }", "nats-interrupt");
+        Queue done();
+        background sub () {
+            hash<auto> rv;
+            try {
+                p.callFunction("run", url);
+                rv.err = "NONE";
+            } catch (hash<ExceptionInfo> ex) {
+                rv.err = ex.err;
+                rv.desc = ex.desc;
+            }
+            rv.end = clock_get_monotonic_us();
+            done.push(rv);
+        }();
+        assertTrue(exists requests.nextMsg(10s), "the request is published");
+        int start = clock_get_monotonic_us();
+        sm.requestInterrupt();
+        hash<auto> rv = done.get();
+        assertEq("PROGRAM-INTERRUPTED", rv.err, rv.desc);
+        assertLt(2000000, rv.end - start, "the interrupt ends the request at once");
     }
 
     # --- Queue group tests ---

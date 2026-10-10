@@ -30,6 +30,11 @@
 #include "nats-module.h"
 #include "NatsHelper.h"
 
+#include <atomic>
+#include <map>
+#include <memory>
+#include <string>
+
 //! Callback context for bridging nats.c callbacks to Qore closures
 struct NatsCallbackContext {
     ResolvedCallReferenceNode* on_disconnect = nullptr;
@@ -160,6 +165,42 @@ private:
     natsConnection* conn = nullptr;
     natsOptions* opts = nullptr;
     NatsCallbackContext* cb_ctx = nullptr;
+
+    //! The replies to the requests of the connection, shared with the callback of the reply subscription
+    struct ReplyMux {
+        QoreThreadLock m;
+        //! broadcast when a reply arrives
+        QoreCondition cond;
+        //! the reply subject prefix: "<inbox>."
+        std::string prefix;
+        //! the reply of each waiting request by its reply subject token; nullptr until the reply arrives
+        std::map<std::string, natsMsg*> replies;
+
+        DLLLOCAL ~ReplyMux() {
+            for (auto& i : replies) {
+                if (i.second) {
+                    natsMsg_Destroy(i.second);
+                }
+            }
+        }
+    };
+    //! the replies of the requests; created with the reply subscription by the first request
+    std::shared_ptr<ReplyMux> reply_mux;
+    //! the subscription that receives the replies of all requests (<inbox>.*)
+    natsSubscription* reply_sub = nullptr;
+    //! serializes the creation of the reply subscription
+    QoreThreadLock reply_init_lock;
+    //! the counter for the reply subject tokens
+    std::atomic<int64> reply_counter{0};
+
+    //! Returns the replies of the requests, creating the reply subscription with the first request
+    DLLLOCAL std::shared_ptr<ReplyMux> getReplyMux(ExceptionSink* xsink);
+
+    //! Delivers a reply to the request waiting for it; called on a cnats delivery thread
+    static void replyHandler(natsConnection* nc, natsSubscription* sub, natsMsg* msg, void* closure);
+
+    //! Releases the reply callback's reference to the replies when the reply subscription is complete
+    static void replyComplete(void* closure);
 
     //! Configure options from a hash
     DLLLOCAL int configureOptions(const QoreHashNode* options, ExceptionSink* xsink);
