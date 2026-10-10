@@ -30,6 +30,7 @@
 
 %requires QUnit
 %requires nats
+%requires ./NatsTestServer.qm
 %requires NatsUtil
 
 %exec-class NatsTest
@@ -38,11 +39,15 @@ public class NatsTest inherits QUnit::Test {
     private {
         int port;
         string url;
-        *int nats_pid;
-        string pid_file;
+        *NatsTestServer server;
     }
 
     constructor() : QUnit::Test("NatsTest", "1.0") {
+        if (!NatsTestServer::available()) {
+            addTestCase("process module dependency", sub () { testSkip("process module not available"); });
+            set_return_value(main());
+            return;
+        }
         # Connection tests
         addTestCase("connection test", \connectionTest());
         addTestCase("named arguments test", \namedArgumentTest());
@@ -110,44 +115,17 @@ public class NatsTest inherits QUnit::Test {
     }
 
     private startServer(*list<string> extra_args) {
-        port = 10000 + (rand() % 50000);
-        pid_file = sprintf("/tmp/nats-test-%d.pid", port);
-        list<string> args = ("nats-server", "-p", string(port), "-a", "127.0.0.1",
-            "--pid", pid_file);
-        if (extra_args) {
-            args += extra_args;
+        if (!NatsTestServer::available()) {
+            return;
         }
-        string cmd = foldl $1 + " " + $2, args;
-        cmd += " &";
-        system(cmd);
-        # Wait for pid file
-        for (int i = 0; i < 50; ++i) {
-            if (is_file(pid_file)) {
-                nats_pid = trim(ReadOnlyFile::readTextFile(pid_file)).toInt();
-                break;
-            }
-            usleep(100000);
-        }
-        if (!nats_pid) {
-            throw "NATS-TEST-ERROR", sprintf("nats-server failed to start on port %d", port);
-        }
-        url = sprintf("nats://127.0.0.1:%d", port);
+        server = new NatsTestServer(extra_args);
+        port = server.port;
+        url = server.url;
     }
 
     private stopServer() {
-        if (nats_pid) {
-            kill(nats_pid, SIGTERM);
-            # Wait for process to exit
-            for (int i = 0; i < 50; ++i) {
-                if (!is_file(sprintf("/proc/%d/status", nats_pid))) {
-                    break;
-                }
-                usleep(100000);
-            }
-            nats_pid = NOTHING;
-        }
-        if (is_file(pid_file)) {
-            unlink(pid_file);
+        if (server) {
+            server.stop();
         }
     }
 
@@ -373,9 +351,8 @@ public class NatsTest inherits QUnit::Test {
         Counter cnt(1);
         background requestResponder(nsub, cnt);
 
-        # Give the background thread a moment to start receiving
-        usleep(100000);
-
+        # the subscription is on the same connection, so the server has it before the request; the responder
+        # receives the request whenever it starts waiting
         hash<NatsMsgInfo> reply = conn.request("test.echo", binary("ping"), 5s);
         assertEq(True, exists reply);
         assertEq(binary("pong"), reply.data);
@@ -862,24 +839,25 @@ public class NatsTest inherits QUnit::Test {
     # --- Connection callback tests ---
 
     closedCallbackTest() {
-        Sequence seq();
+        # the counter is decremented on the first call of the callback
+        Sequence calls();
+        Counter closed(1);
 
         NatsConnection conn(cast<hash<NatsConnectionOptions>>({
             "url": url,
-            "on_closed": sub () { seq.next(); },
+            "on_closed": sub () {
+                if (!calls.next()) {
+                    closed.dec();
+                }
+            },
         }));
         assertTrue(conn.isConnected());
 
         # Close triggers on_closed callback from nats.c thread
         conn.close();
 
-        # Give the callback thread time to run
-        int count = 0;
-        while (seq.getCurrent() == 0 && count < 50) {
-            usleep(100000);  # 100ms
-            ++count;
-        }
-        assertTrue(seq.getCurrent() > 0);
+        # the wait ends when the callback has run
+        assertEq(0, closed.waitForZero(10s));
     }
 
     # --- Negative tests ---

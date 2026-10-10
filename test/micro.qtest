@@ -30,6 +30,7 @@
 
 %requires QUnit
 %requires nats
+%requires ./NatsTestServer.qm
 
 %exec-class MicroTest
 
@@ -37,11 +38,15 @@ public class MicroTest inherits QUnit::Test {
     private {
         int port;
         string url;
-        *int nats_pid;
-        string pid_file;
+        *NatsTestServer server;
     }
 
     constructor() : QUnit::Test("MicroTest", "1.0") {
+        if (!NatsTestServer::available()) {
+            addTestCase("process module dependency", sub () { testSkip("process module not available"); });
+            set_return_value(main());
+            return;
+        }
         addTestCase("basic micro service test", \basicServiceTest());
         addTestCase("named arguments test", \namedArgumentTest());
         addTestCase("micro service info test", \serviceInfoTest());
@@ -62,41 +67,17 @@ public class MicroTest inherits QUnit::Test {
     }
 
     private startServer() {
-        port = 10000 + (rand() % 50000);
-        pid_file = sprintf("/tmp/nats-micro-test-%d.pid", port);
-        list<string> args = ("nats-server", "-p", string(port), "-a", "127.0.0.1",
-            "--pid", pid_file);
-        string cmd = foldl $1 + " " + $2, args;
-        cmd += " &";
-        system(cmd);
-        # Wait for pid file
-        for (int i = 0; i < 50; ++i) {
-            if (is_file(pid_file)) {
-                nats_pid = trim(ReadOnlyFile::readTextFile(pid_file)).toInt();
-                break;
-            }
-            usleep(100000);
+        if (!NatsTestServer::available()) {
+            return;
         }
-        if (!nats_pid) {
-            throw "NATS-TEST-ERROR", sprintf("nats-server failed to start on port %d", port);
-        }
-        url = sprintf("nats://127.0.0.1:%d", port);
+        server = new NatsTestServer();
+        port = server.port;
+        url = server.url;
     }
 
     private stopServer() {
-        if (nats_pid) {
-            kill(nats_pid, SIGTERM);
-            # Wait for process to exit
-            for (int i = 0; i < 50; ++i) {
-                if (!is_file(sprintf("/proc/%d/status", nats_pid))) {
-                    break;
-                }
-                usleep(100000);
-            }
-            nats_pid = NOTHING;
-        }
-        if (is_file(pid_file)) {
-            unlink(pid_file);
+        if (server) {
+            server.stop();
         }
     }
 

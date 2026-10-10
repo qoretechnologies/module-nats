@@ -1,0 +1,182 @@
+# -*- mode: qore; indent-tabs-mode: nil -*-
+
+/*
+    Copyright (C) 2026 Qore Technologies, s.r.o., all rights reserved
+
+    Permission is hereby granted, free of charge, to any person obtaining a
+    copy of this software and associated documentation files (the "Software"),
+    to deal in the Software without restriction, including without limitation
+    the rights to use, copy, modify, merge, publish, distribute, sublicense,
+    and/or sell copies of the Software, and to permit persons to whom the
+    Software is furnished to do so, subject to the following conditions:
+
+    The above copyright notice and this permission notice shall be included in
+    all copies or substantial portions of the Software.
+
+    THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+    IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+    FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+    AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+    DEALINGS IN THE SOFTWARE.
+
+    nats-server process for the tests of the nats module
+*/
+
+%modern
+
+# the server runs as a child process of the test
+%try-module process >= 2.2
+%define NoProcess
+%endtry
+
+module NatsTestServer {
+    version = "1.0";
+    desc = "nats-server process for the tests of the nats module";
+    author = "Qore Technologies <info@qoretechnologies.com>";
+    url = "https://qore.org";
+    license = "MIT";
+}
+
+/** @mainpage NatsTestServer Module
+
+    @section natstestserverintro Introduction to the NatsTestServer Module
+
+    Runs a \c nats-server process for a test, and lets the test wait for events that the server logs: that it is
+    ready for clients, and that another client's subscription is active.  The waits read the server's log as it is
+    written, so a test never guesses how long something takes.
+*/
+
+#! The namespace of the NatsTestServer module
+public namespace NatsTestServer {
+#! A nats-server process for a test
+/** The server listens on 127.0.0.1, on a port that it chooses, and traces the client protocol, so that its log shows
+    every client's subscriptions; it is stopped when the object is destroyed
+*/
+public class NatsTestServer {
+    public {
+        #! the port that the server listens on
+        int port;
+
+        #! the URL of the server
+        string url;
+    }
+
+    private {
+%ifndef NoProcess
+        #! the server process
+        Process server;
+%endif
+        #! server output received but not yet consumed by waitForLog()
+        string log = "";
+    }
+
+    #! Returns True if a server can be run (the process module is available)
+    static bool available() {
+%ifdef NoProcess
+        return False;
+%else
+        return True;
+%endif
+    }
+
+    #! Starts the server and returns when it is ready for clients
+    /** @param extra_args additional server arguments (ex: \c "-js" for JetStream)
+
+        @throw NATS-TEST-ERROR the process module is not available, or the server did not start
+    */
+    constructor(*list<string> extra_args) {
+%ifdef NoProcess
+        throw "NATS-TEST-ERROR", "the process module is not available";
+%else
+        list<string> args = ("-p", "-1", "-a", "127.0.0.1", "-V");
+        if (extra_args) {
+            args += extra_args;
+        }
+        server = new Process("nats-server", args);
+        string line = waitForLog("Listening for client connections on ");
+        *list<*string> m = (line =~ x/Listening for client connections on [^ ]*:([0-9]+)/);
+        if (!m[0]) {
+            throw "NATS-TEST-ERROR", sprintf("cannot find the port of nats-server in %y", line);
+        }
+        port = m[0].toInt();
+        url = sprintf("nats://127.0.0.1:%d", port);
+        waitForLog("Server is ready");
+%endif
+    }
+
+    #! Stops the server
+    destructor() {
+        stop();
+    }
+
+    #! Stops the server and waits for it to exit
+    stop() {
+%ifndef NoProcess
+        if (server.running()) {
+            server.terminate();
+        }
+        server.wait();
+%endif
+    }
+
+    #! Returns the next line of the server log that matches the given regular expression
+    /** The lines before it are consumed; the read returns as soon as the server writes output
+
+        @param pattern the regular expression
+        @param timeout_ms the maximum time to wait
+
+        @return the matching line
+
+        @throw NATS-TEST-ERROR no line matched in time
+    */
+    string waitForLog(string pattern, timeout timeout_ms = 10s) {
+%ifdef NoProcess
+        throw "NATS-TEST-ERROR", "the process module is not available";
+%else
+        int deadline = clock_get_monotonic_us() + timeout_ms * 1000;
+        while (True) {
+            int eol;
+            while ((eol = log.find("\n")) >= 0) {
+                string line = log.substr(0, eol);
+                splice log, 0, eol + 1;
+                if (regex(line, pattern)) {
+                    return line;
+                }
+            }
+            int remaining_ms = (deadline - clock_get_monotonic_us()) / 1000;
+            if (remaining_ms <= 0) {
+                throw "NATS-TEST-ERROR", sprintf("nats-server did not log a line matching %y within %d ms",
+                    pattern, timeout_ms);
+            }
+            *string data = server.readStderr(65536, remaining_ms);
+            if (data) {
+                log += data;
+            }
+        }
+%endif
+    }
+
+    #! Waits until the server has processed another client's subscription to the given subject
+    /** The server logs a SUB before it processes it, and processes a client's commands in order: the PONG that it
+        sends the same client for the PING that follows the subscription (a client flushes after subscribing, as
+        the nats CLI does) shows that the subscription is active
+
+        @param subject the subject
+        @param timeout_ms the maximum time to wait for each of the two log lines
+
+        @throw NATS-TEST-ERROR the subscription was not logged in time
+    */
+    waitForSubscription(string subject, timeout timeout_ms = 10s) {
+        string subject_re = subject;
+        subject_re =~ s/\./\\./g;
+        string line = waitForLog("<<- \\[SUB " + subject_re + " ", timeout_ms);
+        *list<*string> m = (line =~ x/ - (cid:[0-9]+) - /);
+        if (!m[0]) {
+            throw "NATS-TEST-ERROR", sprintf("cannot find the client ID in %y", line);
+        }
+        waitForLog(" - " + m[0] + " - ->> \\[PONG\\]", timeout_ms);
+    }
+}
+}
