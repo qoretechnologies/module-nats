@@ -171,12 +171,22 @@ QoreNatsMicroService::QoreNatsMicroService(natsConnection* conn,
         svc_cfg.Endpoint = &ep_cfg;
     }
 
+    // the done handler releases the handler contexts and makes cnats release the service; the state is shared
+    // with it through the service's state pointer, which it deletes
+    state = std::make_shared<MicroServiceState>();
+    std::shared_ptr<MicroServiceState>* done_state = new std::shared_ptr<MicroServiceState>(state);
+    svc_cfg.State = done_state;
+    svc_cfg.DoneHandler = serviceDone;
+
     microError* err = micro_AddService(&svc, conn, &svc_cfg);
     if (err) {
+        // the default endpoint was not added, so its context is not used; the done handler can still be called for
+        // the monitoring endpoints added before the failure, so its state is not deleted here
         if (ep_ctx) {
             ep_ctx->cleanup(xsink);
             delete ep_ctx;
         }
+        svc = nullptr;
         nats_micro_error(xsink, "NATS-MICRO-ERROR", err,
             "failed to create microservice '%s'", svc_cfg.Name);
         return;
@@ -184,26 +194,54 @@ QoreNatsMicroService::QoreNatsMicroService(natsConnection* conn,
 
     // Store handler context for cleanup
     if (ep_ctx) {
-        handlers.push_back(ep_ctx);
+        registerHandler(ep_ctx);
     }
 }
 
-QoreNatsMicroService::~QoreNatsMicroService() {
-    ExceptionSink xsink;
+void QoreNatsMicroService::serviceDone(microService* m) {
+    std::shared_ptr<MicroServiceState>* done_state =
+        static_cast<std::shared_ptr<MicroServiceState>*>(microService_GetState(m));
+    if (!done_state) {
+        return;
+    }
+    std::vector<MicroEndpointCallbackContext*> handlers;
+    {
+        std::lock_guard<std::mutex> lock((*done_state)->m);
+        (*done_state)->done = true;
+        handlers.swap((*done_state)->handlers);
+    }
+    releaseHandlers(handlers);
+    delete done_state;
+}
 
-    // Clean up handler contexts
-    for (auto* ctx : handlers) {
+void QoreNatsMicroService::releaseHandlers(std::vector<MicroEndpointCallbackContext*>& handlers) {
+    if (handlers.empty()) {
+        return;
+    }
+    // the done handler runs on a cnats thread or a Qore thread
+    QoreForeignThreadHelper fth;
+    ExceptionSink xsink;
+    for (MicroEndpointCallbackContext* ctx : handlers) {
+        if (ctx->pgm) {
+            // the handler is released in the context of its Program
+            QoreExternalProgramContextHelper pch(&xsink, ctx->pgm);
+            if (ctx->handler) {
+                ctx->handler->deref(&xsink);
+                ctx->handler = nullptr;
+            }
+        }
         ctx->cleanup(&xsink);
         delete ctx;
     }
     handlers.clear();
+    // an exception raised by the destructor of a handler's state cannot be reported to a caller
+    xsink.clear();
+}
 
+QoreNatsMicroService::~QoreNatsMicroService() {
     if (svc) {
-        // Stop the service first to initiate endpoint drain, then destroy.
-        // microService_Destroy initiates async subscription drains that
-        // free the service when complete. nats_CloseAndWait in the module
-        // delete function handles waiting for pending async operations.
-        microError_Ignore(microService_Stop(svc));
+        // the service stops by draining its endpoints, whose requests are still handled; when the last endpoint
+        // is complete, the done handler releases the handler contexts, and cnats frees the service
         microError_Ignore(microService_Destroy(svc));
         svc = nullptr;
     }
@@ -525,11 +563,20 @@ int QoreNatsMicroService::addEndpoint(const QoreHashNode* config,
     }
 
     if (ctx) {
-        handlers.push_back(ctx);
+        registerHandler(ctx);
     }
     return 0;
 }
 
 void QoreNatsMicroService::registerHandler(MicroEndpointCallbackContext* ctx) {
-    handlers.push_back(ctx);
+    {
+        std::lock_guard<std::mutex> lock(state->m);
+        if (!state->done) {
+            state->handlers.push_back(ctx);
+            return;
+        }
+    }
+    // the endpoints are complete: the context is no longer used
+    std::vector<MicroEndpointCallbackContext*> handlers = {ctx};
+    releaseHandlers(handlers);
 }

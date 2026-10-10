@@ -52,7 +52,7 @@ public:
 
 private:
     microGroup* group = nullptr;
-    QoreNatsMicroService* svc;  //!< borrowed reference to owning service
+    QoreNatsMicroService* svc;  //!< the owning service, referenced while the group exists
 
     // non-copyable
     QoreNatsMicroGroup(const QoreNatsMicroGroup&) = delete;

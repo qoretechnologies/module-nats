@@ -28,10 +28,13 @@
 
 QoreNatsMicroGroup::QoreNatsMicroGroup(microGroup* g, QoreNatsMicroService* svc)
     : group(g), svc(svc) {
+    // the group keeps its service, which owns the microGroup
+    svc->ref();
 }
 
 QoreNatsMicroGroup::~QoreNatsMicroGroup() {
     // microGroup is owned by the microService; we do NOT destroy it
+    svc->deref();
 }
 
 QoreNatsMicroGroup* QoreNatsMicroGroup::addGroup(const char* prefix,

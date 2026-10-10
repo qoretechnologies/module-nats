@@ -30,6 +30,8 @@
 #include "nats-module.h"
 #include "NatsHelper.h"
 
+#include <memory>
+#include <mutex>
 #include <vector>
 
 class QoreNatsMicroGroup;
@@ -49,6 +51,18 @@ struct MicroEndpointCallbackContext {
             pgm = nullptr;
         }
     }
+};
+
+//! The endpoint handler contexts of a microservice, shared with its done handler
+/** A handler context can be used by a request handler on a cnats delivery thread until the last endpoint
+    subscription of the service is complete, which cnats reports with the done handler; the contexts are released
+    there, never while a request can still be handled
+*/
+struct MicroServiceState {
+    std::mutex m;
+    std::vector<MicroEndpointCallbackContext*> handlers;
+    //! set by the done handler: the endpoints are complete, and a context registered later is released at once
+    bool done = false;
 };
 
 //! C++ wrapper for microService
@@ -86,9 +100,19 @@ public:
     //! Static request handler that bridges nats.c micro to Qore closures
     static microError* requestHandler(microRequest* req);
 
+    //! Called by cnats when the last endpoint subscription of the service is complete
+    /** Setting a done handler also makes cnats release the service when it is destroyed (cnats 3.12 releases the
+        reference that the connection holds on the service only after calling the done handler)
+    */
+    static void serviceDone(microService* m);
+
+    //! Releases handler contexts; can be called on a cnats thread
+    static void releaseHandlers(std::vector<MicroEndpointCallbackContext*>& handlers);
+
 private:
     microService* svc = nullptr;
-    std::vector<MicroEndpointCallbackContext*> handlers;
+    //! the handler contexts, released by the done handler
+    std::shared_ptr<MicroServiceState> state;
 
     // non-copyable
     QoreNatsMicroService(const QoreNatsMicroService&) = delete;

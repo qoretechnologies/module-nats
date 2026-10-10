@@ -53,6 +53,7 @@ public class MicroTest inherits QUnit::Test {
         addTestCase("micro string response test", \stringResponseTest());
         addTestCase("micro stop test", \stopTest());
         addTestCase("micro no endpoint test", \noEndpointTest());
+        addTestCase("micro service destroyed with a request in flight", \destroyInFlightTest());
 
         # negative tests
         addTestCase("micro invalid config test", \invalidConfigTest());
@@ -152,6 +153,51 @@ public class MicroTest inherits QUnit::Test {
         svc.stop();
         assertTrue(svc.isStopped());
         conn.close();
+    }
+
+    #! requests that are queued for a service when it is destroyed are handled with valid handlers
+    destroyInFlightTest() {
+        NatsConnection conn(url);
+        on_exit conn.close();
+        Queue started();
+        Queue go();
+        Queue handled();
+        NatsMicroService svc = conn.createMicroService(cast<hash<NatsMicroServiceConfig>>({
+            "name": "in-flight",
+            "version": "1.0.0",
+            "endpoint": cast<hash<NatsMicroEndpointConfig>>({
+                "name": "slow",
+                "subject": "test.in-flight",
+                "handler": *data sub (hash<auto> req) {
+                    if (req.data == binary("first")) {
+                        # a second request is queued behind this one: once the connection is flushed, the service
+                        # connection has received it
+                        conn.publish("test.in-flight", binary("second"));
+                        conn.flush();
+                        started.push(True);
+                        go.get();
+                    }
+                    handled.push(req.data);
+                    return binary("done");
+                },
+            }),
+        }));
+
+        Queue replies();
+        background sub () {
+            try {
+                replies.push(conn.request("test.in-flight", binary("first"), 10s).data);
+            } catch (hash<ExceptionInfo> ex) {
+                replies.push(ex.err);
+            }
+        }();
+        assertTrue(started.get(), "the first request is being handled");
+        # the service is destroyed while it handles the first request and the second one is queued
+        delete svc;
+        go.push(True);
+        assertEq(binary("done"), replies.get(), "the first request is answered");
+        assertEq(binary("first"), handled.get());
+        assertEq(binary("second"), handled.get(), "the queued request is handled");
     }
 
     serviceInfoTest() {
