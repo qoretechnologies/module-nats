@@ -40,6 +40,8 @@ QoreNatsConnection::QoreNatsConnection(const char* url, ExceptionSink* xsink) {
         return;
     }
 
+    // the options open the C client library
+    nats_library_used();
     natsStatus s = natsOptions_Create(&opts);
     if (s != NATS_OK) {
         nats_error(xsink, "NATS-CONNECTION-ERROR", s, "failed to create NATS options");
@@ -60,6 +62,8 @@ QoreNatsConnection::QoreNatsConnection(const char* url, ExceptionSink* xsink) {
 
 QoreNatsConnection::QoreNatsConnection(const QoreHashNode* options, QoreProgram* pgm,
         ExceptionSink* xsink) {
+    // the options open the C client library
+    nats_library_used();
     natsStatus s = natsOptions_Create(&opts);
     if (s != NATS_OK) {
         nats_error(xsink, "NATS-CONNECTION-ERROR", s, "failed to create NATS options");

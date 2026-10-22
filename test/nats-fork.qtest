@@ -56,6 +56,8 @@ public class NatsForkTest inherits QUnit::Test {
         addTestCase("a child closes and destroys a connection and a subscription of its parent", \connectionTest());
         addTestCase("a child destroys a microservice of its parent", \microTest());
         addTestCase("a child ends its script while a connection of its parent exists", \scriptEndTest());
+        addTestCase("a child exits while a thread of its parent holds the C client's library lock",
+            \libraryLockTest());
         set_return_value(main());
     }
 
@@ -136,6 +138,48 @@ public class NatsForkTest inherits QUnit::Test {
             shellQuote(script.path)));
         assertRegex("child: done", output);
         assertRegex("parent: done", output);
+    }
+
+    # a thread of the parent holds the C client's library lock when fork() is called, as a thread of the client can
+    # (it takes the lock for every reference to the library): the lock stays held in the child, whose exit runs the C
+    # client's own exit handler, which takes it.  The child waited forever.
+    libraryLockTest() {
+        checkEnv();
+        # the C client library is open
+        NatsConnection conn(url);
+        try {
+            call_function("Qore::Nats::dbg_with_library_lock", sub () {});
+        } catch (hash<ExceptionInfo> ex) {
+            if (ex.err == "NO-FUNCTION") {
+                testSkip("the test needs a debug build of the module");
+            }
+            rethrow;
+        }
+        Queue held();
+        Queue release();
+        Queue done();
+        background sub () {
+            on_exit done.push(True);
+            call_function("Qore::Nats::dbg_with_library_lock", sub () {
+                held.push(True);
+                release.get();
+            });
+        }();
+        held.get();
+        # the thread releases the lock before this thread uses the C client again
+        bool released;
+        code release_lock = sub () {
+            if (!released) {
+                released = True;
+                release.push(True);
+                done.get();
+            }
+        };
+        on_exit release_lock();
+        string result = runChild(string sub () { return "exiting"; });
+        release_lock();
+        assertEq("exiting", result);
+        conn.close();
     }
 
     private checkEnv() {

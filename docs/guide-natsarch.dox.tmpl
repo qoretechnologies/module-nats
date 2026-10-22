@@ -47,6 +47,10 @@
     the parent's threads or write to the parent's connection; the module's cleanup in the child likewise leaves the
     C client library as it is.  The parent's connections, subscriptions and microservices are not affected.
 
+    A child process created after the C client was used ends without running the exit-time handlers of the libraries
+    in the process (with %Qore 3.0 or later, see \c qore_fork_child_exit_quickly()): the C client's own exit handler
+    takes a lock that a thread of the client in the parent can have held when the process was created.
+
     @section natscancellation Thread Cancellation
 
     A blocking call ends with \c THREAD-CANCELLED when its thread is cancelled, or with \c PROGRAM-INTERRUPTED

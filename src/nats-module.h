@@ -53,6 +53,11 @@ private:
     const pid_t pid = getpid();
 };
 
+//! Records that the C client library is used in this process (see nats-module.cpp)
+/** Called before the module's first call of the C client for a connection, which opens the library
+*/
+DLLLOCAL void nats_library_used();
+
 // Forward declarations
 class QoreNatsConnection;
 class QoreNatsSubscription;

@@ -89,8 +89,66 @@ QoreNamespace NatsNs("Qore::Nats");
 //! the process that loaded the module (see nats_module_delete())
 static pid_t nats_module_pid = 0;
 
+#ifdef _QORE_HAS_FORK_CHILD_QUICK_EXIT
+//! true once the C client library has been used in the process (or in the parent of a child created with fork())
+static std::atomic<bool> nats_library_opened{false};
+
+//! the registration of nats_fork_child()
+static QoreForkHandlerRegistration* nats_fork_reg = nullptr;
+
+// runs in the child of fork(): once the C client library is open, its atexit() handler (natsLib_Destructor()) takes
+// the library lock, which a thread of the client in the parent can hold when the process is copied, so that the
+// child would wait forever when it exits; such a child ends without running exit-time handlers (see
+// QoreForkHandler.h).  Takes no lock and allocates nothing.
+static void nats_fork_child(void*) {
+    if (nats_library_opened.load(std::memory_order_relaxed)) {
+        qore_fork_child_exit_quickly();
+    }
+}
+#endif
+
+void nats_library_used() {
+#ifdef _QORE_HAS_FORK_CHILD_QUICK_EXIT
+    nats_library_opened.store(true, std::memory_order_relaxed);
+#endif
+}
+
+#ifdef DEBUG
+// the state of the C client library (nats.c src/glib/glibp.h): its first member is the library lock, a natsMutex,
+// which is a pthread_mutex_t on POSIX systems; not part of the client's public API
+extern "C" void* nats_lib(void);
+
+//! Debug-only: calls the code while the calling thread holds the C client's library lock
+/** Lets the tests create a child process with fork() while another thread holds the lock, as a thread of the C
+    client can when another thread forks: the lock stays held forever in the child.  DEBUG builds only.
+
+    @throw NATS-DEBUG-ERROR the C client library has not been opened (no NATS object has been created)
+*/
+static QoreValue f_dbg_with_library_lock(const QoreListNode* args, RuntimeConfig& rc, ExceptionSink* xsink) {
+    const ResolvedCallReferenceNode* code = get_param_value(args, 0).get<const ResolvedCallReferenceNode>();
+    pthread_mutex_t* lock = *static_cast<pthread_mutex_t**>(nats_lib());
+    if (!lock) {
+        xsink->raiseException("NATS-DEBUG-ERROR", "the NATS C client library has not been opened");
+        return QoreValue();
+    }
+    pthread_mutex_lock(lock);
+    ON_BLOCK_EXIT(pthread_mutex_unlock, lock);
+    return code->execValue(nullptr, xsink);
+}
+#endif
+
 static void nats_module_init(QoreModuleInitContext& ctx, ExceptionSink& xsink) {
     nats_module_pid = getpid();
+#ifdef _QORE_HAS_FORK_CHILD_QUICK_EXIT
+    // registered in the initialization function, as fork handlers must be; nothing below fails, so it is removed
+    // only when the module is deleted
+    nats_fork_reg = qore_register_fork_handler(QFR_MODULE_LEAF, "nats_exit", nullptr, nullptr, nats_fork_child,
+        nullptr);
+    if (!nats_fork_reg) {
+        xsink.outOfMemory();
+        return;
+    }
+#endif
 
     // Initialize constants
     init_NatsMsg_constants(NatsNs);
@@ -149,6 +207,11 @@ static void nats_module_init(QoreModuleInitContext& ctx, ExceptionSink& xsink) {
     NatsNs.addSystemClass(initNatsMicroServiceClass(NatsNs));
     // NatsConnection depends on NatsSubscription, JetStreamContext, NatsMicroService
     NatsNs.addSystemClass(initNatsConnectionClass(NatsNs));
+
+#ifdef DEBUG
+    NatsNs.addBuiltinVariant("dbg_with_library_lock", f_dbg_with_library_lock, QCF_NO_FLAGS, QDOM_THREAD_CONTROL,
+        autoTypeInfo, 1, codeTypeInfo, QORE_PARAM_NO_ARG, "code");
+#endif
 }
 
 static void nats_module_ns_init(QoreNamespace* rns, QoreNamespace* qns, ExceptionSink& xsink) {
@@ -156,6 +219,10 @@ static void nats_module_ns_init(QoreNamespace* rns, QoreNamespace* qns, Exceptio
 }
 
 static void nats_module_delete() {
+#ifdef _QORE_HAS_FORK_CHILD_QUICK_EXIT
+    qore_unregister_fork_handler(nats_fork_reg);
+    nats_fork_reg = nullptr;
+#endif
     // in a child process created with fork(), the threads of the C client library, if the parent opened it, exist
     // only in the parent: closing the library would join them and wait forever, so it is left as it is, and its
     // threads, if the child opened it, end with the process (see NatsCreatorProcess)
