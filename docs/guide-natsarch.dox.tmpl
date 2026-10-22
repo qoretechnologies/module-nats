@@ -17,6 +17,15 @@
       @ref natsjetstreamdataproviderintro "NatsJetStreamDataProvider" for integration with Qore's data
       provider framework.
 
+    @section natscallbacksandbox Callbacks and Sandboxing
+
+    The NATS C client calls the connection callbacks (\c on_disconnect, \c on_reconnect, \c on_closed,
+    \c on_error, \c on_lame_duck and \c on_discovered_servers in @ref Qore::Nats::NatsConnectionOptions) and the
+    request handlers of microservice endpoints on its own threads.  Each callback runs under the sandbox
+    (\c Qore::SandboxManager) of the code that registered it: the code that created the connection for the
+    connection callbacks, and the code that added the endpoint for a request handler.  A callback can therefore never
+    do more than the code that registered it, although it runs on a thread that %Qore did not start.
+
     @section natscancellation Thread Cancellation
 
     A blocking call ends with \c THREAD-CANCELLED when its thread is cancelled, or with \c PROGRAM-INTERRUPTED

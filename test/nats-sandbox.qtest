@@ -1,0 +1,325 @@
+#!/usr/bin/env qore
+# -*- mode: qore; indent-tabs-mode: nil -*-
+
+/*
+    Copyright (C) 2026 Qore Technologies, s.r.o., all rights reserved
+
+    Permission is hereby granted, free of charge, to any person obtaining a
+    copy of this software and associated documentation files (the "Software"),
+    to deal in the Software without restriction, including without limitation
+    the rights to use, copy, modify, merge, publish, distribute, sublicense,
+    and/or sell copies of the Software, and to permit persons to whom the
+    Software is furnished to do so, subject to the following conditions:
+
+    The above copyright notice and this permission notice shall be included in
+    all copies or substantial portions of the Software.
+
+    THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+    IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+    FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+    AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+    DEALINGS IN THE SOFTWARE.
+
+    The NATS C client calls the connection callbacks and the microservice request handlers on its own threads, which
+    Qore did not start; they must still be governed by the sandbox of the code that registered them, so that a
+    callback can never do more than that code.
+
+    The trusted code is modeled by a Program with no sandbox (like a module Program) whose callbacks read a file; the
+    sandboxed code by a Program with a SandboxManager that allows the network but denies the filesystem.
+*/
+
+%modern
+%no-child-restrictions
+%prepend-module-path "${SCRIPT_DIR}/../qlib"
+
+%requires QUnit
+%requires Util
+%requires nats
+%requires ./NatsTestServer.qm
+
+%exec-class NatsSandboxTest
+
+public class NatsSandboxTest inherits QUnit::Test {
+    private {
+        *NatsTestServer server;
+        string url;
+        #! the test directory
+        string dir;
+        #! the file that the sandbox denies
+        string secret;
+    }
+
+    #! the content of the secret file
+    const SecretContent = "the secret content";
+
+    #! the longest a test waits for a callback; it is a guard against a hang, never an expected time
+    const CallbackTimeout = 60s;
+
+    #! the trusted code: callbacks that read a file on their registrant's behalf
+    const TrustedSource = "
+%requires nats
+
+string sub read_file(string path) {
+    try {
+        return ReadOnlyFile::readTextFile(path);
+    } catch (hash<ExceptionInfo> ex) {
+        return ex.err;
+    }
+}
+
+# reads the file when it is released
+class ReadOnRelease {
+    private {
+        string path;
+        Queue results;
+    }
+
+    constructor(string path, Queue results) {
+        self.path = path;
+        self.results = results;
+    }
+
+    destructor() {
+        results.push(read_file(path));
+    }
+
+    string read() {
+        return read_file(path);
+    }
+}
+
+# returns a connection whose on_closed callback reads the file
+Nats::NatsConnection sub connect_closed(string url, string path, Queue results) {
+    return new Nats::NatsConnection(cast<hash<Nats::NatsConnectionOptions>>({
+        \"url\": url,
+        \"on_closed\": sub () { results.push(read_file(path)); },
+    }));
+}
+
+# returns a connection whose on_error callback reads the file
+Nats::NatsConnection sub connect_error(string url, string path, Queue results) {
+    return new Nats::NatsConnection(cast<hash<Nats::NatsConnectionOptions>>({
+        \"url\": url,
+        \"on_error\": sub (string err) { results.push(read_file(path)); },
+    }));
+}
+
+# returns a microservice whose endpoint handler reads the file; the handler holds an object that reads the file when
+# the handler is released
+Nats::NatsMicroService sub serve(Nats::NatsConnection conn, string subject, string path, Queue results) {
+    ReadOnRelease on_release(path, results);
+    return conn.createMicroService(cast<hash<Nats::NatsMicroServiceConfig>>({
+        \"name\": \"sandbox-test\",
+        \"version\": \"1.0.0\",
+        \"endpoint\": cast<hash<Nats::NatsMicroEndpointConfig>>({
+            \"name\": \"read\",
+            \"subject\": subject,
+            \"handler\": string sub (hash<auto> req) { return on_release.read(); },
+        }),
+    }));
+}
+
+# adds an endpoint to a microservice whose handler reads the file
+nothing sub add_endpoint(Nats::NatsMicroService svc, string subject, string path, Queue results) {
+    svc.addEndpoint(cast<hash<Nats::NatsMicroEndpointConfig>>({
+        \"name\": \"read-added\",
+        \"subject\": subject,
+        \"handler\": string sub (hash<auto> req) { return read_file(path); },
+    }));
+}
+
+code sub get(string name) {
+    switch (name) {
+        case \"connect_closed\": return \\connect_closed();
+        case \"connect_error\": return \\connect_error();
+        case \"serve\": return \\serve();
+        case \"add_endpoint\": return \\add_endpoint();
+    }
+    throw \"UNKNOWN-FUNCTION\", name;
+}
+";
+
+    #! the sandboxed code: it calls the trusted code
+    const SandboxedSource = "
+auto sub run(code c, ...) {
+    return call_function_args(c, argv);
+}
+";
+
+    constructor() : QUnit::Test("NatsSandboxTest", "1.0") {
+        if (!NatsTestServer::available()) {
+            addTestCase("process module dependency", sub () { testSkip("process module not available"); });
+            set_return_value(main());
+            return;
+        }
+        addTestCase("unsandboxed callbacks read the file", \testUnsandboxed());
+        addTestCase("on_closed runs under the sandbox of its registrant", \testClosed());
+        addTestCase("on_error runs under the sandbox of its registrant", \testError());
+        addTestCase("a microservice request runs under the sandbox of its registrant", \testMicroRequest());
+        addTestCase("an added endpoint's request runs under the sandbox of its registrant", \testMicroAddedEndpoint());
+        addTestCase("a microservice handler is released under the sandbox of its registrant", \testMicroRelease());
+        set_return_value(main());
+    }
+
+    globalSetUp() {
+        string tmp = tmp_location() + DirSep + "qore-nats-sandbox-" + get_random_string(8);
+        mkdir(tmp);
+        dir = realpath(tmp);
+        secret = dir + DirSep + "secret.txt";
+        File f();
+        f.open2(secret, O_CREAT | O_TRUNC | O_WRONLY);
+        f.write(SecretContent);
+        f.close();
+
+        if (NatsTestServer::available()) {
+            server = new NatsTestServer();
+            url = server.url;
+        }
+    }
+
+    globalTearDown() {
+        if (server) {
+            server.stop();
+        }
+        if (dir.val()) {
+            try {
+                unlink(secret);
+                rmdir(dir);
+            } catch (hash<ExceptionInfo> ex) {
+            }
+        }
+    }
+
+    #! returns the trusted code
+    private Program getTrusted() {
+        Program u(PO_NEW_STYLE);
+        u.parse(TrustedSource, "trusted");
+        return u;
+    }
+
+    #! returns a sandboxed Program whose manager allows the network but denies the filesystem
+    private Program getSandboxed() {
+        Program p(PO_NEW_STYLE);
+        p.parse(SandboxedSource, "sandboxed");
+        SandboxManager sm();
+        sm.setFilesystemDefaultPolicy(False);
+        sm.setNetworkDefaultPolicy(True);
+        p.setSandboxManager(sm);
+        return p;
+    }
+
+    #! calls a function of the trusted code, directly or from the sandboxed code
+    private auto call(Program u, *Program p, string name, ...) {
+        code c = u.callFunction("get", name);
+        if (p) {
+            return p.callFunctionArgs("run", (c,) + argv);
+        }
+        return call_function_args(c, argv);
+    }
+
+    #! closes the connection, so that the C client calls on_closed, and returns the result of the callback
+    private static auto triggerClosed(NatsConnection conn, Queue results) {
+        conn.close();
+        return results.get(CallbackTimeout);
+    }
+
+    #! makes the subscriber of the connection a slow consumer, so that the C client calls on_error, and returns
+    #! the result of the callback
+    private static auto triggerError(NatsConnection conn, Queue results) {
+        NatsSubscription nsub = conn.subscribe("sandbox.slow");
+        nsub.setPendingLimits(1, -1);
+        for (int i = 0; i < 3; ++i) {
+            conn.publish("sandbox.slow", binary("message"));
+        }
+        # the server has delivered the messages to the subscription when it answers the flush
+        conn.flush();
+        auto rv = results.get(CallbackTimeout);
+        nsub.unsubscribe();
+        return rv;
+    }
+
+    #! makes a request to the subject and returns the response
+    private static string request(NatsConnection conn, string subject) {
+        hash<NatsMsgInfo> reply = conn.request(subject, NOTHING, CallbackTimeout);
+        return reply.data ? reply.data.toString() : "";
+    }
+
+    testUnsandboxed() {
+        Program u = getTrusted();
+        Queue results();
+
+        NatsConnection conn = call(u, NOTHING, "connect_closed", url, secret, results);
+        assertEq(SecretContent, triggerClosed(conn, results), "on_closed");
+
+        conn = call(u, NOTHING, "connect_error", url, secret, results);
+        assertEq(SecretContent, triggerError(conn, results), "on_error");
+        conn.close();
+
+        conn = new NatsConnection(url);
+        NatsMicroService svc = call(u, NOTHING, "serve", conn, "sandbox.unsandboxed", secret, results);
+        call(u, NOTHING, "add_endpoint", svc, "sandbox.unsandboxed.added", secret, results);
+        assertEq(SecretContent, request(conn, "sandbox.unsandboxed"), "request");
+        assertEq(SecretContent, request(conn, "sandbox.unsandboxed.added"), "request to the added endpoint");
+        delete svc;
+        assertEq(SecretContent, results.get(CallbackTimeout), "release");
+        conn.close();
+    }
+
+    testClosed() {
+        Program u = getTrusted();
+        Program p = getSandboxed();
+        Queue results();
+        NatsConnection conn = call(u, p, "connect_closed", url, secret, results);
+        assertEq("FILESYSTEM-ACCESS-DENIED", triggerClosed(conn, results));
+    }
+
+    testError() {
+        Program u = getTrusted();
+        Program p = getSandboxed();
+        Queue results();
+        NatsConnection conn = call(u, p, "connect_error", url, secret, results);
+        assertEq("FILESYSTEM-ACCESS-DENIED", triggerError(conn, results));
+        conn.close();
+    }
+
+    testMicroRequest() {
+        Program u = getTrusted();
+        Program p = getSandboxed();
+        Queue results();
+        NatsConnection conn(url);
+        NatsMicroService svc = call(u, p, "serve", conn, "sandbox.request", secret, results);
+        assertEq("FILESYSTEM-ACCESS-DENIED", request(conn, "sandbox.request"));
+        delete svc;
+        # the release reads the file too; wait for it, so that it does not outlive the test case
+        results.get(CallbackTimeout);
+        conn.close();
+    }
+
+    testMicroAddedEndpoint() {
+        Program u = getTrusted();
+        Program p = getSandboxed();
+        Queue results();
+        NatsConnection conn(url);
+        # the service is created by unsandboxed code, the endpoint is added by the sandboxed code
+        NatsMicroService svc = call(u, NOTHING, "serve", conn, "sandbox.service", secret, results);
+        call(u, p, "add_endpoint", svc, "sandbox.added", secret, results);
+        assertEq(SecretContent, request(conn, "sandbox.service"), "the endpoint of the unsandboxed code");
+        assertEq("FILESYSTEM-ACCESS-DENIED", request(conn, "sandbox.added"), "the endpoint of the sandboxed code");
+        delete svc;
+        results.get(CallbackTimeout);
+        conn.close();
+    }
+
+    testMicroRelease() {
+        Program u = getTrusted();
+        Program p = getSandboxed();
+        Queue results();
+        NatsConnection conn(url);
+        NatsMicroService svc = call(u, p, "serve", conn, "sandbox.release", secret, results);
+        delete svc;
+        assertEq("FILESYSTEM-ACCESS-DENIED", results.get(CallbackTimeout));
+        conn.close();
+    }
+}

@@ -40,6 +40,11 @@ class QoreNatsMicroGroup;
 struct MicroEndpointCallbackContext {
     ResolvedCallReferenceNode* handler = nullptr;
     QoreProgram* pgm = nullptr;
+    //! The sandbox of the code that added the endpoint
+    /** cnats calls the handler on its own threads, which Qore did not start; each request is handled under this
+        sandbox, so the handler can never do more than the code that registered it
+    */
+    QoreSandboxCapture sandbox;
 
     DLLLOCAL void cleanup(ExceptionSink* xsink) {
         if (handler) {

@@ -249,6 +249,9 @@ hashdecl Qore::Nats::NatsConnectionOptions {
     *string custom_inbox_prefix;
 
     //! Callback fired when the connection is disconnected
+    /** The connection callbacks are called on threads of the NATS C client, under the sandbox of the code that
+        created the connection; see @ref natscallbacksandbox
+    */
     *code on_disconnect;
 
     //! Callback fired when the connection is reconnected
@@ -841,6 +844,9 @@ hashdecl Qore::Nats::NatsMicroEndpointConfig {
     *string subject;
 
     //! Request handler closure; receives a hash with \c "subject" and \c "data" keys, returns \c *data for the response
+    /** The handler is called on a thread of the NATS C client, under the sandbox of the code that added the endpoint;
+        see @ref natscallbacksandbox
+    */
     code handler;
 }
 

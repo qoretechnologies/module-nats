@@ -44,6 +44,11 @@ struct NatsCallbackContext {
     ResolvedCallReferenceNode* on_lame_duck = nullptr;
     ResolvedCallReferenceNode* on_discovered_servers = nullptr;
     QoreProgram* pgm = nullptr;
+    //! The sandbox of the code that created the connection and registered the callbacks
+    /** cnats calls the callbacks on its own threads, which Qore did not start; each callback runs under this
+        sandbox, so it can never do more than the code that registered it
+    */
+    QoreSandboxCapture sandbox;
 
     DLLLOCAL void cleanup(ExceptionSink* xsink) {
         if (on_disconnect) { on_disconnect->deref(xsink); on_disconnect = nullptr; }
@@ -218,8 +223,8 @@ private:
     static void lameDuckHandler(natsConnection* nc, void* closure);
     static void discoveredServersHandler(natsConnection* nc, void* closure);
 
-    //! Helper to execute a callback from a C thread
-    static void execCallback(ResolvedCallReferenceNode* cb, QoreProgram* pgm,
+    //! Helper to execute a callback from a C thread under the sandbox of the code that registered it
+    static void execCallback(const NatsCallbackContext* ctx, ResolvedCallReferenceNode* cb,
         QoreListNode* args = nullptr);
 
     // non-copyable

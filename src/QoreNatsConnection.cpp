@@ -631,16 +631,19 @@ int QoreNatsConnection::setupCallbacks(const QoreHashNode* options, QoreProgram*
     return 0;
 }
 
-void QoreNatsConnection::execCallback(ResolvedCallReferenceNode* cb,
-        QoreProgram* pgm, QoreListNode* args) {
-    if (!cb || !pgm) {
+void QoreNatsConnection::execCallback(const NatsCallbackContext* ctx, ResolvedCallReferenceNode* cb,
+        QoreListNode* args) {
+    if (!cb || !ctx->pgm) {
         return;
     }
     // Register this (nats.c) thread with the Qore runtime
     QoreForeignThreadHelper fth;
+    // the callback, and the release of anything it leaves behind, runs under the sandbox of the code that
+    // registered it
+    QoreSandboxCaptureHelper sch(ctx->sandbox);
 
     ExceptionSink xsink;
-    QoreExternalProgramContextHelper pch(&xsink, pgm);
+    QoreExternalProgramContextHelper pch(&xsink, ctx->pgm);
     if (!xsink) {
         if (args) {
             cb->execValue(args, &xsink).discard(&xsink);
@@ -657,17 +660,17 @@ void QoreNatsConnection::execCallback(ResolvedCallReferenceNode* cb,
 
 void QoreNatsConnection::disconnectHandler(natsConnection* nc, void* closure) {
     NatsCallbackContext* ctx = static_cast<NatsCallbackContext*>(closure);
-    execCallback(ctx->on_disconnect, ctx->pgm);
+    execCallback(ctx, ctx->on_disconnect);
 }
 
 void QoreNatsConnection::reconnectHandler(natsConnection* nc, void* closure) {
     NatsCallbackContext* ctx = static_cast<NatsCallbackContext*>(closure);
-    execCallback(ctx->on_reconnect, ctx->pgm);
+    execCallback(ctx, ctx->on_reconnect);
 }
 
 void QoreNatsConnection::closedHandler(natsConnection* nc, void* closure) {
     NatsCallbackContext* ctx = static_cast<NatsCallbackContext*>(closure);
-    execCallback(ctx->on_closed, ctx->pgm);
+    execCallback(ctx, ctx->on_closed);
 }
 
 void QoreNatsConnection::errorHandler(natsConnection* nc, natsSubscription* sub,
@@ -677,6 +680,9 @@ void QoreNatsConnection::errorHandler(natsConnection* nc, natsSubscription* sub,
         return;
     }
     QoreForeignThreadHelper fth;
+    // the callback, and the release of anything it leaves behind, runs under the sandbox of the code that
+    // registered it
+    QoreSandboxCaptureHelper sch(ctx->sandbox);
 
     ExceptionSink xsink;
     QoreExternalProgramContextHelper pch(&xsink, ctx->pgm);
@@ -694,12 +700,12 @@ void QoreNatsConnection::errorHandler(natsConnection* nc, natsSubscription* sub,
 
 void QoreNatsConnection::lameDuckHandler(natsConnection* nc, void* closure) {
     NatsCallbackContext* ctx = static_cast<NatsCallbackContext*>(closure);
-    execCallback(ctx->on_lame_duck, ctx->pgm);
+    execCallback(ctx, ctx->on_lame_duck);
 }
 
 void QoreNatsConnection::discoveredServersHandler(natsConnection* nc, void* closure) {
     NatsCallbackContext* ctx = static_cast<NatsCallbackContext*>(closure);
-    execCallback(ctx->on_discovered_servers, ctx->pgm);
+    execCallback(ctx, ctx->on_discovered_servers);
 }
 
 int QoreNatsConnection::publish(const char* subject, const void* data, int data_len,

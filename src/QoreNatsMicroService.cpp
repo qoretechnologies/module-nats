@@ -37,6 +37,9 @@ microError* QoreNatsMicroService::requestHandler(microRequest* req) {
     }
 
     QoreForeignThreadHelper fth;
+    // the request is handled, and anything the handler leaves behind is released, under the sandbox of the code
+    // that added the endpoint
+    QoreSandboxCaptureHelper sch(ctx->sandbox);
     ExceptionSink xsink;
     QoreExternalProgramContextHelper pch(&xsink, ctx->pgm);
     if (xsink) {
@@ -222,20 +225,24 @@ void QoreNatsMicroService::releaseHandlers(std::vector<MicroEndpointCallbackCont
     QoreForeignThreadHelper fth;
     ExceptionSink xsink;
     for (MicroEndpointCallbackContext* ctx : handlers) {
-        if (ctx->pgm) {
-            // the handler is released in the context of its Program
-            QoreExternalProgramContextHelper pch(&xsink, ctx->pgm);
-            if (ctx->handler) {
-                ctx->handler->deref(&xsink);
-                ctx->handler = nullptr;
+        {
+            // the handler is released, in the context of its Program, under the sandbox of the code that added
+            // the endpoint, like the requests it handled; so is an exception that its release raises
+            QoreSandboxCaptureHelper sch(ctx->sandbox);
+            if (ctx->pgm) {
+                QoreExternalProgramContextHelper pch(&xsink, ctx->pgm);
+                if (ctx->handler) {
+                    ctx->handler->deref(&xsink);
+                    ctx->handler = nullptr;
+                }
             }
+            ctx->cleanup(&xsink);
+            // an exception raised by the destructor of a handler's state cannot be reported to a caller
+            xsink.clear();
         }
-        ctx->cleanup(&xsink);
         delete ctx;
     }
     handlers.clear();
-    // an exception raised by the destructor of a handler's state cannot be reported to a caller
-    xsink.clear();
 }
 
 QoreNatsMicroService::~QoreNatsMicroService() {
