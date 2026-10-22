@@ -70,6 +70,8 @@ public class NatsTestServer {
 %endif
         #! server output received but not yet consumed by waitForLog()
         string log = "";
+        #! the lines of the server log consumed by waitForLog()
+        list<string> consumed = ();
     }
 
     #! Returns True if a server can be run (the process module is available)
@@ -141,6 +143,7 @@ public class NatsTestServer {
             while ((eol = log.find("\n")) >= 0) {
                 string line = log.substr(0, eol);
                 splice log, 0, eol + 1;
+                consumed += line;
                 if (regex(line, pattern)) {
                     return line;
                 }
@@ -156,6 +159,19 @@ public class NatsTestServer {
             }
         }
 %endif
+    }
+
+    #! Returns the first line of the server log consumed so far that matches the given regular expression
+    /** @param pattern the regular expression
+
+        @return the matching line, or @ref nothing if no line consumed so far matches
+    */
+    *string findLog(string pattern) {
+        foreach string line in (consumed) {
+            if (regex(line, pattern)) {
+                return line;
+            }
+        }
     }
 
     #! Waits until the server has processed another client's subscription to the given subject

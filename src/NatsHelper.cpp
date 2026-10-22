@@ -26,11 +26,19 @@
 
 #include "NatsHelper.h"
 
+#include <algorithm>
+#include <cerrno>
 #include <cstring>
+#include <fcntl.h>
 #include <netdb.h>
+#include <netinet/tcp.h>
+#include <poll.h>
+#include <random>
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <arpa/inet.h>
+#include <unistd.h>
+#include <vector>
 
 void nats_error(ExceptionSink* xsink, const char* err, natsStatus s,
         const char* fmt, ...) {
@@ -255,7 +263,8 @@ static int parse_nats_url(const char* url, QoreString& host, int& port) {
 }
 
 int check_nats_network_access(const char* url, ExceptionSink* xsink) {
-    QoreSandboxManagerHelper smh;
+    // a policy check: under a policy barrier, the caller's network policy does not apply
+    QoreSandboxManagerHelper smh(QoreSandboxManagerHelper::Policy);
     if (!smh) {
         return 0;  // No sandbox manager = allow all
     }
@@ -314,7 +323,8 @@ int check_nats_network_access(const char* url, ExceptionSink* xsink) {
 }
 
 int check_nats_file_access(const char* path, ExceptionSink* xsink) {
-    QoreSandboxManagerHelper smh;
+    // a policy check: under a policy barrier, the caller's filesystem policy does not apply
+    QoreSandboxManagerHelper smh(QoreSandboxManagerHelper::Policy);
     if (!smh) {
         return 0;  // No sandbox manager = allow all
     }
@@ -326,4 +336,211 @@ int check_nats_file_access(const char* path, ExceptionSink* xsink) {
     }
 
     return 0;
+}
+
+namespace {
+// the C client's default connect timeout (NATS_OPTS_DEFAULT_TIMEOUT)
+constexpr int64 NATS_DEFAULT_CONNECT_TIMEOUT_MS = 2000;
+// the shortest time given to each address of a host, as the C client does
+constexpr int64 NATS_MIN_CONNECT_TIMEOUT_PER_ADDRESS_MS = 10;
+
+// closes a socket unless it is released
+class SocketHolder {
+public:
+    DLLLOCAL explicit SocketHolder(int fd) : fd(fd) {
+    }
+
+    DLLLOCAL ~SocketHolder() {
+        if (fd >= 0) {
+            ::close(fd);
+        }
+    }
+
+    DLLLOCAL int release() {
+        int rv = fd;
+        fd = -1;
+        return rv;
+    }
+
+private:
+    int fd;
+};
+
+// frees an addrinfo list
+struct AddrInfoFree {
+    DLLLOCAL void operator()(struct addrinfo* ai) const {
+        freeaddrinfo(ai);
+    }
+};
+}
+
+NatsSandboxDialer::NatsSandboxDialer(int64 timeout_ms, int order_ip, bool no_randomize)
+        : timeout_ms(timeout_ms > 0 ? timeout_ms : NATS_DEFAULT_CONNECT_TIMEOUT_MS), order_ip(order_ip),
+        no_randomize(no_randomize) {
+}
+
+natsStatus NatsSandboxDialer::connect(natsSock* fd, char* host, int port, void* closure) {
+    // no C++ exception may leave the C client's callback
+    try {
+        return static_cast<NatsSandboxDialer*>(closure)->connectIntern(fd, host, port);
+    } catch (const std::bad_alloc&) {
+        return NATS_NO_MEMORY;
+    } catch (...) {
+        return NATS_ERR;
+    }
+}
+
+void NatsSandboxDialer::takeException(ExceptionSink* xsink) {
+    std::unique_ptr<ExceptionSink> e;
+    {
+        std::lock_guard<std::mutex> lock(m);
+        initial = false;
+        e = std::move(pending);
+    }
+    if (e) {
+        xsink->assimilate(*e);
+    }
+}
+
+void NatsSandboxDialer::keepException(ExceptionSink& xsink) {
+    std::lock_guard<std::mutex> lock(m);
+    if (initial && !pending) {
+        pending.reset(new ExceptionSink);
+        pending->assimilate(xsink);
+        return;
+    }
+    // a reconnection on the C client's thread: nobody can receive the exception
+    xsink.clear();
+}
+
+natsStatus NatsSandboxDialer::connectIntern(natsSock* fd, const char* host, int port) {
+    // the reconnect thread of the C client is not a Qore thread; the first connection is made on the Qore thread that
+    // creates the connection, where the helper does nothing
+    QoreForeignThreadHelper fth;
+    // the connection is made under the sandbox of the code that created the connection
+    QoreSandboxCaptureHelper sch(sandbox);
+    ExceptionSink xsink;
+
+    // the address families to resolve, in the order of the IP resolution order option
+    int families[2] = {AF_UNSPEC, AF_UNSPEC};
+    int nfamilies = 1;
+    switch (order_ip) {
+        case 4: families[0] = AF_INET; break;
+        case 6: families[0] = AF_INET6; break;
+        case 46: families[0] = AF_INET; families[1] = AF_INET6; nfamilies = 2; break;
+        case 64: families[0] = AF_INET6; families[1] = AF_INET; nfamilies = 2; break;
+        default: break;
+    }
+
+    char sport[16];
+    snprintf(sport, sizeof(sport), "%d", port);
+
+    std::vector<std::unique_ptr<struct addrinfo, AddrInfoFree>> results;
+    std::vector<const struct addrinfo*> addresses;
+    for (int i = 0; i < nfamilies; ++i) {
+        struct addrinfo hints;
+        memset(&hints, 0, sizeof(hints));
+        hints.ai_family = families[i];
+        hints.ai_socktype = SOCK_STREAM;
+        struct addrinfo* res = nullptr;
+        if (getaddrinfo(host, sport, &hints, &res) || !res) {
+            continue;
+        }
+        results.emplace_back(res);
+        size_t start = addresses.size();
+        for (const struct addrinfo* ai = res; ai; ai = ai->ai_next) {
+            addresses.push_back(ai);
+        }
+        // the C client tries the addresses of a host in a random order unless no_randomize is set
+        if (!no_randomize && addresses.size() - start > 1) {
+            static thread_local std::mt19937 rng{std::random_device{}()};
+            std::shuffle(addresses.begin() + start, addresses.end(), rng);
+        }
+    }
+    if (addresses.empty()) {
+        return NATS_NO_SERVER;
+    }
+
+    int64 per_address_ms = timeout_ms / static_cast<int64>(addresses.size());
+    if (per_address_ms < NATS_MIN_CONNECT_TIMEOUT_PER_ADDRESS_MS) {
+        per_address_ms = NATS_MIN_CONNECT_TIMEOUT_PER_ADDRESS_MS;
+    }
+
+    QoreSandboxManagerHelper smh(QoreSandboxManagerHelper::Policy);
+    bool denied = false;
+    for (const struct addrinfo* ai : addresses) {
+        // the policy is checked for each resolved address, so a host name that the server reports or that resolves
+        // to another address on a reconnection is governed exactly like the first connection
+        if (smh && !smh->checkNetworkAccess(host, ai->ai_addr, ai->ai_addrlen, QSEC_NET_TCP, &xsink)) {
+            xsink.clear();
+            denied = true;
+            continue;
+        }
+        natsStatus s = connectAddress(fd, ai, per_address_ms, xsink);
+        if (s == NATS_OK) {
+            return NATS_OK;
+        }
+        if (xsink) {
+            // the connection was cancelled or its sandbox interrupted
+            keepException(xsink);
+            return NATS_ERR;
+        }
+    }
+    return denied ? NATS_NOT_PERMITTED : NATS_NO_SERVER;
+}
+
+natsStatus NatsSandboxDialer::connectAddress(natsSock* fd, const struct addrinfo* ai, int64 timeout_ms,
+        ExceptionSink& xsink) {
+    int sock = ::socket(ai->ai_family, ai->ai_socktype, ai->ai_protocol);
+    if (sock < 0) {
+        return NATS_SYS_ERROR;
+    }
+    SocketHolder holder(sock);
+
+#ifdef SO_NOSIGPIPE
+    {
+        int yes = 1;
+        if (setsockopt(sock, SOL_SOCKET, SO_NOSIGPIPE, &yes, sizeof(yes))) {
+            return NATS_SYS_ERROR;
+        }
+    }
+#endif
+    // the C client uses its sockets in non-blocking mode
+    int flags = fcntl(sock, F_GETFL, 0);
+    if (flags < 0 || fcntl(sock, F_SETFL, flags | O_NONBLOCK) < 0) {
+        return NATS_SYS_ERROR;
+    }
+
+    if (::connect(sock, ai->ai_addr, ai->ai_addrlen)) {
+        if (errno != EINPROGRESS) {
+            return NATS_NO_SERVER;
+        }
+        struct pollfd pfd = {sock, POLLOUT, 0};
+        int rc = qore_cancellable_poll(&pfd, 1, static_cast<int>(timeout_ms), &xsink, "connecting to a NATS server");
+        if (rc == QORE_POLL_CANCELLED) {
+            return NATS_ERR;
+        }
+        if (rc <= 0) {
+            return rc ? NATS_SYS_ERROR : NATS_TIMEOUT;
+        }
+        int err = 0;
+        socklen_t len = sizeof(err);
+        if (getsockopt(sock, SOL_SOCKET, SO_ERROR, &err, &len) || err) {
+            return NATS_NO_SERVER;
+        }
+    }
+
+    // the options that the C client sets on the sockets that it connects itself
+    int yes = 1;
+    struct linger l;
+    l.l_onoff = 1;
+    l.l_linger = 0;
+    if (setsockopt(sock, IPPROTO_TCP, TCP_NODELAY, &yes, sizeof(yes))
+        || setsockopt(sock, SOL_SOCKET, SO_REUSEADDR, &yes, sizeof(yes))
+        || setsockopt(sock, SOL_SOCKET, SO_LINGER, &l, sizeof(l))) {
+        return NATS_SYS_ERROR;
+    }
+
+    *fd = holder.release();
+    return NATS_OK;
 }

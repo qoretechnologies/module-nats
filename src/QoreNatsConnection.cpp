@@ -52,10 +52,10 @@ QoreNatsConnection::QoreNatsConnection(const char* url, ExceptionSink* xsink) {
         return;
     }
 
-    s = natsConnection_Connect(&conn, opts);
-    if (s != NATS_OK) {
-        nats_error(xsink, "NATS-CONNECTION-ERROR", s, "failed to connect to '%s'", url);
+    if (setupDialer(xsink)) {
+        return;
     }
+    connect(url, xsink);
 }
 
 QoreNatsConnection::QoreNatsConnection(const QoreHashNode* options, QoreProgram* pgm,
@@ -84,9 +84,40 @@ QoreNatsConnection::QoreNatsConnection(const QoreHashNode* options, QoreProgram*
         }
     }
 
-    s = natsConnection_Connect(&conn, opts);
+    if (setupDialer(xsink)) {
+        return;
+    }
+    connect(nullptr, xsink);
+}
+
+int QoreNatsConnection::setupDialer(ExceptionSink* xsink) {
+    std::unique_ptr<NatsSandboxDialer> d(new NatsSandboxDialer(connect_timeout_ms, ip_resolution_order,
+        no_randomize));
+    if (!d->isSandboxed()) {
+        // no sandbox governs the creating code: the C client connects itself
+        return 0;
+    }
+    natsStatus s = natsOptions_SetProxyConnHandler(opts, NatsSandboxDialer::connect, d.get());
     if (s != NATS_OK) {
-        nats_error(xsink, "NATS-CONNECTION-ERROR", s, "failed to connect");
+        nats_error(xsink, "NATS-CONNECTION-ERROR", s, "failed to set the connection handler");
+        return -1;
+    }
+    dialer = std::move(d);
+    return 0;
+}
+
+void QoreNatsConnection::connect(const char* url, ExceptionSink* xsink) {
+    natsStatus s = natsConnection_Connect(&conn, opts);
+    if (dialer) {
+        // a cancellation of the first connection is reported as such
+        dialer->takeException(xsink);
+    }
+    if (s != NATS_OK && !*xsink) {
+        if (url) {
+            nats_error(xsink, "NATS-CONNECTION-ERROR", s, "failed to connect to '%s'", url);
+        } else {
+            nats_error(xsink, "NATS-CONNECTION-ERROR", s, "failed to connect");
+        }
     }
 }
 
@@ -204,6 +235,7 @@ int QoreNatsConnection::configureOptions(const QoreHashNode* options, ExceptionS
     // Connect timeout
     v = options->getKeyValue("connect_timeout_ms");
     if (v.getType() == NT_INT) {
+        connect_timeout_ms = v.getAsBigInt();
         s = natsOptions_SetTimeout(opts, v.getAsBigInt());
         if (s != NATS_OK) {
             nats_error(xsink, "NATS-CONNECTION-ERROR", s, "failed to set connect timeout");
@@ -254,6 +286,7 @@ int QoreNatsConnection::configureOptions(const QoreHashNode* options, ExceptionS
     // No randomize
     v = options->getKeyValue("no_randomize");
     if (v.getType() == NT_BOOLEAN && v.getAsBool()) {
+        no_randomize = true;
         s = natsOptions_SetNoRandomize(opts, true);
         if (s != NATS_OK) {
             nats_error(xsink, "NATS-CONNECTION-ERROR", s, "failed to set no randomize");
@@ -387,7 +420,8 @@ int QoreNatsConnection::configureOptions(const QoreHashNode* options, ExceptionS
     // IP resolution order
     v = options->getKeyValue("ip_resolution_order");
     if (v.getType() == NT_INT) {
-        s = natsOptions_IPResolutionOrder(opts, (int)v.getAsBigInt());
+        ip_resolution_order = static_cast<int>(v.getAsBigInt());
+        s = natsOptions_IPResolutionOrder(opts, ip_resolution_order);
         if (s != NATS_OK) {
             nats_error(xsink, "NATS-CONNECTION-ERROR", s,
                 "failed to set IP resolution order");

@@ -26,6 +26,13 @@
     connection callbacks, and the code that added the endpoint for a request handler.  A callback can therefore never
     do more than the code that registered it, although it runs on a thread that %Qore did not start.
 
+    The NATS C client also reconnects on its own thread, to the configured servers and to the servers that the
+    cluster reports (discovered servers).  When a sandbox governs the code that creates a connection, every
+    connection that the client makes for it, the first one and each reconnection, is made by the module under that
+    sandbox: the host name is resolved and each address is checked against the network policy before it is connected
+    to.  A reconnection to a server that the policy denies, for example a discovered server on another network, fails
+    like a reconnection to a server that is down.
+
     @section natscancellation Thread Cancellation
 
     A blocking call ends with \c THREAD-CANCELLED when its thread is cancelled, or with \c PROGRAM-INTERRUPTED

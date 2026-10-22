@@ -1,0 +1,178 @@
+#!/usr/bin/env qore
+# -*- mode: qore; indent-tabs-mode: nil -*-
+
+/*
+    Copyright (C) 2026 Qore Technologies, s.r.o., all rights reserved
+
+    Permission is hereby granted, free of charge, to any person obtaining a
+    copy of this software and associated documentation files (the "Software"),
+    to deal in the Software without restriction, including without limitation
+    the rights to use, copy, modify, merge, publish, distribute, sublicense,
+    and/or sell copies of the Software, and to permit persons to whom the
+    Software is furnished to do so, subject to the following conditions:
+
+    The above copyright notice and this permission notice shall be included in
+    all copies or substantial portions of the Software.
+
+    THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+    IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+    FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+    AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+    DEALINGS IN THE SOFTWARE.
+
+    The NATS C client reconnects on its own thread, which Qore did not start, also to the servers that the cluster
+    reports (discovered servers), whose addresses come from the server.  Every connection that it makes for a
+    connection created by sandboxed code must be checked against that code's network policy, exactly like the
+    first one.
+
+    Two servers form a cluster; the client connects to the first, learns the second from it, and the first stops.
+    The trusted code is modeled by a Program with no sandbox (like a module Program) that creates the connection;
+    the sandboxed code by a Program with a SandboxManager that allows only the port of the first server.
+*/
+
+%modern
+%no-child-restrictions
+%prepend-module-path "${SCRIPT_DIR}/../qlib"
+
+%requires QUnit
+%requires nats
+%requires ./NatsTestServer.qm
+
+%exec-class NatsSandboxNetworkTest
+
+public class NatsSandboxNetworkTest inherits QUnit::Test {
+    #! the longest a test waits for an event; it is a guard against a hang, never an expected time
+    const EventTimeout = 60s;
+
+    #! the trusted code: it creates a connection that reports its events
+    const TrustedSource = "
+%requires nats
+
+Nats::NatsConnection sub connect_events(string url, Queue events) {
+    return new Nats::NatsConnection(cast<hash<Nats::NatsConnectionOptions>>({
+        \"url\": url,
+        \"no_randomize\": True,
+        \"max_reconnect\": 3,
+        \"reconnect_wait_ms\": 10,
+        \"on_discovered_servers\": sub () { events.push(\"discovered\"); },
+        \"on_reconnect\": sub () { events.push(\"reconnected\"); },
+        \"on_closed\": sub () { events.push(\"closed\"); },
+    }));
+}
+
+code sub get_connect_events() {
+    return \\connect_events();
+}
+";
+
+    #! the sandboxed code: it calls the trusted code
+    const SandboxedSource = "
+auto sub run(code c, ...) {
+    return call_function_args(c, argv);
+}
+";
+
+    constructor() : QUnit::Test("NatsSandboxNetworkTest", "1.0") {
+        if (!NatsTestServer::available()) {
+            addTestCase("process module dependency", sub () { testSkip("process module not available"); });
+            set_return_value(main());
+            return;
+        }
+        addTestCase("an unsandboxed connection reconnects to a discovered server", \testUnsandboxed());
+        addTestCase("a sandboxed connection does not reconnect to a discovered server that its policy denies",
+            \testSandboxed());
+        set_return_value(main());
+    }
+
+    #! returns the trusted code
+    private Program getTrusted() {
+        Program u(PO_NEW_STYLE);
+        u.parse(TrustedSource, "trusted");
+        return u;
+    }
+
+    #! returns a sandboxed Program whose network policy allows only the given port
+    private Program getSandboxed(int port) {
+        Program p(PO_NEW_STYLE);
+        p.parse(SandboxedSource, "sandboxed");
+        SandboxManager sm();
+        sm.setNetworkDefaultPolicy(True);
+        sm.addNetworkAllowedPort(port, QSEC_NET_TCP);
+        p.setSandboxManager(sm);
+        return p;
+    }
+
+    #! starts a cluster of two servers; the second joins after the client has connected to the first
+    private static NatsTestServer startFirst() {
+        return new NatsTestServer(("--cluster_name", "sandbox", "--cluster", "nats://127.0.0.1:-1"));
+    }
+
+    #! starts the second server, which joins the cluster of the first
+    private static NatsTestServer startSecond(NatsTestServer first) {
+        # the server logs the route port while it starts, before or after it is ready for clients
+        string pattern = "Listening for route connections on ";
+        string line = first.findLog(pattern) ?? first.waitForLog(pattern);
+        *list<*string> m = (line =~ x/:([0-9]+)$/);
+        if (!m[0]) {
+            throw "NATS-TEST-ERROR", sprintf("cannot find the route port of the first server in %y", line);
+        }
+        return new NatsTestServer(("--cluster_name", "sandbox", "--cluster", "nats://127.0.0.1:-1", "--routes",
+            sprintf("nats://127.0.0.1:%d", m[0].toInt())));
+    }
+
+    #! returns the next event that ends the reconnection: "reconnected" or "closed"
+    private static string getOutcome(Queue events) {
+        while (True) {
+            string event = events.get(EventTimeout);
+            if (event == "reconnected" || event == "closed") {
+                return event;
+            }
+        }
+    }
+
+    #! the connection learns the second server, the first stops, and the outcome of the reconnection is returned
+    /** @param sandboxed if the connection is created by trusted code for a sandboxed Program whose network policy
+        allows only the port of the first server
+    */
+    private hash<auto> run(bool sandboxed) {
+        NatsTestServer first = startFirst();
+        on_exit first.stop();
+        Program u = getTrusted();
+        Queue events();
+        NatsConnection conn;
+        if (sandboxed) {
+            Program p = getSandboxed(first.port);
+            conn = p.callFunction("run", u.callFunction("get_connect_events"), first.url, events);
+        } else {
+            conn = u.callFunction("connect_events", first.url, events);
+        }
+        on_exit conn.close();
+        # the first connection is made by the C client itself or, for sandboxed code, under its policy
+        assertTrue(conn.isConnected(), "connected to the first server");
+
+        NatsTestServer second = startSecond(first);
+        on_exit second.stop();
+        assertEq("discovered", events.get(EventTimeout), "the first server reports the second");
+
+        first.stop();
+        string outcome = getOutcome(events);
+        return {
+            "outcome": outcome,
+            "second_port": second.port,
+            "url": outcome == "reconnected" ? conn.getConnectedUrl() : NOTHING,
+        };
+    }
+
+    testUnsandboxed() {
+        hash<auto> h = run(False);
+        assertEq("reconnected", h.outcome);
+        assertEq(sprintf("nats://127.0.0.1:%d", h.second_port), h.url);
+    }
+
+    testSandboxed() {
+        hash<auto> h = run(True);
+        assertEq("closed", h.outcome, "the reconnection to the second server is denied");
+    }
+}

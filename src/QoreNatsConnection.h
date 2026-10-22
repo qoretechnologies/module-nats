@@ -170,6 +170,16 @@ private:
     natsConnection* conn = nullptr;
     natsOptions* opts = nullptr;
     NatsCallbackContext* cb_ctx = nullptr;
+    //! makes the connections under the network sandbox of the creating code, if a sandbox governs it
+    /** destroyed after the C client connection, whose reconnect thread uses it
+    */
+    std::unique_ptr<NatsSandboxDialer> dialer;
+    //! the connect timeout option, for the dialer (0 = the default)
+    int64 connect_timeout_ms = 0;
+    //! the IP resolution order option, for the dialer (0 = any)
+    int ip_resolution_order = 0;
+    //! the no_randomize option, for the dialer
+    bool no_randomize = false;
 
     //! The replies to the requests of the connection, shared with the callback of the reply subscription
     struct ReplyMux {
@@ -209,6 +219,12 @@ private:
 
     //! Configure options from a hash
     DLLLOCAL int configureOptions(const QoreHashNode* options, ExceptionSink* xsink);
+
+    //! Installs the sandbox dialer if a sandbox governs the creating code; see NatsSandboxDialer
+    DLLLOCAL int setupDialer(ExceptionSink* xsink);
+
+    //! Connects to the server, reporting an exception that the dialer raised for the first connection
+    DLLLOCAL void connect(const char* url, ExceptionSink* xsink);
 
     //! Setup callbacks from options hash
     DLLLOCAL int setupCallbacks(const QoreHashNode* options, QoreProgram* pgm,
