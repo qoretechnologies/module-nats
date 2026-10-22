@@ -33,6 +33,26 @@
 
 #include <nats/nats.h>
 
+#include <unistd.h>
+
+//! The process that created a native NATS object
+/** A child process created with fork() runs only the thread that called fork(): the threads of the C client (its
+    library threads, and the read loop, flusher and reconnect threads of each connection) remain in the parent, and
+    the child shares each connection's socket with the parent.  Releasing a native object of the parent in the child
+    would wait forever for those threads (the client joins them) or write to the parent's connection, so a child
+    abandons them; their memory is released with the process.
+*/
+class NatsCreatorProcess {
+public:
+    //! returns true in a child process created with fork() after the object was created
+    DLLLOCAL bool isForkedChild() const {
+        return getpid() != pid;
+    }
+
+private:
+    const pid_t pid = getpid();
+};
+
 // Forward declarations
 class QoreNatsConnection;
 class QoreNatsSubscription;

@@ -54,6 +54,10 @@ QoreNatsJetStream::QoreNatsJetStream(natsConnection* conn, ExceptionSink* xsink)
 }
 
 QoreNatsJetStream::~QoreNatsJetStream() {
+    if (creator.isForkedChild()) {
+        // the context belongs to the parent (see NatsCreatorProcess)
+        return;
+    }
     if (js) {
         jsCtx_Destroy(js);
         js = nullptr;

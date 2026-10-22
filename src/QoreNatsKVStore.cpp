@@ -34,6 +34,10 @@ QoreNatsKVStore::QoreNatsKVStore(kvStore* kv) : kv(kv) {
 }
 
 QoreNatsKVStore::~QoreNatsKVStore() {
+    if (creator.isForkedChild()) {
+        // the store belongs to the parent (see NatsCreatorProcess)
+        return;
+    }
     if (kv) {
         kvStore_Destroy(kv);
         kv = nullptr;

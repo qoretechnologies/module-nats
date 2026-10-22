@@ -33,6 +33,20 @@
     to.  A reconnection to a server that the policy denies, for example a discovered server on another network, fails
     like a reconnection to a server that is down.
 
+    @section natsfork Child Processes Created with fork()
+
+    A child process created with \c fork() runs only the thread that called \c fork(): the threads of the NATS C
+    client (its library threads, which run timers, callbacks and garbage collection, and the read loop, flusher and
+    reconnect threads of each connection) remain in the parent, and the child shares the sockets of the parent's
+    connections.  The NATS objects of the parent therefore cannot be used in the child, and the C client cannot be
+    used there either; a child process that needs NATS must start a new process (ex: by calling \c exec() in the
+    child).
+
+    When the child destroys a NATS object of its parent, explicitly or when it ends its script, or closes a
+    connection of its parent, the object is abandoned without calling the C client, which would wait forever for
+    the parent's threads or write to the parent's connection; the module's cleanup in the child likewise leaves the
+    C client library as it is.  The parent's connections, subscriptions and microservices are not affected.
+
     @section natscancellation Thread Cancellation
 
     A blocking call ends with \c THREAD-CANCELLED when its thread is cancelled, or with \c PROGRAM-INTERRUPTED

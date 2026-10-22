@@ -182,6 +182,8 @@ public:
     DLLLOCAL natsConnection* getConnection() const { return conn; }
 
 private:
+    //! the process that created the object; see NatsCreatorProcess
+    NatsCreatorProcess creator;
     natsConnection* conn = nullptr;
     natsOptions* opts = nullptr;
     NatsCallbackContext* cb_ctx = nullptr;

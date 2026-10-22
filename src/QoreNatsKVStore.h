@@ -88,6 +88,8 @@ public:
     DLLLOCAL QoreNatsKVWatcher* watchAll(const QoreHashNode* opts, ExceptionSink* xsink);
 
 private:
+    //! the process that created the object; see NatsCreatorProcess
+    NatsCreatorProcess creator;
     kvStore* kv = nullptr;
 
     //! Convert a kvEntry to a hash

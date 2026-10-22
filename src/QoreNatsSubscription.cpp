@@ -30,6 +30,10 @@ QoreNatsSubscription::QoreNatsSubscription(natsSubscription* sub) : sub(sub) {
 }
 
 QoreNatsSubscription::~QoreNatsSubscription() {
+    if (creator.isForkedChild()) {
+        // the subscription and its message belong to the parent (see NatsCreatorProcess)
+        return;
+    }
     if (lastMsg) {
         natsMsg_Destroy(lastMsg);
         lastMsg = nullptr;

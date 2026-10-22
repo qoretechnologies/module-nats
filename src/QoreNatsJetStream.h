@@ -114,6 +114,8 @@ public:
     DLLLOCAL int deleteKeyValue(const char* bucket, ExceptionSink* xsink);
 
 private:
+    //! the process that created the object; see NatsCreatorProcess
+    NatsCreatorProcess creator;
     jsCtx* js = nullptr;
     natsConnection* conn = nullptr;  // borrowed reference
 

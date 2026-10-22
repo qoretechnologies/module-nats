@@ -30,6 +30,10 @@ QoreNatsKVWatcher::QoreNatsKVWatcher(kvWatcher* w) : watcher(w) {
 }
 
 QoreNatsKVWatcher::~QoreNatsKVWatcher() {
+    if (creator.isForkedChild()) {
+        // the watcher and its subscription belong to the parent (see NatsCreatorProcess)
+        return;
+    }
     if (watcher) {
         kvWatcher_Destroy(watcher);
         watcher = nullptr;

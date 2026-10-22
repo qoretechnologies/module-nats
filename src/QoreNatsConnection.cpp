@@ -130,6 +130,12 @@ void QoreNatsConnection::connect(const char* url, ExceptionSink* xsink) {
 }
 
 QoreNatsConnection::~QoreNatsConnection() {
+    if (creator.isForkedChild()) {
+        // the connection, its reply subscription, its options and its callback context belong to the parent: the C
+        // client would join the connection's threads, which do not exist here, and the parent's pending callbacks
+        // hold references to the context (see NatsCreatorProcess)
+        return;
+    }
     if (reply_sub) {
         // the reply callback releases its reference to the replies when the subscription is complete
         natsSubscription_Unsubscribe(reply_sub);
@@ -1060,6 +1066,12 @@ int QoreNatsConnection::drain(ExceptionSink* xsink) {
 }
 
 void QoreNatsConnection::close() {
+    if (creator.isForkedChild()) {
+        // the C client would join the connection's threads, which exist only in the parent; the connection is
+        // abandoned in this process, whose later calls report that it is not connected (see NatsCreatorProcess)
+        conn = nullptr;
+        return;
+    }
     if (conn) {
         natsConnection_Close(conn);
     }

@@ -246,6 +246,11 @@ void QoreNatsMicroService::releaseHandlers(std::vector<MicroEndpointCallbackCont
 }
 
 QoreNatsMicroService::~QoreNatsMicroService() {
+    if (creator.isForkedChild()) {
+        // the service and its endpoints belong to the parent: stopping it would wait for the completion of its
+        // endpoints, which the C client's threads in the parent report (see NatsCreatorProcess)
+        return;
+    }
     if (svc) {
         // the service stops by draining its endpoints, whose requests are still handled; when the last endpoint
         // is complete, the done handler releases the handler contexts, and cnats frees the service

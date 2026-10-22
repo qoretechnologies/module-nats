@@ -115,6 +115,8 @@ public:
     static void releaseHandlers(std::vector<MicroEndpointCallbackContext*>& handlers);
 
 private:
+    //! the process that created the object; see NatsCreatorProcess
+    NatsCreatorProcess creator;
     microService* svc = nullptr;
     //! the handler contexts, released by the done handler
     std::shared_ptr<MicroServiceState> state;

@@ -86,7 +86,12 @@ const TypedHashDecl* hashdeclNatsMicroServiceStats = nullptr;
 
 QoreNamespace NatsNs("Qore::Nats");
 
+//! the process that loaded the module (see nats_module_delete())
+static pid_t nats_module_pid = 0;
+
 static void nats_module_init(QoreModuleInitContext& ctx, ExceptionSink& xsink) {
+    nats_module_pid = getpid();
+
     // Initialize constants
     init_NatsMsg_constants(NatsNs);
 
@@ -151,6 +156,12 @@ static void nats_module_ns_init(QoreNamespace* rns, QoreNamespace* qns, Exceptio
 }
 
 static void nats_module_delete() {
+    // in a child process created with fork(), the threads of the C client library, if the parent opened it, exist
+    // only in the parent: closing the library would join them and wait forever, so it is left as it is, and its
+    // threads, if the child opened it, end with the process (see NatsCreatorProcess)
+    if (getpid() != nats_module_pid) {
+        return;
+    }
     // nats.c library cleanup; wait for async operations to finish
     nats_CloseAndWait(5000);
 }

@@ -111,6 +111,8 @@ public:
     DLLLOCAL int setPendingLimits(int msg_limit, int bytes_limit, ExceptionSink* xsink);
 
 private:
+    //! the process that created the object; see NatsCreatorProcess
+    NatsCreatorProcess creator;
     natsSubscription* sub = nullptr;
     natsMsg* lastMsg = nullptr;
 

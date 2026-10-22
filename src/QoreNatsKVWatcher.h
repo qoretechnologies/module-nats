@@ -50,6 +50,8 @@ public:
     DLLLOCAL int stop(ExceptionSink* xsink);
 
 private:
+    //! the process that created the object; see NatsCreatorProcess
+    NatsCreatorProcess creator;
     kvWatcher* watcher = nullptr;
 
     QoreNatsKVWatcher(const QoreNatsKVWatcher&) = delete;

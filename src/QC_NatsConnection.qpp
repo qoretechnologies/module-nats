@@ -266,7 +266,10 @@ nothing NatsConnection::drain() {
 }
 
 //! Closes the connection immediately
-/** @since %nats 1.0
+/** In a child process created with \c fork() after the connection was created, the connection belongs to the
+    parent: it is abandoned in the child without being closed (see @ref natsfork)
+
+    @since %nats 1.0
 */
 nothing NatsConnection::close() {
     conn->close();
