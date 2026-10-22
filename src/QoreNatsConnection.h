@@ -36,6 +36,11 @@
 #include <string>
 
 //! Callback context for bridging nats.c callbacks to Qore closures
+/** cnats calls the callbacks on its asynchronous callback thread, which can still run a callback that was posted
+    before the connection was destroyed: the context is reference counted, with one reference for the connection
+    object and one for the closed callback, which is always registered and is the last callback that cnats posts for
+    a connection; the last reference releases the closures and deletes the context
+*/
 struct NatsCallbackContext {
     ResolvedCallReferenceNode* on_disconnect = nullptr;
     ResolvedCallReferenceNode* on_reconnect = nullptr;
@@ -49,6 +54,16 @@ struct NatsCallbackContext {
         sandbox, so it can never do more than the code that registered it
     */
     QoreSandboxCapture sandbox;
+    //! the references to the context; see the class description
+    std::atomic<int> refs{1};
+
+    //! Adds a reference to the context
+    DLLLOCAL void ref() {
+        refs.fetch_add(1);
+    }
+
+    //! Removes a reference; the last one releases the closures and deletes the context, on any thread
+    DLLLOCAL void release();
 
     DLLLOCAL void cleanup(ExceptionSink* xsink) {
         if (on_disconnect) { on_disconnect->deref(xsink); on_disconnect = nullptr; }

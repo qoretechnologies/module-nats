@@ -105,6 +105,7 @@ public class NatsTest inherits QUnit::Test {
 
         # Connection callback tests
         addTestCase("connection closed callback test", \closedCallbackTest());
+        addTestCase("connection closed callback of a destroyed connection test", \closedCallbackDestroyedTest());
 
         # Negative tests
         addTestCase("publish on closed connection test", \publishClosedTest());
@@ -858,6 +859,28 @@ public class NatsTest inherits QUnit::Test {
 
         # the wait ends when the callback has run
         assertEq(0, closed.waitForZero(10s));
+    }
+
+    # the closed callback runs on the C client's callback thread after the connection object is gone: when the
+    # object is destroyed right after close(), and when it is destroyed without close()
+    closedCallbackDestroyedTest() {
+        Queue closed();
+        code connect = NatsConnection sub (string label) {
+            return new NatsConnection(cast<hash<NatsConnectionOptions>>({
+                "url": url,
+                "on_closed": sub () { closed.push(label); },
+            }));
+        };
+
+        NatsConnection conn = connect("close");
+        conn.close();
+        delete conn;
+        # the timeout is a guard against a hang, never an expected time
+        assertEq("close", closed.get(60s));
+
+        conn = connect("destroy");
+        delete conn;
+        assertEq("destroy", closed.get(60s));
     }
 
     # --- Negative tests ---

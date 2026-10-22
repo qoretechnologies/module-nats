@@ -107,7 +107,15 @@ int QoreNatsConnection::setupDialer(ExceptionSink* xsink) {
 }
 
 void QoreNatsConnection::connect(const char* url, ExceptionSink* xsink) {
+    if (cb_ctx) {
+        // the reference of the closed callback, which cnats posts once when the connection closes
+        cb_ctx->ref();
+    }
     natsStatus s = natsConnection_Connect(&conn, opts);
+    if (cb_ctx && !conn) {
+        // no connection was created, so no closed callback will be posted
+        cb_ctx->release();
+    }
     if (dialer) {
         // a cancellation of the first connection is reported as such
         dialer->takeException(xsink);
@@ -137,11 +145,43 @@ QoreNatsConnection::~QoreNatsConnection() {
         opts = nullptr;
     }
     if (cb_ctx) {
-        ExceptionSink xsink;
-        cb_ctx->cleanup(&xsink);
-        delete cb_ctx;
+        // the closed callback that cnats posted when the connection was destroyed can still be pending; it releases
+        // its own reference
+        cb_ctx->release();
         cb_ctx = nullptr;
     }
+}
+
+void NatsCallbackContext::release() {
+    int prev = refs.fetch_sub(1);
+    assert(prev > 0);
+    if (prev > 1) {
+        return;
+    }
+    {
+        // the last reference can be released on the cnats callback thread, which is registered with Qore for it;
+        // the closures are released under the sandbox of the code that registered them, in their Program
+        QoreForeignThreadHelper fth;
+        QoreSandboxCaptureHelper sch(sandbox);
+        ExceptionSink xsink;
+        {
+            std::unique_ptr<QoreExternalProgramContextHelper> pch;
+            if (pgm) {
+                pch.reset(new QoreExternalProgramContextHelper(&xsink, pgm));
+            }
+            QoreProgram* p = pgm;
+            pgm = nullptr;
+            cleanup(&xsink);
+            pgm = p;
+        }
+        if (pgm) {
+            pgm->deref(&xsink);
+            pgm = nullptr;
+        }
+        // an exception raised by releasing a closure cannot be reported to a caller
+        xsink.clear();
+    }
+    delete this;
 }
 
 int QoreNatsConnection::configureOptions(const QoreHashNode* options, ExceptionSink* xsink) {
@@ -624,12 +664,13 @@ int QoreNatsConnection::setupCallbacks(const QoreHashNode* options, QoreProgram*
 
     if (closed) {
         cb_ctx->on_closed = closed->refRefSelf();
-        s = natsOptions_SetClosedCB(opts, closedHandler, cb_ctx);
-        if (s != NATS_OK) {
-            nats_error(xsink, "NATS-CONNECTION-ERROR", s,
-                "failed to set closed callback");
-            return -1;
-        }
+    }
+    // the closed callback is always registered: it releases its reference to the context (see NatsCallbackContext)
+    s = natsOptions_SetClosedCB(opts, closedHandler, cb_ctx);
+    if (s != NATS_OK) {
+        nats_error(xsink, "NATS-CONNECTION-ERROR", s,
+            "failed to set closed callback");
+        return -1;
     }
 
     if (err) {
@@ -705,6 +746,8 @@ void QoreNatsConnection::reconnectHandler(natsConnection* nc, void* closure) {
 void QoreNatsConnection::closedHandler(natsConnection* nc, void* closure) {
     NatsCallbackContext* ctx = static_cast<NatsCallbackContext*>(closure);
     execCallback(ctx, ctx->on_closed);
+    // the closed callback is the last callback of the connection
+    ctx->release();
 }
 
 void QoreNatsConnection::errorHandler(natsConnection* nc, natsSubscription* sub,
