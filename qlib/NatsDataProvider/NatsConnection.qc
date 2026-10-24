@@ -33,7 +33,8 @@ public namespace NatsDataProvider {
 public class NatsConnectionProvider inherits ConnectionProvider::AbstractConnectionWithInfo {
     public {
         #! Connection scheme info
-        const ConnectionScheme = <ConnectionSchemeInfo>{
+        const ConnectionScheme = ConnectionProvider::connection_scheme_presentation("NatsDataProvider",
+            "NatsConnectionProvider", "en", <ConnectionSchemeInfo>{
             "display_name": "NATS Connection",
             "short_desc": "A connection to a NATS server",
             "desc": "A connection to a NATS messaging server for publish/subscribe, "
@@ -72,7 +73,7 @@ public class NatsConnectionProvider inherits ConnectionProvider::AbstractConnect
                     "sensitive": True,
                 },
             },
-        };
+        });
     }
 
     #! Creates the NatsConnectionProvider object
@@ -185,7 +186,8 @@ public class NatsConnectionProvider inherits ConnectionProvider::AbstractConnect
 public class NatsTlsConnectionProvider inherits NatsConnectionProvider {
     public {
         #! Connection scheme info for TLS
-        const ConnectionScheme = <ConnectionSchemeInfo>{
+        const ConnectionScheme = ConnectionProvider::connection_scheme_presentation("NatsDataProvider",
+            "NatsTlsConnectionProvider", "en", <ConnectionSchemeInfo>{
             "display_name": "NATS TLS Connection",
             "short_desc": "A TLS-encrypted connection to a NATS server",
             "desc": "A TLS-encrypted connection to a NATS messaging server.\n\n"
@@ -199,7 +201,7 @@ public class NatsTlsConnectionProvider inherits NatsConnectionProvider {
                 "tls": "natss",
             },
             "options": NatsConnectionProvider::ConnectionScheme.options,
-        };
+        });
     }
 
     #! Creates the NatsTlsConnectionProvider object

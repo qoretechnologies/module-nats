@@ -1,0 +1,69 @@
+{
+  "schema_version": 1,
+  "locales": {
+    "de": {
+      "messages": {
+        "connection.TmF0c0RhdGFQcm92aWRlcg.scheme.TmF0c0Nvbm5lY3Rpb25Qcm92aWRlcg.desc": {
+          "source": "A connection to a NATS messaging server for publish/subscribe, request/reply, and queue group messaging patterns.\n\nSupports plaintext (`nats://`) connections with optional token or username/password authentication.",
+          "message": "Eine Verbindung zu einem NATS-Messaging-Server für Publish/Subscribe, Request/Reply und Queue-Gruppen-Messaging-Muster.\n\nUnterstützt Klartext (`nats://`) Verbindungen mit optionaler Token- oder Benutzername/Passwort-Authentifizierung."
+        },
+        "connection.TmF0c0RhdGFQcm92aWRlcg.scheme.TmF0c0Nvbm5lY3Rpb25Qcm92aWRlcg.display_name": {
+          "source": "NATS Connection",
+          "message": "NATS-Verbindung"
+        },
+        "connection.TmF0c0RhdGFQcm92aWRlcg.scheme.TmF0c0Nvbm5lY3Rpb25Qcm92aWRlcg.option.cGFzc3dvcmQ.desc": {
+          "source": "Password for NATS username/password authentication.\n\nMust be used together with `username`.",
+          "message": "Passwort für die NATS-Authentifizierung per Benutzername und Passwort.\n\nMuss zusammen mit `username` verwendet werden."
+        },
+        "connection.TmF0c0RhdGFQcm92aWRlcg.scheme.TmF0c0Nvbm5lY3Rpb25Qcm92aWRlcg.option.cGFzc3dvcmQ.display_name": {
+          "source": "Password",
+          "message": "Passwort"
+        },
+        "connection.TmF0c0RhdGFQcm92aWRlcg.scheme.TmF0c0Nvbm5lY3Rpb25Qcm92aWRlcg.option.cGFzc3dvcmQ.short_desc": {
+          "source": "Password for authentication",
+          "message": "Passwort für die Authentifizierung"
+        },
+        "connection.TmF0c0RhdGFQcm92aWRlcg.scheme.TmF0c0Nvbm5lY3Rpb25Qcm92aWRlcg.option.dG9rZW4.desc": {
+          "source": "Token for NATS token-based authentication.\n\nMutually exclusive with `username`/`password` authentication.",
+          "message": "Token für die NATS-Token-Authentifizierung.\n\nWechselseitig ausschließlich mit der `username`/`password`-Authentifizierung."
+        },
+        "connection.TmF0c0RhdGFQcm92aWRlcg.scheme.TmF0c0Nvbm5lY3Rpb25Qcm92aWRlcg.option.dG9rZW4.display_name": {
+          "source": "Token",
+          "message": "Token"
+        },
+        "connection.TmF0c0RhdGFQcm92aWRlcg.scheme.TmF0c0Nvbm5lY3Rpb25Qcm92aWRlcg.option.dG9rZW4.short_desc": {
+          "source": "Authentication token",
+          "message": "Authentifizierungstoken"
+        },
+        "connection.TmF0c0RhdGFQcm92aWRlcg.scheme.TmF0c0Nvbm5lY3Rpb25Qcm92aWRlcg.option.dXNlcm5hbWU.desc": {
+          "source": "Username for NATS username/password authentication.\n\nMust be used together with `password`.",
+          "message": "Benutzername für die NATS-Authentifizierung per Benutzername und Passwort.\n\nMuss zusammen mit `password` verwendet werden."
+        },
+        "connection.TmF0c0RhdGFQcm92aWRlcg.scheme.TmF0c0Nvbm5lY3Rpb25Qcm92aWRlcg.option.dXNlcm5hbWU.display_name": {
+          "source": "Username",
+          "message": "Benutzername"
+        },
+        "connection.TmF0c0RhdGFQcm92aWRlcg.scheme.TmF0c0Nvbm5lY3Rpb25Qcm92aWRlcg.option.dXNlcm5hbWU.short_desc": {
+          "source": "Username for authentication",
+          "message": "Benutzername für die Authentifizierung"
+        },
+        "connection.TmF0c0RhdGFQcm92aWRlcg.scheme.TmF0c0Nvbm5lY3Rpb25Qcm92aWRlcg.short_desc": {
+          "source": "A connection to a NATS server",
+          "message": "Eine Verbindung zu einem NATS-Server"
+        },
+        "connection.TmF0c0RhdGFQcm92aWRlcg.scheme.TmF0c1Rsc0Nvbm5lY3Rpb25Qcm92aWRlcg.desc": {
+          "source": "A TLS-encrypted connection to a NATS messaging server.\n\nProvides the same messaging capabilities as the plaintext connection with transport-layer encryption for secure communication.",
+          "message": "Eine TLS-verschlüsselte Verbindung zu einem NATS-Messaging-Server.\n\nBietet dieselben Messaging-Funktionen wie die unverschlüsselte Verbindung mit Verschlüsselung auf Transportebene für sichere Kommunikation."
+        },
+        "connection.TmF0c0RhdGFQcm92aWRlcg.scheme.TmF0c1Rsc0Nvbm5lY3Rpb25Qcm92aWRlcg.display_name": {
+          "source": "NATS TLS Connection",
+          "message": "NATS TLS-Verbindung"
+        },
+        "connection.TmF0c0RhdGFQcm92aWRlcg.scheme.TmF0c1Rsc0Nvbm5lY3Rpb25Qcm92aWRlcg.short_desc": {
+          "source": "A TLS-encrypted connection to a NATS server",
+          "message": "Eine TLS-verschlüsselte Verbindung zu einem NATS-Server"
+        }
+      }
+    }
+  }
+}

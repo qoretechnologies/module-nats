@@ -1,0 +1,69 @@
+{
+  "schema_version": 1,
+  "locales": {
+    "ko": {
+      "messages": {
+        "connection.TmF0c0RhdGFQcm92aWRlcg.scheme.TmF0c0Nvbm5lY3Rpb25Qcm92aWRlcg.desc": {
+          "source": "A connection to a NATS messaging server for publish/subscribe, request/reply, and queue group messaging patterns.\n\nSupports plaintext (`nats://`) connections with optional token or username/password authentication.",
+          "message": "게시/구독, 요청/응답, 대기열 그룹 메시징 패턴을 지원하는 NATS 메시징 서버 연결.\n\n선택적 토큰 또는 사용자 이름/비밀번호 인증을 사용하는 평문 (`nats://`) 연결을 지원합니다."
+        },
+        "connection.TmF0c0RhdGFQcm92aWRlcg.scheme.TmF0c0Nvbm5lY3Rpb25Qcm92aWRlcg.display_name": {
+          "source": "NATS Connection",
+          "message": "NATS 연결"
+        },
+        "connection.TmF0c0RhdGFQcm92aWRlcg.scheme.TmF0c0Nvbm5lY3Rpb25Qcm92aWRlcg.option.cGFzc3dvcmQ.desc": {
+          "source": "Password for NATS username/password authentication.\n\nMust be used together with `username`.",
+          "message": "NATS 사용자 이름/비밀번호 인증을 위한 비밀번호.\n\n`username`와 함께 사용해야 합니다."
+        },
+        "connection.TmF0c0RhdGFQcm92aWRlcg.scheme.TmF0c0Nvbm5lY3Rpb25Qcm92aWRlcg.option.cGFzc3dvcmQ.display_name": {
+          "source": "Password",
+          "message": "비밀번호"
+        },
+        "connection.TmF0c0RhdGFQcm92aWRlcg.scheme.TmF0c0Nvbm5lY3Rpb25Qcm92aWRlcg.option.cGFzc3dvcmQ.short_desc": {
+          "source": "Password for authentication",
+          "message": "인증을 위한 비밀번호"
+        },
+        "connection.TmF0c0RhdGFQcm92aWRlcg.scheme.TmF0c0Nvbm5lY3Rpb25Qcm92aWRlcg.option.dG9rZW4.desc": {
+          "source": "Token for NATS token-based authentication.\n\nMutually exclusive with `username`/`password` authentication.",
+          "message": "NATS 토큰 기반 인증용 토큰.\n\n`username`/`password` 인증과 상호 배타적입니다."
+        },
+        "connection.TmF0c0RhdGFQcm92aWRlcg.scheme.TmF0c0Nvbm5lY3Rpb25Qcm92aWRlcg.option.dG9rZW4.display_name": {
+          "source": "Token",
+          "message": "토큰"
+        },
+        "connection.TmF0c0RhdGFQcm92aWRlcg.scheme.TmF0c0Nvbm5lY3Rpb25Qcm92aWRlcg.option.dG9rZW4.short_desc": {
+          "source": "Authentication token",
+          "message": "인증 토큰"
+        },
+        "connection.TmF0c0RhdGFQcm92aWRlcg.scheme.TmF0c0Nvbm5lY3Rpb25Qcm92aWRlcg.option.dXNlcm5hbWU.desc": {
+          "source": "Username for NATS username/password authentication.\n\nMust be used together with `password`.",
+          "message": "NATS 사용자 이름/비밀번호 인증용 사용자 이름.\n\n`password`와 함께 사용해야 합니다."
+        },
+        "connection.TmF0c0RhdGFQcm92aWRlcg.scheme.TmF0c0Nvbm5lY3Rpb25Qcm92aWRlcg.option.dXNlcm5hbWU.display_name": {
+          "source": "Username",
+          "message": "사용자 이름"
+        },
+        "connection.TmF0c0RhdGFQcm92aWRlcg.scheme.TmF0c0Nvbm5lY3Rpb25Qcm92aWRlcg.option.dXNlcm5hbWU.short_desc": {
+          "source": "Username for authentication",
+          "message": "인증용 사용자 이름"
+        },
+        "connection.TmF0c0RhdGFQcm92aWRlcg.scheme.TmF0c0Nvbm5lY3Rpb25Qcm92aWRlcg.short_desc": {
+          "source": "A connection to a NATS server",
+          "message": "NATS 서버에 연결"
+        },
+        "connection.TmF0c0RhdGFQcm92aWRlcg.scheme.TmF0c1Rsc0Nvbm5lY3Rpb25Qcm92aWRlcg.desc": {
+          "source": "A TLS-encrypted connection to a NATS messaging server.\n\nProvides the same messaging capabilities as the plaintext connection with transport-layer encryption for secure communication.",
+          "message": "NATS 메시징 서버에 TLS 암호화된 연결.\n\n전송 계층 암호화를 통해 보안 통신을 제공하며, 평문 연결과 동일한 메시징 기능을 제공합니다."
+        },
+        "connection.TmF0c0RhdGFQcm92aWRlcg.scheme.TmF0c1Rsc0Nvbm5lY3Rpb25Qcm92aWRlcg.display_name": {
+          "source": "NATS TLS Connection",
+          "message": "NATS TLS 연결"
+        },
+        "connection.TmF0c0RhdGFQcm92aWRlcg.scheme.TmF0c1Rsc0Nvbm5lY3Rpb25Qcm92aWRlcg.short_desc": {
+          "source": "A TLS-encrypted connection to a NATS server",
+          "message": "NATS 서버에 TLS 암호화된 연결"
+        }
+      }
+    }
+  }
+}

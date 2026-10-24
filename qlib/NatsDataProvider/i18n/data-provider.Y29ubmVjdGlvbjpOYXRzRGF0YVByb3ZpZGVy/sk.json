@@ -1,0 +1,69 @@
+{
+  "schema_version": 1,
+  "locales": {
+    "sk": {
+      "messages": {
+        "connection.TmF0c0RhdGFQcm92aWRlcg.scheme.TmF0c0Nvbm5lY3Rpb25Qcm92aWRlcg.desc": {
+          "source": "A connection to a NATS messaging server for publish/subscribe, request/reply, and queue group messaging patterns.\n\nSupports plaintext (`nats://`) connections with optional token or username/password authentication.",
+          "message": "Spojenie s serverom NATS pre publikovanie/prijímanie, požiadavku/odpoveď a správy v skupine.\n\nPodporuje nešifrované (`nats://`) spojenia s voliteľnou autentifikáciou tokenom alebo užívateľským menom/heslom."
+        },
+        "connection.TmF0c0RhdGFQcm92aWRlcg.scheme.TmF0c0Nvbm5lY3Rpb25Qcm92aWRlcg.display_name": {
+          "source": "NATS Connection",
+          "message": "Spojenie NATS"
+        },
+        "connection.TmF0c0RhdGFQcm92aWRlcg.scheme.TmF0c0Nvbm5lY3Rpb25Qcm92aWRlcg.option.cGFzc3dvcmQ.desc": {
+          "source": "Password for NATS username/password authentication.\n\nMust be used together with `username`.",
+          "message": "Heslo pre autentifikáciu užívateľským menom/heslom v NATS.\n\nMusí byť použité spolu s `username`."
+        },
+        "connection.TmF0c0RhdGFQcm92aWRlcg.scheme.TmF0c0Nvbm5lY3Rpb25Qcm92aWRlcg.option.cGFzc3dvcmQ.display_name": {
+          "source": "Password",
+          "message": "Heslo"
+        },
+        "connection.TmF0c0RhdGFQcm92aWRlcg.scheme.TmF0c0Nvbm5lY3Rpb25Qcm92aWRlcg.option.cGFzc3dvcmQ.short_desc": {
+          "source": "Password for authentication",
+          "message": "Heslo pre autentifikáciu"
+        },
+        "connection.TmF0c0RhdGFQcm92aWRlcg.scheme.TmF0c0Nvbm5lY3Rpb25Qcm92aWRlcg.option.dG9rZW4.desc": {
+          "source": "Token for NATS token-based authentication.\n\nMutually exclusive with `username`/`password` authentication.",
+          "message": "Token pre autentifikáciu založenú na tokene v NATS.\n\nNavzájom vylučujúce sa s autentifikáciou `username`/`password`."
+        },
+        "connection.TmF0c0RhdGFQcm92aWRlcg.scheme.TmF0c0Nvbm5lY3Rpb25Qcm92aWRlcg.option.dG9rZW4.display_name": {
+          "source": "Token",
+          "message": "Token"
+        },
+        "connection.TmF0c0RhdGFQcm92aWRlcg.scheme.TmF0c0Nvbm5lY3Rpb25Qcm92aWRlcg.option.dG9rZW4.short_desc": {
+          "source": "Authentication token",
+          "message": "Autentifikačný token"
+        },
+        "connection.TmF0c0RhdGFQcm92aWRlcg.scheme.TmF0c0Nvbm5lY3Rpb25Qcm92aWRlcg.option.dXNlcm5hbWU.desc": {
+          "source": "Username for NATS username/password authentication.\n\nMust be used together with `password`.",
+          "message": "Užívateľské meno pre autentifikáciu užívateľským menom/heslom v NATS.\n\nMusí byť použité spolu s `password`."
+        },
+        "connection.TmF0c0RhdGFQcm92aWRlcg.scheme.TmF0c0Nvbm5lY3Rpb25Qcm92aWRlcg.option.dXNlcm5hbWU.display_name": {
+          "source": "Username",
+          "message": "Používateľské meno"
+        },
+        "connection.TmF0c0RhdGFQcm92aWRlcg.scheme.TmF0c0Nvbm5lY3Rpb25Qcm92aWRlcg.option.dXNlcm5hbWU.short_desc": {
+          "source": "Username for authentication",
+          "message": "Užívateľské meno pre autentifikáciu"
+        },
+        "connection.TmF0c0RhdGFQcm92aWRlcg.scheme.TmF0c0Nvbm5lY3Rpb25Qcm92aWRlcg.short_desc": {
+          "source": "A connection to a NATS server",
+          "message": "Spojenie s serverom NATS"
+        },
+        "connection.TmF0c0RhdGFQcm92aWRlcg.scheme.TmF0c1Rsc0Nvbm5lY3Rpb25Qcm92aWRlcg.desc": {
+          "source": "A TLS-encrypted connection to a NATS messaging server.\n\nProvides the same messaging capabilities as the plaintext connection with transport-layer encryption for secure communication.",
+          "message": "TLS šifrované spojenie s serverom NATS správ.\n\nPoskytuje rovnaké možnosti správy správ ako spojenie bez šifrovania, pričom zabezpečuje šifrovanie na úrovni prenosu pre bezpečnú komunikáciu."
+        },
+        "connection.TmF0c0RhdGFQcm92aWRlcg.scheme.TmF0c1Rsc0Nvbm5lY3Rpb25Qcm92aWRlcg.display_name": {
+          "source": "NATS TLS Connection",
+          "message": "NATS TLS spojenie"
+        },
+        "connection.TmF0c0RhdGFQcm92aWRlcg.scheme.TmF0c1Rsc0Nvbm5lY3Rpb25Qcm92aWRlcg.short_desc": {
+          "source": "A TLS-encrypted connection to a NATS server",
+          "message": "TLS šifrované spojenie s serverom NATS"
+        }
+      }
+    }
+  }
+}
