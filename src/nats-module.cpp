@@ -40,6 +40,9 @@ static void nats_module_delete();
 // Defined in generated QC_NatsMsg.cpp
 DLLLOCAL void init_NatsMsg_constants(QoreNamespace& ns);
 
+// the module's namespace; purged when the module is deleted (see QoreModuleInfo::ns)
+QoreNamespace NatsNs("Qore::Nats");
+
 extern "C" DLLEXPORT void nats_qore_module_desc(QoreModuleInfo& mod_info) {
     mod_info.name = "nats";
     mod_info.version = "1.0.0";
@@ -51,6 +54,10 @@ extern "C" DLLEXPORT void nats_qore_module_desc(QoreModuleInfo& mod_info) {
     mod_info.init = nats_module_init;
     mod_info.ns_init = nats_module_ns_init;
     mod_info.del = nats_module_delete;
+#ifdef QORE_HAS_MODULE_NS_PURGE
+    // the namespace is purged when the module is deleted, before the types are freed (see QoreModuleInfo::ns)
+    mod_info.ns = &NatsNs;
+#endif
     mod_info.license = QL_MIT;
     mod_info.license_str = "MIT";
 }
@@ -83,8 +90,6 @@ const TypedHashDecl* hashdeclNatsMicroEndpointInfo = nullptr;
 const TypedHashDecl* hashdeclNatsMicroServiceInfo = nullptr;
 const TypedHashDecl* hashdeclNatsMicroEndpointStats = nullptr;
 const TypedHashDecl* hashdeclNatsMicroServiceStats = nullptr;
-
-QoreNamespace NatsNs("Qore::Nats");
 
 //! the process that loaded the module (see nats_module_delete())
 static pid_t nats_module_pid = 0;
