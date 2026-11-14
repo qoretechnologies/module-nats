@@ -22,6 +22,7 @@
     DEALINGS IN THE SOFTWARE.
 */
 
+%requires qore >= 3.0
 %modern
 
 %requires nats
@@ -32,6 +33,9 @@ module NatsUtil {
     author = "Qore Technologies, s.r.o.";
     url = "https://github.com/qoretechnologies/module-nats";
     license = "MIT";
+    # THREAD_CONTROL: the module starts its own background tasks
+    # (a Program restricted like a Qorus interface can load the module only when it declares them; Qore #5803)
+    domains = "THREAD_CONTROL";
 }
 
 #! Main Nats namespace
