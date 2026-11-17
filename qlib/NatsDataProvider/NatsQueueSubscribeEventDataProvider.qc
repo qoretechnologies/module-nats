@@ -185,7 +185,14 @@ public class NatsQueueSubscribeEventDataProvider inherits AbstractDataProvider, 
                         break;
                     }
                 }
-                notifyObservers(EVENT_NATS_MESSAGE, msg);
+                # core NATS cannot deliver a message again: an observer error is logged, and the subscription goes
+                # on (qore#6397)
+                try {
+                    notifyObservers(EVENT_NATS_MESSAGE, msg);
+                } catch (hash<ExceptionInfo> ex) {
+                    Logger::LoggerWrapper::error("%s: an observer failed to handle the message on subject %y: %s: %s",
+                        "NatsQueueSubscribeEventDataProvider", msg.subject, ex.err, ex.desc);
+                }
             }
 
             {

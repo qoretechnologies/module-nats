@@ -1217,4 +1217,90 @@ public namespace NatsJetStreamDataProvider {
     }
 
     public const NatsJSStreamMsgBySubjectRequestDataType = new NatsJSStreamMsgBySubjectRequestDataType();
+
+#! Settles the messages of a JetStream subscription one by one (qore#6397)
+/** A JetStream message is acknowledged by a message to its own reply subject, so that each message is settled
+    exactly, whatever messages the subscription received after it (the subscription's own \c ack() and \c nak()
+    settle its last message, and its messages are prefetched on another thread).
+
+    @anchor natsjetstream_delivery
+    @par Delivery and acknowledgement
+    The JetStream event providers acknowledge a message (\c +ACK) only after every observer has accepted it.  An
+    observer refuses a message by throwing from its \c update() method (it reaches the provider as an
+    \c OBSERVER-NOTIFICATION-ERROR): the message is then not acknowledged (\c -NAK with a delay), and the server
+    delivers it again after the delay, which starts at \c refusal_delay_ms and doubles with each delivery of the
+    message (the number of deliveries is given by its reply subject) up to \c max_refusal_delay_ms.  When the provider
+    stops, the messages that it fetched but did not deliver are refused without a delay.  A redelivered message goes
+    to every observer again, so an observer that accepted it before another one refused it sees it again (at-least-once
+    delivery), and the consumer's \c max_deliver limit, if any, applies to it.  A refusal never ends the
+    subscription.
+*/
+public class NatsJSDelivery {
+    public {
+        #! The default initial redelivery delay in milliseconds of a refused message
+        const DefaultRefusalDelayMs = 1000;
+
+        #! The default maximum redelivery delay in milliseconds of a refused message
+        const DefaultMaxRefusalDelayMs = 60000;
+
+        #! The largest redelivery delay in milliseconds that is accepted (one day)
+        const MaxRefusalDelayMs = 86400000;
+    }
+
+    #! Acknowledges a message: the server does not deliver it again
+    /** @return @ref True if the message could be acknowledged (it has a reply subject)
+    */
+    static bool ack(NatsClient client, hash<NatsMsgInfo> msg) {
+        if (!msg.reply) {
+            return False;
+        }
+        client.publish(msg.reply, binary("+ACK"));
+        return True;
+    }
+
+    #! Refuses a message: the server delivers it again after the given delay
+    /** @param client the client to send the refusal with
+        @param msg the message
+        @param delay_ms the redelivery delay in milliseconds; 0 for none
+
+        @return @ref True if the message could be refused (it has a reply subject)
+    */
+    static bool nak(NatsClient client, hash<NatsMsgInfo> msg, int delay_ms = 0) {
+        if (!msg.reply) {
+            return False;
+        }
+        client.publish(msg.reply, binary(delay_ms > 0
+            ? sprintf("-NAK {\"delay\":%d}", delay_ms * 1000000)
+            : "-NAK"));
+        return True;
+    }
+
+    #! Returns the number of deliveries of a message, from its reply subject, or the given value if it has none
+    /** The reply subject of a JetStream message is
+        <tt>$JS.ACK.<stream>.<consumer>.<delivered>.<sseq>.<cseq>.<ts>.<pending></tt> or, with a domain and an account
+        hash, <tt>$JS.ACK.<domain>.<hash>.<stream>.<consumer>.<delivered>...</tt>
+    */
+    static int getDeliveryCount(hash<NatsMsgInfo> msg, int fallback) {
+        list<string> tokens = (msg.reply ?? "").split(".");
+        if (tokens[0] != "$JS" || tokens[1] != "ACK") {
+            return fallback;
+        }
+        *string count = tokens.size() == 9 ? tokens[4] : (tokens.size() >= 11 ? tokens[6] : NOTHING);
+        return (exists count && count =~ /^[0-9]+$/) ? max(1, int(count)) : fallback;
+    }
+
+    #! Returns the redelivery delay in milliseconds of a message delivered the given number of times
+    /** @param attempt the number of deliveries of the message
+        @param req the request of the subscription, with the optional \c refusal_delay_ms and
+        \c max_refusal_delay_ms
+    */
+    static int getDelay(int attempt, *hash<auto> req) {
+        int delay = min(MaxRefusalDelayMs, max(1, int(req.refusal_delay_ms ?? DefaultRefusalDelayMs)));
+        int max_delay = min(MaxRefusalDelayMs, max(delay, int(req.max_refusal_delay_ms ?? DefaultMaxRefusalDelayMs)));
+        while (--attempt > 0 && delay < max_delay) {
+            delay *= 2;
+        }
+        return min(delay, max_delay);
+    }
+}
 }

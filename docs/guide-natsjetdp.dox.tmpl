@@ -31,6 +31,13 @@
       +-- history    (NatsJSKVHistoryDataProvider -- DPAT_API)
     @endverbatim
 
+    @section natsjetdp_delivery Event Delivery
+
+    The \c subscribe and \c pull-subscribe event providers acknowledge each message only after every observer has
+    accepted it; a refused message is not acknowledged and the server delivers it again after a delay that the
+    optional \c refusal_delay_ms and \c max_refusal_delay_ms request fields control, and a refusal never ends the
+    subscription (see @ref NatsJetStreamDataProvider::NatsJSDelivery "NatsJSDelivery").
+
     @section natsjetdp_cli Command Line Usage
 
     @verbatim

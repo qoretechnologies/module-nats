@@ -1851,6 +1851,30 @@
           "source": "JetStream subject to subscribe to",
           "message": "Soggetto JetStream a cui iscriversi"
         },
+        "app.TkFUU0pldFN0cmVhbQ.action.cHVsbC1zdWJzY3JpYmU.option.cmVmdXNhbF9kZWxheV9tcw.display_name": {
+          "source": "Refusal Delay",
+          "message": "Ritardo dopo il rifiuto"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.cHVsbC1zdWJzY3JpYmU.option.cmVmdXNhbF9kZWxheV9tcw.short_desc": {
+          "source": "Initial redelivery delay in milliseconds of a refused message",
+          "message": "Ritardo iniziale in millisecondi prima di una nuova consegna di un messaggio rifiutato"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.cHVsbC1zdWJzY3JpYmU.option.cmVmdXNhbF9kZWxheV9tcw.desc": {
+          "source": "The delay in milliseconds after which the server delivers a message that an observer refused again; it doubles with each delivery of the message up to `max_refusal_delay_ms`.  The default is 1000",
+          "message": "Il ritardo in millisecondi dopo il quale il server consegna di nuovo un messaggio rifiutato da un observer; raddoppia a ogni consegna del messaggio fino a `max_refusal_delay_ms`.  Il valore predefinito è 1000"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.cHVsbC1zdWJzY3JpYmU.option.bWF4X3JlZnVzYWxfZGVsYXlfbXM.display_name": {
+          "source": "Max Refusal Delay",
+          "message": "Ritardo massimo dopo il rifiuto"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.cHVsbC1zdWJzY3JpYmU.option.bWF4X3JlZnVzYWxfZGVsYXlfbXM.short_desc": {
+          "source": "Maximum redelivery delay in milliseconds of a refused message",
+          "message": "Ritardo massimo in millisecondi prima di una nuova consegna di un messaggio rifiutato"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.cHVsbC1zdWJzY3JpYmU.option.bWF4X3JlZnVzYWxfZGVsYXlfbXM.desc": {
+          "source": "The maximum delay in milliseconds after which the server delivers a message that an observer refused again.  The default is 60000",
+          "message": "Il ritardo massimo in millisecondi dopo il quale il server consegna di nuovo un messaggio rifiutato da un observer.  Il valore predefinito è 60000"
+        },
         "app.TkFUU0pldFN0cmVhbQ.action.cHVsbC1zdWJzY3JpYmU.short_desc": {
           "source": "Pull subscribe with a durable consumer",
           "message": "Iscriviti tramite pull con un consumatore durevole"

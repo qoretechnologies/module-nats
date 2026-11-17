@@ -34,6 +34,8 @@
 %requires ./NatsTestServer.qm
 %requires NatsUtil
 %requires NatsJetStreamDataProvider
+# the raw consumer info of the server is read with it
+%requires json
 
 %exec-class NatsJetStreamDataProviderTest
 
@@ -113,6 +115,11 @@ public class NatsJetStreamDataProviderTest inherits QUnit::Test {
         addTestCase("stream info not found test", \streamInfoNotFoundTest());
         addTestCase("kv get not found test", \kvGetNotFoundTest());
 
+        # Delivery and acknowledgement of the event providers (qore#6397)
+        addTestCase("push subscription acknowledges and redelivers refused messages", \jsPushDeliveryTest());
+        addTestCase("pull subscription acknowledges every accepted message", \jsPullDeliveryTest());
+        addTestCase("pull subscription ends when its connection is closed", \jsPullConnectionClosedTest());
+
         set_return_value(main());
     }
 
@@ -137,6 +144,166 @@ public class NatsJetStreamDataProviderTest inherits QUnit::Test {
 
     globalTearDown() {
         stopServer();
+    }
+
+    #! Returns the next delivery from the queue, failing the test if none arrives in time
+    private hash<auto> getDelivery(Queue queue, string what) {
+        try {
+            return queue.get(20s);
+        } catch (hash<ExceptionInfo> ex) {
+            if (ex.err == "QUEUE-TIMEOUT") {
+                throw "NATS-TEST-ERROR", sprintf("%s: no delivery within 20s", what);
+            }
+            rethrow;
+        }
+    }
+
+    #! Waits until the server reports every delivery of the consumer as settled, and returns its consumer info
+    /** The raw consumer info of the server is read (the \c consumers/info provider reports other fields), and read
+        again until it is settled: the server processes acknowledgements asynchronously
+    */
+    private hash<auto> waitForSettled(string stream_name, string consumer_name) {
+        NatsClient client(url);
+        on_exit client.close();
+        date end = now_us() + 20s;
+        while (True) {
+            hash<auto> info = parse_json(client.request(sprintf("$JS.API.CONSUMER.INFO.%s.%s", stream_name,
+                consumer_name), NOTHING, 5s).data.toString());
+            if (!info.num_ack_pending && info.ack_floor.consumer_seq == info.delivered.consumer_seq) {
+                return info;
+            }
+            if (now_us() > end) {
+                throw "NATS-TEST-ERROR", sprintf("the consumer has unsettled deliveries: %y", info);
+            }
+            usleep(10ms);
+        }
+    }
+
+    #! Waits until the provider has settled the given number of messages; acknowledgements are sent after the
+    #! observers return, so after the test has seen the deliveries
+    private waitForAcks(object provider, int acked) {
+        date end = now_us() + 20s;
+        while (provider.getDeliveryStats().acked < acked) {
+            if (now_us() > end) {
+                throw "NATS-TEST-ERROR", sprintf("only %d of %d messages acknowledged within 20s",
+                    provider.getDeliveryStats().acked, acked);
+            }
+            usleep(10ms);
+        }
+    }
+
+    #! Creates a stream and publishes the given values to it; returns the stream name
+    private string createStreamWithValues(NatsJetStreamDataProvider dp, string prefix, list<string> values) {
+        string stream_name = uniqueName(prefix);
+        dp.getChildProvider("streams").getChildProvider("create").doRequest({
+            "name": stream_name,
+            "subjects": (stream_name + ".>",),
+            "storage": NATS_STORAGE_MEMORY,
+        });
+        AbstractDataProvider pub_dp = dp.getChildProvider("publish");
+        foreach string value in (values) {
+            pub_dp.doRequest({"subject": stream_name + ".msg", "string_data": value});
+        }
+        return stream_name;
+    }
+
+    #! A push subscription acknowledges accepted messages and redelivers a refused one; it survives the refusal
+    jsPushDeliveryTest() {
+        NatsJetStreamDataProvider dp({"url": url});
+        string stream_name = createStreamWithValues(dp, "DPJSD", ("m1", "m2"));
+        on_exit dp.getChildProvider("streams").getChildProvider("delete").doRequest({"name": stream_name});
+
+        NatsJSSubscribeEventDataProvider sub_dp = cast<NatsJSSubscribeEventDataProvider>(
+            dp.getChildProvider("subscribe"));
+        sub_dp.setObserverRequest({
+            "subject": stream_name + ".>",
+            "refusal_delay_ms": 10,
+            "max_refusal_delay_ms": 50,
+        });
+        Queue deliveries();
+        NatsTestRefusingObserver obs(deliveries, "m1", 1);
+        sub_dp.registerObserver(obs);
+        sub_dp.observersReady();
+        on_exit sub_dp.stopEvents();
+
+        list<hash<auto>> seen = map getDelivery(deliveries, "delivery " + $1), xrange(3);
+        assertEq("m1", seen[0].data, "the first delivery is m1");
+        assertTrue(seen[0].refused, "the first delivery of m1 is refused");
+        # m2 can arrive before m1 is delivered again
+        assertEq(("m1", "m1", "m2"), sort(map $1.data, seen), "the refused message is delivered again");
+        assertEq((True, False, False), (map $1.refused, seen));
+        waitForAcks(sub_dp, 2);
+        assertEq({"acked": 2, "refused": 1, "settle_errors": 0}, sub_dp.getDeliveryStats());
+        assertTrue(sub_dp.isActive(), "the subscription survives the refusal");
+    }
+
+    #! A pull subscription whose connection is closed ends with an error event instead of fetching again
+    jsPullConnectionClosedTest() {
+        NatsJetStreamDataProvider dp({"url": url});
+        string stream_name = createStreamWithValues(dp, "DPJPC", ("c1",));
+        on_exit dp.getChildProvider("streams").getChildProvider("delete").doRequest({"name": stream_name});
+
+        # the provider gets a client of its own, which the test closes
+        NatsClient client(url);
+        on_exit client.close();
+        NatsJSPullSubscribeEventDataProvider sub_dp(client.getConnection().jetStream(), client);
+        sub_dp.setObserverRequest({
+            "subject": stream_name + ".>",
+            "durable": "dp-closed-consumer",
+        });
+        Queue events();
+        NatsTestEventObserver obs(events);
+        sub_dp.registerObserver(obs);
+        sub_dp.observersReady();
+        on_exit sub_dp.stopEvents();
+
+        hash<auto> evt = getDelivery(events, "the message");
+        assertEq(EVENT_JS_MESSAGE, evt.event, "the message is delivered");
+        client.close();
+        evt = getDelivery(events, "the end of the subscription");
+        assertEq(EVENT_JS_ERROR, evt.event, "the subscription ends with an error event");
+        date end = now_us() + 20s;
+        while (sub_dp.isActive() && now_us() < end) {
+            usleep(10ms);
+        }
+        assertFalse(sub_dp.isActive(), "the subscription is no longer active");
+    }
+
+    #! A pull subscription acknowledges every accepted message: the ack floor of its consumer reaches the last
+    #! delivered message
+    jsPullDeliveryTest() {
+        NatsJetStreamDataProvider dp({"url": url});
+        string stream_name = createStreamWithValues(dp, "DPJPD", ("p1", "p2", "p3"));
+        on_exit dp.getChildProvider("streams").getChildProvider("delete").doRequest({"name": stream_name});
+        # the durable consumer is created by the subscription, with the default explicit acknowledgement policy
+        string consumer_name = "dp-delivery-consumer";
+
+        NatsJSPullSubscribeEventDataProvider sub_dp = cast<NatsJSPullSubscribeEventDataProvider>(
+            dp.getChildProvider("pull-subscribe"));
+        sub_dp.setObserverRequest({
+            "subject": stream_name + ".>",
+            "durable": consumer_name,
+            "refusal_delay_ms": 10,
+            "max_refusal_delay_ms": 50,
+        });
+        Queue deliveries();
+        NatsTestRefusingObserver obs(deliveries, "p2", 2);
+        sub_dp.registerObserver(obs);
+        sub_dp.observersReady();
+        on_exit sub_dp.stopEvents();
+
+        list<hash<auto>> seen = map getDelivery(deliveries, "delivery " + $1), xrange(5);
+        assertEq(("p1", "p2", "p2", "p2", "p3"), sort(map $1.data, seen), "p2 is delivered again after each "
+            "refusal");
+        waitForAcks(sub_dp, 3);
+        assertEq({"acked": 3, "refused": 2, "settle_errors": 0}, sub_dp.getDeliveryStats());
+
+        # every delivery is settled on the server: nothing is pending acknowledgement, and the ack floor is the last
+        # delivery
+        hash<auto> info = waitForSettled(stream_name, consumer_name);
+        assertEq(5, info.delivered.consumer_seq, "five deliveries");
+        assertEq(0, info.num_ack_pending, "nothing is pending acknowledgement");
+        assertEq(0, info.num_pending, "nothing is left to deliver");
     }
 
     # Helper to create a unique name
@@ -1283,5 +1450,48 @@ public class NatsJetStreamDataProviderTest inherits QUnit::Test {
         # Cleanup
         js.deleteKeyValue(bucket);
         client.close();
+    }
+}
+
+#! Records every delivery and refuses the deliveries of one value a number of times
+class NatsTestRefusingObserver inherits Observer {
+    private {
+        Queue queue;
+        string refuse_value;
+        int refusals;
+    }
+
+    constructor(Queue queue, string refuse_value, int refusals) {
+        self.queue = queue;
+        self.refuse_value = refuse_value;
+        self.refusals = refusals;
+    }
+
+    update(string event_id, hash<auto> data) {
+        if (event_id != EVENT_JS_MESSAGE) {
+            return;
+        }
+        string value = data.data.toString();
+        bool refuse = value == refuse_value && refusals > 0;
+        queue.push({"data": value, "refused": refuse});
+        if (refuse) {
+            --refusals;
+            throw "NATS-TEST-REFUSAL", sprintf("refusing %y", value);
+        }
+    }
+}
+
+#! Records the events of a subscription
+class NatsTestEventObserver inherits Observer {
+    private {
+        Queue queue;
+    }
+
+    constructor(Queue queue) {
+        self.queue = queue;
+    }
+
+    update(string event_id, hash<auto> data) {
+        queue.push({"event": event_id, "data": data});
     }
 }

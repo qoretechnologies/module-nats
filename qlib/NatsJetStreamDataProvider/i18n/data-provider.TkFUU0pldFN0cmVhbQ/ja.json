@@ -1851,6 +1851,30 @@
           "source": "JetStream subject to subscribe to",
           "message": "サブスクライブするJetStreamサブジェクト"
         },
+        "app.TkFUU0pldFN0cmVhbQ.action.cHVsbC1zdWJzY3JpYmU.option.cmVmdXNhbF9kZWxheV9tcw.display_name": {
+          "source": "Refusal Delay",
+          "message": "拒否後の遅延"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.cHVsbC1zdWJzY3JpYmU.option.cmVmdXNhbF9kZWxheV9tcw.short_desc": {
+          "source": "Initial redelivery delay in milliseconds of a refused message",
+          "message": "拒否されたメッセージを再配信するまでの初期遅延 (ミリ秒)"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.cHVsbC1zdWJzY3JpYmU.option.cmVmdXNhbF9kZWxheV9tcw.desc": {
+          "source": "The delay in milliseconds after which the server delivers a message that an observer refused again; it doubles with each delivery of the message up to `max_refusal_delay_ms`.  The default is 1000",
+          "message": "オブザーバーが拒否したメッセージをサーバーが再配信するまでの遅延 (ミリ秒) です。メッセージが配信されるたびに `max_refusal_delay_ms` まで倍増します。デフォルトは 1000 です"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.cHVsbC1zdWJzY3JpYmU.option.bWF4X3JlZnVzYWxfZGVsYXlfbXM.display_name": {
+          "source": "Max Refusal Delay",
+          "message": "拒否後の最大遅延"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.cHVsbC1zdWJzY3JpYmU.option.bWF4X3JlZnVzYWxfZGVsYXlfbXM.short_desc": {
+          "source": "Maximum redelivery delay in milliseconds of a refused message",
+          "message": "拒否されたメッセージを再配信するまでの最大遅延 (ミリ秒)"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.cHVsbC1zdWJzY3JpYmU.option.bWF4X3JlZnVzYWxfZGVsYXlfbXM.desc": {
+          "source": "The maximum delay in milliseconds after which the server delivers a message that an observer refused again.  The default is 60000",
+          "message": "オブザーバーが拒否したメッセージをサーバーが再配信するまでの最大遅延 (ミリ秒) です。デフォルトは 60000 です"
+        },
         "app.TkFUU0pldFN0cmVhbQ.action.cHVsbC1zdWJzY3JpYmU.short_desc": {
           "source": "Pull subscribe with a durable consumer",
           "message": "永続コンシューマーを使用してプルサブスクライブ"

@@ -89,6 +89,8 @@ public class NatsDataProviderTest inherits QUnit::Test {
 
         # Subscribe tests
         addTestCase("subscribe test", \subscribeTest());
+        addTestCase("subscribe survives observer errors test", \subscribeObserverErrorTest());
+        addTestCase("queue subscribe survives observer errors test", \queueSubscribeObserverErrorTest());
 
         # Queue subscribe tests
         addTestCase("queue subscribe test", \queueSubscribeTest());
@@ -311,6 +313,55 @@ public class NatsDataProviderTest inherits QUnit::Test {
         client.close();
     }
 
+    #! An observer error does not end a core NATS subscription: the next messages are delivered (qore#6397)
+    subscribeObserverErrorTest() {
+        NatsDataProvider dp({"url": url});
+        NatsSubscribeEventDataProvider sub_dp =
+            cast<NatsSubscribeEventDataProvider>(dp.getChildProvider("subscribe"));
+
+        Queue deliveries();
+        NatsTestFailingObserver observer(deliveries, "msg1");
+        sub_dp.setObserverRequest({"subject": "dp.sub.err.>"});
+        sub_dp.registerObserver(observer, EVENT_NATS_MESSAGE);
+        sub_dp.observersReady();
+        on_exit sub_dp.stopEvents();
+
+        NatsClient client(url);
+        on_exit client.close();
+        client.publishString("dp.sub.err.one", "msg1");
+        client.publishString("dp.sub.err.two", "msg2");
+        client.publishString("dp.sub.err.three", "msg3");
+        client.flush();
+
+        list<string> seen = map deliveries.get(10s), xrange(3);
+        assertEq(("msg1", "msg2", "msg3"), seen, "the messages after the observer error are delivered");
+        assertTrue(sub_dp.isActive(), "the subscription survives the observer error");
+    }
+
+    #! An observer error does not end a core NATS queue subscription (qore#6397)
+    queueSubscribeObserverErrorTest() {
+        NatsDataProvider dp({"url": url});
+        NatsQueueSubscribeEventDataProvider qsub_dp =
+            cast<NatsQueueSubscribeEventDataProvider>(dp.getChildProvider("queue-subscribe"));
+
+        Queue deliveries();
+        NatsTestFailingObserver observer(deliveries, "q1");
+        qsub_dp.setObserverRequest({"subject": "dp.qsub.err.>", "queue": "err-workers"});
+        qsub_dp.registerObserver(observer, EVENT_NATS_MESSAGE);
+        qsub_dp.observersReady();
+        on_exit qsub_dp.stopEvents();
+
+        NatsClient client(url);
+        on_exit client.close();
+        client.publishString("dp.qsub.err.one", "q1");
+        client.publishString("dp.qsub.err.two", "q2");
+        client.flush();
+
+        list<string> seen = map deliveries.get(10s), xrange(2);
+        assertEq(("q1", "q2"), seen, "the message after the observer error is delivered");
+        assertTrue(qsub_dp.isActive(), "the queue subscription survives the observer error");
+    }
+
     # --- Queue subscribe tests ---
 
     queueSubscribeTest() {
@@ -389,5 +440,26 @@ public class NatsDataProviderTest inherits QUnit::Test {
                 "timeout_ms": 500,
             });
         });
+    }
+}
+
+#! Records every message and throws for one of them
+class NatsTestFailingObserver inherits Observer {
+    private {
+        Queue queue;
+        string fail_value;
+    }
+
+    constructor(Queue queue, string fail_value) {
+        self.queue = queue;
+        self.fail_value = fail_value;
+    }
+
+    update(string event_id, hash<auto> data) {
+        string value = data.data.toString();
+        queue.push(value);
+        if (value == fail_value) {
+            throw "NATS-TEST-ERROR", sprintf("failing for %y", value);
+        }
     }
 }
