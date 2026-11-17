@@ -1851,6 +1851,30 @@
           "source": "JetStream subject to subscribe to",
           "message": "Tema de JetStream al que suscribirse"
         },
+        "app.TkFUU0pldFN0cmVhbQ.action.cHVsbC1zdWJzY3JpYmU.option.cmVmdXNhbF9kZWxheV9tcw.display_name": {
+          "source": "Refusal Delay",
+          "message": "Retardo tras rechazo"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.cHVsbC1zdWJzY3JpYmU.option.cmVmdXNhbF9kZWxheV9tcw.short_desc": {
+          "source": "Initial redelivery delay in milliseconds of a refused message",
+          "message": "Retardo inicial en milisegundos antes de volver a entregar un mensaje rechazado"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.cHVsbC1zdWJzY3JpYmU.option.cmVmdXNhbF9kZWxheV9tcw.desc": {
+          "source": "The delay in milliseconds after which the server delivers a message that an observer refused again; it doubles with each delivery of the message up to `max_refusal_delay_ms`.  The default is 1000",
+          "message": "El retardo en milisegundos tras el cual el servidor vuelve a entregar un mensaje que un observador rechazó; se duplica con cada entrega del mensaje hasta `max_refusal_delay_ms`.  El valor predeterminado es 1000"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.cHVsbC1zdWJzY3JpYmU.option.bWF4X3JlZnVzYWxfZGVsYXlfbXM.display_name": {
+          "source": "Max Refusal Delay",
+          "message": "Retardo máximo tras rechazo"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.cHVsbC1zdWJzY3JpYmU.option.bWF4X3JlZnVzYWxfZGVsYXlfbXM.short_desc": {
+          "source": "Maximum redelivery delay in milliseconds of a refused message",
+          "message": "Retardo máximo en milisegundos antes de volver a entregar un mensaje rechazado"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.cHVsbC1zdWJzY3JpYmU.option.bWF4X3JlZnVzYWxfZGVsYXlfbXM.desc": {
+          "source": "The maximum delay in milliseconds after which the server delivers a message that an observer refused again.  The default is 60000",
+          "message": "El retardo máximo en milisegundos tras el cual el servidor vuelve a entregar un mensaje que un observador rechazó.  El valor predeterminado es 60000"
+        },
         "app.TkFUU0pldFN0cmVhbQ.action.cHVsbC1zdWJzY3JpYmU.short_desc": {
           "source": "Pull subscribe with a durable consumer",
           "message": "Suscripción pull con un consumidor duradero"

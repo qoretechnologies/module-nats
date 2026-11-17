@@ -41,6 +41,23 @@ public class NatsJSSubscribeRequestDataType inherits HashDataType {
                 "required": True,
                 "example_value": "orders.>",
             },
+            "refusal_delay_ms": {
+                "type": IntOrNothingType,
+                "display_name": "Refusal Delay",
+                "short_desc": "Initial redelivery delay in milliseconds of a refused message",
+                "desc": "The delay in milliseconds after which the server delivers a message that an observer "
+                    "refused again; it doubles with each delivery of the message up to `max_refusal_delay_ms`.  "
+                    "The default is 1000",
+                "example_value": 1000,
+            },
+            "max_refusal_delay_ms": {
+                "type": IntOrNothingType,
+                "display_name": "Max Refusal Delay",
+                "short_desc": "Maximum redelivery delay in milliseconds of a refused message",
+                "desc": "The maximum delay in milliseconds after which the server delivers a message that an "
+                    "observer refused again.  The default is 60000",
+                "example_value": 60000,
+            },
         };
     }
     constructor() : HashDataType("NatsJSSubscribeRequest") {
@@ -52,6 +69,9 @@ public const NatsJSSubscribeRequestDataType = new NatsJSSubscribeRequestDataType
 
 #! Observable data provider for JetStream push subscriptions
 /** Uses NatsChannelSubscription internally for message delivery.
+
+    Each message is acknowledged after every observer has accepted it, and a refused message is delivered again
+    after a delay (see @ref natsjetstream_delivery); a refusal never ends the subscription.
 
     Events raised:
     - @ref EVENT_JS_MESSAGE — a message received on the JetStream subscription
@@ -85,6 +105,15 @@ public class NatsJSSubscribeEventDataProvider inherits AbstractDataProvider, Del
 
         #! Mutex
         Mutex m();
+
+        #! The number of messages acknowledged
+        int acked_count = 0;
+
+        #! The number of refusals
+        int refused_count = 0;
+
+        #! The number of acknowledgements that could not be sent
+        int settle_error_count = 0;
     }
 
     constructor(JetStreamContext js, NatsClient client) {
@@ -137,6 +166,46 @@ public class NatsJSSubscribeEventDataProvider inherits AbstractDataProvider, Del
         return active;
     }
 
+    #! Returns delivery statistics
+    /** @return a hash with the following keys:
+        - \c acked: the number of messages acknowledged after the observers accepted them
+        - \c refused: the number of refusals (each refused message is delivered again)
+        - \c settle_errors: the number of settlements that could not be sent (the server delivers those messages
+          again after the consumer's ack wait)
+    */
+    hash<string, int> getDeliveryStats() {
+        AutoLock al(m);
+        return {
+            "acked": acked_count,
+            "refused": refused_count,
+            "settle_errors": settle_error_count,
+        };
+    }
+
+    #! Settles a message
+    /** @return @ref True if the settlement was sent
+    */
+    private bool settle(code action, hash<NatsMsgInfo> msg, *int delay_ms) {
+        try {
+            bool rv = exists delay_ms ? action(client, msg, delay_ms) : action(client, msg);
+            if (!rv) {
+                # a message without a reply subject cannot be settled
+                AutoLock al(m);
+                ++settle_error_count;
+            }
+            return rv;
+        } catch (hash<ExceptionInfo> ex) {
+            {
+                AutoLock al(m);
+                ++settle_error_count;
+            }
+            Logger::LoggerWrapper::error("cannot settle the message on subject %y: %s: %s", msg.subject, ex.err,
+                ex.desc);
+        }
+        return False;
+    }
+
+
     private hash<DataProviderInfo> getStaticInfoImpl() {
         return <DataProviderInfo>{
             "type": "NatsJSSubscribeEventDataProvider",
@@ -185,6 +254,8 @@ public class NatsJSSubscribeEventDataProvider inherits AbstractDataProvider, Del
     private subscribeLoop() {
         @debug("NatsJSSubscribeEventDataProvider::subscribeLoop() started");
         try {
+            # consecutive refusals; gives the redelivery delay of a message without a delivery count
+            int refusals = 0;
             foreach hash<NatsMsgInfo> msg in (csub.iterator()) {
                 {
                     AutoLock al(m);
@@ -192,7 +263,27 @@ public class NatsJSSubscribeEventDataProvider inherits AbstractDataProvider, Del
                         break;
                     }
                 }
-                notifyObservers(EVENT_JS_MESSAGE, msg);
+                # see @ref natsjetstream_delivery
+                try {
+                    notifyObservers(EVENT_JS_MESSAGE, msg);
+                } catch (hash<ExceptionInfo> ex) {
+                    int delay_ms = NatsJSDelivery::getDelay(NatsJSDelivery::getDeliveryCount(msg, ++refusals),
+                        observer_request);
+                    {
+                        AutoLock al(m);
+                        ++refused_count;
+                    }
+                    Logger::LoggerWrapper::error("%s: message on subject %y refused; it will be delivered again in "
+                        "%d ms: %s: %s", "NatsJSSubscribeEventDataProvider", msg.subject, delay_ms,
+                        ex.err, ex.desc);
+                    settle(\NatsJSDelivery::nak(), msg, delay_ms);
+                    continue;
+                }
+                refusals = 0;
+                if (settle(\NatsJSDelivery::ack(), msg)) {
+                    AutoLock al(m);
+                    ++acked_count;
+                }
             }
 
             {

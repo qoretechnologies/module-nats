@@ -1851,6 +1851,30 @@
           "source": "JetStream subject to subscribe to",
           "message": "要訂閱的 JetStream 主題"
         },
+        "app.TkFUU0pldFN0cmVhbQ.action.cHVsbC1zdWJzY3JpYmU.option.cmVmdXNhbF9kZWxheV9tcw.display_name": {
+          "source": "Refusal Delay",
+          "message": "拒絕後延遲"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.cHVsbC1zdWJzY3JpYmU.option.cmVmdXNhbF9kZWxheV9tcw.short_desc": {
+          "source": "Initial redelivery delay in milliseconds of a refused message",
+          "message": "被拒絕的訊息再次傳遞前的初始延遲（毫秒）"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.cHVsbC1zdWJzY3JpYmU.option.cmVmdXNhbF9kZWxheV9tcw.desc": {
+          "source": "The delay in milliseconds after which the server delivers a message that an observer refused again; it doubles with each delivery of the message up to `max_refusal_delay_ms`.  The default is 1000",
+          "message": "伺服器再次傳遞觀察者拒絕的訊息前的延遲（毫秒）；訊息每傳遞一次就會加倍，最多到 `max_refusal_delay_ms`。預設值為 1000"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.cHVsbC1zdWJzY3JpYmU.option.bWF4X3JlZnVzYWxfZGVsYXlfbXM.display_name": {
+          "source": "Max Refusal Delay",
+          "message": "拒絕後最大延遲"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.cHVsbC1zdWJzY3JpYmU.option.bWF4X3JlZnVzYWxfZGVsYXlfbXM.short_desc": {
+          "source": "Maximum redelivery delay in milliseconds of a refused message",
+          "message": "被拒絕的訊息再次傳遞前的最大延遲（毫秒）"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.cHVsbC1zdWJzY3JpYmU.option.bWF4X3JlZnVzYWxfZGVsYXlfbXM.desc": {
+          "source": "The maximum delay in milliseconds after which the server delivers a message that an observer refused again.  The default is 60000",
+          "message": "伺服器再次傳遞觀察者拒絕的訊息前的最大延遲（毫秒）。預設值為 60000"
+        },
         "app.TkFUU0pldFN0cmVhbQ.action.cHVsbC1zdWJzY3JpYmU.short_desc": {
           "source": "Pull subscribe with a durable consumer",
           "message": "使用持久消費者進行拉取式訂閱"

@@ -1851,6 +1851,30 @@
           "source": "JetStream subject to subscribe to",
           "message": "Суб'єкт JetStream для підписки"
         },
+        "app.TkFUU0pldFN0cmVhbQ.action.cHVsbC1zdWJzY3JpYmU.option.cmVmdXNhbF9kZWxheV9tcw.display_name": {
+          "source": "Refusal Delay",
+          "message": "Затримка після відхилення"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.cHVsbC1zdWJzY3JpYmU.option.cmVmdXNhbF9kZWxheV9tcw.short_desc": {
+          "source": "Initial redelivery delay in milliseconds of a refused message",
+          "message": "Початкова затримка в мілісекундах перед повторною доставкою відхиленого повідомлення"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.cHVsbC1zdWJzY3JpYmU.option.cmVmdXNhbF9kZWxheV9tcw.desc": {
+          "source": "The delay in milliseconds after which the server delivers a message that an observer refused again; it doubles with each delivery of the message up to `max_refusal_delay_ms`.  The default is 1000",
+          "message": "Затримка в мілісекундах, після якої сервер повторно доставляє повідомлення, відхилене спостерігачем; вона подвоюється з кожною доставкою повідомлення до `max_refusal_delay_ms`.  Значення за замовчуванням — 1000"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.cHVsbC1zdWJzY3JpYmU.option.bWF4X3JlZnVzYWxfZGVsYXlfbXM.display_name": {
+          "source": "Max Refusal Delay",
+          "message": "Максимальна затримка після відхилення"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.cHVsbC1zdWJzY3JpYmU.option.bWF4X3JlZnVzYWxfZGVsYXlfbXM.short_desc": {
+          "source": "Maximum redelivery delay in milliseconds of a refused message",
+          "message": "Максимальна затримка в мілісекундах перед повторною доставкою відхиленого повідомлення"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.cHVsbC1zdWJzY3JpYmU.option.bWF4X3JlZnVzYWxfZGVsYXlfbXM.desc": {
+          "source": "The maximum delay in milliseconds after which the server delivers a message that an observer refused again.  The default is 60000",
+          "message": "Максимальна затримка в мілісекундах, після якої сервер повторно доставляє повідомлення, відхилене спостерігачем.  Значення за замовчуванням — 60000"
+        },
         "app.TkFUU0pldFN0cmVhbQ.action.cHVsbC1zdWJzY3JpYmU.short_desc": {
           "source": "Pull subscribe with a durable consumer",
           "message": "Підписатися способом Pull за допомогою довговічного споживача"

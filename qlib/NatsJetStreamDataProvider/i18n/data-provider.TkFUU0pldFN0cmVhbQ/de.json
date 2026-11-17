@@ -1851,6 +1851,30 @@
           "source": "JetStream subject to subscribe to",
           "message": "Zu abonnierendes JetStream-Subject"
         },
+        "app.TkFUU0pldFN0cmVhbQ.action.cHVsbC1zdWJzY3JpYmU.option.cmVmdXNhbF9kZWxheV9tcw.display_name": {
+          "source": "Refusal Delay",
+          "message": "Verzögerung nach Ablehnung"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.cHVsbC1zdWJzY3JpYmU.option.cmVmdXNhbF9kZWxheV9tcw.short_desc": {
+          "source": "Initial redelivery delay in milliseconds of a refused message",
+          "message": "Anfängliche Verzögerung in Millisekunden bis zur erneuten Zustellung einer abgelehnten Nachricht"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.cHVsbC1zdWJzY3JpYmU.option.cmVmdXNhbF9kZWxheV9tcw.desc": {
+          "source": "The delay in milliseconds after which the server delivers a message that an observer refused again; it doubles with each delivery of the message up to `max_refusal_delay_ms`.  The default is 1000",
+          "message": "Die Verzögerung in Millisekunden, nach der der Server eine Nachricht, die ein Observer abgelehnt hat, erneut zustellt; sie verdoppelt sich mit jeder Zustellung der Nachricht bis `max_refusal_delay_ms`.  Der Standardwert ist 1000"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.cHVsbC1zdWJzY3JpYmU.option.bWF4X3JlZnVzYWxfZGVsYXlfbXM.display_name": {
+          "source": "Max Refusal Delay",
+          "message": "Maximale Verzögerung nach Ablehnung"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.cHVsbC1zdWJzY3JpYmU.option.bWF4X3JlZnVzYWxfZGVsYXlfbXM.short_desc": {
+          "source": "Maximum redelivery delay in milliseconds of a refused message",
+          "message": "Maximale Verzögerung in Millisekunden bis zur erneuten Zustellung einer abgelehnten Nachricht"
+        },
+        "app.TkFUU0pldFN0cmVhbQ.action.cHVsbC1zdWJzY3JpYmU.option.bWF4X3JlZnVzYWxfZGVsYXlfbXM.desc": {
+          "source": "The maximum delay in milliseconds after which the server delivers a message that an observer refused again.  The default is 60000",
+          "message": "Die maximale Verzögerung in Millisekunden, nach der der Server eine Nachricht, die ein Observer abgelehnt hat, erneut zustellt.  Der Standardwert ist 60000"
+        },
         "app.TkFUU0pldFN0cmVhbQ.action.cHVsbC1zdWJzY3JpYmU.short_desc": {
           "source": "Pull subscribe with a durable consumer",
           "message": "Pull-Abonnement mit einem dauerhaften Consumer"
