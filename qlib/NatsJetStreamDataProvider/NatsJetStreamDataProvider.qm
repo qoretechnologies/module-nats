@@ -762,9 +762,14 @@ module NatsJetStreamDataProvider {
   └── account-info     (NatsJSAccountInfoDataProvider — DPAT_API)
     @endverbatim
 
-    @section natsjetstreamdataprovider_relnotes Release Notes
+    @anchor natsjetstreamdataprovider_relnotes
 
-    @subsection natsjetstreamdataprovider_v1_0 NatsJetStreamDataProvider v1.0
+    @subpage natsjetstreamdataproviderreleasenotes
+*/
+
+/** @page natsjetstreamdataproviderreleasenotes NatsJetStreamDataProvider Release Notes
+
+    @section natsjetstreamdataprovider_v1_0 NatsJetStreamDataProvider Module Version 1.0
     - initial release
 */
 
