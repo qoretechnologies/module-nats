@@ -125,8 +125,13 @@ client.subscribe("events.>", sub (hash<NatsMsgInfo> msg) {
 });
     @endcode
 
-    @section natsutilrelnotes Release Notes
+    @anchor natsutilrelnotes
 
-    @subsection natsutil_v1_0 NatsUtil Module Version 1.0
+    @subpage natsutilreleasenotes
+*/
+
+/** @page natsutilreleasenotes NatsUtil Release Notes
+
+    @section natsutil_v1_0 NatsUtil Module Version 1.0
     - initial release
 */

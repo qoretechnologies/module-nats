@@ -185,6 +185,9 @@ module NatsDataProvider {
     - <b>Subscribe</b>: observable event-based message delivery
     - <b>Queue Subscribe</b>: load-balanced message delivery across consumers
 
+    @par Connection options
+    Connection option labels and descriptions are localized in all twelve standard locales.
+
     @subsection natsdataprovider_hierarchy Provider Hierarchy
 
     @verbatim
@@ -201,11 +204,14 @@ module NatsDataProvider {
     - \c nats://host:port — plaintext NATS
     - \c natss://host:port — TLS-encrypted NATS
 
-    @section natsdataprovider_relnotes Release Notes
+    @anchor natsdataprovider_relnotes
 
-    @subsection natsdataprovider_v1_0 NatsDataProvider v1.0
-    - added source-owned connection option catalogs in all twelve standard locales; unchanged inherited
-      presentation keeps its original producer identity, including HTTP/REST options and allowed values
+    @subpage natsdataproviderreleasenotes
+*/
+
+/** @page natsdataproviderreleasenotes NatsDataProvider Release Notes
+
+    @section natsdataprovider_v1_0 NatsDataProvider Module Version 1.0
     - initial release
 */
 

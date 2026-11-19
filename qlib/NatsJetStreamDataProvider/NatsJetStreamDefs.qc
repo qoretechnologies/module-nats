@@ -1277,8 +1277,8 @@ public class NatsJSDelivery {
 
     #! Returns the number of deliveries of a message, from its reply subject, or the given value if it has none
     /** The reply subject of a JetStream message is
-        <tt>$JS.ACK.<stream>.<consumer>.<delivered>.<sseq>.<cseq>.<ts>.<pending></tt> or, with a domain and an account
-        hash, <tt>$JS.ACK.<domain>.<hash>.<stream>.<consumer>.<delivered>...</tt>
+        <tt>$JS.ACK.&lt;stream&gt;.&lt;consumer&gt;.&lt;delivered&gt;.&lt;sseq&gt;.&lt;cseq&gt;.&lt;ts&gt;.&lt;pending&gt;</tt> or, with a domain and an account
+        hash, <tt>$JS.ACK.&lt;domain&gt;.&lt;hash&gt;.&lt;stream&gt;.&lt;consumer&gt;.&lt;delivered&gt;...</tt>
     */
     static int getDeliveryCount(hash<NatsMsgInfo> msg, int fallback) {
         list<string> tokens = (msg.reply ?? "").split(".");
