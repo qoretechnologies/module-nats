@@ -227,6 +227,7 @@ public class NatsJSPullSubscribeEventDataProvider inherits AbstractDataProvider,
         return <DataProviderInfo>{
             "type": "NatsJSPullSubscribeEventDataProvider",
             "supports_observable": True,
+            "supports_refusal_redelivery": True,
         };
     }
 

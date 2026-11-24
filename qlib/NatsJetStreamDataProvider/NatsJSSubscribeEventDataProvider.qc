@@ -210,6 +210,7 @@ public class NatsJSSubscribeEventDataProvider inherits AbstractDataProvider, Del
         return <DataProviderInfo>{
             "type": "NatsJSSubscribeEventDataProvider",
             "supports_observable": True,
+            "supports_refusal_redelivery": True,
         };
     }
 

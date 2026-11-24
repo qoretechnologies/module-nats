@@ -1233,7 +1233,8 @@ public namespace NatsJetStreamDataProvider {
     stops, the messages that it fetched but did not deliver are refused without a delay.  A redelivered message goes
     to every observer again, so an observer that accepted it before another one refused it sees it again (at-least-once
     delivery), and the consumer's \c max_deliver limit, if any, applies to it.  A refusal never ends the
-    subscription.
+    subscription. A message without a reply subject cannot be negatively acknowledged, so the provider cannot
+    request its redelivery.
 */
 public class NatsJSDelivery {
     public {
