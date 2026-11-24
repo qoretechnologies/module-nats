@@ -31,6 +31,13 @@ public namespace NatsDataProvider {
     @since NatsDataProvider 1.0
 */
 public class NatsConnectionProvider inherits ConnectionProvider::AbstractConnectionWithInfo {
+    #! Returns the functional domains of the connection's clients (qoretechnologies/qore#7097)
+    /** The clients connect to a NATS server, also those of NatsTlsConnectionProvider
+    */
+    private final int getConnectionDomainsImpl() {
+        return DOM_NETWORK;
+    }
+
     public {
         #! Connection scheme info
         const ConnectionScheme = ConnectionProvider::connection_scheme_presentation("NatsDataProvider",
