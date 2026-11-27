@@ -78,6 +78,8 @@ NatsConnection::constructor(string url) [flags=NAMED_ARGS] {
     @throw NATS-CONNECTION-ERROR if the connection cannot be established
     @throw NATS-AUTH-ERROR if authentication fails
     @throw NATS-TLS-ERROR if TLS configuration fails
+    @throw PERMISSION-DENIED the options name a file (\c credentials, \c nkey_seed or a \c tls file) and the calling
+    code is restricted from the \c FILESYSTEM functional domain (see @ref natscallerpaths)
 
     @par Example:
     @code{.py}

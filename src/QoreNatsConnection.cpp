@@ -240,7 +240,7 @@ int QoreNatsConnection::configureOptions(const QoreHashNode* options, ExceptionS
     v = options->getKeyValue("nkey_seed");
     if (v.getType() == NT_STRING) {
         QoreStringValueHelper seed(v);
-        if (check_nats_file_access(seed->c_str(), xsink)) {
+        if (check_nats_file_access("nkey_seed", seed->c_str(), xsink)) {
             return -1;
         }
         QoreValue nkey_pub = options->getKeyValue("nkey_pub");
@@ -260,7 +260,7 @@ int QoreNatsConnection::configureOptions(const QoreHashNode* options, ExceptionS
     v = options->getKeyValue("credentials");
     if (v.getType() == NT_STRING) {
         QoreStringValueHelper credentials(v);
-        if (check_nats_file_access(credentials->c_str(), xsink)) {
+        if (check_nats_file_access("credentials", credentials->c_str(), xsink)) {
             return -1;
         }
         s = natsOptions_SetUserCredentialsFromFiles(opts,
@@ -527,7 +527,7 @@ int QoreNatsConnection::configureOptions(const QoreHashNode* options, ExceptionS
         QoreValue ca = tls->getKeyValue("ca_cert");
         if (ca.getType() == NT_STRING) {
             QoreStringValueHelper ca_str(ca);
-            if (check_nats_file_access(ca_str->c_str(), xsink)) {
+            if (check_nats_file_access("tls.ca_cert", ca_str->c_str(), xsink)) {
                 return -1;
             }
             s = natsOptions_LoadCATrustedCertificates(opts,
@@ -543,10 +543,10 @@ int QoreNatsConnection::configureOptions(const QoreHashNode* options, ExceptionS
         if (cert.getType() == NT_STRING && key.getType() == NT_STRING) {
             QoreStringValueHelper cert_str(cert);
             QoreStringValueHelper key_str(key);
-            if (check_nats_file_access(cert_str->c_str(), xsink)) {
+            if (check_nats_file_access("tls.client_cert", cert_str->c_str(), xsink)) {
                 return -1;
             }
-            if (check_nats_file_access(key_str->c_str(), xsink)) {
+            if (check_nats_file_access("tls.client_key", key_str->c_str(), xsink)) {
                 return -1;
             }
             s = natsOptions_LoadCertificatesChain(opts,

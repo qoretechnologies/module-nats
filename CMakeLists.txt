@@ -23,7 +23,7 @@ if (UNIX AND NOT APPLE)
 endif()
 
 list(APPEND QORE_DOXYGEN_MODULES DataProvider)
-find_package(Qore 2.0 REQUIRED)
+find_package(Qore 3.0 REQUIRED)
 
 # Find nats.c library — if not installed, fetch and build from source
 find_path(NATS_INCLUDE_DIR nats/nats.h)

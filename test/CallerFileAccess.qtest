@@ -1,0 +1,212 @@
+#!/usr/bin/env qore
+# -*- mode: qore; indent-tabs-mode: nil -*-
+
+/*
+    Copyright (C) 2026 Qore Technologies, s.r.o.
+
+    Permission is hereby granted, free of charge, to any person obtaining a
+    copy of this software and associated documentation files (the "Software"),
+    to deal in the Software without restriction, including without limitation
+    the rights to use, copy, modify, merge, publish, distribute, sublicense,
+    and/or sell copies of the Software, and to permit persons to whom the
+    Software is furnished to do so, subject to the following conditions:
+
+    The above copyright notice and this permission notice shall be included in
+    all copies or substantial portions of the Software.
+
+    THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+    IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+    FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+    AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+    DEALINGS IN THE SOFTWARE.
+*/
+
+%modern
+%no-child-restrictions
+%prepend-module-path "${SCRIPT_DIR}/../qlib"
+
+%requires QUnit
+%requires Util
+%requires nats
+%requires NatsUtil
+%requires ./NatsTestServer.qm
+
+%exec-class CallerFileAccessTest
+
+#! Tests that the file options of a NATS connection are refused for code restricted from the file system (module-nats#10)
+/** The module's code runs with its own Program's options, so the files that the connection options name (the
+    credentials file, the NKey seed file and the TLS certificate and key files), which the NATS C client reads, are
+    refused with PERMISSION-DENIED if the code that creates the connection is restricted from the file system, as with
+    PO_NO_FILESYSTEM, also when it creates the connection through NatsUtil's NatsClient; the refusal comes before the
+    C client reads the file or connects.  A sandbox that denies the file system by default refuses the files with its
+    policy.  Options without files work for restricted code, and unrestricted code uses the files.
+
+    No NATS server is needed for the refusals: the connections are made to a port where nothing listens, so the
+    unrestricted code gets a TLS or connection error after the file was used.  The case that connects to a server is
+    skipped when no server can be run.
+*/
+class CallerFileAccessTest inherits QUnit::Test {
+    private {
+        const Modes = {"ast": EM_AST, "ir": EM_IR, "jit": EM_JIT, "tiered": EM_TIERED};
+
+        #! the URL of a port where nothing listens: an attempt to connect fails at once
+        const NoServer = "nats://127.0.0.1:1";
+
+        const Source = "%modern
+%requires nats
+%requires NatsUtil
+
+# runs the given use and returns \"ok\" or the error
+string sub run(code c) {
+    try {
+        c();
+        return \"ok\";
+    } catch (hash<ExceptionInfo> ex) {
+        return ex.err;
+    }
+}
+
+hash<Nats::NatsConnectionOptions> sub get_options(hash<auto> opts) {
+    if (opts.tls) {
+        opts.tls = cast<hash<Nats::NatsTlsOptions>>(opts.tls);
+    }
+    return cast<hash<Nats::NatsConnectionOptions>>(opts);
+}
+
+string sub connect(hash<auto> opts) {
+    return run(sub () {
+        Nats::NatsConnection conn(get_options(opts));
+        conn.close();
+    });
+}
+
+string sub client(hash<auto> opts) {
+    return run(sub () { NatsClient c(get_options(opts)); });
+}
+";
+    }
+
+    private {
+        #! the test directory
+        string dir;
+        #! a file that is not a valid credentials, seed, certificate or key file
+        string file;
+    }
+
+    constructor() : QUnit::Test("CallerFileAccess", "1.0", \ARGV) {
+        foreach string mode in (keys Modes) {
+            string m = mode;
+            addTestCase("file options, " + m, sub () { testFileOptions(m); });
+            addTestCase("options without files, " + m, sub () { testNoFiles(m); });
+        }
+        addTestCase("restricted code connects without files", \testConnect());
+        set_return_value(main());
+    }
+
+    globalSetUp() {
+        string tmp = tmp_location() + DirSep + "qore-nats-caller-file-access-" + get_random_string(8);
+        mkdir(tmp);
+        dir = realpath(tmp);
+        file = dir + DirSep + "file.txt";
+        File f();
+        f.open2(file, O_CREAT | O_TRUNC | O_WRONLY);
+        f.write("not a credentials, seed, certificate or key file\n");
+        f.close();
+    }
+
+    globalTearDown() {
+        if (dir.val()) {
+            unlink(file);
+            rmdir(dir);
+        }
+    }
+
+    #! returns the options with files: description, options
+    private list<list<auto>> getFileOptions(string path) {
+        return (
+            ("credentials", {"url": NoServer, "credentials": path}),
+            ("nkey_seed", {"url": NoServer, "nkey_seed": path}),
+            ("tls.ca_cert", {"url": NoServer, "tls": {"ca_cert": path}}),
+            ("tls.client_cert and client_key", {"url": NoServer, "tls": {"client_cert": path, "client_key": path}}),
+        );
+    }
+
+    #! the files of restricted code are refused before they are used; unrestricted code uses them
+    private testFileOptions(string mode) {
+        foreach string func in ("connect", "client") {
+            foreach list<auto> o in (getFileOptions(file)) {
+                string desc = sprintf("%s %s %s", func, o[0], mode);
+                assertEq("PERMISSION-DENIED", getProgram("nofs", mode).callFunction(func, o[1]), "nofs " + desc);
+                # the sandbox's file-system policy refuses the file
+                assertEq("FILESYSTEM-ACCESS-DENIED", getProgram("sandbox", mode).callFunction(func, o[1]),
+                    "sandbox " + desc);
+                # the C client uses the file: it cannot be parsed, or no server is there
+                string err = getProgram("unrestricted", mode).callFunction(func, o[1]);
+                assertRegex("^NATS-(TLS|AUTH|CONNECTION)-ERROR$", err, "unrestricted " + desc);
+            }
+            # any value that is set is checked
+            foreach string path in ("", "0") {
+                foreach list<auto> o in (getFileOptions(path)) {
+                    assertEq("PERMISSION-DENIED", getProgram("nofs", mode).callFunction(func, o[1]),
+                        sprintf("nofs %s %s %y %s", func, o[0], path, mode));
+                }
+            }
+        }
+    }
+
+    #! options without files work for restricted code
+    private testNoFiles(string mode) {
+        foreach string kind in ("nofs", "sandbox") {
+            foreach string func in ("connect", "client") {
+                # the connection fails, as no server is there, after the options were accepted
+                assertEq("NATS-CONNECTION-ERROR", getProgram(kind, mode).callFunction(func, {"url": NoServer,
+                    "name": "test", "tls": {"skip_verify": True}}), sprintf("%s %s %s", kind, func, mode));
+            }
+        }
+    }
+
+    #! restricted code connects to a server without files
+    private testConnect() {
+        if (!NatsTestServer::available()) {
+            testSkip("the process module is not available");
+        }
+        NatsTestServer server;
+        try {
+            server = new NatsTestServer();
+        } catch (hash<ExceptionInfo> ex) {
+            testSkip(sprintf("cannot run nats-server: %s: %s", ex.err, ex.desc));
+        }
+        on_exit server.stop();
+        foreach string mode in (keys Modes) {
+            foreach string func in ("connect", "client") {
+                assertEq("ok", getProgram("nofs", mode).callFunction(func, {"url": server.url}),
+                    sprintf("nofs %s %s", func, mode));
+            }
+        }
+    }
+
+    #! returns a Program of the given kind
+    private Program getProgram(string kind, string mode) {
+        Program p;
+        switch (kind) {
+            case "nofs":
+                p = new Program(PO_NEW_STYLE | PO_NO_FILESYSTEM);
+                break;
+            case "sandbox": {
+                SandboxManager sm();
+                sm.setFilesystemDefaultPolicy(False);
+                p = new Program(PO_NEW_STYLE);
+                p.setSandboxManager(sm);
+                break;
+            }
+            default:
+                p = new Program(PO_NEW_STYLE);
+                break;
+        }
+        p.setExecMode(Modes{mode});
+        p.parse(Source, kind);
+        return p;
+    }
+}

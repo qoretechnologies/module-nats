@@ -33,6 +33,24 @@
     to.  A reconnection to a server that the policy denies, for example a discovered server on another network, fails
     like a reconnection to a server that is down.
 
+    @section natscallerpaths Paths Given by Restricted Callers
+
+    The module's code runs with its own %Program's options, so it decides with the restrictions of the code that
+    creates a connection before the NATS C client reads a file that the connection options name: the \c credentials
+    file, the \c nkey_seed file and the \c ca_cert, \c client_cert and \c client_key files of the \c tls options
+    (see @ref Qore::Nats::NatsConnectionOptions and @ref Qore::Nats::NatsTlsOptions).  If that code is restricted from
+    the \c FILESYSTEM functional domain (for example with \c PO_NO_FILESYSTEM), the connection is not created and
+    the constructor raises \c PERMISSION-DENIED before any file is read or the server is connected to; any value that
+    is set is checked, also an empty string.  This also applies when the code creates the connection through
+    @ref Nats::NatsClient "NatsClient".  The file-system policy of a sandbox that governs the code is checked as well
+    (\c FILESYSTEM-ACCESS-DENIED).
+
+    The options are given when the connection is created, so the creating code is judged (see
+    @ref Qore::SandboxManager::isCallerRestricted() "SandboxManager::isCallerRestricted()"): a connection that the
+    host created and gave to restricted code keeps the files that the host configured.  The connection options of the
+    data providers and connection schemes of the module name no files.  Options without files work for restricted
+    code.
+
     @section natsfork Child Processes Created with fork()
 
     A child process created with \c fork() runs only the thread that called \c fork(): the threads of the NATS C
