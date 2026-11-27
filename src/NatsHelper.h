@@ -137,12 +137,19 @@ private:
     NatsSandboxDialer& operator=(const NatsSandboxDialer&) = delete;
 };
 
-//! Check sandbox filesystem access for a file path
-/** @param path the file path to check
+//! Checks that the code that creates a connection may read a file given in the connection options
+/** The module's code runs with its own Program's options, so a file path that the calling code gives is refused with
+    \c PERMISSION-DENIED if that code is restricted from the \c FILESYSTEM functional domain (for example with
+    \c PO_NO_FILESYSTEM); the file-system policy of a sandbox that governs the code is checked too.  The options are
+    given when the connection is created, so the creating code is judged (qore_caller_restricts_domain()): a
+    connection that the host configured keeps using the host's files when it is lent to restricted code.
+
+    @param option the name of the option, for the error message
+    @param path the file path to check
     @param xsink the exception sink
-    @return 0 on success (or no sandbox active), -1 if access was denied
+    @return 0 on success, -1 if access was denied (an exception is raised)
 */
-DLLLOCAL int check_nats_file_access(const char* path, ExceptionSink* xsink);
+DLLLOCAL int check_nats_file_access(const char* option, const char* path, ExceptionSink* xsink);
 
 //! Convert a kvEntry to a hash<NatsKVEntry>
 /** @param entry the KV entry (caller retains ownership)

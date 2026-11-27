@@ -322,7 +322,15 @@ int check_nats_network_access(const char* url, ExceptionSink* xsink) {
     return denied ? -1 : 0;
 }
 
-int check_nats_file_access(const char* path, ExceptionSink* xsink) {
+int check_nats_file_access(const char* option, const char* path, ExceptionSink* xsink) {
+    // the path is the calling code's input: refused before the C client reads it if that code is restricted from the
+    // file system (issue #10)
+    if (qore_caller_restricts_domain(QDOM_FILESYSTEM)) {
+        xsink->raiseException("PERMISSION-DENIED", "the '%s' option cannot be used: the calling code is restricted "
+            "from the FILESYSTEM functional domain", option);
+        return -1;
+    }
+
     // a policy check: under a policy barrier, the caller's filesystem policy does not apply
     QoreSandboxManagerHelper smh(QoreSandboxManagerHelper::Policy);
     if (!smh) {

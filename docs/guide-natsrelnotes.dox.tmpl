@@ -6,4 +6,8 @@
 
     @section nats_v1_0 nats Module Version 1.0
     - initial release
+    - the files that the connection options name (\c credentials, \c nkey_seed and the \c tls certificate and key
+      files) are refused with \c PERMISSION-DENIED before they are read if the code that creates the connection is
+      restricted from the file system (see @ref natscallerpaths,
+      <a href="https://github.com/qoretechnologies/module-nats/issues/10">issue 10</a>)
 */
