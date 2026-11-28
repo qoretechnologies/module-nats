@@ -61,7 +61,7 @@ public namespace NatsDataProvider {
                 },
                 "reply": {
                     "type": StringOrNothingType,
-                    "display_name": "Reply Subject",
+                    "display_name": "Reply subject",
                     "short_desc": "The reply subject for request-reply messaging",
                     "desc": "The reply-to subject used for NATS request-reply "
                         "patterns. This is an auto-generated inbox address "
@@ -100,7 +100,7 @@ public namespace NatsDataProvider {
             const Fields = {
                 "err": {
                     "type": StringType,
-                    "display_name": "Error Code",
+                    "display_name": "Error code",
                     "short_desc": "The error code identifying the type of failure",
                     "desc": "The NATS error code string identifying the type of "
                         "failure that occurred (e.g., "

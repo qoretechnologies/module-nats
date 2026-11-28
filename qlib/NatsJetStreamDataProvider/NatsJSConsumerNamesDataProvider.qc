@@ -31,7 +31,7 @@ public class NatsJSConsumerNamesRequestDataType inherits HashDataType {
         const Fields = {
             "stream": {
                 "type": StringType,
-                "display_name": "Stream Name",
+                "display_name": "Stream name",
                 "short_desc": "Stream name to list consumer names for",
                 "desc": "The name of the JetStream stream to list consumer names for.\n\n"
                     "The stream must already exist; an error is raised if the stream is "
@@ -92,7 +92,7 @@ public class NatsJSConsumerNamesDataProvider inherits AbstractDataProvider {
         return <DataProviderInfo>{
             "type": "NatsJSConsumerNamesDataProvider",
             "supports_request": True,
-            "display_name": "Consumer Names",
+            "display_name": "Consumer names",
             "short_desc": "List all consumer names for a JetStream stream",
         };
     }

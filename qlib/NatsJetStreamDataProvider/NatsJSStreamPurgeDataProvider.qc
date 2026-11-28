@@ -31,7 +31,7 @@ public class NatsJSStreamPurgeRequestDataType inherits HashDataType {
         const Fields = {
             "name": {
                 "type": StringType,
-                "display_name": "Stream Name",
+                "display_name": "Stream name",
                 "short_desc": "Stream name to purge",
                 "desc": "The name of the JetStream stream to purge.\n\n"
                     "**Warning**: purging removes all messages from the stream while "

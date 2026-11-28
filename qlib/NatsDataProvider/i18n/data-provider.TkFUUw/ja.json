@@ -8,7 +8,7 @@
           "message": "オブザーバブルなイベントベースの配信により NATS サブジェクトのメッセージをサブスクライブします。\n\nワイルドカードサブジェクト (単一トークンは `*`、複数トークンは `>`) をサポートします。アクティブなすべてのサブスクライバーが一致するすべてのメッセージを受信します。ロードバランス配信を行う場合は、代わりに queue-subscribe を使用してください。"
         },
         "app.TkFUUw.action.c3Vic2NyaWJl.display_name": {
-          "source": "Subscribe to Messages",
+          "source": "Subscribe to messages",
           "message": "メッセージのサブスクライブ"
         },
         "app.TkFUUw.action.c3Vic2NyaWJl.option.c3ViamVjdA.desc": {
@@ -32,7 +32,7 @@
           "message": "Fire-and-Forget パターンを使用して指定された NATS サブジェクトにメッセージを発行します。\n\nメッセージは `subject` 上のすべてのアクティブなサブスクライバーに配信されます。**配信確認は提供されません**。サブスクライバーがリッスンしていない場合、メッセージは黙って破棄されます。"
         },
         "app.TkFUUw.action.cHVibGlzaA.display_name": {
-          "source": "Publish Message",
+          "source": "Publish message",
           "message": "メッセージの発行"
         },
         "app.TkFUUw.action.cHVibGlzaA.option.ZGF0YQ.desc": {
@@ -40,7 +40,7 @@
           "message": "バイナリメッセージペイロード。`data` または `string_data` のいずれかを使用します"
         },
         "app.TkFUUw.action.cHVibGlzaA.option.ZGF0YQ.display_name": {
-          "source": "Binary Data",
+          "source": "Binary data",
           "message": "バイナリデータ"
         },
         "app.TkFUUw.action.cHVibGlzaA.option.ZGF0YQ.short_desc": {
@@ -64,7 +64,7 @@
           "message": "文字列メッセージペイロード (`data` の代替)"
         },
         "app.TkFUUw.action.cHVibGlzaA.option.c3RyaW5nX2RhdGE.display_name": {
-          "source": "String Data",
+          "source": "String data",
           "message": "文字列データ"
         },
         "app.TkFUUw.action.cHVibGlzaA.option.c3RyaW5nX2RhdGE.short_desc": {
@@ -92,7 +92,7 @@
           "message": "ロードバランス配信用のキューグループを使用して NATS サブジェクトのメッセージをサブスクライブします。\n\n各メッセージはキューグループの**ただ 1 つの**メンバーに配信されるため、重複処理なしに複数のワーカーインスタンス間でメッセージ処理を水平スケーリングできます。"
         },
         "app.TkFUUw.action.cXVldWUtc3Vic2NyaWJl.display_name": {
-          "source": "Queue Subscribe",
+          "source": "Queue subscribe",
           "message": "キューサブスクライブ"
         },
         "app.TkFUUw.action.cXVldWUtc3Vic2NyaWJl.option.c3ViamVjdA.desc": {
@@ -112,7 +112,7 @@
           "message": "ロードバランスされたメッセージ配信用のキューグループ名。\n\n同じ `queue` グループ名を共有するすべてのサブスクライバーがワーカープールを形成します。各メッセージはグループの**ただ 1 つの**メンバーに配信されるため、重複処理なしに複数のインスタンス間でメッセージ処理を水平スケーリングできます。"
         },
         "app.TkFUUw.action.cXVldWUtc3Vic2NyaWJl.option.cXVldWU.display_name": {
-          "source": "Queue Group",
+          "source": "Queue group",
           "message": "キューグループ"
         },
         "app.TkFUUw.action.cXVldWUtc3Vic2NyaWJl.option.cXVldWU.short_desc": {
@@ -128,7 +128,7 @@
           "message": "NATS サブジェクトに同期リクエストを送信し、返答を待ちます。\n\nマイクロサービス通信用のリクエスト/リプライパターンを実装します。一意のインボックスが自動的に作成されます。レスポンスが届くか、または `timeout_ms` が期限切れになるまで呼び出しはブロックされます。"
         },
         "app.TkFUUw.action.cmVxdWVzdA.display_name": {
-          "source": "Request/Reply",
+          "source": "Request/reply",
           "message": "リクエスト/リプライ"
         },
         "app.TkFUUw.action.cmVxdWVzdA.option.ZGF0YQ.desc": {
@@ -136,7 +136,7 @@
           "message": "バイナリリクエストペイロード。`data` または `string_data` のいずれかを使用します"
         },
         "app.TkFUUw.action.cmVxdWVzdA.option.ZGF0YQ.display_name": {
-          "source": "Binary Data",
+          "source": "Binary data",
           "message": "バイナリデータ"
         },
         "app.TkFUUw.action.cmVxdWVzdA.option.ZGF0YQ.short_desc": {
@@ -148,7 +148,7 @@
           "message": "文字列リクエストペイロード (`data` の代替)"
         },
         "app.TkFUUw.action.cmVxdWVzdA.option.c3RyaW5nX2RhdGE.display_name": {
-          "source": "String Data",
+          "source": "String data",
           "message": "文字列データ"
         },
         "app.TkFUUw.action.cmVxdWVzdA.option.c3RyaW5nX2RhdGE.short_desc": {

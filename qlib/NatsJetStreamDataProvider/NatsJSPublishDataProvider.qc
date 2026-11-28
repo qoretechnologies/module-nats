@@ -42,14 +42,14 @@ public class NatsJSPublishRequestDataType inherits HashDataType {
             },
             "data": {
                 "type": DataOrNothingType,
-                "display_name": "Binary Data",
+                "display_name": "Binary data",
                 "short_desc": "Binary message payload",
                 "desc": "The binary message payload; use either `data` or `string_data`.\n\n"
                     "Binary data is stored as-is in the stream without encoding.",
             },
             "string_data": {
                 "type": StringOrNothingType,
-                "display_name": "String Data",
+                "display_name": "String data",
                 "short_desc": "String message payload",
                 "desc": "The string message payload (alternative to `data`).\n\n"
                     "The string is converted to binary before publishing. Use this for "
@@ -68,7 +68,7 @@ public class NatsJSPublishRequestDataType inherits HashDataType {
             },
             "expect_stream": {
                 "type": StringOrNothingType,
-                "display_name": "Expected Stream",
+                "display_name": "Expected stream",
                 "short_desc": "Expected stream name",
                 "desc": "The expected stream name that the message should be published to.\n\n"
                     "If the message would be stored in a different stream, the publish fails "
@@ -77,7 +77,7 @@ public class NatsJSPublishRequestDataType inherits HashDataType {
             },
             "expect_last_msg_id": {
                 "type": StringOrNothingType,
-                "display_name": "Expected Last Message ID",
+                "display_name": "Expected last message ID",
                 "short_desc": "Expected last message ID",
                 "desc": "The expected message ID of the last message in the stream.\n\n"
                     "If the last message's ID does not match, the publish fails. Use this "
@@ -85,7 +85,7 @@ public class NatsJSPublishRequestDataType inherits HashDataType {
             },
             "expect_last_seq": {
                 "type": IntOrNothingType,
-                "display_name": "Expected Last Sequence",
+                "display_name": "Expected last sequence",
                 "short_desc": "Expected last sequence number",
                 "desc": "The expected sequence number of the last message in the stream.\n\n"
                     "If the stream's last sequence number does not match, the publish fails. "
@@ -94,7 +94,7 @@ public class NatsJSPublishRequestDataType inherits HashDataType {
             },
             "expect_last_subject_seq": {
                 "type": IntOrNothingType,
-                "display_name": "Expected Last Subject Sequence",
+                "display_name": "Expected last subject sequence",
                 "short_desc": "Expected last subject sequence",
                 "desc": "The expected sequence number of the last message for this specific "
                     "subject.\n\n"
@@ -103,7 +103,7 @@ public class NatsJSPublishRequestDataType inherits HashDataType {
             },
             "expect_no_message": {
                 "type": BoolOrNothingType,
-                "display_name": "Expect No Message",
+                "display_name": "Expect no message",
                 "short_desc": "Expect no existing messages for subject",
                 "desc": "When set to `True`, the publish will fail if any message already "
                     "exists for the subject.\n\n"

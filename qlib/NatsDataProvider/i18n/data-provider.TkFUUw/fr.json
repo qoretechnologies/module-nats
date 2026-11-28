@@ -8,7 +8,7 @@
           "message": "S'abonne aux messages sur un sujet NATS avec une livraison basée sur des événements observables.\n\nPrend en charge les sujets avec caractères génériques (`*` pour un jeton unique, `>` pour plusieurs jetons). Chaque abonné actif reçoit chaque message correspondant. Pour une livraison équilibrée sur la charge, utilisez plutôt queue-subscribe."
         },
         "app.TkFUUw.action.c3Vic2NyaWJl.display_name": {
-          "source": "Subscribe to Messages",
+          "source": "Subscribe to messages",
           "message": "S'abonner aux messages"
         },
         "app.TkFUUw.action.c3Vic2NyaWJl.option.c3ViamVjdA.desc": {
@@ -32,7 +32,7 @@
           "message": "Publie un message sur le sujet NATS spécifié selon le modèle « fire-and-forget ».\n\nLe message est livré à tous les abonnés actifs sur le `subject`. **Aucune confirmation de livraison** n'est fournie ; si aucun abonné n'est à l'écoute, le message est rejeté silencieusement."
         },
         "app.TkFUUw.action.cHVibGlzaA.display_name": {
-          "source": "Publish Message",
+          "source": "Publish message",
           "message": "Publier le message"
         },
         "app.TkFUUw.action.cHVibGlzaA.option.ZGF0YQ.desc": {
@@ -40,7 +40,7 @@
           "message": "La charge utile binaire du message ; utilisez soit `data` soit `string_data`"
         },
         "app.TkFUUw.action.cHVibGlzaA.option.ZGF0YQ.display_name": {
-          "source": "Binary Data",
+          "source": "Binary data",
           "message": "Données binaires"
         },
         "app.TkFUUw.action.cHVibGlzaA.option.ZGF0YQ.short_desc": {
@@ -64,7 +64,7 @@
           "message": "La charge utile du message sous forme de chaîne (alternative à `data`)"
         },
         "app.TkFUUw.action.cHVibGlzaA.option.c3RyaW5nX2RhdGE.display_name": {
-          "source": "String Data",
+          "source": "String data",
           "message": "Données de chaîne"
         },
         "app.TkFUUw.action.cHVibGlzaA.option.c3RyaW5nX2RhdGE.short_desc": {
@@ -92,7 +92,7 @@
           "message": "S'abonne aux messages sur un sujet NATS avec un groupe de file d'attente pour une livraison équilibrée sur la charge.\n\nChaque message est livré à **exactement un** membre du groupe de file d'attente, permettant la mise à l'échelle horizontale du traitement des messages sur plusieurs instances de travail sans traitement en double."
         },
         "app.TkFUUw.action.cXVldWUtc3Vic2NyaWJl.display_name": {
-          "source": "Queue Subscribe",
+          "source": "Queue subscribe",
           "message": "Abonnement par file d'attente"
         },
         "app.TkFUUw.action.cXVldWUtc3Vic2NyaWJl.option.c3ViamVjdA.desc": {
@@ -112,7 +112,7 @@
           "message": "Le nom du groupe de file d'attente pour une livraison de messages équilibrée sur la charge.\n\nTous les abonnés partageant le même nom de groupe `queue` forment un pool de travailleurs. Chaque message est livré à **exactement un** membre du groupe, permettant une mise à l'échelle horizontale du traitement des messages sur plusieurs instances sans traitement en double."
         },
         "app.TkFUUw.action.cXVldWUtc3Vic2NyaWJl.option.cXVldWU.display_name": {
-          "source": "Queue Group",
+          "source": "Queue group",
           "message": "Groupe de file d'attente"
         },
         "app.TkFUUw.action.cXVldWUtc3Vic2NyaWJl.option.cXVldWU.short_desc": {
@@ -128,7 +128,7 @@
           "message": "Envoie une requête synchrone à un sujet NATS et attend une réponse.\n\nImplémente le modèle requête-réponse pour la communication entre microservices. Une boîte de réception unique est créée automatiquement. L'appel bloque jusqu'à ce qu'une réponse arrive ou que `timeout_ms` expire."
         },
         "app.TkFUUw.action.cmVxdWVzdA.display_name": {
-          "source": "Request/Reply",
+          "source": "Request/reply",
           "message": "Requête/Réponse"
         },
         "app.TkFUUw.action.cmVxdWVzdA.option.ZGF0YQ.desc": {
@@ -136,7 +136,7 @@
           "message": "La charge utile de la requête binaire ; utilisez soit `data` soit `string_data`"
         },
         "app.TkFUUw.action.cmVxdWVzdA.option.ZGF0YQ.display_name": {
-          "source": "Binary Data",
+          "source": "Binary data",
           "message": "Données binaires"
         },
         "app.TkFUUw.action.cmVxdWVzdA.option.ZGF0YQ.short_desc": {
@@ -148,7 +148,7 @@
           "message": "La charge utile de la requête sous forme de chaîne (alternative à `data`)"
         },
         "app.TkFUUw.action.cmVxdWVzdA.option.c3RyaW5nX2RhdGE.display_name": {
-          "source": "String Data",
+          "source": "String data",
           "message": "Données de chaîne"
         },
         "app.TkFUUw.action.cmVxdWVzdA.option.c3RyaW5nX2RhdGE.short_desc": {

@@ -68,7 +68,7 @@ module NatsDataProvider {
             "app": NatsDataProvider::AppName,
             "path": "/publish",
             "action": "publish",
-            "display_name": "Publish Message",
+            "display_name": "Publish message",
             "short_desc": "Publish a fire-and-forget message to a NATS subject",
             "desc": "Publishes a message to the specified NATS subject using the "
                 "fire-and-forget pattern.\n\n"
@@ -93,7 +93,7 @@ module NatsDataProvider {
             "app": NatsDataProvider::AppName,
             "path": "/request",
             "action": "request",
-            "display_name": "Request/Reply",
+            "display_name": "Request/reply",
             "short_desc": "Send a synchronous request and wait for a reply",
             "desc": "Sends a synchronous request to a NATS subject and waits for a "
                 "reply.\n\n"
@@ -118,7 +118,7 @@ module NatsDataProvider {
             "app": NatsDataProvider::AppName,
             "path": "/subscribe",
             "action": "subscribe",
-            "display_name": "Subscribe to Messages",
+            "display_name": "Subscribe to messages",
             "short_desc": "Subscribe to real-time messages on a NATS subject",
             "desc": "Subscribes to messages on a NATS subject with observable event-based "
                 "delivery.\n\n"
@@ -142,7 +142,7 @@ module NatsDataProvider {
             "app": NatsDataProvider::AppName,
             "path": "/queue-subscribe",
             "action": "queue-subscribe",
-            "display_name": "Queue Subscribe",
+            "display_name": "Queue subscribe",
             "short_desc": "Queue subscribe for load-balanced message delivery",
             "desc": "Subscribes to messages on a NATS subject with a queue group for "
                 "load-balanced delivery.\n\n"

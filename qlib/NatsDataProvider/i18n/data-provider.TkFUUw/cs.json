@@ -8,7 +8,7 @@
           "message": "Přihlašuje se k odběru zpráv na tématu NATS s pozorovatelným doručováním na základě událostí.\n\nPodporuje témata s divokými kartami (`*` pro jeden token, `>` pro více tokenů). Každý aktivní odběratel obdrží každou odpovídající zprávu. Pro doručování s vyrovnáváním zátěže použijte místo toho queue-subscribe."
         },
         "app.TkFUUw.action.c3Vic2NyaWJl.display_name": {
-          "source": "Subscribe to Messages",
+          "source": "Subscribe to messages",
           "message": "Odběr zpráv"
         },
         "app.TkFUUw.action.c3Vic2NyaWJl.option.c3ViamVjdA.desc": {
@@ -32,7 +32,7 @@
           "message": "Publikuje zprávu na zadané téma NATS pomocí vzoru fire-and-forget.\n\nZpráva je doručena všem aktivním odběratelům na `subject`. Není k dispozici **žádné potvrzení o doručení**; pokud neposlouchají žádní odběratelé, zpráva je tichou cestou zahozena."
         },
         "app.TkFUUw.action.cHVibGlzaA.display_name": {
-          "source": "Publish Message",
+          "source": "Publish message",
           "message": "Publikovat zprávu"
         },
         "app.TkFUUw.action.cHVibGlzaA.option.ZGF0YQ.desc": {
@@ -40,7 +40,7 @@
           "message": "Binární datová část zprávy; použijte buď `data` nebo `string_data`"
         },
         "app.TkFUUw.action.cHVibGlzaA.option.ZGF0YQ.display_name": {
-          "source": "Binary Data",
+          "source": "Binary data",
           "message": "Binární data"
         },
         "app.TkFUUw.action.cHVibGlzaA.option.ZGF0YQ.short_desc": {
@@ -64,7 +64,7 @@
           "message": "Řetězcová datová část zprávy (alternativa k `data`)"
         },
         "app.TkFUUw.action.cHVibGlzaA.option.c3RyaW5nX2RhdGE.display_name": {
-          "source": "String Data",
+          "source": "String data",
           "message": "Řetězcová data"
         },
         "app.TkFUUw.action.cHVibGlzaA.option.c3RyaW5nX2RhdGE.short_desc": {
@@ -92,7 +92,7 @@
           "message": "Přihlašuje se k odběru zpráv na tématu NATS ze skupiny fronty pro doručování s vyrovnáváním zátěže.\n\nKaždá zpráva je doručena **právě jednomu** členovi skupiny fronty, což umožňuje horizontální škálování zpracování zpráv napříč více instancemi pracovníků bez duplicitního zpracování."
         },
         "app.TkFUUw.action.cXVldWUtc3Vic2NyaWJl.display_name": {
-          "source": "Queue Subscribe",
+          "source": "Queue subscribe",
           "message": "Odběr z fronty"
         },
         "app.TkFUUw.action.cXVldWUtc3Vic2NyaWJl.option.c3ViamVjdA.desc": {
@@ -112,7 +112,7 @@
           "message": "Název skupiny fronty pro doručování zpráv s vyrovnáváním zátěže.\n\nVšichni odběratelé sdílející stejný název skupiny `queue` tvoří fond pracovníků. Každá zpráva je doručena **právě jednomu** členovi skupiny, což umožňuje horizontální škálování zpracování zpráv napříč více instancemi bez duplicitního zpracování."
         },
         "app.TkFUUw.action.cXVldWUtc3Vic2NyaWJl.option.cXVldWU.display_name": {
-          "source": "Queue Group",
+          "source": "Queue group",
           "message": "Skupina fronty"
         },
         "app.TkFUUw.action.cXVldWUtc3Vic2NyaWJl.option.cXVldWU.short_desc": {
@@ -128,7 +128,7 @@
           "message": "Odesílá synchronní požadavek na téma NATS a čeká na odpověď.\n\nImplementuje vzor požadavek-odpověď pro komunikaci mezi mikroslužbami. Unikátní příchozí schránka (inbox) je vytvořena automaticky. Volání blokuje, dokud nepřijde odpověď nebo nevyprší `timeout_ms`."
         },
         "app.TkFUUw.action.cmVxdWVzdA.display_name": {
-          "source": "Request/Reply",
+          "source": "Request/reply",
           "message": "Požadavek/odpověď"
         },
         "app.TkFUUw.action.cmVxdWVzdA.option.ZGF0YQ.desc": {
@@ -136,7 +136,7 @@
           "message": "Binární datová část požadavku; použijte buď `data` nebo `string_data`"
         },
         "app.TkFUUw.action.cmVxdWVzdA.option.ZGF0YQ.display_name": {
-          "source": "Binary Data",
+          "source": "Binary data",
           "message": "Binární data"
         },
         "app.TkFUUw.action.cmVxdWVzdA.option.ZGF0YQ.short_desc": {
@@ -148,7 +148,7 @@
           "message": "Řetězcová datová část požadavku (alternativa k `data`)"
         },
         "app.TkFUUw.action.cmVxdWVzdA.option.c3RyaW5nX2RhdGE.display_name": {
-          "source": "String Data",
+          "source": "String data",
           "message": "Řetězcová data"
         },
         "app.TkFUUw.action.cmVxdWVzdA.option.c3RyaW5nX2RhdGE.short_desc": {

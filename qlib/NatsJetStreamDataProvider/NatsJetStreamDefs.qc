@@ -99,7 +99,7 @@ public namespace NatsJetStreamDataProvider {
             const Fields = {
                 "name": {
                     "type": StringType,
-                    "display_name": "Stream Name",
+                    "display_name": "Stream name",
                     "short_desc": "Name of the stream",
                     "desc": "Unique identifier for the JetStream stream.\n\n"
                         "Stream names are used to reference the stream in all JetStream operations "
@@ -123,14 +123,14 @@ public namespace NatsJetStreamDataProvider {
                 },
                 "retention": {
                     "type": IntOrNothingType,
-                    "display_name": "Retention Policy",
+                    "display_name": "Retention policy",
                     "short_desc": "Stream retention policy",
                     "desc": "Controls how messages are retained or removed from the stream.\n\n"
                         "- `0` (Limits): messages are kept until stream limits (`max_msgs`, "
                         "`max_bytes`, `max_age`) are reached\n"
                         "- `1` (Interest): messages are removed once all known consumers have "
                         "acknowledged them\n"
-                        "- `2` (Work Queue): messages are removed as soon as any consumer "
+                        "- `2` (Work queue): messages are removed as soon as any consumer "
                         "acknowledges them\n\n"
                         "**Default is `0` (Limits) if not specified.**",
                     "allowed_values": (
@@ -138,13 +138,13 @@ public namespace NatsJetStreamDataProvider {
                             "short_desc": "Retain based on limits (max_msgs, max_bytes, max_age)"},
                         <AllowedValueInfo>{"value": 1, "display_name": "Interest",
                             "short_desc": "Remove when all known consumers have acknowledged"},
-                        <AllowedValueInfo>{"value": 2, "display_name": "Work Queue",
+                        <AllowedValueInfo>{"value": 2, "display_name": "Work queue",
                             "short_desc": "Remove when any consumer acknowledges"},
                     ),
                 },
                 "max_msgs": {
                     "type": IntOrNothingType,
-                    "display_name": "Max Messages",
+                    "display_name": "Max messages",
                     "short_desc": "Maximum number of messages",
                     "desc": "Maximum number of messages the stream will retain.\n\n"
                         "When this limit is reached, older messages are discarded according to "
@@ -154,7 +154,7 @@ public namespace NatsJetStreamDataProvider {
                 },
                 "max_bytes": {
                     "type": IntOrNothingType,
-                    "display_name": "Max Bytes",
+                    "display_name": "Max bytes",
                     "short_desc": "Maximum total bytes",
                     "desc": "Maximum total storage in bytes for all messages in the stream.\n\n"
                         "When this limit is reached, older messages are discarded according to "
@@ -164,7 +164,7 @@ public namespace NatsJetStreamDataProvider {
                 },
                 "max_age": {
                     "type": IntOrNothingType,
-                    "display_name": "Max Age (ms)",
+                    "display_name": "Max age (ms)",
                     "short_desc": "Maximum message age in milliseconds",
                     "desc": "Maximum age of any message in the stream, specified in milliseconds.\n\n"
                         "Messages older than this value are automatically removed. Set to `0` "
@@ -175,7 +175,7 @@ public namespace NatsJetStreamDataProvider {
                 },
                 "max_msg_size": {
                     "type": IntOrNothingType,
-                    "display_name": "Max Message Size",
+                    "display_name": "Max message size",
                     "short_desc": "Maximum message size in bytes",
                     "desc": "Maximum size in bytes for any individual message published to the "
                         "stream.\n\n"
@@ -186,7 +186,7 @@ public namespace NatsJetStreamDataProvider {
                 },
                 "storage": {
                     "type": IntOrNothingType,
-                    "display_name": "Storage Type",
+                    "display_name": "Storage type",
                     "short_desc": "Message storage type",
                     "desc": "Controls where stream messages are persisted.\n\n"
                         "- `0` (File): messages are stored on disk for durability across server "
@@ -214,7 +214,7 @@ public namespace NatsJetStreamDataProvider {
                 },
                 "discard": {
                     "type": IntOrNothingType,
-                    "display_name": "Discard Policy",
+                    "display_name": "Discard policy",
                     "short_desc": "Discard policy when limits are reached",
                     "desc": "Controls which messages are removed when stream limits "
                         "(`max_msgs`, `max_bytes`, or `max_age`) are reached.\n\n"
@@ -253,7 +253,7 @@ public namespace NatsJetStreamDataProvider {
             const Fields = {
                 "stream": {
                     "type": StringType,
-                    "display_name": "Stream Name",
+                    "display_name": "Stream name",
                     "short_desc": "Name of the stream",
                     "desc": "The name of the JetStream stream that this consumer will read "
                         "messages from.\n\n"
@@ -264,7 +264,7 @@ public namespace NatsJetStreamDataProvider {
                 },
                 "durable_name": {
                     "type": StringOrNothingType,
-                    "display_name": "Durable Name",
+                    "display_name": "Durable name",
                     "short_desc": "Durable consumer name",
                     "desc": "A unique name that makes the consumer durable (persistent).\n\n"
                         "**Important**: without a durable name, the consumer is ephemeral and "
@@ -275,7 +275,7 @@ public namespace NatsJetStreamDataProvider {
                 },
                 "deliver_subject": {
                     "type": StringOrNothingType,
-                    "display_name": "Deliver Subject",
+                    "display_name": "Deliver subject",
                     "short_desc": "Subject for push delivery",
                     "desc": "The NATS subject where the server will push messages to the "
                         "consumer.\n\n"
@@ -286,7 +286,7 @@ public namespace NatsJetStreamDataProvider {
                 },
                 "deliver_group": {
                     "type": StringOrNothingType,
-                    "display_name": "Deliver Group",
+                    "display_name": "Deliver group",
                     "short_desc": "Deliver group (queue group)",
                     "desc": "Queue group name for load-balanced message delivery across "
                         "multiple consumer instances.\n\n"
@@ -297,7 +297,7 @@ public namespace NatsJetStreamDataProvider {
                 },
                 "ack_policy": {
                     "type": IntOrNothingType,
-                    "display_name": "Ack Policy",
+                    "display_name": "Ack policy",
                     "short_desc": "Acknowledgment policy",
                     "desc": "Controls how the consumer acknowledges message delivery.\n\n"
                         "- `0` (None): no acknowledgment required; messages are considered "
@@ -317,7 +317,7 @@ public namespace NatsJetStreamDataProvider {
                 },
                 "ack_wait": {
                     "type": IntOrNothingType,
-                    "display_name": "Ack Wait (ms)",
+                    "display_name": "Ack wait (ms)",
                     "short_desc": "Acknowledgment wait timeout in milliseconds",
                     "desc": "Duration in milliseconds that the server will wait for an "
                         "acknowledgment before considering a message unacknowledged and "
@@ -329,7 +329,7 @@ public namespace NatsJetStreamDataProvider {
                 },
                 "deliver_policy": {
                     "type": IntOrNothingType,
-                    "display_name": "Deliver Policy",
+                    "display_name": "Deliver policy",
                     "short_desc": "Message delivery policy",
                     "desc": "Determines the starting point for message delivery to the "
                         "consumer.\n\n"
@@ -338,9 +338,9 @@ public namespace NatsJetStreamDataProvider {
                         "- `1` (Last): start with the last message in the stream\n"
                         "- `2` (New): deliver only messages published after the consumer is "
                         "created\n"
-                        "- `3` (By Start Sequence): start at a specific sequence number\n"
-                        "- `4` (By Start Time): start at a specific timestamp\n"
-                        "- `5` (Last Per Subject): deliver the last message for each subject\n"
+                        "- `3` (By start sequence): start at a specific sequence number\n"
+                        "- `4` (By start time): start at a specific timestamp\n"
+                        "- `5` (Last per subject): deliver the last message for each subject\n"
                         "\n**Default is `0` (All) if not specified.**",
                     "allowed_values": (
                         <AllowedValueInfo>{"value": 0, "display_name": "All",
@@ -349,17 +349,17 @@ public namespace NatsJetStreamDataProvider {
                             "short_desc": "Deliver starting with the last message"},
                         <AllowedValueInfo>{"value": 2, "display_name": "New",
                             "short_desc": "Deliver only new messages"},
-                        <AllowedValueInfo>{"value": 3, "display_name": "By Start Sequence",
+                        <AllowedValueInfo>{"value": 3, "display_name": "By start sequence",
                             "short_desc": "Deliver starting at a specific sequence"},
-                        <AllowedValueInfo>{"value": 4, "display_name": "By Start Time",
+                        <AllowedValueInfo>{"value": 4, "display_name": "By start time",
                             "short_desc": "Deliver starting at a specific time"},
-                        <AllowedValueInfo>{"value": 5, "display_name": "Last Per Subject",
+                        <AllowedValueInfo>{"value": 5, "display_name": "Last per subject",
                             "short_desc": "Deliver the last message per subject"},
                     ),
                 },
                 "replay_policy": {
                     "type": IntOrNothingType,
-                    "display_name": "Replay Policy",
+                    "display_name": "Replay policy",
                     "short_desc": "Message replay policy",
                     "desc": "Controls the speed at which messages are replayed to the consumer "
                         "when catching up on historical messages.\n\n"
@@ -376,7 +376,7 @@ public namespace NatsJetStreamDataProvider {
                 },
                 "filter_subject": {
                     "type": StringOrNothingType,
-                    "display_name": "Filter Subject",
+                    "display_name": "Filter subject",
                     "short_desc": "Filter subject for the consumer",
                     "desc": "A subject filter that restricts the consumer to receiving only "
                         "messages matching this pattern.\n\n"
@@ -387,7 +387,7 @@ public namespace NatsJetStreamDataProvider {
                 },
                 "max_deliver": {
                     "type": IntOrNothingType,
-                    "display_name": "Max Deliver",
+                    "display_name": "Max deliver",
                     "short_desc": "Maximum delivery attempts",
                     "desc": "Maximum number of times the server will attempt to deliver a "
                         "message to the consumer.\n\n"
@@ -399,7 +399,7 @@ public namespace NatsJetStreamDataProvider {
                 },
                 "max_ack_pending": {
                     "type": IntOrNothingType,
-                    "display_name": "Max Ack Pending",
+                    "display_name": "Max ack pending",
                     "short_desc": "Maximum pending acknowledgments",
                     "desc": "Maximum number of messages that can be delivered but not yet "
                         "acknowledged.\n\n"
@@ -462,7 +462,7 @@ public namespace NatsJetStreamDataProvider {
                 },
                 "first_seq": {
                     "type": IntType,
-                    "display_name": "First Sequence",
+                    "display_name": "First sequence",
                     "short_desc": "First sequence number",
                     "desc": "The sequence number of the oldest message still retained in "
                         "the stream.\n\n"
@@ -472,7 +472,7 @@ public namespace NatsJetStreamDataProvider {
                 },
                 "last_seq": {
                     "type": IntType,
-                    "display_name": "Last Sequence",
+                    "display_name": "Last sequence",
                     "short_desc": "Last sequence number",
                     "desc": "The sequence number of the most recently published message in "
                         "the stream.\n\n"
@@ -482,7 +482,7 @@ public namespace NatsJetStreamDataProvider {
                 },
                 "consumer_count": {
                     "type": IntType,
-                    "display_name": "Consumer Count",
+                    "display_name": "Consumer count",
                     "short_desc": "Number of consumers",
                     "desc": "The number of consumers currently bound to this stream.\n\n"
                         "Includes both durable and ephemeral consumers that are actively "
@@ -523,7 +523,7 @@ public namespace NatsJetStreamDataProvider {
                 },
                 "ack_pending": {
                     "type": IntType,
-                    "display_name": "Ack Pending",
+                    "display_name": "Ack pending",
                     "short_desc": "Number of pending acknowledgments",
                     "desc": "Number of messages that have been delivered but not yet "
                         "acknowledged by the consumer.\n\n"
@@ -640,7 +640,7 @@ public namespace NatsJetStreamDataProvider {
                 },
                 "reply": {
                     "type": StringOrNothingType,
-                    "display_name": "Reply Subject",
+                    "display_name": "Reply subject",
                     "short_desc": "The reply subject",
                     "desc": "The NATS reply subject used internally by JetStream for message "
                         "acknowledgment.\n\n"
@@ -670,7 +670,7 @@ public namespace NatsJetStreamDataProvider {
             const Fields = {
                 "err": {
                     "type": StringType,
-                    "display_name": "Error Code",
+                    "display_name": "Error code",
                     "short_desc": "The error code",
                     "desc": "The NATS JetStream error code identifying the type of error "
                         "that occurred.\n\n"
@@ -830,7 +830,7 @@ public namespace NatsJetStreamDataProvider {
                 },
                 "api_total": {
                     "type": IntType,
-                    "display_name": "API Total",
+                    "display_name": "API total",
                     "short_desc": "Total number of JetStream API requests processed",
                     "desc": "Total number of JetStream API requests that have been processed "
                         "by the server for this account.\n\n"
@@ -840,7 +840,7 @@ public namespace NatsJetStreamDataProvider {
                 },
                 "api_errors": {
                     "type": IntType,
-                    "display_name": "API Errors",
+                    "display_name": "API errors",
                     "short_desc": "Number of JetStream API errors",
                     "desc": "Total number of JetStream API requests that resulted in errors "
                         "for this account.\n\n"
@@ -872,7 +872,7 @@ public namespace NatsJetStreamDataProvider {
                 },
                 "pause_until": {
                     "type": DateOrNothingType,
-                    "display_name": "Pause Until",
+                    "display_name": "Pause until",
                     "short_desc": "When the consumer will automatically resume",
                     "desc": "The timestamp when the consumer will automatically resume "
                         "message delivery.\n\n"
@@ -882,7 +882,7 @@ public namespace NatsJetStreamDataProvider {
                 },
                 "pause_remaining_ms": {
                     "type": IntOrNothingType,
-                    "display_name": "Pause Remaining (ms)",
+                    "display_name": "Pause remaining (ms)",
                     "short_desc": "Remaining pause time in milliseconds",
                     "desc": "The remaining time in milliseconds until the consumer "
                         "automatically resumes.\n\n"
@@ -972,7 +972,7 @@ public namespace NatsJetStreamDataProvider {
             const Fields = {
                 "bucket": {
                     "type": StringType,
-                    "display_name": "Bucket Name",
+                    "display_name": "Bucket name",
                     "short_desc": "Bucket name to create",
                     "desc": "The name for the new KV bucket.\n\n"
                         "Bucket names must be alphanumeric and may include dashes or "
@@ -990,7 +990,7 @@ public namespace NatsJetStreamDataProvider {
                 },
                 "max_value_size": {
                     "type": IntOrNothingType,
-                    "display_name": "Max Value Size",
+                    "display_name": "Max value size",
                     "short_desc": "Maximum value size in bytes",
                     "desc": "Maximum size in bytes for any individual value stored in the "
                         "bucket.\n\n"
@@ -1017,7 +1017,7 @@ public namespace NatsJetStreamDataProvider {
                 },
                 "max_bytes": {
                     "type": IntOrNothingType,
-                    "display_name": "Max Bytes",
+                    "display_name": "Max bytes",
                     "short_desc": "Maximum total bytes in the bucket",
                     "desc": "Maximum total storage in bytes for all keys and revisions in "
                         "the bucket.\n\n"
@@ -1026,7 +1026,7 @@ public namespace NatsJetStreamDataProvider {
                 },
                 "storage": {
                     "type": IntOrNothingType,
-                    "display_name": "Storage Type",
+                    "display_name": "Storage type",
                     "short_desc": "Storage type",
                     "desc": "Controls where bucket data is persisted.\n\n"
                         "- `0` (File): data is stored on disk for durability across server "
@@ -1154,7 +1154,7 @@ public namespace NatsJetStreamDataProvider {
             const Fields = {
                 "stream": {
                     "type": StringType,
-                    "display_name": "Stream Name",
+                    "display_name": "Stream name",
                     "short_desc": "Stream name",
                     "desc": "The name of the JetStream stream to retrieve the message "
                         "from.\n\n"
@@ -1165,7 +1165,7 @@ public namespace NatsJetStreamDataProvider {
                 },
                 "seq": {
                     "type": IntType,
-                    "display_name": "Sequence Number",
+                    "display_name": "Sequence number",
                     "short_desc": "Message sequence number",
                     "desc": "The sequence number of the message to retrieve.\n\n"
                         "Sequence numbers are assigned monotonically by the stream. Use "
@@ -1189,7 +1189,7 @@ public namespace NatsJetStreamDataProvider {
             const Fields = {
                 "stream": {
                     "type": StringType,
-                    "display_name": "Stream Name",
+                    "display_name": "Stream name",
                     "short_desc": "Stream name",
                     "desc": "The name of the JetStream stream to retrieve the message "
                         "from.\n\n"
@@ -1233,7 +1233,8 @@ public namespace NatsJetStreamDataProvider {
     stops, the messages that it fetched but did not deliver are refused without a delay.  A redelivered message goes
     to every observer again, so an observer that accepted it before another one refused it sees it again (at-least-once
     delivery), and the consumer's \c max_deliver limit, if any, applies to it.  A refusal never ends the
-    subscription.
+    subscription. A message without a reply subject cannot be negatively acknowledged, so the provider cannot
+    request its redelivery.
 */
 public class NatsJSDelivery {
     public {

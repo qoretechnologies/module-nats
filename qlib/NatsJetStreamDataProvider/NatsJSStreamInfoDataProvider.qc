@@ -31,7 +31,7 @@ public class NatsJSStreamInfoRequestDataType inherits HashDataType {
         const Fields = {
             "name": {
                 "type": StringType,
-                "display_name": "Stream Name",
+                "display_name": "Stream name",
                 "short_desc": "Stream name to get info for",
                 "desc": "The name of the JetStream stream to retrieve information for.\n\n"
                     "The stream must already exist; an error is raised if the stream is "

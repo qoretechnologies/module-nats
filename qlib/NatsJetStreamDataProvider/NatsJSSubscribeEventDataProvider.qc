@@ -43,7 +43,7 @@ public class NatsJSSubscribeRequestDataType inherits HashDataType {
             },
             "refusal_delay_ms": {
                 "type": IntOrNothingType,
-                "display_name": "Refusal Delay",
+                "display_name": "Refusal delay",
                 "short_desc": "Initial redelivery delay in milliseconds of a refused message",
                 "desc": "The delay in milliseconds after which the server delivers a message that an observer "
                     "refused again; it doubles with each delivery of the message up to `max_refusal_delay_ms`.  "
@@ -52,7 +52,7 @@ public class NatsJSSubscribeRequestDataType inherits HashDataType {
             },
             "max_refusal_delay_ms": {
                 "type": IntOrNothingType,
-                "display_name": "Max Refusal Delay",
+                "display_name": "Max refusal delay",
                 "short_desc": "Maximum redelivery delay in milliseconds of a refused message",
                 "desc": "The maximum delay in milliseconds after which the server delivers a message that an "
                     "observer refused again.  The default is 60000",
@@ -210,6 +210,7 @@ public class NatsJSSubscribeEventDataProvider inherits AbstractDataProvider, Del
         return <DataProviderInfo>{
             "type": "NatsJSSubscribeEventDataProvider",
             "supports_observable": True,
+            "supports_refusal_redelivery": True,
         };
     }
 

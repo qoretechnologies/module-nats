@@ -10,4 +10,9 @@
       files) are refused with \c PERMISSION-DENIED before they are read if the code that creates the connection is
       restricted from the file system (see @ref natscallerpaths,
       <a href="https://github.com/qoretechnologies/module-nats/issues/10">issue 10</a>)
+    - the JetStream push and pull subscription event providers report \c supports_refusal_redelivery in their
+      provider info, as a message that an observer refuses is delivered again; the core NATS subscriptions do not
+      (<a href="https://github.com/qoretechnologies/qore/issues/7561">qore#7561</a>)
+    - the module's action, option and field names are in sentence case
+      (<a href="https://github.com/qoretechnologies/qore/issues/7749">qore#7749</a>)
 */

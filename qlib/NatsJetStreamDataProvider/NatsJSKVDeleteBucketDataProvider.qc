@@ -31,7 +31,7 @@ public class NatsJSKVDeleteBucketRequestDataType inherits HashDataType {
         const Fields = {
             "bucket": {
                 "type": StringType,
-                "display_name": "Bucket Name",
+                "display_name": "Bucket name",
                 "short_desc": "Bucket name to delete",
                 "desc": "The name of the JetStream KV bucket to delete.\n\n"
                     "**Warning**: this permanently removes the bucket, all its keys, and "
@@ -91,7 +91,7 @@ public class NatsJSKVDeleteBucketDataProvider inherits AbstractDataProvider {
         return <DataProviderInfo>{
             "type": "NatsJSKVDeleteBucketDataProvider",
             "supports_request": True,
-            "display_name": "Delete Bucket",
+            "display_name": "Delete bucket",
             "short_desc": "Permanently delete a Key-Value store bucket",
         };
     }

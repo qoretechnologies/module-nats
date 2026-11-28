@@ -319,6 +319,7 @@ public class NatsDataProviderTest inherits QUnit::Test {
         NatsSubscribeEventDataProvider sub_dp =
             cast<NatsSubscribeEventDataProvider>(dp.getChildProvider("subscribe"));
 
+        assertEq(False, sub_dp.getInfo().supports_refusal_redelivery);
         Queue deliveries();
         NatsTestFailingObserver observer(deliveries, "msg1");
         sub_dp.setObserverRequest({"subject": "dp.sub.err.>"});
@@ -344,6 +345,7 @@ public class NatsDataProviderTest inherits QUnit::Test {
         NatsQueueSubscribeEventDataProvider qsub_dp =
             cast<NatsQueueSubscribeEventDataProvider>(dp.getChildProvider("queue-subscribe"));
 
+        assertEq(False, qsub_dp.getInfo().supports_refusal_redelivery);
         Queue deliveries();
         NatsTestFailingObserver observer(deliveries, "q1");
         qsub_dp.setObserverRequest({"subject": "dp.qsub.err.>", "queue": "err-workers"});

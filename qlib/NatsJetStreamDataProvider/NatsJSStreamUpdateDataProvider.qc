@@ -82,7 +82,7 @@ public class NatsJSStreamUpdateDataProvider inherits AbstractDataProvider {
         return <DataProviderInfo>{
             "type": "NatsJSStreamUpdateDataProvider",
             "supports_request": True,
-            "display_name": "Update Stream",
+            "display_name": "Update stream",
             "short_desc": "Update a JetStream stream configuration",
         };
     }

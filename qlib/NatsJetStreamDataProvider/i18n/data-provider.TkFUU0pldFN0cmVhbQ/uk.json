@@ -8,7 +8,7 @@
           "message": "Створює нового споживача (consumer) у потоці JetStream для обробки повідомлень.\n\nСпоживачі визначають, як повідомлення доставляються з потоку, включаючи політику доставки, вимоги до підтвердження та поведінку повторних спроб. Постійні (durable) споживачі зберігаються після відключення клієнта."
         },
         "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItY3JlYXRl.display_name": {
-          "source": "Create Consumer",
+          "source": "Create consumer",
           "message": "Створити споживача"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItY3JlYXRl.option.YWNrX3BvbGljeQ.allowed-value.aW50OjA.display_name": {
@@ -40,7 +40,7 @@
           "message": "Керує тим, як споживач підтверджує доставку повідомлень.\n\n- `0` (None): підтвердження не потрібне; повідомлення вважаються доставленими негайно\n- `1` (All): підтвердження повідомлення неявно підтверджує всі попередні повідомлення\n- `2` (Explicit): кожне повідомлення має бути підтверджене окремо\n\n**Значення за замовчуванням: `2` (Explicit), якщо не вказано.**"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItY3JlYXRl.option.YWNrX3BvbGljeQ.display_name": {
-          "source": "Ack Policy",
+          "source": "Ack policy",
           "message": "Політика підтвердження"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItY3JlYXRl.option.YWNrX3BvbGljeQ.short_desc": {
@@ -52,7 +52,7 @@
           "message": "Тривалість у мілісекундах, протягом якої сервер чекатиме на підтвердження, перш ніж вважатиме повідомлення непідтвердженим і запланує його повторну доставку.\n\nНаприклад, `30000` задає тайм-аут у 30 секунд. **Якщо не вказано, використовується стандартне значення сервера — 30 секунд.** Задайте це значення на основі очікуваного часу обробки ваших повідомлень."
         },
         "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItY3JlYXRl.option.YWNrX3dhaXQ.display_name": {
-          "source": "Ack Wait (ms)",
+          "source": "Ack wait (ms)",
           "message": "Час очікування підтвердження (мс)"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItY3JlYXRl.option.YWNrX3dhaXQ.short_desc": {
@@ -64,7 +64,7 @@
           "message": "Назва групи черги для збалансованої доставки повідомлень між кількома екземплярами споживачів.\n\nЯкщо вказано, повідомлення розподіляються між усіма споживачами з однаковим значенням `deliver_group`, що гарантує обробку кожного повідомлення лише одним споживачем. **Застосовується лише у режимі push** (коли вказано `deliver_subject`)."
         },
         "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItY3JlYXRl.option.ZGVsaXZlcl9ncm91cA.display_name": {
-          "source": "Deliver Group",
+          "source": "Deliver group",
           "message": "Група доставки"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItY3JlYXRl.option.ZGVsaXZlcl9ncm91cA.short_desc": {
@@ -96,7 +96,7 @@
           "message": "Доставити лише нові повідомлення"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItY3JlYXRl.option.ZGVsaXZlcl9wb2xpY3k.allowed-value.aW50OjM.display_name": {
-          "source": "By Start Sequence",
+          "source": "By start sequence",
           "message": "За початковим порядковим номером"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItY3JlYXRl.option.ZGVsaXZlcl9wb2xpY3k.allowed-value.aW50OjM.short_desc": {
@@ -104,7 +104,7 @@
           "message": "Доставити, починаючи з конкретного порядкового номера"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItY3JlYXRl.option.ZGVsaXZlcl9wb2xpY3k.allowed-value.aW50OjQ.display_name": {
-          "source": "By Start Time",
+          "source": "By start time",
           "message": "За початковим часом"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItY3JlYXRl.option.ZGVsaXZlcl9wb2xpY3k.allowed-value.aW50OjQ.short_desc": {
@@ -112,7 +112,7 @@
           "message": "Доставити, починаючи з конкретного часу"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItY3JlYXRl.option.ZGVsaXZlcl9wb2xpY3k.allowed-value.aW50OjU.display_name": {
-          "source": "Last Per Subject",
+          "source": "Last per subject",
           "message": "Останнє для кожної теми"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItY3JlYXRl.option.ZGVsaXZlcl9wb2xpY3k.allowed-value.aW50OjU.short_desc": {
@@ -120,11 +120,11 @@
           "message": "Доставити останнє повідомлення для кожної теми"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItY3JlYXRl.option.ZGVsaXZlcl9wb2xpY3k.desc": {
-          "source": "Determines the starting point for message delivery to the consumer.\n\n- `0` (All): deliver all available messages from the beginning of the stream\n- `1` (Last): start with the last message in the stream\n- `2` (New): deliver only messages published after the consumer is created\n- `3` (By Start Sequence): start at a specific sequence number\n- `4` (By Start Time): start at a specific timestamp\n- `5` (Last Per Subject): deliver the last message for each subject\n\n**Default is `0` (All) if not specified.**",
+          "source": "Determines the starting point for message delivery to the consumer.\n\n- `0` (All): deliver all available messages from the beginning of the stream\n- `1` (Last): start with the last message in the stream\n- `2` (New): deliver only messages published after the consumer is created\n- `3` (By start sequence): start at a specific sequence number\n- `4` (By start time): start at a specific timestamp\n- `5` (Last per subject): deliver the last message for each subject\n\n**Default is `0` (All) if not specified.**",
           "message": "Визначає початкову точку для доставки повідомлень споживачеві.\n\n- `0` (All): доставити всі доступні повідомлення від початку потоку\n- `1` (Last): почати з останнього повідомлення у потоці\n- `2` (New): доставити лише повідомлення, опубліковані після створення споживача\n- `3` (By Start Sequence): почати з конкретного порядкового номера\n- `4` (By Start Time): почати з конкретної мітки часу\n- `5` (Last Per Subject): доставити останнє повідомлення для кожної теми\n\n**Значення за замовчуванням: `0` (All), якщо не вказано.**"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItY3JlYXRl.option.ZGVsaXZlcl9wb2xpY3k.display_name": {
-          "source": "Deliver Policy",
+          "source": "Deliver policy",
           "message": "Політика доставки"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItY3JlYXRl.option.ZGVsaXZlcl9wb2xpY3k.short_desc": {
@@ -136,7 +136,7 @@
           "message": "Тема NATS, на яку сервер надсилатиме повідомлення споживачеві.\n\nЯкщо вказано, споживач працює в **режимі push**, коли сервер активно доставляє повідомлення на цю тему. Якщо не вказано, споживач працює в **режимі pull**, коли клієнти повинні явно запитувати повідомлення."
         },
         "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItY3JlYXRl.option.ZGVsaXZlcl9zdWJqZWN0.display_name": {
-          "source": "Deliver Subject",
+          "source": "Deliver subject",
           "message": "Тема доставки"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItY3JlYXRl.option.ZGVsaXZlcl9zdWJqZWN0.short_desc": {
@@ -160,7 +160,7 @@
           "message": "Унікальна назва, яка робить споживача постійним (durable).\n\n**Важливо**: без назви durable споживач є ефемерним і буде автоматично видалений після відключення або втрати активності. Постійний споживач зберігає свій стан (позицію доставки, очікувані підтвердження) під час відключень клієнта та перезапусків сервера."
         },
         "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItY3JlYXRl.option.ZHVyYWJsZV9uYW1l.display_name": {
-          "source": "Durable Name",
+          "source": "Durable name",
           "message": "Назва Durable"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItY3JlYXRl.option.ZHVyYWJsZV9uYW1l.short_desc": {
@@ -172,7 +172,7 @@
           "message": "Фільтр теми, який обмежує споживача отриманням лише тих повідомлень, які відповідають цьому шаблону.\n\nЦе дозволяє споживачу обробляти підмножину повідомлень потоку. Підтримує символи підстановки NATS (`*` та `>`). Якщо не вказано, споживач отримує всі повідомлення з потоку."
         },
         "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItY3JlYXRl.option.ZmlsdGVyX3N1YmplY3Q.display_name": {
-          "source": "Filter Subject",
+          "source": "Filter subject",
           "message": "Фільтр теми"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItY3JlYXRl.option.ZmlsdGVyX3N1YmplY3Q.short_desc": {
@@ -184,7 +184,7 @@
           "message": "Максимальна кількість повідомлень, які можуть бути доставлені, але ще не підтверджені.\n\nЦе працює як механізм управління потоком для запобігання перевантаженню споживача. Після досягнення цього ліміту сервер призупиняє доставку, доки деякі повідомлення не будуть підтверджені. **Значення за замовчуванням: `1000`, якщо не вказано.**"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItY3JlYXRl.option.bWF4X2Fja19wZW5kaW5n.display_name": {
-          "source": "Max Ack Pending",
+          "source": "Max ack pending",
           "message": "Максимум очікуваних підтверджень"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItY3JlYXRl.option.bWF4X2Fja19wZW5kaW5n.short_desc": {
@@ -196,7 +196,7 @@
           "message": "Максимальна кількість спроб сервера доставити повідомлення споживачеві.\n\nПісля такої кількості невдалих спроб доставки повідомлення відкидається або надсилається до черги нерозподілених повідомлень, якщо її налаштовано. Установіть значення `-1` для необмеженої кількості спроб повторної доставки. **У продакшені зазвичай використовується значення `5`.**"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItY3JlYXRl.option.bWF4X2RlbGl2ZXI.display_name": {
-          "source": "Max Deliver",
+          "source": "Max deliver",
           "message": "Максимум спроб доставки"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItY3JlYXRl.option.bWF4X2RlbGl2ZXI.short_desc": {
@@ -208,7 +208,7 @@
           "message": "Назва потоку JetStream, з якого цей споживач читатиме повідомлення.\n\nПотік уже повинен існувати до створення споживача. Використовуйте значення `name` потоку з його конфігурації."
         },
         "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItY3JlYXRl.option.c3RyZWFt.display_name": {
-          "source": "Stream Name",
+          "source": "Stream name",
           "message": "Назва потоку"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItY3JlYXRl.option.c3RyZWFt.short_desc": {
@@ -236,7 +236,7 @@
           "message": "Керує швидкістю відтворення повідомлень для споживача під час наздоганяння історичних повідомлень.\n\n- `0` (Instant): повідомлення доставляються якомога швидше\n- `1` (Original): повідомлення доставляються зі швидкістю їх початкової публікації із збереженням вихідного хронометражу\n\n**За замовчуванням — `0` (Instant), якщо не вказано.**"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItY3JlYXRl.option.cmVwbGF5X3BvbGljeQ.display_name": {
-          "source": "Replay Policy",
+          "source": "Replay policy",
           "message": "Політика відтворення"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItY3JlYXRl.option.cmVwbGF5X3BvbGljeQ.short_desc": {
@@ -252,7 +252,7 @@
           "message": "Видаляє споживача з потоку JetStream.\n\n**Попередження**: це назавжди видаляє споживача та його стан відстеження. Непідтверджені повідомлення не будуть доставлені повторно."
         },
         "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItZGVsZXRl.display_name": {
-          "source": "Delete Consumer",
+          "source": "Delete consumer",
           "message": "Видалити споживача"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItZGVsZXRl.option.Y29uc3VtZXI.desc": {
@@ -260,7 +260,7 @@
           "message": "Ім'я споживача, якого потрібно видалити з потоку.\n\n**Попередження**: видалення споживача скидає його стан відстеження, включно з останньою підтвердженою позицією послідовності. Якщо споживача створити повторно, він розпочне з налаштованої політики доставки, а не з місця зупинки."
         },
         "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItZGVsZXRl.option.Y29uc3VtZXI.display_name": {
-          "source": "Consumer Name",
+          "source": "Consumer name",
           "message": "Ім'я споживача"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItZGVsZXRl.option.Y29uc3VtZXI.short_desc": {
@@ -272,7 +272,7 @@
           "message": "Ім'я потоку JetStream, якому належить споживач для видалення.\n\nПотік повинен існувати та містити вказаного споживача."
         },
         "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItZGVsZXRl.option.c3RyZWFt.display_name": {
-          "source": "Stream Name",
+          "source": "Stream name",
           "message": "Назва потоку"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItZGVsZXRl.option.c3RyZWFt.short_desc": {
@@ -288,7 +288,7 @@
           "message": "Отримує конфігурацію та стан доставки для споживача JetStream.\n\nПовертає політику підтвердження (ack policy), політику доставки (deliver policy), тему фільтра (filter subject) і поточний стан споживача, включно з очікуваними повідомленнями та прогресом обробки."
         },
         "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItaW5mbw.display_name": {
-          "source": "Consumer Info",
+          "source": "Consumer info",
           "message": "Інформація про споживача"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItaW5mbw.option.Y29uc3VtZXI.desc": {
@@ -296,7 +296,7 @@
           "message": "Ім'я споживача, для якого потрібно отримати інформацію.\n\nСпоживач повинен існувати у вказаному потоці; якщо його не знайдено, виникає помилка."
         },
         "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItaW5mbw.option.Y29uc3VtZXI.display_name": {
-          "source": "Consumer Name",
+          "source": "Consumer name",
           "message": "Ім'я споживача"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItaW5mbw.option.Y29uc3VtZXI.short_desc": {
@@ -308,7 +308,7 @@
           "message": "Ім'я потоку JetStream, якому належить споживач.\n\nПотік повинен існувати; якщо його не знайдено, виникає помилка."
         },
         "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItaW5mbw.option.c3RyZWFt.display_name": {
-          "source": "Stream Name",
+          "source": "Stream name",
           "message": "Назва потоку"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItaW5mbw.option.c3RyZWFt.short_desc": {
@@ -324,7 +324,7 @@
           "message": "Виводить список усіх споживачів для потоку JetStream з їхньою конфігурацією та станом доставки.\n\nПовертає детальну інформацію про кожного споживача, включно з політикою доставки, налаштуваннями підтвердження та прогресом обробки."
         },
         "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItbGlzdA.display_name": {
-          "source": "List Consumers",
+          "source": "List consumers",
           "message": "Список споживачів"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItbGlzdA.option.c3RyZWFt.desc": {
@@ -332,7 +332,7 @@
           "message": "Ім'я потоку JetStream, для якого потрібно вивести список споживачів.\n\nПотік вже повинен існувати; якщо потік не знайдено, виникає помилка."
         },
         "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItbGlzdA.option.c3RyZWFt.display_name": {
-          "source": "Stream Name",
+          "source": "Stream name",
           "message": "Назва потоку"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItbGlzdA.option.c3RyZWFt.short_desc": {
@@ -348,7 +348,7 @@
           "message": "Виводить список імен усіх споживачів для потоку JetStream без повних деталей конфігурації чи стану.\n\nВикористовуйте це для швидкого переліку, коли потрібно лише перевірити, які споживачі існують."
         },
         "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItbmFtZXM.display_name": {
-          "source": "Consumer Names",
+          "source": "Consumer names",
           "message": "Імена споживачів"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItbmFtZXM.option.c3RyZWFt.desc": {
@@ -356,7 +356,7 @@
           "message": "Ім'я потоку JetStream, для якого потрібно вивести список імен споживачів.\n\nПотік вже повинен існувати; якщо потік не знайдено, виникає помилка."
         },
         "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItbmFtZXM.option.c3RyZWFt.display_name": {
-          "source": "Stream Name",
+          "source": "Stream name",
           "message": "Назва потоку"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItbmFtZXM.option.c3RyZWFt.short_desc": {
@@ -372,7 +372,7 @@
           "message": "Призупиняє споживача JetStream до вказаного часу.\n\nПризупинений споживач припиняє отримувати повідомлення до вказаного часу, після чого доставка автоматично відновлюється. Використовуйте це для регламентних робіт або обмеження швидкості."
         },
         "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItcGF1c2U.display_name": {
-          "source": "Pause Consumer",
+          "source": "Pause consumer",
           "message": "Призупинити споживача"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItcGF1c2U.option.Y29uc3VtZXI.desc": {
@@ -380,7 +380,7 @@
           "message": "Ім'я споживача, якого потрібно призупинити.\n\nСпоживач вже повинен існувати у вказаному потоці; якщо його не знайдено, виникає помилка."
         },
         "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItcGF1c2U.option.Y29uc3VtZXI.display_name": {
-          "source": "Consumer Name",
+          "source": "Consumer name",
           "message": "Ім'я споживача"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItcGF1c2U.option.Y29uc3VtZXI.short_desc": {
@@ -392,7 +392,7 @@
           "message": "Ім'я потоку JetStream, до якого належить споживач.\n\nПотік вже повинен існувати; якщо потік не знайдено, виникає помилка."
         },
         "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItcGF1c2U.option.c3RyZWFt.display_name": {
-          "source": "Stream Name",
+          "source": "Stream name",
           "message": "Назва потоку"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItcGF1c2U.option.c3RyZWFt.short_desc": {
@@ -404,7 +404,7 @@
           "message": "Дата/час, до якого споживач повинен бути призупинений.\n\nСпоживач припинить отримувати повідомлення до настання цього часу, після чого автоматично відновить доставку. Використовуйте це для запланованих регламентних робіт або обмеження швидкості."
         },
         "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItcGF1c2U.option.cGF1c2VfdW50aWw.display_name": {
-          "source": "Pause Until",
+          "source": "Pause until",
           "message": "Призупинити до"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItcGF1c2U.option.cGF1c2VfdW50aWw.short_desc": {
@@ -420,7 +420,7 @@
           "message": "Оновлює конфігурацію існуючого споживача JetStream.\n\nЗмінює налаштування споживача, такі як політика підтвердження, політика доставки, тема фільтра та поведінка повторних спроб. Не всі налаштування можна змінити після створення."
         },
         "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItdXBkYXRl.display_name": {
-          "source": "Update Consumer",
+          "source": "Update consumer",
           "message": "Оновити споживача"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItdXBkYXRl.option.YWNrX3BvbGljeQ.allowed-value.aW50OjA.display_name": {
@@ -452,7 +452,7 @@
           "message": "Керує тим, як споживач підтверджує доставку повідомлень.\n\n- `0` (None): підтвердження не потрібне; повідомлення вважаються доставленими негайно\n- `1` (All): підтвердження повідомлення неявно підтверджує всі попередні повідомлення\n- `2` (Explicit): кожне повідомлення має бути підтверджене окремо\n\n**Значення за замовчуванням: `2` (Explicit), якщо не вказано.**"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItdXBkYXRl.option.YWNrX3BvbGljeQ.display_name": {
-          "source": "Ack Policy",
+          "source": "Ack policy",
           "message": "Політика підтвердження"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItdXBkYXRl.option.YWNrX3BvbGljeQ.short_desc": {
@@ -464,7 +464,7 @@
           "message": "Тривалість у мілісекундах, протягом якої сервер чекатиме на підтвердження, перш ніж вважатиме повідомлення непідтвердженим і запланує його повторну доставку.\n\nНаприклад, `30000` задає тайм-аут у 30 секунд. **Якщо не вказано, використовується стандартне значення сервера — 30 секунд.** Задайте це значення на основі очікуваного часу обробки ваших повідомлень."
         },
         "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItdXBkYXRl.option.YWNrX3dhaXQ.display_name": {
-          "source": "Ack Wait (ms)",
+          "source": "Ack wait (ms)",
           "message": "Час очікування підтвердження (мс)"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItdXBkYXRl.option.YWNrX3dhaXQ.short_desc": {
@@ -476,7 +476,7 @@
           "message": "Назва групи черги для збалансованої доставки повідомлень між кількома екземплярами споживачів.\n\nЯкщо вказано, повідомлення розподіляються між усіма споживачами з однаковим значенням `deliver_group`, що гарантує обробку кожного повідомлення лише одним споживачем. **Застосовується лише у режимі push** (коли вказано `deliver_subject`)."
         },
         "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItdXBkYXRl.option.ZGVsaXZlcl9ncm91cA.display_name": {
-          "source": "Deliver Group",
+          "source": "Deliver group",
           "message": "Група доставки"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItdXBkYXRl.option.ZGVsaXZlcl9ncm91cA.short_desc": {
@@ -508,7 +508,7 @@
           "message": "Доставити лише нові повідомлення"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItdXBkYXRl.option.ZGVsaXZlcl9wb2xpY3k.allowed-value.aW50OjM.display_name": {
-          "source": "By Start Sequence",
+          "source": "By start sequence",
           "message": "За початковим порядковим номером"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItdXBkYXRl.option.ZGVsaXZlcl9wb2xpY3k.allowed-value.aW50OjM.short_desc": {
@@ -516,7 +516,7 @@
           "message": "Доставити, починаючи з конкретного порядкового номера"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItdXBkYXRl.option.ZGVsaXZlcl9wb2xpY3k.allowed-value.aW50OjQ.display_name": {
-          "source": "By Start Time",
+          "source": "By start time",
           "message": "За початковим часом"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItdXBkYXRl.option.ZGVsaXZlcl9wb2xpY3k.allowed-value.aW50OjQ.short_desc": {
@@ -524,7 +524,7 @@
           "message": "Доставити, починаючи з конкретного часу"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItdXBkYXRl.option.ZGVsaXZlcl9wb2xpY3k.allowed-value.aW50OjU.display_name": {
-          "source": "Last Per Subject",
+          "source": "Last per subject",
           "message": "Останнє для кожної теми"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItdXBkYXRl.option.ZGVsaXZlcl9wb2xpY3k.allowed-value.aW50OjU.short_desc": {
@@ -532,11 +532,11 @@
           "message": "Доставити останнє повідомлення для кожної теми"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItdXBkYXRl.option.ZGVsaXZlcl9wb2xpY3k.desc": {
-          "source": "Determines the starting point for message delivery to the consumer.\n\n- `0` (All): deliver all available messages from the beginning of the stream\n- `1` (Last): start with the last message in the stream\n- `2` (New): deliver only messages published after the consumer is created\n- `3` (By Start Sequence): start at a specific sequence number\n- `4` (By Start Time): start at a specific timestamp\n- `5` (Last Per Subject): deliver the last message for each subject\n\n**Default is `0` (All) if not specified.**",
+          "source": "Determines the starting point for message delivery to the consumer.\n\n- `0` (All): deliver all available messages from the beginning of the stream\n- `1` (Last): start with the last message in the stream\n- `2` (New): deliver only messages published after the consumer is created\n- `3` (By start sequence): start at a specific sequence number\n- `4` (By start time): start at a specific timestamp\n- `5` (Last per subject): deliver the last message for each subject\n\n**Default is `0` (All) if not specified.**",
           "message": "Визначає початкову точку для доставки повідомлень споживачеві.\n\n- `0` (All): доставити всі доступні повідомлення від початку потоку\n- `1` (Last): почати з останнього повідомлення у потоці\n- `2` (New): доставити лише повідомлення, опубліковані після створення споживача\n- `3` (By Start Sequence): почати з конкретного порядкового номера\n- `4` (By Start Time): почати з конкретної мітки часу\n- `5` (Last Per Subject): доставити останнє повідомлення для кожної теми\n\n**Значення за замовчуванням: `0` (All), якщо не вказано.**"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItdXBkYXRl.option.ZGVsaXZlcl9wb2xpY3k.display_name": {
-          "source": "Deliver Policy",
+          "source": "Deliver policy",
           "message": "Політика доставки"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItdXBkYXRl.option.ZGVsaXZlcl9wb2xpY3k.short_desc": {
@@ -548,7 +548,7 @@
           "message": "Тема NATS, на яку сервер надсилатиме повідомлення споживачеві.\n\nЯкщо вказано, споживач працює в **режимі push**, коли сервер активно доставляє повідомлення на цю тему. Якщо не вказано, споживач працює в **режимі pull**, коли клієнти повинні явно запитувати повідомлення."
         },
         "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItdXBkYXRl.option.ZGVsaXZlcl9zdWJqZWN0.display_name": {
-          "source": "Deliver Subject",
+          "source": "Deliver subject",
           "message": "Тема доставки"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItdXBkYXRl.option.ZGVsaXZlcl9zdWJqZWN0.short_desc": {
@@ -572,7 +572,7 @@
           "message": "Унікальна назва, яка робить споживача постійним (durable).\n\n**Важливо**: без назви durable споживач є ефемерним і буде автоматично видалений після відключення або втрати активності. Постійний споживач зберігає свій стан (позицію доставки, очікувані підтвердження) під час відключень клієнта та перезапусків сервера."
         },
         "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItdXBkYXRl.option.ZHVyYWJsZV9uYW1l.display_name": {
-          "source": "Durable Name",
+          "source": "Durable name",
           "message": "Назва Durable"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItdXBkYXRl.option.ZHVyYWJsZV9uYW1l.short_desc": {
@@ -584,7 +584,7 @@
           "message": "Фільтр теми, який обмежує споживача отриманням лише тих повідомлень, які відповідають цьому шаблону.\n\nЦе дозволяє споживачу обробляти підмножину повідомлень потоку. Підтримує символи підстановки NATS (`*` та `>`). Якщо не вказано, споживач отримує всі повідомлення з потоку."
         },
         "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItdXBkYXRl.option.ZmlsdGVyX3N1YmplY3Q.display_name": {
-          "source": "Filter Subject",
+          "source": "Filter subject",
           "message": "Фільтр теми"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItdXBkYXRl.option.ZmlsdGVyX3N1YmplY3Q.short_desc": {
@@ -596,7 +596,7 @@
           "message": "Максимальна кількість повідомлень, які можуть бути доставлені, але ще не підтверджені.\n\nЦе працює як механізм управління потоком для запобігання перевантаженню споживача. Після досягнення цього ліміту сервер призупиняє доставку, доки деякі повідомлення не будуть підтверджені. **Значення за замовчуванням: `1000`, якщо не вказано.**"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItdXBkYXRl.option.bWF4X2Fja19wZW5kaW5n.display_name": {
-          "source": "Max Ack Pending",
+          "source": "Max ack pending",
           "message": "Максимум очікуваних підтверджень"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItdXBkYXRl.option.bWF4X2Fja19wZW5kaW5n.short_desc": {
@@ -608,7 +608,7 @@
           "message": "Максимальна кількість спроб сервера доставити повідомлення споживачеві.\n\nПісля такої кількості невдалих спроб доставки повідомлення відкидається або надсилається до черги нерозподілених повідомлень, якщо її налаштовано. Установіть значення `-1` для необмеженої кількості спроб повторної доставки. **У продакшені зазвичай використовується значення `5`.**"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItdXBkYXRl.option.bWF4X2RlbGl2ZXI.display_name": {
-          "source": "Max Deliver",
+          "source": "Max deliver",
           "message": "Максимум спроб доставки"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItdXBkYXRl.option.bWF4X2RlbGl2ZXI.short_desc": {
@@ -620,7 +620,7 @@
           "message": "Назва потоку JetStream, з якого цей споживач читатиме повідомлення.\n\nПотік уже повинен існувати до створення споживача. Використовуйте значення `name` потоку з його конфігурації."
         },
         "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItdXBkYXRl.option.c3RyZWFt.display_name": {
-          "source": "Stream Name",
+          "source": "Stream name",
           "message": "Назва потоку"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItdXBkYXRl.option.c3RyZWFt.short_desc": {
@@ -648,7 +648,7 @@
           "message": "Керує швидкістю відтворення повідомлень для споживача під час наздоганяння історичних повідомлень.\n\n- `0` (Instant): повідомлення доставляються якомога швидше\n- `1` (Original): повідомлення доставляються зі швидкістю їх початкової публікації із збереженням вихідного хронометражу\n\n**За замовчуванням — `0` (Instant), якщо не вказано.**"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItdXBkYXRl.option.cmVwbGF5X3BvbGljeQ.display_name": {
-          "source": "Replay Policy",
+          "source": "Replay policy",
           "message": "Політика відтворення"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItdXBkYXRl.option.cmVwbGF5X3BvbGljeQ.short_desc": {
@@ -664,7 +664,7 @@
           "message": "Отримує інформацію про обліковий запис JetStream, включно з використанням ресурсів та статистикою API.\n\nПовертає використання пам'яті та сховища, кількість потоків і споживачів, а також загальну кількість запитів до API. Використовуйте це для планування ємності та моніторингу."
         },
         "app.TkFUU0pldFN0cmVhbQ.action.YWNjb3VudC1pbmZv.display_name": {
-          "source": "Account Info",
+          "source": "Account info",
           "message": "Інформація про обліковий запис"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.YWNjb3VudC1pbmZv.short_desc": {
@@ -676,7 +676,7 @@
           "message": "Створює новий бакет у сховищі Key-Value JetStream.\n\nСтворює бакет із вказаною конфігурацією, включно з глибиною історії, TTL, типом сховища та реплікацією. Повертає початковий статус бакета."
         },
         "app.TkFUU0pldFN0cmVhbQ.action.a3YtY3JlYXRlLWJ1Y2tldA.display_name": {
-          "source": "KV Create Bucket",
+          "source": "KV create bucket",
           "message": "KV: Створити бакет"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.a3YtY3JlYXRlLWJ1Y2tldA.option.YnVja2V0.desc": {
@@ -684,7 +684,7 @@
           "message": "Ім'я нового бакета KV.\n\nІмена бакетів повинні містити буквено-цифрові символи та можуть включати дефіси або підкреслення. Ім'я має бути унікальним у межах облікового запису JetStream."
         },
         "app.TkFUU0pldFN0cmVhbQ.action.a3YtY3JlYXRlLWJ1Y2tldA.option.YnVja2V0.display_name": {
-          "source": "Bucket Name",
+          "source": "Bucket name",
           "message": "Ім'я бакета"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.a3YtY3JlYXRlLWJ1Y2tldA.option.YnVja2V0.short_desc": {
@@ -720,7 +720,7 @@
           "message": "Максимальний загальний обсяг сховища в байтах для всіх ключів і ревізій у бакеті.\n\nПри досягненні цього ліміту старі ревізії видаляються для звільнення місця. Якщо не вказано, використовується значення сервера за замовчуванням."
         },
         "app.TkFUU0pldFN0cmVhbQ.action.a3YtY3JlYXRlLWJ1Y2tldA.option.bWF4X2J5dGVz.display_name": {
-          "source": "Max Bytes",
+          "source": "Max bytes",
           "message": "Макс. байтів"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.a3YtY3JlYXRlLWJ1Y2tldA.option.bWF4X2J5dGVz.short_desc": {
@@ -732,7 +732,7 @@
           "message": "Максимальний розмір у байтах для будь-якого окремого значення, що зберігається в бакеті.\n\nЗначення, які перевищують цей розмір, будуть відхилені. Якщо не вказано, використовується значення сервера за замовчуванням."
         },
         "app.TkFUU0pldFN0cmVhbQ.action.a3YtY3JlYXRlLWJ1Y2tldA.option.bWF4X3ZhbHVlX3NpemU.display_name": {
-          "source": "Max Value Size",
+          "source": "Max value size",
           "message": "Макс. розмір значення"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.a3YtY3JlYXRlLWJ1Y2tldA.option.bWF4X3ZhbHVlX3NpemU.short_desc": {
@@ -772,7 +772,7 @@
           "message": "Визначає місце зберігання даних бакета.\n\n- `0` (Файл): дані зберігаються на диску для забезпечення довговічності між перезапусками сервера\n- `1` (Пам'ять): дані зберігаються в пам'яті для вищої пропускної здатності, але втрачаються під час перезапуску сервера\n\n**За замовчуванням використовується `0` (Файл), якщо не вказано інше.**"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.a3YtY3JlYXRlLWJ1Y2tldA.option.c3RvcmFnZQ.display_name": {
-          "source": "Storage Type",
+          "source": "Storage type",
           "message": "Тип сховища"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.a3YtY3JlYXRlLWJ1Y2tldA.option.c3RvcmFnZQ.short_desc": {
@@ -800,7 +800,7 @@
           "message": "Отримує поточне значення та метадані для ключа з бакета JetStream KV.\n\nПовертає останню ревізію, включаючи `value`, `revision`, позначку часу `created` та тип `operation`."
         },
         "app.TkFUU0pldFN0cmVhbQ.action.a3YtZ2V0.display_name": {
-          "source": "KV Get",
+          "source": "KV get",
           "message": "KV Get"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.a3YtZ2V0.option.YnVja2V0.desc": {
@@ -836,7 +836,7 @@
           "message": "М'яко видаляє ключ із бакета JetStream KV.\n\nРозміщує маркер видалення, тому ключ більше не відображається у списках або операціях отримання. Історія ревізій ключа зберігається."
         },
         "app.TkFUU0pldFN0cmVhbQ.action.a3YtZGVsZXRl.display_name": {
-          "source": "KV Delete",
+          "source": "KV delete",
           "message": "KV Delete"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.a3YtZGVsZXRl.option.YnVja2V0.desc": {
@@ -872,7 +872,7 @@
           "message": "Остаточно видаляє бакет сховища ключ-значення JetStream.\n\n**Попередження**: це видаляє бакет, усі збережені ключі та всю історію ревізій. Цю дію неможливо скасувати."
         },
         "app.TkFUU0pldFN0cmVhbQ.action.a3YtZGVsZXRlLWJ1Y2tldA.display_name": {
-          "source": "KV Delete Bucket",
+          "source": "KV delete bucket",
           "message": "KV Delete Bucket"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.a3YtZGVsZXRlLWJ1Y2tldA.option.YnVja2V0.desc": {
@@ -880,7 +880,7 @@
           "message": "Назва бакета JetStream KV для видалення.\n\n**Попередження**: це остаточно видаляє бакет, усі його ключі та всю історію ревізій. Цю операцію неможливо скасувати."
         },
         "app.TkFUU0pldFN0cmVhbQ.action.a3YtZGVsZXRlLWJ1Y2tldA.option.YnVja2V0.display_name": {
-          "source": "Bucket Name",
+          "source": "Bucket name",
           "message": "Ім'я бакета"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.a3YtZGVsZXRlLWJ1Y2tldA.option.YnVja2V0.short_desc": {
@@ -896,7 +896,7 @@
           "message": "Виводить список усіх активних ключів у бакеті JetStream KV.\n\nПовертає назви ключів із поточними (невидаленими) значеннями. Видалені або очищені ключі виключаються зі списку."
         },
         "app.TkFUU0pldFN0cmVhbQ.action.a3Yta2V5cw.display_name": {
-          "source": "KV Keys",
+          "source": "KV keys",
           "message": "KV Keys"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.a3Yta2V5cw.option.YnVja2V0.desc": {
@@ -920,7 +920,7 @@
           "message": "Отримує повну історію ревізій для ключа в бакеті JetStream KV.\n\nПовертає всі ревізії від найстарішої до найновішої, включаючи операції запису (put), видалення (delete) та очищення (purge). Використовуйте це для аудиту та налагодження змін конфігурації."
         },
         "app.TkFUU0pldFN0cmVhbQ.action.a3YtaGlzdG9yeQ.display_name": {
-          "source": "KV History",
+          "source": "KV history",
           "message": "KV History"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.a3YtaGlzdG9yeQ.option.YnVja2V0.desc": {
@@ -956,7 +956,7 @@
           "message": "Отримує інформацію про статус бакета JetStream KV.\n\nПовертає кількість ключів у бакеті, глибину історії, TTL, кількість реплік та загальне використання сховища."
         },
         "app.TkFUU0pldFN0cmVhbQ.action.a3Ytc3RhdHVz.display_name": {
-          "source": "KV Bucket Status",
+          "source": "KV bucket status",
           "message": "KV Bucket Status"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.a3Ytc3RhdHVz.option.YnVja2V0.desc": {
@@ -964,7 +964,7 @@
           "message": "Назва бакета JetStream KV для отримання статусу.\n\nБакет повинен уже існувати; якщо його не знайдено, виникає помилка."
         },
         "app.TkFUU0pldFN0cmVhbQ.action.a3Ytc3RhdHVz.option.YnVja2V0.display_name": {
-          "source": "Bucket Name",
+          "source": "Bucket name",
           "message": "Ім'я бакета"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.a3Ytc3RhdHVz.option.YnVja2V0.short_desc": {
@@ -980,7 +980,7 @@
           "message": "Зберігає значення для ключа в бакеті JetStream KV.\n\nСтворює ключ, якщо він не існує, або оновлює його з новою ревізією. Повертає новий номер `revision` для оптимістичного контролю паралелізму."
         },
         "app.TkFUU0pldFN0cmVhbQ.action.a3YtcHV0.display_name": {
-          "source": "KV Put",
+          "source": "KV put",
           "message": "KV Put"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.a3YtcHV0.option.YnVja2V0.desc": {
@@ -1000,7 +1000,7 @@
           "message": "Двійкове значення для збереження; використовуйте `data` або `string_data`.\n\nДвійкові дані зберігаються як є без кодування. Якщо вказано і `data`, і `string_data`, пріоритет має `data`."
         },
         "app.TkFUU0pldFN0cmVhbQ.action.a3YtcHV0.option.ZGF0YQ.display_name": {
-          "source": "Binary Data",
+          "source": "Binary data",
           "message": "Бінарні дані"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.a3YtcHV0.option.ZGF0YQ.short_desc": {
@@ -1024,7 +1024,7 @@
           "message": "Рядкове значення для збереження (альтернатива `data`).\n\nВикористовуйте це для конфігураційних значень, JSON або іншого текстового вмісту. Рядок перетворюється на двійкові дані перед збереженням."
         },
         "app.TkFUU0pldFN0cmVhbQ.action.a3YtcHV0.option.c3RyaW5nX2RhdGE.display_name": {
-          "source": "String Data",
+          "source": "String data",
           "message": "Рядкові дані"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.a3YtcHV0.option.c3RyaW5nX2RhdGE.short_desc": {
@@ -1040,7 +1040,7 @@
           "message": "Публікує повідомлення в тему JetStream із гарантованою доставкою.\n\nНа відміну від базової публікації NATS, повідомлення зберігається в потоці, і повертається підтвердження публікації, що підтверджує збереження з назвою `stream` та номером `sequence`."
         },
         "app.TkFUU0pldFN0cmVhbQ.action.anMtcHVibGlzaA.display_name": {
-          "source": "JetStream Publish",
+          "source": "JetStream publish",
           "message": "JetStream Publish"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.anMtcHVibGlzaA.option.ZGF0YQ.desc": {
@@ -1048,7 +1048,7 @@
           "message": "Двійкове корисне навантаження повідомлення; використовуйте `data` або `string_data`.\n\nДвійкові дані зберігаються в потоці як є без кодування."
         },
         "app.TkFUU0pldFN0cmVhbQ.action.anMtcHVibGlzaA.option.ZGF0YQ.display_name": {
-          "source": "Binary Data",
+          "source": "Binary data",
           "message": "Бінарні дані"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.anMtcHVibGlzaA.option.ZGF0YQ.short_desc": {
@@ -1060,7 +1060,7 @@
           "message": "Якщо встановлено `True`, публікація завершиться помилкою, якщо для цієї теми вже існує будь-яке повідомлення.\n\nВикористовуйте це, щоб переконатися, що приймається лише перше повідомлення для теми, реалізуючи семантику \"лише створення\"."
         },
         "app.TkFUU0pldFN0cmVhbQ.action.anMtcHVibGlzaA.option.ZXhwZWN0X25vX21lc3NhZ2U.display_name": {
-          "source": "Expect No Message",
+          "source": "Expect no message",
           "message": "Очікувати відсутність повідомлень"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.anMtcHVibGlzaA.option.ZXhwZWN0X25vX21lc3NhZ2U.short_desc": {
@@ -1072,7 +1072,7 @@
           "message": "Очікуваний ідентифікатор останнього повідомлення в потоці.\n\nЯкщо ID останнього повідомлення не збігається, публікація завершується помилкою. Використовуйте це для перевірки цілісності послідовності."
         },
         "app.TkFUU0pldFN0cmVhbQ.action.anMtcHVibGlzaA.option.ZXhwZWN0X2xhc3RfbXNnX2lk.display_name": {
-          "source": "Expected Last Message ID",
+          "source": "Expected last message ID",
           "message": "Очікуваний ID останнього повідомлення"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.anMtcHVibGlzaA.option.ZXhwZWN0X2xhc3RfbXNnX2lk.short_desc": {
@@ -1084,7 +1084,7 @@
           "message": "Очікуваний порядковий номер останнього повідомлення в потоці.\n\nЯкщо останній порядковий номер потоку не збігається, публікація завершується помилкою. Використовуйте це для оптимістичного контролю паралельності, щоб переконатися, що між читаннями не було опубліковано жодного повідомлення."
         },
         "app.TkFUU0pldFN0cmVhbQ.action.anMtcHVibGlzaA.option.ZXhwZWN0X2xhc3Rfc2Vx.display_name": {
-          "source": "Expected Last Sequence",
+          "source": "Expected last sequence",
           "message": "Очікувана остання послідовність"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.anMtcHVibGlzaA.option.ZXhwZWN0X2xhc3Rfc2Vx.short_desc": {
@@ -1096,7 +1096,7 @@
           "message": "Очікуваний порядковий номер останнього повідомлення для цієї конкретної теми.\n\nЯкщо останнє повідомлення в темі не має цього порядкового номера, публікація завершується помилкою. Використовуйте це для оптимістичного контролю паралельності на рівні теми."
         },
         "app.TkFUU0pldFN0cmVhbQ.action.anMtcHVibGlzaA.option.ZXhwZWN0X2xhc3Rfc3ViamVjdF9zZXE.display_name": {
-          "source": "Expected Last Subject Sequence",
+          "source": "Expected last subject sequence",
           "message": "Очікувана остання послідовність теми"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.anMtcHVibGlzaA.option.ZXhwZWN0X2xhc3Rfc3ViamVjdF9zZXE.short_desc": {
@@ -1108,7 +1108,7 @@
           "message": "Очікувана назва потоку, у який має бути опубліковано повідомлення.\n\nЯкщо повідомлення має зберігатися в іншому потоці, публікація завершується помилкою. Використовуйте це для безпеки під час публікації в теми, які перехоплюються кількома потоками."
         },
         "app.TkFUU0pldFN0cmVhbQ.action.anMtcHVibGlzaA.option.ZXhwZWN0X3N0cmVhbQ.display_name": {
-          "source": "Expected Stream",
+          "source": "Expected stream",
           "message": "Очікуваний потік"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.anMtcHVibGlzaA.option.ZXhwZWN0X3N0cmVhbQ.short_desc": {
@@ -1132,7 +1132,7 @@
           "message": "Рядкове корисне навантаження повідомлення (альтернатива `data`).\n\nРядок перетворюється на бінарний формат перед публікацією. Використовуйте це для JSON, XML або інших текстових даних."
         },
         "app.TkFUU0pldFN0cmVhbQ.action.anMtcHVibGlzaA.option.c3RyaW5nX2RhdGE.display_name": {
-          "source": "String Data",
+          "source": "String data",
           "message": "Рядкові дані"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.anMtcHVibGlzaA.option.c3RyaW5nX2RhdGE.short_desc": {
@@ -1160,7 +1160,7 @@
           "message": "Видаляє повідомлення з потоку JetStream за порядковим номером.\n\nДані повідомлення все ще можна відновити зі сховища. Для гарантованого видалення даних використовуйте дію очищення замість видалення."
         },
         "app.TkFUU0pldFN0cmVhbQ.action.bWVzc2FnZS1kZWxldGU.display_name": {
-          "source": "Delete Message",
+          "source": "Delete message",
           "message": "Видалити повідомлення"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.bWVzc2FnZS1kZWxldGU.option.c2Vx.desc": {
@@ -1168,7 +1168,7 @@
           "message": "Порядковий номер повідомлення для отримання.\n\nПорядкові номери призначаються монотонно потоком. Використовуйте інформацію про потік, щоб визначити допустимий діапазон (від `first_seq` до `last_seq`)."
         },
         "app.TkFUU0pldFN0cmVhbQ.action.bWVzc2FnZS1kZWxldGU.option.c2Vx.display_name": {
-          "source": "Sequence Number",
+          "source": "Sequence number",
           "message": "Порядковий номер"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.bWVzc2FnZS1kZWxldGU.option.c2Vx.short_desc": {
@@ -1180,7 +1180,7 @@
           "message": "Назва потоку JetStream, з якого потрібно отримати повідомлення.\n\nПотік повинен уже існувати; якщо потік не знайдено, виникає помилка."
         },
         "app.TkFUU0pldFN0cmVhbQ.action.bWVzc2FnZS1kZWxldGU.option.c3RyZWFt.display_name": {
-          "source": "Stream Name",
+          "source": "Stream name",
           "message": "Назва потоку"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.bWVzc2FnZS1kZWxldGU.option.c3RyZWFt.short_desc": {
@@ -1196,7 +1196,7 @@
           "message": "Безпечно очищає повідомлення з потоку JetStream за порядковим номером.\n\nНа відміну від видалення, це перезаписує дані повідомлення у сховищі для відповідності нормам захисту даних."
         },
         "app.TkFUU0pldFN0cmVhbQ.action.bWVzc2FnZS1lcmFzZQ.display_name": {
-          "source": "Erase Message",
+          "source": "Erase message",
           "message": "Очистити повідомлення"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.bWVzc2FnZS1lcmFzZQ.option.c2Vx.desc": {
@@ -1204,7 +1204,7 @@
           "message": "Порядковий номер повідомлення для отримання.\n\nПорядкові номери призначаються монотонно потоком. Використовуйте інформацію про потік, щоб визначити допустимий діапазон (від `first_seq` до `last_seq`)."
         },
         "app.TkFUU0pldFN0cmVhbQ.action.bWVzc2FnZS1lcmFzZQ.option.c2Vx.display_name": {
-          "source": "Sequence Number",
+          "source": "Sequence number",
           "message": "Порядковий номер"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.bWVzc2FnZS1lcmFzZQ.option.c2Vx.short_desc": {
@@ -1216,7 +1216,7 @@
           "message": "Назва потоку JetStream, з якого потрібно отримати повідомлення.\n\nПотік повинен уже існувати; якщо потік не знайдено, виникає помилка."
         },
         "app.TkFUU0pldFN0cmVhbQ.action.bWVzc2FnZS1lcmFzZQ.option.c3RyZWFt.display_name": {
-          "source": "Stream Name",
+          "source": "Stream name",
           "message": "Назва потоку"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.bWVzc2FnZS1lcmFzZQ.option.c3RyZWFt.short_desc": {
@@ -1232,7 +1232,7 @@
           "message": "Отримує повідомлення з потоку JetStream за порядковим номером.\n\nПовертає корисне навантаження повідомлення, тему та заголовки. Нічого не повертає, якщо повідомлення за вказаним порядковим номером не існує."
         },
         "app.TkFUU0pldFN0cmVhbQ.action.bWVzc2FnZS1nZXQ.display_name": {
-          "source": "Get Message",
+          "source": "Get message",
           "message": "Отримати повідомлення"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.bWVzc2FnZS1nZXQ.option.c2Vx.desc": {
@@ -1240,7 +1240,7 @@
           "message": "Порядковий номер повідомлення для отримання.\n\nПорядкові номери призначаються монотонно потоком. Використовуйте інформацію про потік, щоб визначити допустимий діапазон (від `first_seq` до `last_seq`)."
         },
         "app.TkFUU0pldFN0cmVhbQ.action.bWVzc2FnZS1nZXQ.option.c2Vx.display_name": {
-          "source": "Sequence Number",
+          "source": "Sequence number",
           "message": "Порядковий номер"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.bWVzc2FnZS1nZXQ.option.c2Vx.short_desc": {
@@ -1252,7 +1252,7 @@
           "message": "Назва потоку JetStream, з якого потрібно отримати повідомлення.\n\nПотік повинен уже існувати; якщо потік не знайдено, виникає помилка."
         },
         "app.TkFUU0pldFN0cmVhbQ.action.bWVzc2FnZS1nZXQ.option.c3RyZWFt.display_name": {
-          "source": "Stream Name",
+          "source": "Stream name",
           "message": "Назва потоку"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.bWVzc2FnZS1nZXQ.option.c3RyZWFt.short_desc": {
@@ -1268,7 +1268,7 @@
           "message": "Отримує останнє повідомлення для теми з потоку JetStream.\n\nПовертає найновіше опубліковане повідомлення у вказаній темі. Нічого не повертає, якщо для теми немає повідомлень."
         },
         "app.TkFUU0pldFN0cmVhbQ.action.bWVzc2FnZS1nZXQtbGFzdA.display_name": {
-          "source": "Get Last Message",
+          "source": "Get last message",
           "message": "Отримати останнє повідомлення"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.bWVzc2FnZS1nZXQtbGFzdA.option.c3RyZWFt.desc": {
@@ -1276,7 +1276,7 @@
           "message": "Назва потоку JetStream, з якого потрібно отримати повідомлення.\n\nПотік повинен уже існувати; якщо потік не знайдено, виникає помилка."
         },
         "app.TkFUU0pldFN0cmVhbQ.action.bWVzc2FnZS1nZXQtbGFzdA.option.c3RyZWFt.display_name": {
-          "source": "Stream Name",
+          "source": "Stream name",
           "message": "Назва потоку"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.bWVzc2FnZS1nZXQtbGFzdA.option.c3RyZWFt.short_desc": {
@@ -1304,7 +1304,7 @@
           "message": "Виводить список усіх назв потоків JetStream без повної конфігурації чи деталей стану.\n\nВикористовуйте це для легкого перелічення, коли вам потрібно лише перевірити, які потоки існують."
         },
         "app.TkFUU0pldFN0cmVhbQ.action.c3RyZWFtLW5hbWVz.display_name": {
-          "source": "Stream Names",
+          "source": "Stream names",
           "message": "Назви потоків"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.c3RyZWFtLW5hbWVz.short_desc": {
@@ -1316,7 +1316,7 @@
           "message": "Створює новий потік JetStream для довгострокового зберігання повідомлень.\n\nПотоки перехоплюють повідомлення, опубліковані у відповідні теми, і зберігають їх відповідно до налаштованих політик утримання. Використовуйте потоки для повторного відтворення повідомлень, журналу аудиту та гарантованої доставки."
         },
         "app.TkFUU0pldFN0cmVhbQ.action.c3RyZWFtLWNyZWF0ZQ.display_name": {
-          "source": "Create Stream",
+          "source": "Create stream",
           "message": "Створити потік"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.c3RyZWFtLWNyZWF0ZQ.option.ZGVzY3JpcHRpb24.desc": {
@@ -1352,7 +1352,7 @@
           "message": "Керує тим, які повідомлення видаляються під час досягнення лімітів потоку (`max_msgs`, `max_bytes` або `max_age`).\n\n- `0` (Old): найстаріші повідомлення видаляються, щоб звільнити місце\n- `1` (New): нові повідомлення відхиляються з помилкою\n\n**Значення за замовчуванням: `0` (Old), якщо не вказано.**"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.c3RyZWFtLWNyZWF0ZQ.option.ZGlzY2FyZA.display_name": {
-          "source": "Discard Policy",
+          "source": "Discard policy",
           "message": "Політика відкидання"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.c3RyZWFtLWNyZWF0ZQ.option.ZGlzY2FyZA.short_desc": {
@@ -1364,7 +1364,7 @@
           "message": "Максимальний розмір у байтах для будь-якого окремого повідомлення, опублікованого в потік.\n\nПовідомлення, розмір яких перевищує цей ліміт, будуть відхилені сервером. Встановіть значення `-1`, щоб використовувати максимум за замовчуванням для сервера (зазвичай 1 МБ). Наприклад, `1048576` встановлює ліміт у 1 МБ."
         },
         "app.TkFUU0pldFN0cmVhbQ.action.c3RyZWFtLWNyZWF0ZQ.option.bWF4X21zZ19zaXpl.display_name": {
-          "source": "Max Message Size",
+          "source": "Max message size",
           "message": "Максимальний розмір повідомлення"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.c3RyZWFtLWNyZWF0ZQ.option.bWF4X21zZ19zaXpl.short_desc": {
@@ -1376,7 +1376,7 @@
           "message": "Максимальна кількість повідомлень, яку зберігатиме потік.\n\nУ разі досягнення цього ліміту старіші повідомлення відкидаються відповідно до політики `discard`. Встановіть значення `-1` для необмеженої кількості повідомлень.\n\n**Застосовується лише тоді, коли для політики `retention` встановлено значення Limits (`0`).**"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.c3RyZWFtLWNyZWF0ZQ.option.bWF4X21zZ3M.display_name": {
-          "source": "Max Messages",
+          "source": "Max messages",
           "message": "Максимальна кількість повідомлень"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.c3RyZWFtLWNyZWF0ZQ.option.bWF4X21zZ3M.short_desc": {
@@ -1388,7 +1388,7 @@
           "message": "Максимальний вік будь-якого повідомлення в потоці в мілісекундах.\n\nПовідомлення, старіші за це значення, видаляються автоматично. Встановіть значення `0`, щоб скасувати обмеження за віком. Наприклад, `86400000` встановлює 24-годинне вікно утримання.\n\n**Застосовується лише тоді, коли для політики `retention` встановлено значення Limits (`0`).**"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.c3RyZWFtLWNyZWF0ZQ.option.bWF4X2FnZQ.display_name": {
-          "source": "Max Age (ms)",
+          "source": "Max age (ms)",
           "message": "Макс. вік (мс)"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.c3RyZWFtLWNyZWF0ZQ.option.bWF4X2FnZQ.short_desc": {
@@ -1400,7 +1400,7 @@
           "message": "Максимальний загальний обсяг сховища у байтах для всіх повідомлень у потоці.\n\nУ разі досягнення цього ліміту старіші повідомлення відкидаються відповідно до політики `discard`. Встановіть значення `-1` для необмеженого обсягу сховища.\n\n**Застосовується лише тоді, коли для політики `retention` встановлено значення Limits (`0`).**"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.c3RyZWFtLWNyZWF0ZQ.option.bWF4X2J5dGVz.display_name": {
-          "source": "Max Bytes",
+          "source": "Max bytes",
           "message": "Макс. байтів"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.c3RyZWFtLWNyZWF0ZQ.option.bWF4X2J5dGVz.short_desc": {
@@ -1412,7 +1412,7 @@
           "message": "Унікальний ідентифікатор для потоку JetStream.\n\nНазви потоків використовуються для посилання на потік у всіх операціях JetStream, таких як публікація, підписка та керування. **Назви повинні бути буквено-цифровими та можуть містити дефіси або підкреслення, але не крапки чи пробіли.**"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.c3RyZWFtLWNyZWF0ZQ.option.bmFtZQ.display_name": {
-          "source": "Stream Name",
+          "source": "Stream name",
           "message": "Назва потоку"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.c3RyZWFtLWNyZWF0ZQ.option.bmFtZQ.short_desc": {
@@ -1452,7 +1452,7 @@
           "message": "Керує тим, де зберігаються повідомлення потоку.\n\n- `0` (File): повідомлення зберігаються на диску для надійності під час перезапусків сервера\n- `1` (Memory): повідомлення зберігаються в пам'яті для вищої пропускної здатності, але втрачаються під час перезапуску сервера\n\n**Значення за замовчуванням: `0` (File), якщо не вказано.**"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.c3RyZWFtLWNyZWF0ZQ.option.c3RvcmFnZQ.display_name": {
-          "source": "Storage Type",
+          "source": "Storage type",
           "message": "Тип сховища"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.c3RyZWFtLWNyZWF0ZQ.option.c3RvcmFnZQ.short_desc": {
@@ -1488,7 +1488,7 @@
           "message": "Видаляти, коли всі відомі споживачі підтвердили отримання"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.c3RyZWFtLWNyZWF0ZQ.option.cmV0ZW50aW9u.allowed-value.aW50OjI.display_name": {
-          "source": "Work Queue",
+          "source": "Work queue",
           "message": "Робоча черга"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.c3RyZWFtLWNyZWF0ZQ.option.cmV0ZW50aW9u.allowed-value.aW50OjI.short_desc": {
@@ -1496,11 +1496,11 @@
           "message": "Видаляти, коли будь-який споживач підтвердить отримання"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.c3RyZWFtLWNyZWF0ZQ.option.cmV0ZW50aW9u.desc": {
-          "source": "Controls how messages are retained or removed from the stream.\n\n- `0` (Limits): messages are kept until stream limits (`max_msgs`, `max_bytes`, `max_age`) are reached\n- `1` (Interest): messages are removed once all known consumers have acknowledged them\n- `2` (Work Queue): messages are removed as soon as any consumer acknowledges them\n\n**Default is `0` (Limits) if not specified.**",
+          "source": "Controls how messages are retained or removed from the stream.\n\n- `0` (Limits): messages are kept until stream limits (`max_msgs`, `max_bytes`, `max_age`) are reached\n- `1` (Interest): messages are removed once all known consumers have acknowledged them\n- `2` (Work queue): messages are removed as soon as any consumer acknowledges them\n\n**Default is `0` (Limits) if not specified.**",
           "message": "Керує тим, як повідомлення зберігаються або видаляються з потоку.\n\n- `0` (Limits): повідомлення зберігаються, доки не буде досягнуто обмежень потоку (`max_msgs`, `max_bytes`, `max_age`)\n- `1` (Interest): повідомлення видаляються, як тільки всі відомі споживачі підтвердять їх отримання\n- `2` (Work Queue): повідомлення видаляються, як тільки будь-який споживач підтвердить їх отримання\n\n**За замовчуванням використовується `0` (Limits), якщо не вказано інше.**"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.c3RyZWFtLWNyZWF0ZQ.option.cmV0ZW50aW9u.display_name": {
-          "source": "Retention Policy",
+          "source": "Retention policy",
           "message": "Політика зберігання"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.c3RyZWFtLWNyZWF0ZQ.option.cmV0ZW50aW9u.short_desc": {
@@ -1516,7 +1516,7 @@
           "message": "Остаточно видаляє потік JetStream та всі його повідомлення.\n\n**Увага**: це видалить потік, усі збережені повідомлення та всіх пов'язаних споживачів. Цю дію неможливо скасувати."
         },
         "app.TkFUU0pldFN0cmVhbQ.action.c3RyZWFtLWRlbGV0ZQ.display_name": {
-          "source": "Delete Stream",
+          "source": "Delete stream",
           "message": "Видалити потік"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.c3RyZWFtLWRlbGV0ZQ.option.bmFtZQ.desc": {
@@ -1524,7 +1524,7 @@
           "message": "Назва потоку JetStream для видалення.\n\n**Увага**: це остаточно видалить потік і всі збережені у ньому повідомлення. Будь-які споживачі, приєднані до потоку, також будуть видалені. Цю операцію неможливо скасувати."
         },
         "app.TkFUU0pldFN0cmVhbQ.action.c3RyZWFtLWRlbGV0ZQ.option.bmFtZQ.display_name": {
-          "source": "Stream Name",
+          "source": "Stream name",
           "message": "Назва потоку"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.c3RyZWFtLWRlbGV0ZQ.option.bmFtZQ.short_desc": {
@@ -1540,7 +1540,7 @@
           "message": "Отримує конфігурацію та інформацію про стан потоку JetStream.\n\nПовертає фільтри суб'єктів потоку, політику зберігання, обмеження сховища та поточний стан, у тому числі кількість повідомлень і розмір у байтах."
         },
         "app.TkFUU0pldFN0cmVhbQ.action.c3RyZWFtLWluZm8.display_name": {
-          "source": "Stream Info",
+          "source": "Stream info",
           "message": "Інформація про потік"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.c3RyZWFtLWluZm8.option.bmFtZQ.desc": {
@@ -1548,7 +1548,7 @@
           "message": "Назва потоку JetStream, для якого потрібно отримати інформацію.\n\nПотік повинен уже існувати; якщо потік не знайдено, виникне помилка."
         },
         "app.TkFUU0pldFN0cmVhbQ.action.c3RyZWFtLWluZm8.option.bmFtZQ.display_name": {
-          "source": "Stream Name",
+          "source": "Stream name",
           "message": "Назва потоку"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.c3RyZWFtLWluZm8.option.bmFtZQ.short_desc": {
@@ -1564,7 +1564,7 @@
           "message": "Виводить список усіх потоків JetStream із їхньою конфігурацією та поточним станом.\n\nПовертає детальну інформацію про кожен потік, включаючи фільтри суб'єктів, політику зберігання, обмеження сховища, кількість повідомлень і кількість споживачів."
         },
         "app.TkFUU0pldFN0cmVhbQ.action.c3RyZWFtLWxpc3Q.display_name": {
-          "source": "List Streams",
+          "source": "List streams",
           "message": "Список потоків"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.c3RyZWFtLWxpc3Q.short_desc": {
@@ -1576,7 +1576,7 @@
           "message": "Видаляє всі повідомлення з потоку JetStream, зберігаючи його конфігурацію.\n\n**Увага**: це остаточно видалить усі повідомлення в потоці. Конфігурацію потоку та споживачів буде збережено, але позиції послідовності споживачів будуть скинуті."
         },
         "app.TkFUU0pldFN0cmVhbQ.action.c3RyZWFtLXB1cmdl.display_name": {
-          "source": "Purge Stream",
+          "source": "Purge stream",
           "message": "Очистити потік"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.c3RyZWFtLXB1cmdl.option.bmFtZQ.desc": {
@@ -1584,7 +1584,7 @@
           "message": "Назва потоку JetStream для очищення.\n\n**Увага**: очищення видаляє всі повідомлення з потоку, зберігаючи конфігурацію потоку та споживачів. Відстеження послідовності споживачів скидається. Цю операцію неможливо скасувати."
         },
         "app.TkFUU0pldFN0cmVhbQ.action.c3RyZWFtLXB1cmdl.option.bmFtZQ.display_name": {
-          "source": "Stream Name",
+          "source": "Stream name",
           "message": "Назва потоку"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.c3RyZWFtLXB1cmdl.option.bmFtZQ.short_desc": {
@@ -1600,7 +1600,7 @@
           "message": "Оновлює конфігурацію існуючого потоку JetStream.\n\nЗмінює налаштування потоку, такі як фільтри суб'єктів, політика зберігання, обмеження сховища та реплікація. Не всі налаштування можна змінити після створення."
         },
         "app.TkFUU0pldFN0cmVhbQ.action.c3RyZWFtLXVwZGF0ZQ.display_name": {
-          "source": "Update Stream",
+          "source": "Update stream",
           "message": "Оновити потік"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.c3RyZWFtLXVwZGF0ZQ.option.ZGVzY3JpcHRpb24.desc": {
@@ -1636,7 +1636,7 @@
           "message": "Керує тим, які повідомлення видаляються під час досягнення лімітів потоку (`max_msgs`, `max_bytes` або `max_age`).\n\n- `0` (Old): найстаріші повідомлення видаляються, щоб звільнити місце\n- `1` (New): нові повідомлення відхиляються з помилкою\n\n**Значення за замовчуванням: `0` (Old), якщо не вказано.**"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.c3RyZWFtLXVwZGF0ZQ.option.ZGlzY2FyZA.display_name": {
-          "source": "Discard Policy",
+          "source": "Discard policy",
           "message": "Політика відкидання"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.c3RyZWFtLXVwZGF0ZQ.option.ZGlzY2FyZA.short_desc": {
@@ -1648,7 +1648,7 @@
           "message": "Максимальний розмір у байтах для будь-якого окремого повідомлення, опублікованого в потік.\n\nПовідомлення, розмір яких перевищує цей ліміт, будуть відхилені сервером. Встановіть значення `-1`, щоб використовувати максимум за замовчуванням для сервера (зазвичай 1 МБ). Наприклад, `1048576` встановлює ліміт у 1 МБ."
         },
         "app.TkFUU0pldFN0cmVhbQ.action.c3RyZWFtLXVwZGF0ZQ.option.bWF4X21zZ19zaXpl.display_name": {
-          "source": "Max Message Size",
+          "source": "Max message size",
           "message": "Максимальний розмір повідомлення"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.c3RyZWFtLXVwZGF0ZQ.option.bWF4X21zZ19zaXpl.short_desc": {
@@ -1660,7 +1660,7 @@
           "message": "Максимальна кількість повідомлень, яку зберігатиме потік.\n\nУ разі досягнення цього ліміту старіші повідомлення відкидаються відповідно до політики `discard`. Встановіть значення `-1` для необмеженої кількості повідомлень.\n\n**Застосовується лише тоді, коли для політики `retention` встановлено значення Limits (`0`).**"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.c3RyZWFtLXVwZGF0ZQ.option.bWF4X21zZ3M.display_name": {
-          "source": "Max Messages",
+          "source": "Max messages",
           "message": "Максимальна кількість повідомлень"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.c3RyZWFtLXVwZGF0ZQ.option.bWF4X21zZ3M.short_desc": {
@@ -1672,7 +1672,7 @@
           "message": "Максимальний вік будь-якого повідомлення в потоці в мілісекундах.\n\nПовідомлення, старіші за це значення, видаляються автоматично. Встановіть значення `0`, щоб скасувати обмеження за віком. Наприклад, `86400000` встановлює 24-годинне вікно утримання.\n\n**Застосовується лише тоді, коли для політики `retention` встановлено значення Limits (`0`).**"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.c3RyZWFtLXVwZGF0ZQ.option.bWF4X2FnZQ.display_name": {
-          "source": "Max Age (ms)",
+          "source": "Max age (ms)",
           "message": "Макс. вік (мс)"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.c3RyZWFtLXVwZGF0ZQ.option.bWF4X2FnZQ.short_desc": {
@@ -1684,7 +1684,7 @@
           "message": "Максимальний загальний обсяг сховища у байтах для всіх повідомлень у потоці.\n\nУ разі досягнення цього ліміту старіші повідомлення відкидаються відповідно до політики `discard`. Встановіть значення `-1` для необмеженого обсягу сховища.\n\n**Застосовується лише тоді, коли для політики `retention` встановлено значення Limits (`0`).**"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.c3RyZWFtLXVwZGF0ZQ.option.bWF4X2J5dGVz.display_name": {
-          "source": "Max Bytes",
+          "source": "Max bytes",
           "message": "Макс. байтів"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.c3RyZWFtLXVwZGF0ZQ.option.bWF4X2J5dGVz.short_desc": {
@@ -1696,7 +1696,7 @@
           "message": "Унікальний ідентифікатор для потоку JetStream.\n\nНазви потоків використовуються для посилання на потік у всіх операціях JetStream, таких як публікація, підписка та керування. **Назви повинні бути буквено-цифровими та можуть містити дефіси або підкреслення, але не крапки чи пробіли.**"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.c3RyZWFtLXVwZGF0ZQ.option.bmFtZQ.display_name": {
-          "source": "Stream Name",
+          "source": "Stream name",
           "message": "Назва потоку"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.c3RyZWFtLXVwZGF0ZQ.option.bmFtZQ.short_desc": {
@@ -1736,7 +1736,7 @@
           "message": "Керує тим, де зберігаються повідомлення потоку.\n\n- `0` (File): повідомлення зберігаються на диску для надійності під час перезапусків сервера\n- `1` (Memory): повідомлення зберігаються в пам'яті для вищої пропускної здатності, але втрачаються під час перезапуску сервера\n\n**Значення за замовчуванням: `0` (File), якщо не вказано.**"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.c3RyZWFtLXVwZGF0ZQ.option.c3RvcmFnZQ.display_name": {
-          "source": "Storage Type",
+          "source": "Storage type",
           "message": "Тип сховища"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.c3RyZWFtLXVwZGF0ZQ.option.c3RvcmFnZQ.short_desc": {
@@ -1772,7 +1772,7 @@
           "message": "Видаляти, коли всі відомі споживачі підтвердили отримання"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.c3RyZWFtLXVwZGF0ZQ.option.cmV0ZW50aW9u.allowed-value.aW50OjI.display_name": {
-          "source": "Work Queue",
+          "source": "Work queue",
           "message": "Робоча черга"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.c3RyZWFtLXVwZGF0ZQ.option.cmV0ZW50aW9u.allowed-value.aW50OjI.short_desc": {
@@ -1780,11 +1780,11 @@
           "message": "Видаляти, коли будь-який споживач підтвердить отримання"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.c3RyZWFtLXVwZGF0ZQ.option.cmV0ZW50aW9u.desc": {
-          "source": "Controls how messages are retained or removed from the stream.\n\n- `0` (Limits): messages are kept until stream limits (`max_msgs`, `max_bytes`, `max_age`) are reached\n- `1` (Interest): messages are removed once all known consumers have acknowledged them\n- `2` (Work Queue): messages are removed as soon as any consumer acknowledges them\n\n**Default is `0` (Limits) if not specified.**",
+          "source": "Controls how messages are retained or removed from the stream.\n\n- `0` (Limits): messages are kept until stream limits (`max_msgs`, `max_bytes`, `max_age`) are reached\n- `1` (Interest): messages are removed once all known consumers have acknowledged them\n- `2` (Work queue): messages are removed as soon as any consumer acknowledges them\n\n**Default is `0` (Limits) if not specified.**",
           "message": "Керує тим, як повідомлення зберігаються або видаляються з потоку.\n\n- `0` (Limits): повідомлення зберігаються, доки не буде досягнуто обмежень потоку (`max_msgs`, `max_bytes`, `max_age`)\n- `1` (Interest): повідомлення видаляються, як тільки всі відомі споживачі підтвердять їх отримання\n- `2` (Work Queue): повідомлення видаляються, як тільки будь-який споживач підтвердить їх отримання\n\n**За замовчуванням використовується `0` (Limits), якщо не вказано інше.**"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.c3RyZWFtLXVwZGF0ZQ.option.cmV0ZW50aW9u.display_name": {
-          "source": "Retention Policy",
+          "source": "Retention policy",
           "message": "Політика зберігання"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.c3RyZWFtLXVwZGF0ZQ.option.cmV0ZW50aW9u.short_desc": {
@@ -1800,7 +1800,7 @@
           "message": "Оформлює підписку на повідомлення JetStream із доставкою Push для обробки подій у реальному часі.\n\nПовідомлення надсилаються передплатнику в міру їх надходження до потоку. Включає метадані JetStream, такі як порядкові номери потоку та часові мітки."
         },
         "app.TkFUU0pldFN0cmVhbQ.action.c3Vic2NyaWJl.display_name": {
-          "source": "JetStream Subscribe",
+          "source": "JetStream subscribe",
           "message": "Підписка JetStream"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.c3Vic2NyaWJl.option.c3ViamVjdA.desc": {
@@ -1824,7 +1824,7 @@
           "message": "Оформлює підписку на повідомлення JetStream із доставкою Pull за допомогою довговічного споживача.\n\nКлієнт керує швидкістю доставки, запитуючи пакети повідомлень, що забезпечує природне регулювання навантаження. Споживач `durable` відстежує останню підтверджену позицію між перезапусками."
         },
         "app.TkFUU0pldFN0cmVhbQ.action.cHVsbC1zdWJzY3JpYmU.display_name": {
-          "source": "JetStream Pull Subscribe",
+          "source": "JetStream pull subscribe",
           "message": "Підписка JetStream Pull"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.cHVsbC1zdWJzY3JpYmU.option.ZHVyYWJsZQ.desc": {
@@ -1832,7 +1832,7 @@
           "message": "Назва довговічного споживача, яка зберігає стан підписки.\n\nДовговічні споживачі витримують відключення клієнта та перезапуски сервера. Коли клієнт повторно підключається з тим самим ім'ям `durable`, доставка повідомлень відновлюється з останньої підтвердженої позиції. Споживач повинен уже існувати у потоці або буде створений автоматично."
         },
         "app.TkFUU0pldFN0cmVhbQ.action.cHVsbC1zdWJzY3JpYmU.option.ZHVyYWJsZQ.display_name": {
-          "source": "Durable Name",
+          "source": "Durable name",
           "message": "Назва Durable"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.cHVsbC1zdWJzY3JpYmU.option.ZHVyYWJsZQ.short_desc": {
@@ -1852,7 +1852,7 @@
           "message": "Суб'єкт JetStream для підписки"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.cHVsbC1zdWJzY3JpYmU.option.cmVmdXNhbF9kZWxheV9tcw.display_name": {
-          "source": "Refusal Delay",
+          "source": "Refusal delay",
           "message": "Затримка після відхилення"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.cHVsbC1zdWJzY3JpYmU.option.cmVmdXNhbF9kZWxheV9tcw.short_desc": {
@@ -1864,7 +1864,7 @@
           "message": "Затримка в мілісекундах, після якої сервер повторно доставляє повідомлення, відхилене спостерігачем; вона подвоюється з кожною доставкою повідомлення до `max_refusal_delay_ms`.  Значення за замовчуванням — 1000"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.cHVsbC1zdWJzY3JpYmU.option.bWF4X3JlZnVzYWxfZGVsYXlfbXM.display_name": {
-          "source": "Max Refusal Delay",
+          "source": "Max refusal delay",
           "message": "Максимальна затримка після відхилення"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.cHVsbC1zdWJzY3JpYmU.option.bWF4X3JlZnVzYWxfZGVsYXlfbXM.short_desc": {
