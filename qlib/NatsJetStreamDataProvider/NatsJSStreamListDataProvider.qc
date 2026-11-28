@@ -68,7 +68,7 @@ public class NatsJSStreamListDataProvider inherits AbstractDataProvider {
         return <DataProviderInfo>{
             "type": "NatsJSStreamListDataProvider",
             "supports_request": True,
-            "display_name": "List Streams",
+            "display_name": "List streams",
             "short_desc": "List all JetStream streams with configuration and state",
         };
     }

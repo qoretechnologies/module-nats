@@ -31,7 +31,7 @@ public class NatsJSStreamDeleteRequestDataType inherits HashDataType {
         const Fields = {
             "name": {
                 "type": StringType,
-                "display_name": "Stream Name",
+                "display_name": "Stream name",
                 "short_desc": "Stream name to delete",
                 "desc": "The name of the JetStream stream to delete.\n\n"
                     "**Warning**: this permanently removes the stream and all its stored "

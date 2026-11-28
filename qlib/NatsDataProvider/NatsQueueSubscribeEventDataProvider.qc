@@ -42,7 +42,7 @@ public class NatsQueueSubscribeRequestDataType inherits HashDataType {
             },
             "queue": {
                 "type": StringType,
-                "display_name": "Queue Group",
+                "display_name": "Queue group",
                 "short_desc": "Queue group name for load balancing",
                 "desc": "The queue group name for load-balanced message delivery.\n\n"
                     "All subscribers sharing the same `queue` group name form a worker "

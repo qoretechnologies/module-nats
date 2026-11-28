@@ -31,7 +31,7 @@ public class NatsJSKVStatusRequestDataType inherits HashDataType {
         const Fields = {
             "bucket": {
                 "type": StringType,
-                "display_name": "Bucket Name",
+                "display_name": "Bucket name",
                 "short_desc": "Bucket name to get status for",
                 "desc": "The name of the JetStream KV bucket to retrieve status for.\n\n"
                     "The bucket must already exist; an error is raised if not found.",
@@ -92,7 +92,7 @@ public class NatsJSKVStatusDataProvider inherits AbstractDataProvider {
         return <DataProviderInfo>{
             "type": "NatsJSKVStatusDataProvider",
             "supports_request": True,
-            "display_name": "Bucket Status",
+            "display_name": "Bucket status",
             "short_desc": "Get status information for a Key-Value bucket",
         };
     }

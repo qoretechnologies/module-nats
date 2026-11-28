@@ -8,7 +8,7 @@
           "message": "메시지 처리를 위해 JetStream 스트림에 새 컨슈머를 생성합니다.\n\n컨슈머는 전달 정책, 승인(ACK) 요구 사항 및 재시도 동작을 포함하여 스트림에서 메시지가 전달되는 방식을 정의합니다. 내구성(Durable) 컨슈머는 클라이언트 연결 해제 후에도 유지됩니다."
         },
         "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItY3JlYXRl.display_name": {
-          "source": "Create Consumer",
+          "source": "Create consumer",
           "message": "컨슈머 생성"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItY3JlYXRl.option.YWNrX3BvbGljeQ.allowed-value.aW50OjA.display_name": {
@@ -40,7 +40,7 @@
           "message": "컨슈머가 메시지 전달을 승인하는 방식을 제어합니다.\n\n- `0` (없음): 승인이 필요하지 않으며, 메시지가 즉시 전달된 것으로 간주됩니다.\n- `1` (모두): 메시지를 승인하면 암시적으로 모든 이전 메시지가 승인됩니다.\n- `2` (명시적): 각 메시지를 개별적으로 승인해야 합니다.\n\n**지정되지 않은 경우 기본값은 `2` (명시적)입니다.**"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItY3JlYXRl.option.YWNrX3BvbGljeQ.display_name": {
-          "source": "Ack Policy",
+          "source": "Ack policy",
           "message": "승인 정책"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItY3JlYXRl.option.YWNrX3BvbGljeQ.short_desc": {
@@ -52,7 +52,7 @@
           "message": "서버가 메시지를 미승인 상태로 간주하고 재전달을 예약하기 전에 승인을 기다리는 시간(밀리초)입니다.\n\n예를 들어 `30000`은 30초의 제한 시간을 설정합니다. **지정하지 않으면 서버 기본값인 30초가 사용됩니다.** 메시지의 예상 처리 시간을 기준으로 이 값을 설정하세요."
         },
         "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItY3JlYXRl.option.YWNrX3dhaXQ.display_name": {
-          "source": "Ack Wait (ms)",
+          "source": "Ack wait (ms)",
           "message": "승인 대기 시간(ms)"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItY3JlYXRl.option.YWNrX3dhaXQ.short_desc": {
@@ -64,7 +64,7 @@
           "message": "여러 컨슈머 인스턴스 간에 부하 분산 메시지 전달을 위한 큐 그룹 이름입니다.\n\n설정되면 동일한 `deliver_group` 값을 공유하는 모든 컨슈머에 메시지가 분배되어 각 메시지가 하나의 컨슈머에 의해서만 처리되도록 합니다. **푸시 모드에서만 적용 가능**합니다(`deliver_subject`이 설정된 경우)."
         },
         "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItY3JlYXRl.option.ZGVsaXZlcl9ncm91cA.display_name": {
-          "source": "Deliver Group",
+          "source": "Deliver group",
           "message": "전달 그룹"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItY3JlYXRl.option.ZGVsaXZlcl9ncm91cA.short_desc": {
@@ -96,7 +96,7 @@
           "message": "새 메시지만 전달"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItY3JlYXRl.option.ZGVsaXZlcl9wb2xpY3k.allowed-value.aW50OjM.display_name": {
-          "source": "By Start Sequence",
+          "source": "By start sequence",
           "message": "시작 시퀀스 기준"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItY3JlYXRl.option.ZGVsaXZlcl9wb2xpY3k.allowed-value.aW50OjM.short_desc": {
@@ -104,7 +104,7 @@
           "message": "특정 시퀀스부터 전달 시작"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItY3JlYXRl.option.ZGVsaXZlcl9wb2xpY3k.allowed-value.aW50OjQ.display_name": {
-          "source": "By Start Time",
+          "source": "By start time",
           "message": "시작 시간 기준"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItY3JlYXRl.option.ZGVsaXZlcl9wb2xpY3k.allowed-value.aW50OjQ.short_desc": {
@@ -112,7 +112,7 @@
           "message": "특정 시간부터 전달 시작"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItY3JlYXRl.option.ZGVsaXZlcl9wb2xpY3k.allowed-value.aW50OjU.display_name": {
-          "source": "Last Per Subject",
+          "source": "Last per subject",
           "message": "서브젝트당 마지막"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItY3JlYXRl.option.ZGVsaXZlcl9wb2xpY3k.allowed-value.aW50OjU.short_desc": {
@@ -124,7 +124,7 @@
           "message": "컨슈머로의 메시지 전달 시작 지점을 결정합니다.\n\n- `0` (모두): 스트림의 처음부터 사용 가능한 모든 메시지를 전달합니다.\n- `1` (마지막): 스트림의 마지막 메시지부터 시작합니다.\n- `2` (새 항목): 컨슈머가 생성된 후 게시된 메시지만 전달합니다.\n- `3` (시작 시퀀스 기준): 특정 시퀀스 번호에서 시작합니다.\n- `4` (시작 시간 기준): 특정 타임스탬프에서 시작합니다.\n- `5` (서브젝트당 마지막): 각 서브젝트의 마지막 메시지를 전달합니다.\n\n**지정되지 않은 경우 기본값은 `0` (모두)입니다.**"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItY3JlYXRl.option.ZGVsaXZlcl9wb2xpY3k.display_name": {
-          "source": "Deliver Policy",
+          "source": "Deliver policy",
           "message": "전달 정책"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItY3JlYXRl.option.ZGVsaXZlcl9wb2xpY3k.short_desc": {
@@ -136,7 +136,7 @@
           "message": "서버가 컨슈머에게 메시지를 푸시할 NATS 서브젝트입니다.\n\n설정되면 컨슈머는 서버가 이 서브젝트로 메시지를 적극적으로 전달하는 **푸시 모드**로 작동합니다. 설정되지 않은 경우 컨슈머는 클라이언트가 메시지를 명시적으로 요청해야 하는 **풀 모드**로 작동합니다."
         },
         "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItY3JlYXRl.option.ZGVsaXZlcl9zdWJqZWN0.display_name": {
-          "source": "Deliver Subject",
+          "source": "Deliver subject",
           "message": "전달 서브젝트"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItY3JlYXRl.option.ZGVsaXZlcl9zdWJqZWN0.short_desc": {
@@ -160,7 +160,7 @@
           "message": "컨슈머를 내구성 있게(지속 가능하게) 만드는 고유 이름입니다.\n\n**중요**: 내구성 이름이 없으면 컨슈머는 임시적(ephemeral)이며 연결이 끊어지거나 비활성화될 때 자동으로 제거됩니다. 내구성 컨슈머는 클라이언트 연결 해제 및 서버 재시작 시에도 상태(전달 위치, 보류 중인 승인)를 유지합니다."
         },
         "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItY3JlYXRl.option.ZHVyYWJsZV9uYW1l.display_name": {
-          "source": "Durable Name",
+          "source": "Durable name",
           "message": "내구성 이름"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItY3JlYXRl.option.ZHVyYWJsZV9uYW1l.short_desc": {
@@ -172,7 +172,7 @@
           "message": "컨슈머가 이 패턴과 일치하는 메시지만 수신하도록 제한하는 서브젝트 필터입니다.\n\n이를 통해 컨슈머는 스트림 메시지의 일부를 처리할 수 있습니다. NATS 와일드카드 토큰(`*` 및 `>`)을 지원합니다. 설정하지 않으면 컨슈머는 스트림의 모든 메시지를 수신합니다."
         },
         "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItY3JlYXRl.option.ZmlsdGVyX3N1YmplY3Q.display_name": {
-          "source": "Filter Subject",
+          "source": "Filter subject",
           "message": "필터 서브젝트"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItY3JlYXRl.option.ZmlsdGVyX3N1YmplY3Q.short_desc": {
@@ -184,7 +184,7 @@
           "message": "전달되었지만 아직 승인되지 않은 최대 메시지 수입니다.\n\n이는 컨슈머의 과부하를 방지하기 위한 흐름 제어 메커니즘 역할을 합니다. 이 한도에 도달하면 서버는 일부 메시지가 승인될 때까지 전달을 일시 중지합니다. **지정되지 않은 경우 기본값은 `1000`입니다.**"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItY3JlYXRl.option.bWF4X2Fja19wZW5kaW5n.display_name": {
-          "source": "Max Ack Pending",
+          "source": "Max ack pending",
           "message": "최대 보류 중 승인 수"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItY3JlYXRl.option.bWF4X2Fja19wZW5kaW5n.short_desc": {
@@ -196,7 +196,7 @@
           "message": "서버가 컨슈머에게 메시지 전달을 시도하는 최대 횟수입니다.\n\n이 횟수만큼 전달 시도가 실패하면 메시지가 삭제되거나, 구성된 경우 데드 레터 큐로 전송됩니다. 무제한 재전달 시도의 경우 `-1`으로 설정하세요. **프로덕션 환경에서는 보통 `5` 값이 사용됩니다.**"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItY3JlYXRl.option.bWF4X2RlbGl2ZXI.display_name": {
-          "source": "Max Deliver",
+          "source": "Max deliver",
           "message": "최대 전달 횟수"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItY3JlYXRl.option.bWF4X2RlbGl2ZXI.short_desc": {
@@ -208,7 +208,7 @@
           "message": "이 컨슈머가 메시지를 읽어올 JetStream 스트림의 이름입니다.\n\n컨슈머를 생성하려면 스트림이 이미 존재해야 합니다. 스트림 구성의 스트림 `name` 값을 사용하세요."
         },
         "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItY3JlYXRl.option.c3RyZWFt.display_name": {
-          "source": "Stream Name",
+          "source": "Stream name",
           "message": "스트림 이름"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItY3JlYXRl.option.c3RyZWFt.short_desc": {
@@ -236,7 +236,7 @@
           "message": "이전 메시지를 따라잡을 때 컨슈머에게 메시지가 재생되는 속도를 제어합니다.\n\n- `0` (Instant): 메시지가 가능한 한 빠르게 전달됩니다\n- `1` (Original): 메시지가 원래 게시된 속도로 전달되어 원래의 타이밍을 유지합니다\n\n**지정하지 않은 경우 기본값은 `0` (Instant)입니다.**"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItY3JlYXRl.option.cmVwbGF5X3BvbGljeQ.display_name": {
-          "source": "Replay Policy",
+          "source": "Replay policy",
           "message": "재생 정책"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItY3JlYXRl.option.cmVwbGF5X3BvbGljeQ.short_desc": {
@@ -252,7 +252,7 @@
           "message": "JetStream 스트림에서 컨슈머를 삭제합니다.\n\n**경고**: 이 작업은 컨슈머 및 해당 추적 상태를 영구적으로 제거합니다. 미승인 메시지는 재전송되지 않습니다."
         },
         "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItZGVsZXRl.display_name": {
-          "source": "Delete Consumer",
+          "source": "Delete consumer",
           "message": "컨슈머 삭제"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItZGVsZXRl.option.Y29uc3VtZXI.desc": {
@@ -260,7 +260,7 @@
           "message": "스트림에서 삭제할 컨슈머의 이름입니다.\n\n**경고**: 컨슈머를 삭제하면 마지막으로 확인된 시퀀스 위치를 포함한 추적 상태가 폐기됩니다. 컨슈머를 다시 생성하면 중단된 위치가 아닌 설정된 전달 정책부터 시작됩니다."
         },
         "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItZGVsZXRl.option.Y29uc3VtZXI.display_name": {
-          "source": "Consumer Name",
+          "source": "Consumer name",
           "message": "컨슈머 이름"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItZGVsZXRl.option.Y29uc3VtZXI.short_desc": {
@@ -272,7 +272,7 @@
           "message": "삭제할 컨슈머를 소유한 JetStream 스트림의 이름입니다.\n\n스트림이 존재해야 하며 지정된 컨슈머를 포함해야 합니다."
         },
         "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItZGVsZXRl.option.c3RyZWFt.display_name": {
-          "source": "Stream Name",
+          "source": "Stream name",
           "message": "스트림 이름"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItZGVsZXRl.option.c3RyZWFt.short_desc": {
@@ -288,7 +288,7 @@
           "message": "JetStream 컨슈머의 설정 및 전달 상태를 조회합니다.\n\n컨슈머의 승인(ack) 정책, 전달(deliver) 정책, 필터 주제, 그리고 대기 중인 메시지 및 처리 진행 상황을 포함한 현재 상태를 반환합니다."
         },
         "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItaW5mbw.display_name": {
-          "source": "Consumer Info",
+          "source": "Consumer info",
           "message": "컨슈머 정보"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItaW5mbw.option.Y29uc3VtZXI.desc": {
@@ -296,7 +296,7 @@
           "message": "정보를 조회할 컨슈머의 이름입니다.\n\n컨슈머는 지정된 스트림에 존재해야 하며, 찾지 못하면 오류가 발생합니다."
         },
         "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItaW5mbw.option.Y29uc3VtZXI.display_name": {
-          "source": "Consumer Name",
+          "source": "Consumer name",
           "message": "컨슈머 이름"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItaW5mbw.option.Y29uc3VtZXI.short_desc": {
@@ -308,7 +308,7 @@
           "message": "컨슈머를 소유한 JetStream 스트림의 이름입니다.\n\n스트림이 존재해야 하며, 찾지 못하면 오류가 발생합니다."
         },
         "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItaW5mbw.option.c3RyZWFt.display_name": {
-          "source": "Stream Name",
+          "source": "Stream name",
           "message": "스트림 이름"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItaW5mbw.option.c3RyZWFt.short_desc": {
@@ -324,7 +324,7 @@
           "message": "JetStream 스트림의 모든 컨슈머를 설정 및 전달 상태와 함께 나열합니다.\n\n전달 정책, 승인 설정, 처리 진행 상황을 포함하여 각 컨슈머의 상세 정보를 반환합니다."
         },
         "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItbGlzdA.display_name": {
-          "source": "List Consumers",
+          "source": "List consumers",
           "message": "컨슈머 목록 조회"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItbGlzdA.option.c3RyZWFt.desc": {
@@ -332,7 +332,7 @@
           "message": "컨슈머 목록을 조회할 JetStream 스트림의 이름입니다.\n\n스트림이 이미 존재해야 하며, 스트림을 찾지 못하면 오류가 발생합니다."
         },
         "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItbGlzdA.option.c3RyZWFt.display_name": {
-          "source": "Stream Name",
+          "source": "Stream name",
           "message": "스트림 이름"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItbGlzdA.option.c3RyZWFt.short_desc": {
@@ -348,7 +348,7 @@
           "message": "전체 설정이나 상태 상세 정보 없이 JetStream 스트림의 모든 컨슈머 이름을 나열합니다.\n\n어떤 컨슈머가 존재하는지만 확인하면 되는 가벼운 열거 작업에 사용하세요."
         },
         "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItbmFtZXM.display_name": {
-          "source": "Consumer Names",
+          "source": "Consumer names",
           "message": "컨슈머 이름 목록"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItbmFtZXM.option.c3RyZWFt.desc": {
@@ -356,7 +356,7 @@
           "message": "컨슈머 이름 목록을 조회할 JetStream 스트림의 이름입니다.\n\n스트림이 이미 존재해야 하며, 스트림을 찾지 못하면 오류가 발생합니다."
         },
         "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItbmFtZXM.option.c3RyZWFt.display_name": {
-          "source": "Stream Name",
+          "source": "Stream name",
           "message": "스트림 이름"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItbmFtZXM.option.c3RyZWFt.short_desc": {
@@ -372,7 +372,7 @@
           "message": "지정된 시간까지 JetStream 컨슈머를 일시 중지합니다.\n\n일시 중지된 컨슈머는 지정된 시간까지 메시지 수신을 중단하며, 해당 시점이 되면 전달이 자동으로 재개됩니다. 유지 관리 기간이나 속도 제한에 사용하세요."
         },
         "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItcGF1c2U.display_name": {
-          "source": "Pause Consumer",
+          "source": "Pause consumer",
           "message": "컨슈머 일시 중지"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItcGF1c2U.option.Y29uc3VtZXI.desc": {
@@ -380,7 +380,7 @@
           "message": "일시 중지할 컨슈머의 이름입니다.\n\n컨슈머가 지정된 스트림에 이미 존재해야 하며, 찾지 못하면 오류가 발생합니다."
         },
         "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItcGF1c2U.option.Y29uc3VtZXI.display_name": {
-          "source": "Consumer Name",
+          "source": "Consumer name",
           "message": "컨슈머 이름"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItcGF1c2U.option.Y29uc3VtZXI.short_desc": {
@@ -392,7 +392,7 @@
           "message": "컨슈머가 속한 JetStream 스트림의 이름입니다.\n\n스트림이 이미 존재해야 하며, 스트림을 찾지 못하면 오류가 발생합니다."
         },
         "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItcGF1c2U.option.c3RyZWFt.display_name": {
-          "source": "Stream Name",
+          "source": "Stream name",
           "message": "스트림 이름"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItcGF1c2U.option.c3RyZWFt.short_desc": {
@@ -404,7 +404,7 @@
           "message": "컨슈머를 일시 중지할 날짜/시간입니다.\n\n컨슈머는 이 시간에 도달할 때까지 메시지 수신을 중단하며, 이 시점에 전달을 자동으로 재개합니다. 예약된 유지 관리 기간이나 속도 제한에 사용하세요."
         },
         "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItcGF1c2U.option.cGF1c2VfdW50aWw.display_name": {
-          "source": "Pause Until",
+          "source": "Pause until",
           "message": "일시 중지 기한"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItcGF1c2U.option.cGF1c2VfdW50aWw.short_desc": {
@@ -420,7 +420,7 @@
           "message": "기존 JetStream 컨슈머의 설정을 업데이트합니다.\n\n승인 정책, 전달 정책, 필터 주제 및 재시도 동작과 같은 컨슈머 설정을 수정합니다. 생성 후 모든 설정을 변경할 수 있는 것은 아닙니다."
         },
         "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItdXBkYXRl.display_name": {
-          "source": "Update Consumer",
+          "source": "Update consumer",
           "message": "컨슈머 업데이트"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItdXBkYXRl.option.YWNrX3BvbGljeQ.allowed-value.aW50OjA.display_name": {
@@ -452,7 +452,7 @@
           "message": "컨슈머가 메시지 전달을 승인하는 방식을 제어합니다.\n\n- `0` (없음): 승인이 필요하지 않으며, 메시지가 즉시 전달된 것으로 간주됩니다.\n- `1` (모두): 메시지를 승인하면 암시적으로 모든 이전 메시지가 승인됩니다.\n- `2` (명시적): 각 메시지를 개별적으로 승인해야 합니다.\n\n**지정되지 않은 경우 기본값은 `2` (명시적)입니다.**"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItdXBkYXRl.option.YWNrX3BvbGljeQ.display_name": {
-          "source": "Ack Policy",
+          "source": "Ack policy",
           "message": "승인 정책"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItdXBkYXRl.option.YWNrX3BvbGljeQ.short_desc": {
@@ -464,7 +464,7 @@
           "message": "서버가 메시지를 미승인 상태로 간주하고 재전달을 예약하기 전에 승인을 기다리는 시간(밀리초)입니다.\n\n예를 들어 `30000`은 30초의 제한 시간을 설정합니다. **지정하지 않으면 서버 기본값인 30초가 사용됩니다.** 메시지의 예상 처리 시간을 기준으로 이 값을 설정하세요."
         },
         "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItdXBkYXRl.option.YWNrX3dhaXQ.display_name": {
-          "source": "Ack Wait (ms)",
+          "source": "Ack wait (ms)",
           "message": "승인 대기 시간(ms)"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItdXBkYXRl.option.YWNrX3dhaXQ.short_desc": {
@@ -476,7 +476,7 @@
           "message": "여러 컨슈머 인스턴스 간에 부하 분산 메시지 전달을 위한 큐 그룹 이름입니다.\n\n설정되면 동일한 `deliver_group` 값을 공유하는 모든 컨슈머에 메시지가 분배되어 각 메시지가 하나의 컨슈머에 의해서만 처리되도록 합니다. **푸시 모드에서만 적용 가능**합니다(`deliver_subject`이 설정된 경우)."
         },
         "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItdXBkYXRl.option.ZGVsaXZlcl9ncm91cA.display_name": {
-          "source": "Deliver Group",
+          "source": "Deliver group",
           "message": "전달 그룹"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItdXBkYXRl.option.ZGVsaXZlcl9ncm91cA.short_desc": {
@@ -508,7 +508,7 @@
           "message": "새 메시지만 전달"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItdXBkYXRl.option.ZGVsaXZlcl9wb2xpY3k.allowed-value.aW50OjM.display_name": {
-          "source": "By Start Sequence",
+          "source": "By start sequence",
           "message": "시작 시퀀스 기준"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItdXBkYXRl.option.ZGVsaXZlcl9wb2xpY3k.allowed-value.aW50OjM.short_desc": {
@@ -516,7 +516,7 @@
           "message": "특정 시퀀스부터 전달 시작"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItdXBkYXRl.option.ZGVsaXZlcl9wb2xpY3k.allowed-value.aW50OjQ.display_name": {
-          "source": "By Start Time",
+          "source": "By start time",
           "message": "시작 시간 기준"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItdXBkYXRl.option.ZGVsaXZlcl9wb2xpY3k.allowed-value.aW50OjQ.short_desc": {
@@ -524,7 +524,7 @@
           "message": "특정 시간부터 전달 시작"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItdXBkYXRl.option.ZGVsaXZlcl9wb2xpY3k.allowed-value.aW50OjU.display_name": {
-          "source": "Last Per Subject",
+          "source": "Last per subject",
           "message": "서브젝트당 마지막"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItdXBkYXRl.option.ZGVsaXZlcl9wb2xpY3k.allowed-value.aW50OjU.short_desc": {
@@ -536,7 +536,7 @@
           "message": "컨슈머로의 메시지 전달 시작 지점을 결정합니다.\n\n- `0` (모두): 스트림의 처음부터 사용 가능한 모든 메시지를 전달합니다.\n- `1` (마지막): 스트림의 마지막 메시지부터 시작합니다.\n- `2` (새 항목): 컨슈머가 생성된 후 게시된 메시지만 전달합니다.\n- `3` (시작 시퀀스 기준): 특정 시퀀스 번호에서 시작합니다.\n- `4` (시작 시간 기준): 특정 타임스탬프에서 시작합니다.\n- `5` (서브젝트당 마지막): 각 서브젝트의 마지막 메시지를 전달합니다.\n\n**지정되지 않은 경우 기본값은 `0` (모두)입니다.**"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItdXBkYXRl.option.ZGVsaXZlcl9wb2xpY3k.display_name": {
-          "source": "Deliver Policy",
+          "source": "Deliver policy",
           "message": "전달 정책"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItdXBkYXRl.option.ZGVsaXZlcl9wb2xpY3k.short_desc": {
@@ -548,7 +548,7 @@
           "message": "서버가 컨슈머에게 메시지를 푸시할 NATS 서브젝트입니다.\n\n설정되면 컨슈머는 서버가 이 서브젝트로 메시지를 적극적으로 전달하는 **푸시 모드**로 작동합니다. 설정되지 않은 경우 컨슈머는 클라이언트가 메시지를 명시적으로 요청해야 하는 **풀 모드**로 작동합니다."
         },
         "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItdXBkYXRl.option.ZGVsaXZlcl9zdWJqZWN0.display_name": {
-          "source": "Deliver Subject",
+          "source": "Deliver subject",
           "message": "전달 서브젝트"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItdXBkYXRl.option.ZGVsaXZlcl9zdWJqZWN0.short_desc": {
@@ -572,7 +572,7 @@
           "message": "컨슈머를 내구성 있게(지속 가능하게) 만드는 고유 이름입니다.\n\n**중요**: 내구성 이름이 없으면 컨슈머는 임시적(ephemeral)이며 연결이 끊어지거나 비활성화될 때 자동으로 제거됩니다. 내구성 컨슈머는 클라이언트 연결 해제 및 서버 재시작 시에도 상태(전달 위치, 보류 중인 승인)를 유지합니다."
         },
         "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItdXBkYXRl.option.ZHVyYWJsZV9uYW1l.display_name": {
-          "source": "Durable Name",
+          "source": "Durable name",
           "message": "내구성 이름"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItdXBkYXRl.option.ZHVyYWJsZV9uYW1l.short_desc": {
@@ -584,7 +584,7 @@
           "message": "컨슈머가 이 패턴과 일치하는 메시지만 수신하도록 제한하는 서브젝트 필터입니다.\n\n이를 통해 컨슈머는 스트림 메시지의 일부를 처리할 수 있습니다. NATS 와일드카드 토큰(`*` 및 `>`)을 지원합니다. 설정하지 않으면 컨슈머는 스트림의 모든 메시지를 수신합니다."
         },
         "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItdXBkYXRl.option.ZmlsdGVyX3N1YmplY3Q.display_name": {
-          "source": "Filter Subject",
+          "source": "Filter subject",
           "message": "필터 서브젝트"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItdXBkYXRl.option.ZmlsdGVyX3N1YmplY3Q.short_desc": {
@@ -596,7 +596,7 @@
           "message": "전달되었지만 아직 승인되지 않은 최대 메시지 수입니다.\n\n이는 컨슈머의 과부하를 방지하기 위한 흐름 제어 메커니즘 역할을 합니다. 이 한도에 도달하면 서버는 일부 메시지가 승인될 때까지 전달을 일시 중지합니다. **지정되지 않은 경우 기본값은 `1000`입니다.**"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItdXBkYXRl.option.bWF4X2Fja19wZW5kaW5n.display_name": {
-          "source": "Max Ack Pending",
+          "source": "Max ack pending",
           "message": "최대 보류 중 승인 수"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItdXBkYXRl.option.bWF4X2Fja19wZW5kaW5n.short_desc": {
@@ -608,7 +608,7 @@
           "message": "서버가 컨슈머에게 메시지 전달을 시도하는 최대 횟수입니다.\n\n이 횟수만큼 전달 시도가 실패하면 메시지가 삭제되거나, 구성된 경우 데드 레터 큐로 전송됩니다. 무제한 재전달 시도의 경우 `-1`으로 설정하세요. **프로덕션 환경에서는 보통 `5` 값이 사용됩니다.**"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItdXBkYXRl.option.bWF4X2RlbGl2ZXI.display_name": {
-          "source": "Max Deliver",
+          "source": "Max deliver",
           "message": "최대 전달 횟수"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItdXBkYXRl.option.bWF4X2RlbGl2ZXI.short_desc": {
@@ -620,7 +620,7 @@
           "message": "이 컨슈머가 메시지를 읽어올 JetStream 스트림의 이름입니다.\n\n컨슈머를 생성하려면 스트림이 이미 존재해야 합니다. 스트림 구성의 스트림 `name` 값을 사용하세요."
         },
         "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItdXBkYXRl.option.c3RyZWFt.display_name": {
-          "source": "Stream Name",
+          "source": "Stream name",
           "message": "스트림 이름"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItdXBkYXRl.option.c3RyZWFt.short_desc": {
@@ -648,7 +648,7 @@
           "message": "이전 메시지를 따라잡을 때 컨슈머에게 메시지가 재생되는 속도를 제어합니다.\n\n- `0` (Instant): 메시지가 가능한 한 빠르게 전달됩니다\n- `1` (Original): 메시지가 원래 게시된 속도로 전달되어 원래의 타이밍을 유지합니다\n\n**지정하지 않은 경우 기본값은 `0` (Instant)입니다.**"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItdXBkYXRl.option.cmVwbGF5X3BvbGljeQ.display_name": {
-          "source": "Replay Policy",
+          "source": "Replay policy",
           "message": "재생 정책"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItdXBkYXRl.option.cmVwbGF5X3BvbGljeQ.short_desc": {
@@ -664,7 +664,7 @@
           "message": "리소스 사용량 및 API 통계를 포함한 JetStream 계정 정보를 조회합니다.\n\n메모리 및 스토리지 사용량, 스트림 및 컨슈머 수, API 요청 총계를 반환합니다. 용량 계획 및 모니터링에 사용하세요."
         },
         "app.TkFUU0pldFN0cmVhbQ.action.YWNjb3VudC1pbmZv.display_name": {
-          "source": "Account Info",
+          "source": "Account info",
           "message": "계정 정보"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.YWNjb3VudC1pbmZv.short_desc": {
@@ -676,7 +676,7 @@
           "message": "새 JetStream 키-값 Store 버킷을 생성합니다.\n\n히스토리 깊이, TTL, 스토리지 유형 및 복제를 포함하여 지정된 설정으로 버킷을 생성합니다. 초기 버킷 상태를 반환합니다."
         },
         "app.TkFUU0pldFN0cmVhbQ.action.a3YtY3JlYXRlLWJ1Y2tldA.display_name": {
-          "source": "KV Create Bucket",
+          "source": "KV create bucket",
           "message": "KV 버킷 생성"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.a3YtY3JlYXRlLWJ1Y2tldA.option.YnVja2V0.desc": {
@@ -684,7 +684,7 @@
           "message": "새 KV 버킷의 이름입니다.\n\n버킷 이름은 영숫자이어야 하며 대시 또는 밑줄을 포함할 수 있습니다. 이름은 JetStream 계정 내에서 고유해야 합니다."
         },
         "app.TkFUU0pldFN0cmVhbQ.action.a3YtY3JlYXRlLWJ1Y2tldA.option.YnVja2V0.display_name": {
-          "source": "Bucket Name",
+          "source": "Bucket name",
           "message": "버킷 이름"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.a3YtY3JlYXRlLWJ1Y2tldA.option.YnVja2V0.short_desc": {
@@ -720,7 +720,7 @@
           "message": "버킷의 모든 키 및 수정 버전에 대한 최대 총 스토리지 용량(바이트 단위)입니다.\n\n이 한도에 도달하면 공간을 확보하기 위해 오래된 수정 버전이 제거됩니다. 설정하지 않으면 서버 기본값이 사용됩니다."
         },
         "app.TkFUU0pldFN0cmVhbQ.action.a3YtY3JlYXRlLWJ1Y2tldA.option.bWF4X2J5dGVz.display_name": {
-          "source": "Max Bytes",
+          "source": "Max bytes",
           "message": "최대 바이트 수"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.a3YtY3JlYXRlLWJ1Y2tldA.option.bWF4X2J5dGVz.short_desc": {
@@ -732,7 +732,7 @@
           "message": "버킷에 저장되는 개별 값의 최대 크기(바이트 단위)입니다.\n\n이 크기를 초과하는 값은 거부됩니다. 설정하지 않으면 서버 기본값이 사용됩니다."
         },
         "app.TkFUU0pldFN0cmVhbQ.action.a3YtY3JlYXRlLWJ1Y2tldA.option.bWF4X3ZhbHVlX3NpemU.display_name": {
-          "source": "Max Value Size",
+          "source": "Max value size",
           "message": "최대 값 크기"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.a3YtY3JlYXRlLWJ1Y2tldA.option.bWF4X3ZhbHVlX3NpemU.short_desc": {
@@ -772,7 +772,7 @@
           "message": "버킷 데이터가 지속되는 위치를 제어합니다.\n\n- `0` (File): 서버 재시작 후에도 내구성을 유지하기 위해 데이터가 디스크에 저장됩니다.\n- `1` (Memory): 높은 처리량을 위해 데이터가 메모리에 저장되지만 서버 재시작 시 손실됩니다.\n\n**지정하지 않은 경우 기본값은 `0` (File)입니다.**"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.a3YtY3JlYXRlLWJ1Y2tldA.option.c3RvcmFnZQ.display_name": {
-          "source": "Storage Type",
+          "source": "Storage type",
           "message": "스토리지 유형"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.a3YtY3JlYXRlLWJ1Y2tldA.option.c3RvcmFnZQ.short_desc": {
@@ -800,7 +800,7 @@
           "message": "JetStream KV 버킷에서 키의 현재 값과 메타데이터를 조회합니다.\n\n`value`, `revision`, `created` 타임스탬프 및 `operation` 유형을 포함한 최신 리비전을 반환합니다."
         },
         "app.TkFUU0pldFN0cmVhbQ.action.a3YtZ2V0.display_name": {
-          "source": "KV Get",
+          "source": "KV get",
           "message": "KV Get"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.a3YtZ2V0.option.YnVja2V0.desc": {
@@ -836,7 +836,7 @@
           "message": "JetStream KV 버킷에서 키를 소프트 삭제합니다.\n\n삭제 마커를 배치하여 해당 키가 더 이상 목록이나 조회 작업에 나타나지 않도록 합니다. 키의 리비전 이력은 유지됩니다."
         },
         "app.TkFUU0pldFN0cmVhbQ.action.a3YtZGVsZXRl.display_name": {
-          "source": "KV Delete",
+          "source": "KV delete",
           "message": "KV Delete"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.a3YtZGVsZXRl.option.YnVja2V0.desc": {
@@ -872,7 +872,7 @@
           "message": "JetStream Key-Value 스토어 버킷을 영구적으로 삭제합니다.\n\n**경고**: 이 작업은 버킷, 저장된 모든 키 및 모든 리비전 이력을 제거합니다. 이 작업은 되돌릴 수 없습니다."
         },
         "app.TkFUU0pldFN0cmVhbQ.action.a3YtZGVsZXRlLWJ1Y2tldA.display_name": {
-          "source": "KV Delete Bucket",
+          "source": "KV delete bucket",
           "message": "KV Delete Bucket"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.a3YtZGVsZXRlLWJ1Y2tldA.option.YnVja2V0.desc": {
@@ -880,7 +880,7 @@
           "message": "삭제할 JetStream KV 버킷의 이름입니다.\n\n**경고**: 이 작업은 버킷, 해당 버킷의 모든 키 및 모든 리비전 이력을 영구적으로 제거합니다. 이 작업은 되돌릴 수 없습니다."
         },
         "app.TkFUU0pldFN0cmVhbQ.action.a3YtZGVsZXRlLWJ1Y2tldA.option.YnVja2V0.display_name": {
-          "source": "Bucket Name",
+          "source": "Bucket name",
           "message": "버킷 이름"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.a3YtZGVsZXRlLWJ1Y2tldA.option.YnVja2V0.short_desc": {
@@ -896,7 +896,7 @@
           "message": "JetStream KV 버킷의 모든 활성 키를 나열합니다.\n\n현재(삭제되지 않은) 값이 있는 키 이름을 반환합니다. 삭제되거나 퍼지된 키는 목록에서 제외됩니다."
         },
         "app.TkFUU0pldFN0cmVhbQ.action.a3Yta2V5cw.display_name": {
-          "source": "KV Keys",
+          "source": "KV keys",
           "message": "KV Keys"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.a3Yta2V5cw.option.YnVja2V0.desc": {
@@ -920,7 +920,7 @@
           "message": "JetStream KV 버킷 내 키의 전체 리비전 이력을 조회합니다.\n\nput, delete 및 purge 작업을 포함하여 가장 오래된 항목부터 최신 항목 순으로 정렬된 모든 리비전을 반환합니다. 감사 추적 및 구성 변경 사항 디버깅에 사용합니다."
         },
         "app.TkFUU0pldFN0cmVhbQ.action.a3YtaGlzdG9yeQ.display_name": {
-          "source": "KV History",
+          "source": "KV history",
           "message": "KV History"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.a3YtaGlzdG9yeQ.option.YnVja2V0.desc": {
@@ -956,7 +956,7 @@
           "message": "JetStream KV 버킷의 상태 정보를 조회합니다.\n\n버킷의 키 수, 이력 깊이, TTL, 복제본 수 및 총 스토리지 사용량을 반환합니다."
         },
         "app.TkFUU0pldFN0cmVhbQ.action.a3Ytc3RhdHVz.display_name": {
-          "source": "KV Bucket Status",
+          "source": "KV bucket status",
           "message": "KV Bucket Status"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.a3Ytc3RhdHVz.option.YnVja2V0.desc": {
@@ -964,7 +964,7 @@
           "message": "상태를 조회할 JetStream KV 버킷의 이름입니다.\n\n버킷이 이미 존재해야 하며 찾을 수 없는 경우 오류가 발생합니다."
         },
         "app.TkFUU0pldFN0cmVhbQ.action.a3Ytc3RhdHVz.option.YnVja2V0.display_name": {
-          "source": "Bucket Name",
+          "source": "Bucket name",
           "message": "버킷 이름"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.a3Ytc3RhdHVz.option.YnVja2V0.short_desc": {
@@ -980,7 +980,7 @@
           "message": "JetStream KV 버킷에 키에 대한 값을 저장합니다.\n\n키가 존재하지 않는 경우 생성하거나, 새로운 리비전으로 업데이트합니다. 낙관적 동시성 제어를 위해 새 `revision` 번호를 반환합니다."
         },
         "app.TkFUU0pldFN0cmVhbQ.action.a3YtcHV0.display_name": {
-          "source": "KV Put",
+          "source": "KV put",
           "message": "KV Put"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.a3YtcHV0.option.YnVja2V0.desc": {
@@ -1000,7 +1000,7 @@
           "message": "저장할 바이너리 값입니다. `data` 또는 `string_data` 중 하나를 사용하십시오.\n\n바이너리 데이터는 인코딩 없이 그대로 저장됩니다. `data` 및 `string_data`가 모두 제공되는 경우 `data`가 우선 적용됩니다."
         },
         "app.TkFUU0pldFN0cmVhbQ.action.a3YtcHV0.option.ZGF0YQ.display_name": {
-          "source": "Binary Data",
+          "source": "Binary data",
           "message": "바이너리 데이터"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.a3YtcHV0.option.ZGF0YQ.short_desc": {
@@ -1024,7 +1024,7 @@
           "message": "저장할 문자열 값입니다(`data`의 대체 항목).\n\n구성 값, JSON 또는 기타 텍스트 콘텐츠에 이것을 사용하십시오. 문자열은 저장되기 전에 바이너리로 변환됩니다."
         },
         "app.TkFUU0pldFN0cmVhbQ.action.a3YtcHV0.option.c3RyaW5nX2RhdGE.display_name": {
-          "source": "String Data",
+          "source": "String data",
           "message": "문자열 데이터"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.a3YtcHV0.option.c3RyaW5nX2RhdGE.short_desc": {
@@ -1040,7 +1040,7 @@
           "message": "보장된 전송 방식으로 JetStream 주제에 메시지를 발행합니다.\n\n기본 NATS 발행과 달리 메시지가 스트림에 지속되고, `stream` 이름과 `sequence` 번호로 저장을 확인하는 발행 수신 확인이 반환됩니다."
         },
         "app.TkFUU0pldFN0cmVhbQ.action.anMtcHVibGlzaA.display_name": {
-          "source": "JetStream Publish",
+          "source": "JetStream publish",
           "message": "JetStream Publish"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.anMtcHVibGlzaA.option.ZGF0YQ.desc": {
@@ -1048,7 +1048,7 @@
           "message": "바이너리 메시지 페이로드입니다. `data` 또는 `string_data` 중 하나를 사용하십시오.\n\n바이너리 데이터는 인코딩 없이 스트림에 그대로 저장됩니다."
         },
         "app.TkFUU0pldFN0cmVhbQ.action.anMtcHVibGlzaA.option.ZGF0YQ.display_name": {
-          "source": "Binary Data",
+          "source": "Binary data",
           "message": "바이너리 데이터"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.anMtcHVibGlzaA.option.ZGF0YQ.short_desc": {
@@ -1060,7 +1060,7 @@
           "message": "`True`(으)로 설정하면 해당 주제에 메시지가 이미 존재하는 경우 발행이 실패합니다.\n\n주제에 대한 첫 번째 메시지만 수락되도록 하여 생성 전용 시맨틱을 구현할 때 이것을 사용하십시오."
         },
         "app.TkFUU0pldFN0cmVhbQ.action.anMtcHVibGlzaA.option.ZXhwZWN0X25vX21lc3NhZ2U.display_name": {
-          "source": "Expect No Message",
+          "source": "Expect no message",
           "message": "Expect No Message"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.anMtcHVibGlzaA.option.ZXhwZWN0X25vX21lc3NhZ2U.short_desc": {
@@ -1072,7 +1072,7 @@
           "message": "스트림의 마지막 메시지의 예상 메시지 ID입니다.\n\n마지막 메시지 ID가 일치하지 않으면 발행이 실패합니다. 순서 무결성 검사에 이것을 사용하십시오."
         },
         "app.TkFUU0pldFN0cmVhbQ.action.anMtcHVibGlzaA.option.ZXhwZWN0X2xhc3RfbXNnX2lk.display_name": {
-          "source": "Expected Last Message ID",
+          "source": "Expected last message ID",
           "message": "Expected Last Message ID"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.anMtcHVibGlzaA.option.ZXhwZWN0X2xhc3RfbXNnX2lk.short_desc": {
@@ -1084,7 +1084,7 @@
           "message": "스트림 내 마지막 메시지의 기대되는 시퀀스 번호입니다.\n\n스트림의 마지막 시퀀스 번호가 일치하지 않으면 발행에 실패합니다. 읽기 작업 사이에 게시된 메시지가 없는지 확인하는 낙관적 동시성 제어에 이를 사용하세요."
         },
         "app.TkFUU0pldFN0cmVhbQ.action.anMtcHVibGlzaA.option.ZXhwZWN0X2xhc3Rfc2Vx.display_name": {
-          "source": "Expected Last Sequence",
+          "source": "Expected last sequence",
           "message": "기대되는 마지막 시퀀스"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.anMtcHVibGlzaA.option.ZXhwZWN0X2xhc3Rfc2Vx.short_desc": {
@@ -1096,7 +1096,7 @@
           "message": "이 특정 주제(subject)에 대한 마지막 메시지의 기대되는 시퀀스 번호입니다.\n\n해당 주제의 마지막 메시지가 이 시퀀스 번호와 일치하지 않으면 발행에 실패합니다. 주제 수준의 낙관적 동시성에 이를 사용하세요."
         },
         "app.TkFUU0pldFN0cmVhbQ.action.anMtcHVibGlzaA.option.ZXhwZWN0X2xhc3Rfc3ViamVjdF9zZXE.display_name": {
-          "source": "Expected Last Subject Sequence",
+          "source": "Expected last subject sequence",
           "message": "기대되는 마지막 주제 시퀀스"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.anMtcHVibGlzaA.option.ZXhwZWN0X2xhc3Rfc3ViamVjdF9zZXE.short_desc": {
@@ -1108,7 +1108,7 @@
           "message": "메시지가 발행되어야 하는 기대되는 스트림 이름입니다.\n\n메시지가 다른 스트림에 저장될 경우 오류와 함께 발행에 실패합니다. 여러 스트림에 의해 캡처되는 주제에 발행할 때 안전을 위해 이를 사용하세요."
         },
         "app.TkFUU0pldFN0cmVhbQ.action.anMtcHVibGlzaA.option.ZXhwZWN0X3N0cmVhbQ.display_name": {
-          "source": "Expected Stream",
+          "source": "Expected stream",
           "message": "기대되는 스트림"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.anMtcHVibGlzaA.option.ZXhwZWN0X3N0cmVhbQ.short_desc": {
@@ -1132,7 +1132,7 @@
           "message": "문자열 메시지 페이로드(`data`의 대안)입니다.\n\n문자열은 발행 전에 바이너리로 변환됩니다. JSON, XML 또는 기타 텍스트 기반 페이로드에 이를 사용하세요."
         },
         "app.TkFUU0pldFN0cmVhbQ.action.anMtcHVibGlzaA.option.c3RyaW5nX2RhdGE.display_name": {
-          "source": "String Data",
+          "source": "String data",
           "message": "문자열 데이터"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.anMtcHVibGlzaA.option.c3RyaW5nX2RhdGE.short_desc": {
@@ -1160,7 +1160,7 @@
           "message": "시퀀스 번호로 JetStream 스트림에서 메시지를 삭제합니다.\n\n저장소에서 메시지 데이터가 여전히 복구될 수 있습니다. 확실한 데이터 삭제를 원하시면 대신 지우기(erase) 작업을 사용하세요."
         },
         "app.TkFUU0pldFN0cmVhbQ.action.bWVzc2FnZS1kZWxldGU.display_name": {
-          "source": "Delete Message",
+          "source": "Delete message",
           "message": "메시지 삭제"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.bWVzc2FnZS1kZWxldGU.option.c2Vx.desc": {
@@ -1168,7 +1168,7 @@
           "message": "가져올 메시지의 시퀀스 번호입니다.\n\n시퀀스 번호는 스트림에 의해 단조 증가하도록 할당됩니다. 스트림 정보를 사용하여 유효한 범위(`first_seq` ~ `last_seq`)를 확인하세요."
         },
         "app.TkFUU0pldFN0cmVhbQ.action.bWVzc2FnZS1kZWxldGU.option.c2Vx.display_name": {
-          "source": "Sequence Number",
+          "source": "Sequence number",
           "message": "시퀀스 번호"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.bWVzc2FnZS1kZWxldGU.option.c2Vx.short_desc": {
@@ -1180,7 +1180,7 @@
           "message": "메시지를 가져올 JetStream 스트림의 이름입니다.\n\n스트림이 이미 존재해야 하며, 스트림을 찾을 수 없으면 오류가 발생합니다."
         },
         "app.TkFUU0pldFN0cmVhbQ.action.bWVzc2FnZS1kZWxldGU.option.c3RyZWFt.display_name": {
-          "source": "Stream Name",
+          "source": "Stream name",
           "message": "스트림 이름"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.bWVzc2FnZS1kZWxldGU.option.c3RyZWFt.short_desc": {
@@ -1196,7 +1196,7 @@
           "message": "시퀀스 번호로 JetStream 스트림의 메시지를 안전하게 영구 지웁니다.\n\n삭제(delete)와 달리, 데이터 보호 규정 준수를 위해 저장소의 메시지 데이터를 덮어씁니다."
         },
         "app.TkFUU0pldFN0cmVhbQ.action.bWVzc2FnZS1lcmFzZQ.display_name": {
-          "source": "Erase Message",
+          "source": "Erase message",
           "message": "메시지 영구 지우기"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.bWVzc2FnZS1lcmFzZQ.option.c2Vx.desc": {
@@ -1204,7 +1204,7 @@
           "message": "가져올 메시지의 시퀀스 번호입니다.\n\n시퀀스 번호는 스트림에 의해 단조 증가하도록 할당됩니다. 스트림 정보를 사용하여 유효한 범위(`first_seq` ~ `last_seq`)를 확인하세요."
         },
         "app.TkFUU0pldFN0cmVhbQ.action.bWVzc2FnZS1lcmFzZQ.option.c2Vx.display_name": {
-          "source": "Sequence Number",
+          "source": "Sequence number",
           "message": "시퀀스 번호"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.bWVzc2FnZS1lcmFzZQ.option.c2Vx.short_desc": {
@@ -1216,7 +1216,7 @@
           "message": "메시지를 가져올 JetStream 스트림의 이름입니다.\n\n스트림이 이미 존재해야 하며, 스트림을 찾을 수 없으면 오류가 발생합니다."
         },
         "app.TkFUU0pldFN0cmVhbQ.action.bWVzc2FnZS1lcmFzZQ.option.c3RyZWFt.display_name": {
-          "source": "Stream Name",
+          "source": "Stream name",
           "message": "스트림 이름"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.bWVzc2FnZS1lcmFzZQ.option.c3RyZWFt.short_desc": {
@@ -1232,7 +1232,7 @@
           "message": "시퀀스 번호로 JetStream 스트림에서 메시지를 가져옵니다.\n\n메시지 페이로드, 주제 및 헤더를 반환합니다. 해당 시퀀스에 메시지가 없으면 아무것도 반환하지 않습니다."
         },
         "app.TkFUU0pldFN0cmVhbQ.action.bWVzc2FnZS1nZXQ.display_name": {
-          "source": "Get Message",
+          "source": "Get message",
           "message": "메시지 가져오기"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.bWVzc2FnZS1nZXQ.option.c2Vx.desc": {
@@ -1240,7 +1240,7 @@
           "message": "가져올 메시지의 시퀀스 번호입니다.\n\n시퀀스 번호는 스트림에 의해 단조 증가하도록 할당됩니다. 스트림 정보를 사용하여 유효한 범위(`first_seq` ~ `last_seq`)를 확인하세요."
         },
         "app.TkFUU0pldFN0cmVhbQ.action.bWVzc2FnZS1nZXQ.option.c2Vx.display_name": {
-          "source": "Sequence Number",
+          "source": "Sequence number",
           "message": "시퀀스 번호"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.bWVzc2FnZS1nZXQ.option.c2Vx.short_desc": {
@@ -1252,7 +1252,7 @@
           "message": "메시지를 가져올 JetStream 스트림의 이름입니다.\n\n스트림이 이미 존재해야 하며, 스트림을 찾을 수 없으면 오류가 발생합니다."
         },
         "app.TkFUU0pldFN0cmVhbQ.action.bWVzc2FnZS1nZXQ.option.c3RyZWFt.display_name": {
-          "source": "Stream Name",
+          "source": "Stream name",
           "message": "스트림 이름"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.bWVzc2FnZS1nZXQ.option.c3RyZWFt.short_desc": {
@@ -1268,7 +1268,7 @@
           "message": "JetStream 스트림에서 해당 주제의 마지막 메시지를 가져옵니다.\n\n지정한 주제에 가장 최근에 발행된 메시지를 반환합니다. 해당 주제에 대한 메시지가 없으면 아무것도 반환하지 않습니다."
         },
         "app.TkFUU0pldFN0cmVhbQ.action.bWVzc2FnZS1nZXQtbGFzdA.display_name": {
-          "source": "Get Last Message",
+          "source": "Get last message",
           "message": "마지막 메시지 가져오기"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.bWVzc2FnZS1nZXQtbGFzdA.option.c3RyZWFt.desc": {
@@ -1276,7 +1276,7 @@
           "message": "메시지를 가져올 JetStream 스트림의 이름입니다.\n\n스트림이 이미 존재해야 하며, 스트림을 찾을 수 없으면 오류가 발생합니다."
         },
         "app.TkFUU0pldFN0cmVhbQ.action.bWVzc2FnZS1nZXQtbGFzdA.option.c3RyZWFt.display_name": {
-          "source": "Stream Name",
+          "source": "Stream name",
           "message": "스트림 이름"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.bWVzc2FnZS1nZXQtbGFzdA.option.c3RyZWFt.short_desc": {
@@ -1304,7 +1304,7 @@
           "message": "전체 구성이나 상태 세부 정보 없이 모든 JetStream 스트림 이름을 나열합니다.\n\n어떤 스트림이 존재하는지 확인만 하면 되는 경량 열거 작업에 이를 사용하세요."
         },
         "app.TkFUU0pldFN0cmVhbQ.action.c3RyZWFtLW5hbWVz.display_name": {
-          "source": "Stream Names",
+          "source": "Stream names",
           "message": "스트림 이름 목록"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.c3RyZWFtLW5hbWVz.short_desc": {
@@ -1316,7 +1316,7 @@
           "message": "지속 가능한 메시지 저장소를 위해 새 JetStream 스트림을 생성합니다.\n\n스트림은 일치하는 주제로 발행된 메시지를 캡처하고 구성된 보존 정책에 따라 영구 저장합니다. 메시지 재플레이, 감사 추적 및 보장된 전달을 위해 스트림을 사용하세요."
         },
         "app.TkFUU0pldFN0cmVhbQ.action.c3RyZWFtLWNyZWF0ZQ.display_name": {
-          "source": "Create Stream",
+          "source": "Create stream",
           "message": "스트림 생성"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.c3RyZWFtLWNyZWF0ZQ.option.ZGVzY3JpcHRpb24.desc": {
@@ -1352,7 +1352,7 @@
           "message": "스트림 한도(`max_msgs`, `max_bytes` 또는 `max_age`)에 도달했을 때 제거할 메시지를 제어합니다.\n\n- `0` (Old): 공간을 확보하기 위해 가장 오래된 메시지를 제거합니다.\n- `1` (New): 새 메시지를 오류와 함께 거부합니다.\n\n**지정하지 않은 경우 기본값은 `0` (Old)입니다.**"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.c3RyZWFtLWNyZWF0ZQ.option.ZGlzY2FyZA.display_name": {
-          "source": "Discard Policy",
+          "source": "Discard policy",
           "message": "폐기 정책"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.c3RyZWFtLWNyZWF0ZQ.option.ZGlzY2FyZA.short_desc": {
@@ -1364,7 +1364,7 @@
           "message": "스트림에 발행되는 개별 메시지의 최대 크기(바이트)입니다.\n\n이 크기를 초과하는 메시지는 서버에서 거부됩니다. 서버의 기본 최대값(일반적으로 1MB)을 사용하려면 `-1`(으)로 설정하세요. 예를 들어 `1048576`은(는) 1MB 한도를 설정합니다."
         },
         "app.TkFUU0pldFN0cmVhbQ.action.c3RyZWFtLWNyZWF0ZQ.option.bWF4X21zZ19zaXpl.display_name": {
-          "source": "Max Message Size",
+          "source": "Max message size",
           "message": "최대 메시지 크기"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.c3RyZWFtLWNyZWF0ZQ.option.bWF4X21zZ19zaXpl.short_desc": {
@@ -1376,7 +1376,7 @@
           "message": "스트림이 보존할 최대 메시지 수입니다.\n\n이 한도에 도달하면 `discard` 정책에 따라 이전 메시지가 폐기됩니다. 제한 없는 메시지 수를 원하시면 `-1`(으)로 설정하세요.\n\n**`retention` 정책이 Limits(`0`)(으)로 설정된 경우에만 적용됩니다.**"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.c3RyZWFtLWNyZWF0ZQ.option.bWF4X21zZ3M.display_name": {
-          "source": "Max Messages",
+          "source": "Max messages",
           "message": "최대 메시지 수"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.c3RyZWFtLWNyZWF0ZQ.option.bWF4X21zZ3M.short_desc": {
@@ -1388,7 +1388,7 @@
           "message": "밀리초 단위로 지정된 스트림 내 메시지의 최대 보존 기간입니다.\n\n이 값보다 오래된 메시지는 자동으로 제거됩니다. 보존 기간 제한을 두지 않으려면 `0`(으)로 설정하세요. 예를 들어 `86400000`은(는) 24시간 보존 창을 설정합니다.\n\n**`retention` 정책이 Limits(`0`)(으)로 설정된 경우에만 적용됩니다.**"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.c3RyZWFtLWNyZWF0ZQ.option.bWF4X2FnZQ.display_name": {
-          "source": "Max Age (ms)",
+          "source": "Max age (ms)",
           "message": "최대 보존 기간(ms)"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.c3RyZWFtLWNyZWF0ZQ.option.bWF4X2FnZQ.short_desc": {
@@ -1400,7 +1400,7 @@
           "message": "스트림의 모든 메시지에 대한 최대 총 저장 용량(바이트)입니다.\n\n이 한도에 도달하면 `discard` 정책에 따라 이전 메시지가 폐기됩니다. 무제한 저장 용량을 사용하려면 `-1`(으)로 설정하세요.\n\n**`retention` 정책이 Limits(`0`)(으)로 설정된 경우에만 적용됩니다.**"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.c3RyZWFtLWNyZWF0ZQ.option.bWF4X2J5dGVz.display_name": {
-          "source": "Max Bytes",
+          "source": "Max bytes",
           "message": "최대 바이트 수"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.c3RyZWFtLWNyZWF0ZQ.option.bWF4X2J5dGVz.short_desc": {
@@ -1412,7 +1412,7 @@
           "message": "JetStream 스트림의 고유 식별자입니다.\n\n스트림 이름은 발행, 구독 및 관리와 같은 모든 JetStream 작업에서 스트림을 참조하는 데 사용됩니다. **이름은 영문자와 숫자여야 하며 대시(-)나 언더스코어(_)를 포함할 수 있지만 마침표(.)나 공백은 포함할 수 없습니다.**"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.c3RyZWFtLWNyZWF0ZQ.option.bmFtZQ.display_name": {
-          "source": "Stream Name",
+          "source": "Stream name",
           "message": "스트림 이름"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.c3RyZWFtLWNyZWF0ZQ.option.bmFtZQ.short_desc": {
@@ -1452,7 +1452,7 @@
           "message": "스트림 메시지가 영구 저장되는 위치를 제어합니다.\n\n- `0` (File): 서버 재시작 시에도 내구성을 유지하도록 메시지가 디스크에 저장됩니다.\n- `1` (Memory): 높은 처리량을 위해 메시지가 메모리에 저장되지만 서버가 재시작되면 손실됩니다.\n\n**지정하지 않은 경우 기본값은 `0` (File)입니다.**"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.c3RyZWFtLWNyZWF0ZQ.option.c3RvcmFnZQ.display_name": {
-          "source": "Storage Type",
+          "source": "Storage type",
           "message": "스토리지 유형"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.c3RyZWFtLWNyZWF0ZQ.option.c3RvcmFnZQ.short_desc": {
@@ -1488,7 +1488,7 @@
           "message": "알려진 모든 소비자가 확인한 경우 제거"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.c3RyZWFtLWNyZWF0ZQ.option.cmV0ZW50aW9u.allowed-value.aW50OjI.display_name": {
-          "source": "Work Queue",
+          "source": "Work queue",
           "message": "작업 대기열"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.c3RyZWFtLWNyZWF0ZQ.option.cmV0ZW50aW9u.allowed-value.aW50OjI.short_desc": {
@@ -1500,7 +1500,7 @@
           "message": "스트림에서 메시지가 유지되거나 제거되는 방식을 제어합니다.\n\n- `0` (Limits): 스트림 제한(`max_msgs`, `max_bytes`, `max_age`)에 도달할 때까지 메시지가 보관됩니다.\n- `1` (Interest): 알려진 모든 소비자가 메시지를 확인하면 메시지가 제거됩니다.\n- `2` (Work Queue): 임의의 소비자가 메시지를 확인하는 즉시 메시지가 제거됩니다.\n\n**지정하지 않은 경우 기본값은 `0` (Limits)입니다.**"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.c3RyZWFtLWNyZWF0ZQ.option.cmV0ZW50aW9u.display_name": {
-          "source": "Retention Policy",
+          "source": "Retention policy",
           "message": "보유 정책"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.c3RyZWFtLWNyZWF0ZQ.option.cmV0ZW50aW9u.short_desc": {
@@ -1516,7 +1516,7 @@
           "message": "JetStream 스트림과 모든 메시지를 영구적으로 삭제합니다.\n\n**경고**: 이 작업은 스트림, 저장된 모든 메시지 및 관련된 모든 소비자를 제거합니다. 이 작업은 되돌릴 수 없습니다."
         },
         "app.TkFUU0pldFN0cmVhbQ.action.c3RyZWFtLWRlbGV0ZQ.display_name": {
-          "source": "Delete Stream",
+          "source": "Delete stream",
           "message": "스트림 삭제"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.c3RyZWFtLWRlbGV0ZQ.option.bmFtZQ.desc": {
@@ -1524,7 +1524,7 @@
           "message": "삭제할 JetStream 스트림의 이름입니다.\n\n**경고**: 이 작업은 스트림과 저장된 모든 메시지를 영구적으로 제거합니다. 스트림에 연결된 모든 소비자도 삭제됩니다. 이 작업은 되돌릴 수 없습니다."
         },
         "app.TkFUU0pldFN0cmVhbQ.action.c3RyZWFtLWRlbGV0ZQ.option.bmFtZQ.display_name": {
-          "source": "Stream Name",
+          "source": "Stream name",
           "message": "스트림 이름"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.c3RyZWFtLWRlbGV0ZQ.option.bmFtZQ.short_desc": {
@@ -1540,7 +1540,7 @@
           "message": "JetStream 스트림의 구성 및 상태 정보를 조회합니다.\n\n스트림의 주제 필터, 보유 정책, 저장소 제한, 메시지 수 및 바이트 크기를 포함한 현재 상태를 반환합니다."
         },
         "app.TkFUU0pldFN0cmVhbQ.action.c3RyZWFtLWluZm8.display_name": {
-          "source": "Stream Info",
+          "source": "Stream info",
           "message": "스트림 정보"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.c3RyZWFtLWluZm8.option.bmFtZQ.desc": {
@@ -1548,7 +1548,7 @@
           "message": "정보를 조회할 JetStream 스트림의 이름입니다.\n\n스트림이 이미 존재해야 합니다. 스트림을 찾을 수 없는 경우 오류가 발생합니다."
         },
         "app.TkFUU0pldFN0cmVhbQ.action.c3RyZWFtLWluZm8.option.bmFtZQ.display_name": {
-          "source": "Stream Name",
+          "source": "Stream name",
           "message": "스트림 이름"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.c3RyZWFtLWluZm8.option.bmFtZQ.short_desc": {
@@ -1564,7 +1564,7 @@
           "message": "구성 및 현재 상태와 함께 모든 JetStream 스트림을 나열합니다.\n\n주제 필터, 보유 정책, 저장소 제한, 메시지 수, 소비자 수를 포함하여 각 스트림에 대한 상세 정보를 반환합니다."
         },
         "app.TkFUU0pldFN0cmVhbQ.action.c3RyZWFtLWxpc3Q.display_name": {
-          "source": "List Streams",
+          "source": "List streams",
           "message": "스트림 목록 조회"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.c3RyZWFtLWxpc3Q.short_desc": {
@@ -1576,7 +1576,7 @@
           "message": "구성을 유지하면서 JetStream 스트림의 모든 메시지를 제거합니다.\n\n**경고**: 스트림의 모든 메시지를 영구적으로 삭제합니다. 스트림 구성과 소비자는 유지되지만 소비자 시퀀스 위치는 재설정됩니다."
         },
         "app.TkFUU0pldFN0cmVhbQ.action.c3RyZWFtLXB1cmdl.display_name": {
-          "source": "Purge Stream",
+          "source": "Purge stream",
           "message": "스트림 제거"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.c3RyZWFtLXB1cmdl.option.bmFtZQ.desc": {
@@ -1584,7 +1584,7 @@
           "message": "퍼지할 JetStream 스트림의 이름입니다.\n\n**경고**: 퍼지 작업은 스트림 구성과 소비자를 유지하면서 스트림의 모든 메시지를 제거합니다. 소비자 시퀀스 추적이 재설정됩니다. 이 작업은 되돌릴 수 없습니다."
         },
         "app.TkFUU0pldFN0cmVhbQ.action.c3RyZWFtLXB1cmdl.option.bmFtZQ.display_name": {
-          "source": "Stream Name",
+          "source": "Stream name",
           "message": "스트림 이름"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.c3RyZWFtLXB1cmdl.option.bmFtZQ.short_desc": {
@@ -1600,7 +1600,7 @@
           "message": "기존 JetStream 스트림의 구성을 업데이트합니다.\n\n주제 필터, 보유 정책, 저장소 제한, 복제와 같은 스트림 설정을 수정합니다. 생성 후 모든 설정을 변경할 수 있는 것은 아닙니다."
         },
         "app.TkFUU0pldFN0cmVhbQ.action.c3RyZWFtLXVwZGF0ZQ.display_name": {
-          "source": "Update Stream",
+          "source": "Update stream",
           "message": "스트림 업데이트"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.c3RyZWFtLXVwZGF0ZQ.option.ZGVzY3JpcHRpb24.desc": {
@@ -1636,7 +1636,7 @@
           "message": "스트림 한도(`max_msgs`, `max_bytes` 또는 `max_age`)에 도달했을 때 제거할 메시지를 제어합니다.\n\n- `0` (Old): 공간을 확보하기 위해 가장 오래된 메시지를 제거합니다.\n- `1` (New): 새 메시지를 오류와 함께 거부합니다.\n\n**지정하지 않은 경우 기본값은 `0` (Old)입니다.**"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.c3RyZWFtLXVwZGF0ZQ.option.ZGlzY2FyZA.display_name": {
-          "source": "Discard Policy",
+          "source": "Discard policy",
           "message": "폐기 정책"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.c3RyZWFtLXVwZGF0ZQ.option.ZGlzY2FyZA.short_desc": {
@@ -1648,7 +1648,7 @@
           "message": "스트림에 발행되는 개별 메시지의 최대 크기(바이트)입니다.\n\n이 크기를 초과하는 메시지는 서버에서 거부됩니다. 서버의 기본 최대값(일반적으로 1MB)을 사용하려면 `-1`(으)로 설정하세요. 예를 들어 `1048576`은(는) 1MB 한도를 설정합니다."
         },
         "app.TkFUU0pldFN0cmVhbQ.action.c3RyZWFtLXVwZGF0ZQ.option.bWF4X21zZ19zaXpl.display_name": {
-          "source": "Max Message Size",
+          "source": "Max message size",
           "message": "최대 메시지 크기"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.c3RyZWFtLXVwZGF0ZQ.option.bWF4X21zZ19zaXpl.short_desc": {
@@ -1660,7 +1660,7 @@
           "message": "스트림이 보존할 최대 메시지 수입니다.\n\n이 한도에 도달하면 `discard` 정책에 따라 이전 메시지가 폐기됩니다. 제한 없는 메시지 수를 원하시면 `-1`(으)로 설정하세요.\n\n**`retention` 정책이 Limits(`0`)(으)로 설정된 경우에만 적용됩니다.**"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.c3RyZWFtLXVwZGF0ZQ.option.bWF4X21zZ3M.display_name": {
-          "source": "Max Messages",
+          "source": "Max messages",
           "message": "최대 메시지 수"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.c3RyZWFtLXVwZGF0ZQ.option.bWF4X21zZ3M.short_desc": {
@@ -1672,7 +1672,7 @@
           "message": "밀리초 단위로 지정된 스트림 내 메시지의 최대 보존 기간입니다.\n\n이 값보다 오래된 메시지는 자동으로 제거됩니다. 보존 기간 제한을 두지 않으려면 `0`(으)로 설정하세요. 예를 들어 `86400000`은(는) 24시간 보존 창을 설정합니다.\n\n**`retention` 정책이 Limits(`0`)(으)로 설정된 경우에만 적용됩니다.**"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.c3RyZWFtLXVwZGF0ZQ.option.bWF4X2FnZQ.display_name": {
-          "source": "Max Age (ms)",
+          "source": "Max age (ms)",
           "message": "최대 보존 기간(ms)"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.c3RyZWFtLXVwZGF0ZQ.option.bWF4X2FnZQ.short_desc": {
@@ -1684,7 +1684,7 @@
           "message": "스트림의 모든 메시지에 대한 최대 총 저장 용량(바이트)입니다.\n\n이 한도에 도달하면 `discard` 정책에 따라 이전 메시지가 폐기됩니다. 무제한 저장 용량을 사용하려면 `-1`(으)로 설정하세요.\n\n**`retention` 정책이 Limits(`0`)(으)로 설정된 경우에만 적용됩니다.**"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.c3RyZWFtLXVwZGF0ZQ.option.bWF4X2J5dGVz.display_name": {
-          "source": "Max Bytes",
+          "source": "Max bytes",
           "message": "최대 바이트 수"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.c3RyZWFtLXVwZGF0ZQ.option.bWF4X2J5dGVz.short_desc": {
@@ -1696,7 +1696,7 @@
           "message": "JetStream 스트림의 고유 식별자입니다.\n\n스트림 이름은 발행, 구독 및 관리와 같은 모든 JetStream 작업에서 스트림을 참조하는 데 사용됩니다. **이름은 영문자와 숫자여야 하며 대시(-)나 언더스코어(_)를 포함할 수 있지만 마침표(.)나 공백은 포함할 수 없습니다.**"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.c3RyZWFtLXVwZGF0ZQ.option.bmFtZQ.display_name": {
-          "source": "Stream Name",
+          "source": "Stream name",
           "message": "스트림 이름"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.c3RyZWFtLXVwZGF0ZQ.option.bmFtZQ.short_desc": {
@@ -1736,7 +1736,7 @@
           "message": "스트림 메시지가 영구 저장되는 위치를 제어합니다.\n\n- `0` (File): 서버 재시작 시에도 내구성을 유지하도록 메시지가 디스크에 저장됩니다.\n- `1` (Memory): 높은 처리량을 위해 메시지가 메모리에 저장되지만 서버가 재시작되면 손실됩니다.\n\n**지정하지 않은 경우 기본값은 `0` (File)입니다.**"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.c3RyZWFtLXVwZGF0ZQ.option.c3RvcmFnZQ.display_name": {
-          "source": "Storage Type",
+          "source": "Storage type",
           "message": "스토리지 유형"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.c3RyZWFtLXVwZGF0ZQ.option.c3RvcmFnZQ.short_desc": {
@@ -1772,7 +1772,7 @@
           "message": "알려진 모든 소비자가 확인한 경우 제거"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.c3RyZWFtLXVwZGF0ZQ.option.cmV0ZW50aW9u.allowed-value.aW50OjI.display_name": {
-          "source": "Work Queue",
+          "source": "Work queue",
           "message": "작업 대기열"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.c3RyZWFtLXVwZGF0ZQ.option.cmV0ZW50aW9u.allowed-value.aW50OjI.short_desc": {
@@ -1784,7 +1784,7 @@
           "message": "스트림에서 메시지가 유지되거나 제거되는 방식을 제어합니다.\n\n- `0` (Limits): 스트림 제한(`max_msgs`, `max_bytes`, `max_age`)에 도달할 때까지 메시지가 보관됩니다.\n- `1` (Interest): 알려진 모든 소비자가 메시지를 확인하면 메시지가 제거됩니다.\n- `2` (Work Queue): 임의의 소비자가 메시지를 확인하는 즉시 메시지가 제거됩니다.\n\n**지정하지 않은 경우 기본값은 `0` (Limits)입니다.**"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.c3RyZWFtLXVwZGF0ZQ.option.cmV0ZW50aW9u.display_name": {
-          "source": "Retention Policy",
+          "source": "Retention policy",
           "message": "보유 정책"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.c3RyZWFtLXVwZGF0ZQ.option.cmV0ZW50aW9u.short_desc": {
@@ -1800,7 +1800,7 @@
           "message": "실시간 이벤트 처리를 위해 푸시 기반 전달 방식으로 JetStream 메시지를 구독합니다.\n\n메시지가 스트림에 도착하는 즉시 구독자에게 푸시됩니다. 스트림 시퀀스 번호 및 타임스탬프와 같은 JetStream 메타데이터가 포함됩니다."
         },
         "app.TkFUU0pldFN0cmVhbQ.action.c3Vic2NyaWJl.display_name": {
-          "source": "JetStream Subscribe",
+          "source": "JetStream subscribe",
           "message": "JetStream 구독"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.c3Vic2NyaWJl.option.c3ViamVjdA.desc": {
@@ -1824,7 +1824,7 @@
           "message": "지속성(Durable) 소비자를 사용하는 풀 기반 전달 방식으로 JetStream 메시지를 구독합니다.\n\n클라이언트는 메시지 배치를 요청하여 전달 속도를 제어하므로 자연스러운 백프레셔를 제공합니다. `durable` 소비자는 재시작 후에도 마지막으로 확인된 위치를 추적합니다."
         },
         "app.TkFUU0pldFN0cmVhbQ.action.cHVsbC1zdWJzY3JpYmU.display_name": {
-          "source": "JetStream Pull Subscribe",
+          "source": "JetStream pull subscribe",
           "message": "JetStream 풀 구독"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.cHVsbC1zdWJzY3JpYmU.option.ZHVyYWJsZQ.desc": {
@@ -1832,7 +1832,7 @@
           "message": "구독 상태를 유지하는 지속성 소비자 이름입니다.\n\n지속성 소비자는 클라이언트 연결 끊김 및 서버 재시작 후에도 유지됩니다. 클라이언트가 동일한 `durable` 이름으로 다시 연결되면 마지막으로 확인된 위치부터 메시지 전달이 재개됩니다. 소비자가 스트림에 이미 존재해야 하며, 그렇지 않으면 자동으로 생성됩니다."
         },
         "app.TkFUU0pldFN0cmVhbQ.action.cHVsbC1zdWJzY3JpYmU.option.ZHVyYWJsZQ.display_name": {
-          "source": "Durable Name",
+          "source": "Durable name",
           "message": "내구성 이름"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.cHVsbC1zdWJzY3JpYmU.option.ZHVyYWJsZQ.short_desc": {
@@ -1852,7 +1852,7 @@
           "message": "구독할 JetStream 주제"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.cHVsbC1zdWJzY3JpYmU.option.cmVmdXNhbF9kZWxheV9tcw.display_name": {
-          "source": "Refusal Delay",
+          "source": "Refusal delay",
           "message": "거부 후 지연"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.cHVsbC1zdWJzY3JpYmU.option.cmVmdXNhbF9kZWxheV9tcw.short_desc": {
@@ -1864,7 +1864,7 @@
           "message": "옵저버가 거부한 메시지를 서버가 다시 전달하기 전의 지연 시간(밀리초)입니다. 메시지가 전달될 때마다 `max_refusal_delay_ms`까지 두 배로 늘어납니다. 기본값은 1000입니다"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.cHVsbC1zdWJzY3JpYmU.option.bWF4X3JlZnVzYWxfZGVsYXlfbXM.display_name": {
-          "source": "Max Refusal Delay",
+          "source": "Max refusal delay",
           "message": "거부 후 최대 지연"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.cHVsbC1zdWJzY3JpYmU.option.bWF4X3JlZnVzYWxfZGVsYXlfbXM.short_desc": {

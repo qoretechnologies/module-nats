@@ -8,7 +8,7 @@
           "message": "メッセージ処理のためにJetStreamストリーム上に新しいコンシューマーを作成します。\n\nコンシューマーは、配信ポリシー、確認応答（ack）の要件、再試行動作を含め、ストリームからメッセージがどのように配信されるかを定義します。Durable（耐久性のある）コンシューマーはクライアント切断後も維持されます。"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItY3JlYXRl.display_name": {
-          "source": "Create Consumer",
+          "source": "Create consumer",
           "message": "コンシューマーを作成"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItY3JlYXRl.option.YWNrX3BvbGljeQ.allowed-value.aW50OjA.display_name": {
@@ -40,7 +40,7 @@
           "message": "コンシューマーがメッセージの配信をどのように確認応答（ack）するかを制御します。\n\n- `0` (なし): 確認応答は不要で、メッセージは即座に配信されたとみなされます\n- `1` (すべて): メッセージを確認応答すると、それ以前のすべてのメッセージも暗黙的に確認応答されます\n- `2` (明示的): 各メッセージを個別に確認応答する必要があります\n\n**指定しない場合のデフォルトは `2` (明示的) です。**"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItY3JlYXRl.option.YWNrX3BvbGljeQ.display_name": {
-          "source": "Ack Policy",
+          "source": "Ack policy",
           "message": "Ackポリシー"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItY3JlYXRl.option.YWNrX3BvbGljeQ.short_desc": {
@@ -52,7 +52,7 @@
           "message": "サーバーが確認応答を待機する時間（ミリ秒）です。この時間を過ぎるとメッセージは未確認とみなされ、再配信がスケジュールされます。\n\n例えば、`30000` は30秒のタイムアウトを設定します。**指定しない場合は、サーバーのデフォルト値である30秒が使用されます。**メッセージの予想処理時間に基づいてこの値を設定してください。"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItY3JlYXRl.option.YWNrX3dhaXQ.display_name": {
-          "source": "Ack Wait (ms)",
+          "source": "Ack wait (ms)",
           "message": "Ack待機時間 (ms)"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItY3JlYXRl.option.YWNrX3dhaXQ.short_desc": {
@@ -64,7 +64,7 @@
           "message": "複数のコンシューマーインスタンス間でロードバランスされたメッセージ配信を行うためのキューグループ名です。\n\n設定すると、同じ `deliver_group` の値を共有するすべてのコンシューマーにメッセージが分散され、各メッセージが1つのコンシューマーのみによって処理されるようになります。**プッシュモード（`deliver_subject` が設定されている場合）でのみ適用可能です。**"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItY3JlYXRl.option.ZGVsaXZlcl9ncm91cA.display_name": {
-          "source": "Deliver Group",
+          "source": "Deliver group",
           "message": "配信グループ"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItY3JlYXRl.option.ZGVsaXZlcl9ncm91cA.short_desc": {
@@ -96,7 +96,7 @@
           "message": "新しいメッセージのみを配信"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItY3JlYXRl.option.ZGVsaXZlcl9wb2xpY3k.allowed-value.aW50OjM.display_name": {
-          "source": "By Start Sequence",
+          "source": "By start sequence",
           "message": "開始シーケンス指定"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItY3JlYXRl.option.ZGVsaXZlcl9wb2xpY3k.allowed-value.aW50OjM.short_desc": {
@@ -104,7 +104,7 @@
           "message": "特定のシーケンス番号から配信を開始"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItY3JlYXRl.option.ZGVsaXZlcl9wb2xpY3k.allowed-value.aW50OjQ.display_name": {
-          "source": "By Start Time",
+          "source": "By start time",
           "message": "開始時刻指定"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItY3JlYXRl.option.ZGVsaXZlcl9wb2xpY3k.allowed-value.aW50OjQ.short_desc": {
@@ -112,7 +112,7 @@
           "message": "特定の日時から配信を開始"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItY3JlYXRl.option.ZGVsaXZlcl9wb2xpY3k.allowed-value.aW50OjU.display_name": {
-          "source": "Last Per Subject",
+          "source": "Last per subject",
           "message": "サブジェクトごとの最新"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItY3JlYXRl.option.ZGVsaXZlcl9wb2xpY3k.allowed-value.aW50OjU.short_desc": {
@@ -124,7 +124,7 @@
           "message": "コンシューマーへのメッセージ配信の開始点を決定します。\n\n- `0` (すべて): ストリームの最初から利用可能なすべてのメッセージを配信します\n- `1` (最新): ストリーム内の最後のメッセージから開始します\n- `2` (新規): コンシューマー作成後に発行されたメッセージのみを配信します\n- `3` (開始シーケンス指定): 指定したシーケンス番号から開始します\n- `4` (開始時刻指定): 指定したタイムスタンプから開始します\n- `5` (サブジェクトごとの最新): サブジェクトごとに最後のメッセージを配信します\n\n**指定しない場合のデフォルトは `0` (すべて) です。**"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItY3JlYXRl.option.ZGVsaXZlcl9wb2xpY3k.display_name": {
-          "source": "Deliver Policy",
+          "source": "Deliver policy",
           "message": "配信ポリシー"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItY3JlYXRl.option.ZGVsaXZlcl9wb2xpY3k.short_desc": {
@@ -136,7 +136,7 @@
           "message": "サーバーがコンシューマーへメッセージをプッシュ送信するNATSサブジェクトです。\n\n設定すると、コンシューマーはサーバーがこのサブジェクトへ能動的にメッセージを配信する**プッシュモード**で動作します。設定しない場合、コンシューマーはクライアントが明示的にメッセージを要求する必要がある**プルモード**で動作します。"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItY3JlYXRl.option.ZGVsaXZlcl9zdWJqZWN0.display_name": {
-          "source": "Deliver Subject",
+          "source": "Deliver subject",
           "message": "配信サブジェクト"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItY3JlYXRl.option.ZGVsaXZlcl9zdWJqZWN0.short_desc": {
@@ -160,7 +160,7 @@
           "message": "コンシューマーをDurable（永続的）にするユニークな名前です。\n\n**重要**: durable nameがない場合、コンシューマーはEphemeral（一時的）となり、切断または非アクティブ化されたときに自動的に削除されます。Durableコンシューマーは、クライアントの切断やサーバーの再起動を挟んでもその状態（配信位置、保留中の確認応答）を保持します。"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItY3JlYXRl.option.ZHVyYWJsZV9uYW1l.display_name": {
-          "source": "Durable Name",
+          "source": "Durable name",
           "message": "Durable名"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItY3JlYXRl.option.ZHVyYWJsZV9uYW1l.short_desc": {
@@ -172,7 +172,7 @@
           "message": "このパターンに一致するメッセージのみを受信するようにコンシューマーを制限するサブジェクトフィルターです。\n\nこれにより、コンシューマーはストリームのメッセージのサブセットを処理できます。NATSワイルドカードトークン（`*` および `>`）をサポートしています。設定しない場合、コンシューマーはストリームからすべてのメッセージを受信します。"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItY3JlYXRl.option.ZmlsdGVyX3N1YmplY3Q.display_name": {
-          "source": "Filter Subject",
+          "source": "Filter subject",
           "message": "フィルターサブジェクト"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItY3JlYXRl.option.ZmlsdGVyX3N1YmplY3Q.short_desc": {
@@ -184,7 +184,7 @@
           "message": "配信済みでまだ確認応答（ack）されていないメッセージの最大数です。\n\nこれはコンシューマーの負荷が高くなりすぎるのを防ぐフロー制御メカニズムとして機能します。この上限に達すると、一部のメッセージが確認応答されるまでサーバーは配信を一時停止します。**指定しない場合のデフォルトは `1000` です。**"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItY3JlYXRl.option.bWF4X2Fja19wZW5kaW5n.display_name": {
-          "source": "Max Ack Pending",
+          "source": "Max ack pending",
           "message": "最大未確認応答数"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItY3JlYXRl.option.bWF4X2Fja19wZW5kaW5n.short_desc": {
@@ -196,7 +196,7 @@
           "message": "サーバーがコンシューマーへのメッセージ配信を試行する最大回数です。\n\nこの回数の配信試行に失敗すると、メッセージは破棄されるか、設定されている場合はデッドレターキューに送信されます。無制限の再配信試行を行うには `-1` に設定します。**本番環境では `5` の値がよく使用されます。**"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItY3JlYXRl.option.bWF4X2RlbGl2ZXI.display_name": {
-          "source": "Max Deliver",
+          "source": "Max deliver",
           "message": "最大配信試行回数"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItY3JlYXRl.option.bWF4X2RlbGl2ZXI.short_desc": {
@@ -208,7 +208,7 @@
           "message": "このコンシューマーがメッセージを読み取るJetStreamストリームの名前です。\n\nコンシューマーを作成するには、ストリームが既に存在している必要があります。ストリーム設定のストリーム `name` の値を使用してください。"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItY3JlYXRl.option.c3RyZWFt.display_name": {
-          "source": "Stream Name",
+          "source": "Stream name",
           "message": "ストリーム名"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItY3JlYXRl.option.c3RyZWFt.short_desc": {
@@ -236,7 +236,7 @@
           "message": "履歴メッセージに追いつく際に、コンシューマーへメッセージが再生される速度を制御します。\n\n- `0`（Instant）：メッセージは可能な限り高速に配信されます\n- `1`（Original）：メッセージは元々発行されたレートで配信され、元のタイミングが維持されます\n\n**指定しない場合のデフォルトは `0`（Instant）です。**"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItY3JlYXRl.option.cmVwbGF5X3BvbGljeQ.display_name": {
-          "source": "Replay Policy",
+          "source": "Replay policy",
           "message": "再生ポリシー"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItY3JlYXRl.option.cmVwbGF5X3BvbGljeQ.short_desc": {
@@ -252,7 +252,7 @@
           "message": "JetStream ストリームからコンシューマーを削除します。\n\n**警告**: これにより、コンシューマーとその追跡状態が永久に削除されます。未確認のメッセージは再配信されません。"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItZGVsZXRl.display_name": {
-          "source": "Delete Consumer",
+          "source": "Delete consumer",
           "message": "コンシューマーを削除"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItZGVsZXRl.option.Y29uc3VtZXI.desc": {
@@ -260,7 +260,7 @@
           "message": "ストリームから削除するコンシューマーの名前。\n\n**警告**: コンシューマーを削除すると、最後に確認されたシーケンス位置を含む追跡状態が破棄されます。コンシューマーが再作成された場合、中断した場所からではなく、設定された配信ポリシーから開始されます。"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItZGVsZXRl.option.Y29uc3VtZXI.display_name": {
-          "source": "Consumer Name",
+          "source": "Consumer name",
           "message": "コンシューマー名"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItZGVsZXRl.option.Y29uc3VtZXI.short_desc": {
@@ -272,7 +272,7 @@
           "message": "削除対象のコンシューマーを所有する JetStream ストリームの名前。\n\nストリームが存在し、指定されたコンシューマーが含まれている必要があります。"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItZGVsZXRl.option.c3RyZWFt.display_name": {
-          "source": "Stream Name",
+          "source": "Stream name",
           "message": "ストリーム名"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItZGVsZXRl.option.c3RyZWFt.short_desc": {
@@ -288,7 +288,7 @@
           "message": "JetStream コンシューマーの設定および配信状態を取得します。\n\nコンシューマーの確認ポリシー（ack policy）、配信ポリシー（deliver policy）、フィルターサブジェクト、および保留中のメッセージや処理の進行状況を含む現在の状態を返します。"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItaW5mbw.display_name": {
-          "source": "Consumer Info",
+          "source": "Consumer info",
           "message": "コンシューマー情報"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItaW5mbw.option.Y29uc3VtZXI.desc": {
@@ -296,7 +296,7 @@
           "message": "情報を取得するコンシューマーの名前。\n\nコンシューマーは指定されたストリーム上に存在する必要があります。見つからない場合はエラーが発生します。"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItaW5mbw.option.Y29uc3VtZXI.display_name": {
-          "source": "Consumer Name",
+          "source": "Consumer name",
           "message": "コンシューマー名"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItaW5mbw.option.Y29uc3VtZXI.short_desc": {
@@ -308,7 +308,7 @@
           "message": "コンシューマーを所有する JetStream ストリームの名前。\n\nストリームが存在する必要があります。見つからない場合はエラーが発生します。"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItaW5mbw.option.c3RyZWFt.display_name": {
-          "source": "Stream Name",
+          "source": "Stream name",
           "message": "ストリーム名"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItaW5mbw.option.c3RyZWFt.short_desc": {
@@ -324,7 +324,7 @@
           "message": "JetStream ストリームのすべてのコンシューマーを、その設定および配信状態とともに一覧表示します。\n\n配信ポリシー、確認設定、処理の進行状況など、各コンシューマーの詳細情報を返します。"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItbGlzdA.display_name": {
-          "source": "List Consumers",
+          "source": "List consumers",
           "message": "コンシューマー一覧"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItbGlzdA.option.c3RyZWFt.desc": {
@@ -332,7 +332,7 @@
           "message": "コンシューマーを一覧表示する JetStream ストリームの名前。\n\nストリームはすでに存在する必要があります。ストリームが見つからない場合はエラーが発生します。"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItbGlzdA.option.c3RyZWFt.display_name": {
-          "source": "Stream Name",
+          "source": "Stream name",
           "message": "ストリーム名"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItbGlzdA.option.c3RyZWFt.short_desc": {
@@ -348,7 +348,7 @@
           "message": "詳細な設定や状態の詳細を含めずに、JetStream ストリームのすべてのコンシューマー名を一覧表示します。\n\nどのコンシューマーが存在するかを確認するだけでよい場合に、軽量な列挙としてこれを使用します。"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItbmFtZXM.display_name": {
-          "source": "Consumer Names",
+          "source": "Consumer names",
           "message": "コンシューマー名一覧"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItbmFtZXM.option.c3RyZWFt.desc": {
@@ -356,7 +356,7 @@
           "message": "コンシューマー名を一覧表示する JetStream ストリームの名前。\n\nストリームはすでに存在する必要があります。ストリームが見つからない場合はエラーが発生します。"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItbmFtZXM.option.c3RyZWFt.display_name": {
-          "source": "Stream Name",
+          "source": "Stream name",
           "message": "ストリーム名"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItbmFtZXM.option.c3RyZWFt.short_desc": {
@@ -372,7 +372,7 @@
           "message": "指定された時間まで JetStream コンシューマーを一時停止します。\n\n一時停止されたコンシューマーは指定された時間までメッセージの受信を停止し、その時点で配信が自動的に再開されます。メンテナンスウィンドウやレート制限に使用します。"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItcGF1c2U.display_name": {
-          "source": "Pause Consumer",
+          "source": "Pause consumer",
           "message": "コンシューマーを一時停止"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItcGF1c2U.option.Y29uc3VtZXI.desc": {
@@ -380,7 +380,7 @@
           "message": "一時停止するコンシューマーの名前。\n\nコンシューマーは指定されたストリーム上にすでに存在する必要があります。見つからない場合はエラーが発生します。"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItcGF1c2U.option.Y29uc3VtZXI.display_name": {
-          "source": "Consumer Name",
+          "source": "Consumer name",
           "message": "コンシューマー名"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItcGF1c2U.option.Y29uc3VtZXI.short_desc": {
@@ -392,7 +392,7 @@
           "message": "コンシューマーが所属する JetStream ストリームの名前。\n\nストリームはすでに存在する必要があります。ストリームが見つからない場合はエラーが発生します。"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItcGF1c2U.option.c3RyZWFt.display_name": {
-          "source": "Stream Name",
+          "source": "Stream name",
           "message": "ストリーム名"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItcGF1c2U.option.c3RyZWFt.short_desc": {
@@ -404,7 +404,7 @@
           "message": "コンシューマーを一時停止する日時。\n\nコンシューマーはこの時間に達するまでメッセージの受信を停止し、達した時点で配信を自動的に再開します。計画メンテナンスウィンドウやレート制限に使用します。"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItcGF1c2U.option.cGF1c2VfdW50aWw.display_name": {
-          "source": "Pause Until",
+          "source": "Pause until",
           "message": "一時停止期限"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItcGF1c2U.option.cGF1c2VfdW50aWw.short_desc": {
@@ -420,7 +420,7 @@
           "message": "既存の JetStream コンシューマーの設定を更新します。\n\n確認ポリシー、配信ポリシー、フィルターサブジェクト、リトライ動作などのコンシューマー設定を変更します。作成後にすべての設定を変更できるわけではありません。"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItdXBkYXRl.display_name": {
-          "source": "Update Consumer",
+          "source": "Update consumer",
           "message": "コンシューマーを更新"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItdXBkYXRl.option.YWNrX3BvbGljeQ.allowed-value.aW50OjA.display_name": {
@@ -452,7 +452,7 @@
           "message": "コンシューマーがメッセージの配信をどのように確認応答（ack）するかを制御します。\n\n- `0` (なし): 確認応答は不要で、メッセージは即座に配信されたとみなされます\n- `1` (すべて): メッセージを確認応答すると、それ以前のすべてのメッセージも暗黙的に確認応答されます\n- `2` (明示的): 各メッセージを個別に確認応答する必要があります\n\n**指定しない場合のデフォルトは `2` (明示的) です。**"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItdXBkYXRl.option.YWNrX3BvbGljeQ.display_name": {
-          "source": "Ack Policy",
+          "source": "Ack policy",
           "message": "Ackポリシー"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItdXBkYXRl.option.YWNrX3BvbGljeQ.short_desc": {
@@ -464,7 +464,7 @@
           "message": "サーバーが確認応答を待機する時間（ミリ秒）です。この時間を過ぎるとメッセージは未確認とみなされ、再配信がスケジュールされます。\n\n例えば、`30000` は30秒のタイムアウトを設定します。**指定しない場合は、サーバーのデフォルト値である30秒が使用されます。**メッセージの予想処理時間に基づいてこの値を設定してください。"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItdXBkYXRl.option.YWNrX3dhaXQ.display_name": {
-          "source": "Ack Wait (ms)",
+          "source": "Ack wait (ms)",
           "message": "Ack待機時間 (ms)"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItdXBkYXRl.option.YWNrX3dhaXQ.short_desc": {
@@ -476,7 +476,7 @@
           "message": "複数のコンシューマーインスタンス間でロードバランスされたメッセージ配信を行うためのキューグループ名です。\n\n設定すると、同じ `deliver_group` の値を共有するすべてのコンシューマーにメッセージが分散され、各メッセージが1つのコンシューマーのみによって処理されるようになります。**プッシュモード（`deliver_subject` が設定されている場合）でのみ適用可能です。**"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItdXBkYXRl.option.ZGVsaXZlcl9ncm91cA.display_name": {
-          "source": "Deliver Group",
+          "source": "Deliver group",
           "message": "配信グループ"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItdXBkYXRl.option.ZGVsaXZlcl9ncm91cA.short_desc": {
@@ -508,7 +508,7 @@
           "message": "新しいメッセージのみを配信"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItdXBkYXRl.option.ZGVsaXZlcl9wb2xpY3k.allowed-value.aW50OjM.display_name": {
-          "source": "By Start Sequence",
+          "source": "By start sequence",
           "message": "開始シーケンス指定"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItdXBkYXRl.option.ZGVsaXZlcl9wb2xpY3k.allowed-value.aW50OjM.short_desc": {
@@ -516,7 +516,7 @@
           "message": "特定のシーケンス番号から配信を開始"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItdXBkYXRl.option.ZGVsaXZlcl9wb2xpY3k.allowed-value.aW50OjQ.display_name": {
-          "source": "By Start Time",
+          "source": "By start time",
           "message": "開始時刻指定"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItdXBkYXRl.option.ZGVsaXZlcl9wb2xpY3k.allowed-value.aW50OjQ.short_desc": {
@@ -524,7 +524,7 @@
           "message": "特定の日時から配信を開始"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItdXBkYXRl.option.ZGVsaXZlcl9wb2xpY3k.allowed-value.aW50OjU.display_name": {
-          "source": "Last Per Subject",
+          "source": "Last per subject",
           "message": "サブジェクトごとの最新"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItdXBkYXRl.option.ZGVsaXZlcl9wb2xpY3k.allowed-value.aW50OjU.short_desc": {
@@ -536,7 +536,7 @@
           "message": "コンシューマーへのメッセージ配信の開始点を決定します。\n\n- `0` (すべて): ストリームの最初から利用可能なすべてのメッセージを配信します\n- `1` (最新): ストリーム内の最後のメッセージから開始します\n- `2` (新規): コンシューマー作成後に発行されたメッセージのみを配信します\n- `3` (開始シーケンス指定): 指定したシーケンス番号から開始します\n- `4` (開始時刻指定): 指定したタイムスタンプから開始します\n- `5` (サブジェクトごとの最新): サブジェクトごとに最後のメッセージを配信します\n\n**指定しない場合のデフォルトは `0` (すべて) です。**"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItdXBkYXRl.option.ZGVsaXZlcl9wb2xpY3k.display_name": {
-          "source": "Deliver Policy",
+          "source": "Deliver policy",
           "message": "配信ポリシー"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItdXBkYXRl.option.ZGVsaXZlcl9wb2xpY3k.short_desc": {
@@ -548,7 +548,7 @@
           "message": "サーバーがコンシューマーへメッセージをプッシュ送信するNATSサブジェクトです。\n\n設定すると、コンシューマーはサーバーがこのサブジェクトへ能動的にメッセージを配信する**プッシュモード**で動作します。設定しない場合、コンシューマーはクライアントが明示的にメッセージを要求する必要がある**プルモード**で動作します。"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItdXBkYXRl.option.ZGVsaXZlcl9zdWJqZWN0.display_name": {
-          "source": "Deliver Subject",
+          "source": "Deliver subject",
           "message": "配信サブジェクト"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItdXBkYXRl.option.ZGVsaXZlcl9zdWJqZWN0.short_desc": {
@@ -572,7 +572,7 @@
           "message": "コンシューマーをDurable（永続的）にするユニークな名前です。\n\n**重要**: durable nameがない場合、コンシューマーはEphemeral（一時的）となり、切断または非アクティブ化されたときに自動的に削除されます。Durableコンシューマーは、クライアントの切断やサーバーの再起動を挟んでもその状態（配信位置、保留中の確認応答）を保持します。"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItdXBkYXRl.option.ZHVyYWJsZV9uYW1l.display_name": {
-          "source": "Durable Name",
+          "source": "Durable name",
           "message": "Durable名"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItdXBkYXRl.option.ZHVyYWJsZV9uYW1l.short_desc": {
@@ -584,7 +584,7 @@
           "message": "このパターンに一致するメッセージのみを受信するようにコンシューマーを制限するサブジェクトフィルターです。\n\nこれにより、コンシューマーはストリームのメッセージのサブセットを処理できます。NATSワイルドカードトークン（`*` および `>`）をサポートしています。設定しない場合、コンシューマーはストリームからすべてのメッセージを受信します。"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItdXBkYXRl.option.ZmlsdGVyX3N1YmplY3Q.display_name": {
-          "source": "Filter Subject",
+          "source": "Filter subject",
           "message": "フィルターサブジェクト"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItdXBkYXRl.option.ZmlsdGVyX3N1YmplY3Q.short_desc": {
@@ -596,7 +596,7 @@
           "message": "配信済みでまだ確認応答（ack）されていないメッセージの最大数です。\n\nこれはコンシューマーの負荷が高くなりすぎるのを防ぐフロー制御メカニズムとして機能します。この上限に達すると、一部のメッセージが確認応答されるまでサーバーは配信を一時停止します。**指定しない場合のデフォルトは `1000` です。**"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItdXBkYXRl.option.bWF4X2Fja19wZW5kaW5n.display_name": {
-          "source": "Max Ack Pending",
+          "source": "Max ack pending",
           "message": "最大未確認応答数"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItdXBkYXRl.option.bWF4X2Fja19wZW5kaW5n.short_desc": {
@@ -608,7 +608,7 @@
           "message": "サーバーがコンシューマーへのメッセージ配信を試行する最大回数です。\n\nこの回数の配信試行に失敗すると、メッセージは破棄されるか、設定されている場合はデッドレターキューに送信されます。無制限の再配信試行を行うには `-1` に設定します。**本番環境では `5` の値がよく使用されます。**"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItdXBkYXRl.option.bWF4X2RlbGl2ZXI.display_name": {
-          "source": "Max Deliver",
+          "source": "Max deliver",
           "message": "最大配信試行回数"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItdXBkYXRl.option.bWF4X2RlbGl2ZXI.short_desc": {
@@ -620,7 +620,7 @@
           "message": "このコンシューマーがメッセージを読み取るJetStreamストリームの名前です。\n\nコンシューマーを作成するには、ストリームが既に存在している必要があります。ストリーム設定のストリーム `name` の値を使用してください。"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItdXBkYXRl.option.c3RyZWFt.display_name": {
-          "source": "Stream Name",
+          "source": "Stream name",
           "message": "ストリーム名"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItdXBkYXRl.option.c3RyZWFt.short_desc": {
@@ -648,7 +648,7 @@
           "message": "履歴メッセージに追いつく際に、コンシューマーへメッセージが再生される速度を制御します。\n\n- `0`（Instant）：メッセージは可能な限り高速に配信されます\n- `1`（Original）：メッセージは元々発行されたレートで配信され、元のタイミングが維持されます\n\n**指定しない場合のデフォルトは `0`（Instant）です。**"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItdXBkYXRl.option.cmVwbGF5X3BvbGljeQ.display_name": {
-          "source": "Replay Policy",
+          "source": "Replay policy",
           "message": "再生ポリシー"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItdXBkYXRl.option.cmVwbGF5X3BvbGljeQ.short_desc": {
@@ -664,7 +664,7 @@
           "message": "リソース使用状況や API 統計情報を含む JetStream アカウント情報を取得します。\n\nメモリおよびストレージの使用状況、ストリームおよびコンシューマーの数、API リクエストの合計を返します。容量計画およびモニタリングに使用します。"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.YWNjb3VudC1pbmZv.display_name": {
-          "source": "Account Info",
+          "source": "Account info",
           "message": "アカウント情報"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.YWNjb3VudC1pbmZv.short_desc": {
@@ -676,7 +676,7 @@
           "message": "新しい JetStream キーバリューストアバケットを作成します。\n\n履歴の保持数、TTL、ストレージタイプ、レプリケーションを含む指定された設定でバケットを作成します。初期のバケットステータスを返します。"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.a3YtY3JlYXRlLWJ1Y2tldA.display_name": {
-          "source": "KV Create Bucket",
+          "source": "KV create bucket",
           "message": "KV バケットを作成"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.a3YtY3JlYXRlLWJ1Y2tldA.option.YnVja2V0.desc": {
@@ -684,7 +684,7 @@
           "message": "新しい KV バケットの名前。\n\nバケット名は半角英数字である必要があり、ダッシュまたはアンダースコアを含めることができます。名前は JetStream アカウント内で一意である必要があります。"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.a3YtY3JlYXRlLWJ1Y2tldA.option.YnVja2V0.display_name": {
-          "source": "Bucket Name",
+          "source": "Bucket name",
           "message": "バケット名"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.a3YtY3JlYXRlLWJ1Y2tldA.option.YnVja2V0.short_desc": {
@@ -720,7 +720,7 @@
           "message": "バケット内のすべてのキーとリビジョンの合計ストレージの最大バイト数。\n\nこの制限に達すると、空き容量を確保するために古いリビジョンが削除されます。設定しない場合、サーバーのデフォルトが使用されます。"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.a3YtY3JlYXRlLWJ1Y2tldA.option.bWF4X2J5dGVz.display_name": {
-          "source": "Max Bytes",
+          "source": "Max bytes",
           "message": "最大バイト数"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.a3YtY3JlYXRlLWJ1Y2tldA.option.bWF4X2J5dGVz.short_desc": {
@@ -732,7 +732,7 @@
           "message": "バケットに保存される個々の値の最大サイズ（バイト単位）。\n\nこのサイズを超える値は拒否されます。設定しない場合、サーバーのデフォルトが使用されます。"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.a3YtY3JlYXRlLWJ1Y2tldA.option.bWF4X3ZhbHVlX3NpemU.display_name": {
-          "source": "Max Value Size",
+          "source": "Max value size",
           "message": "最大値サイズ"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.a3YtY3JlYXRlLWJ1Y2tldA.option.bWF4X3ZhbHVlX3NpemU.short_desc": {
@@ -772,7 +772,7 @@
           "message": "バケットデータの永続化先を制御します。\n\n- `0` (File): サーバ再起動後も保持されるよう、データをディスクに保存します\n- `1` (Memory): スループットを高めるためデータをメモリに保存しますが、サーバ再起動時に失われます\n\n**指定しない場合のデフォルトは `0` (File) です。**"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.a3YtY3JlYXRlLWJ1Y2tldA.option.c3RvcmFnZQ.display_name": {
-          "source": "Storage Type",
+          "source": "Storage type",
           "message": "ストレージタイプ"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.a3YtY3JlYXRlLWJ1Y2tldA.option.c3RvcmFnZQ.short_desc": {
@@ -800,7 +800,7 @@
           "message": "JetStream KVバケットからキーの現在の値とメタデータを取得します。\n\n`value`、`revision`、`created` タイムスタンプ、`operation` タイプを含む最新リビジョンを返します。"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.a3YtZ2V0.display_name": {
-          "source": "KV Get",
+          "source": "KV get",
           "message": "KV Get"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.a3YtZ2V0.option.YnVja2V0.desc": {
@@ -836,7 +836,7 @@
           "message": "JetStream KVバケットからキーをソフト削除します。\n\n削除マーカーを配置することで、キーが一覧や取得操作に表示されなくなります。キーのリビジョン履歴は保持されます。"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.a3YtZGVsZXRl.display_name": {
-          "source": "KV Delete",
+          "source": "KV delete",
           "message": "KV Delete"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.a3YtZGVsZXRl.option.YnVja2V0.desc": {
@@ -872,7 +872,7 @@
           "message": "JetStreamキーバリューストアバケットを永久に削除します。\n\n**警告**: これによりバケット、保存されているすべてのキー、およびすべてのリビジョン履歴が削除されます。この操作を取り消すことはできません。"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.a3YtZGVsZXRlLWJ1Y2tldA.display_name": {
-          "source": "KV Delete Bucket",
+          "source": "KV delete bucket",
           "message": "KV Delete Bucket"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.a3YtZGVsZXRlLWJ1Y2tldA.option.YnVja2V0.desc": {
@@ -880,7 +880,7 @@
           "message": "削除するJetStream KVバケットの名前。\n\n**警告**: これによりバケット、そのすべてのキー、およびすべてのリビジョン履歴が永久に削除されます。この操作を取り消すことはできません。"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.a3YtZGVsZXRlLWJ1Y2tldA.option.YnVja2V0.display_name": {
-          "source": "Bucket Name",
+          "source": "Bucket name",
           "message": "バケット名"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.a3YtZGVsZXRlLWJ1Y2tldA.option.YnVja2V0.short_desc": {
@@ -896,7 +896,7 @@
           "message": "JetStream KVバケット内のすべてのアクティブなキーを一覧表示します。\n\n現在有効な（削除されていない）値を持つキー名を返します。削除済みまたはパージ済みのキーは一覧から除外されます。"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.a3Yta2V5cw.display_name": {
-          "source": "KV Keys",
+          "source": "KV keys",
           "message": "KV Keys"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.a3Yta2V5cw.option.YnVja2V0.desc": {
@@ -920,7 +920,7 @@
           "message": "JetStream KVバケット内のキーの完全なリビジョン履歴を取得します。\n\nput、delete、purge操作を含む、最古から最新の順に並べられたすべてのリビジョンを返します。監査証跡や設定変更のデバッグに使用します。"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.a3YtaGlzdG9yeQ.display_name": {
-          "source": "KV History",
+          "source": "KV history",
           "message": "KV History"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.a3YtaGlzdG9yeQ.option.YnVja2V0.desc": {
@@ -956,7 +956,7 @@
           "message": "JetStream KVバケットのステータス情報を取得します。\n\nバケットのキー数、履歴の深度、TTL、レプリカ数、および総ストレージ使用量を返します。"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.a3Ytc3RhdHVz.display_name": {
-          "source": "KV Bucket Status",
+          "source": "KV bucket status",
           "message": "KV Bucket Status"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.a3Ytc3RhdHVz.option.YnVja2V0.desc": {
@@ -964,7 +964,7 @@
           "message": "ステータスを取得するJetStream KVバケットの名前。\n\nバケットはすでに存在している必要があります。見つからない場合はエラーが発生します。"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.a3Ytc3RhdHVz.option.YnVja2V0.display_name": {
-          "source": "Bucket Name",
+          "source": "Bucket name",
           "message": "バケット名"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.a3Ytc3RhdHVz.option.YnVja2V0.short_desc": {
@@ -980,7 +980,7 @@
           "message": "JetStream KVバケット内のキーに値を保存します。\n\nキーが存在しない場合は作成し、存在する場合は新しいリビジョンで更新します。楽観的並行性制御のために新しい `revision` 番号を返します。"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.a3YtcHV0.display_name": {
-          "source": "KV Put",
+          "source": "KV put",
           "message": "KV Put"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.a3YtcHV0.option.YnVja2V0.desc": {
@@ -1000,7 +1000,7 @@
           "message": "保存するバイナリ値。`data` または `string_data` のいずれかを使用します。\n\nバイナリデータはエンコードされずにそのまま保存されます。`data` と `string_data` の両方が指定された場合、`data` が優先されます。"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.a3YtcHV0.option.ZGF0YQ.display_name": {
-          "source": "Binary Data",
+          "source": "Binary data",
           "message": "バイナリデータ"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.a3YtcHV0.option.ZGF0YQ.short_desc": {
@@ -1024,7 +1024,7 @@
           "message": "保存する文字列値（`data` の代替）。\n\n設定値、JSON、またはその他のテキストコンテンツに使用します。文字列は保存前にバイナリに変換されます。"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.a3YtcHV0.option.c3RyaW5nX2RhdGE.display_name": {
-          "source": "String Data",
+          "source": "String data",
           "message": "文字列データ"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.a3YtcHV0.option.c3RyaW5nX2RhdGE.short_desc": {
@@ -1040,7 +1040,7 @@
           "message": "配信保証付きでJetStreamサブジェクトにメッセージを発行します。\n\n基本的なNATS publishとは異なり、メッセージはストリームに永続化され、`stream` 名と `sequence` 番号でストレージを確認する発行確認（publish acknowledgment）が返されます。"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.anMtcHVibGlzaA.display_name": {
-          "source": "JetStream Publish",
+          "source": "JetStream publish",
           "message": "JetStream Publish"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.anMtcHVibGlzaA.option.ZGF0YQ.desc": {
@@ -1048,7 +1048,7 @@
           "message": "バイナリメッセージペイロード。`data` または `string_data` のいずれかを使用します。\n\nバイナリデータはエンコードされずにそのままストリームに保存されます。"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.anMtcHVibGlzaA.option.ZGF0YQ.display_name": {
-          "source": "Binary Data",
+          "source": "Binary data",
           "message": "バイナリデータ"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.anMtcHVibGlzaA.option.ZGF0YQ.short_desc": {
@@ -1060,7 +1060,7 @@
           "message": "`True` に設定されている場合、サブジェクトに既にメッセージが存在すると発行が失敗します。\n\nこれを使用して、サブジェクトに対する最初のメッセージのみが受け入れられるようにし、作成専用セマンティクスを実装します。"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.anMtcHVibGlzaA.option.ZXhwZWN0X25vX21lc3NhZ2U.display_name": {
-          "source": "Expect No Message",
+          "source": "Expect no message",
           "message": "既存メッセージが存在しないことを期待"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.anMtcHVibGlzaA.option.ZXhwZWN0X25vX21lc3NhZ2U.short_desc": {
@@ -1072,7 +1072,7 @@
           "message": "ストリーム内の最後のメッセージの期待されるメッセージID。\n\n最後のメッセージのIDが一致しない場合、発行は失敗します。シーケンス整合性チェックに使用します。"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.anMtcHVibGlzaA.option.ZXhwZWN0X2xhc3RfbXNnX2lk.display_name": {
-          "source": "Expected Last Message ID",
+          "source": "Expected last message ID",
           "message": "期待される最終メッセージID"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.anMtcHVibGlzaA.option.ZXhwZWN0X2xhc3RfbXNnX2lk.short_desc": {
@@ -1084,7 +1084,7 @@
           "message": "ストリーム内の最終メッセージの期待されるシーケンス番号。\n\nストリームの最終シーケンス番号が一致しない場合、パブリッシュは失敗します。読み取りの間にメッセージがパブリッシュされていないことを保証する楽観的コンカレンシー制御に使用します。"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.anMtcHVibGlzaA.option.ZXhwZWN0X2xhc3Rfc2Vx.display_name": {
-          "source": "Expected Last Sequence",
+          "source": "Expected last sequence",
           "message": "期待される最終シーケンス"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.anMtcHVibGlzaA.option.ZXhwZWN0X2xhc3Rfc2Vx.short_desc": {
@@ -1096,7 +1096,7 @@
           "message": "この特定のサブジェクトにおける最終メッセージの期待されるシーケンス番号。\n\nサブジェクト上の最終メッセージがこのシーケンス番号を持たない場合、パブリッシュは失敗します。サブジェクトレベルの楽観的コンカレンシーに使用します。"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.anMtcHVibGlzaA.option.ZXhwZWN0X2xhc3Rfc3ViamVjdF9zZXE.display_name": {
-          "source": "Expected Last Subject Sequence",
+          "source": "Expected last subject sequence",
           "message": "期待される最終サブジェクトシーケンス"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.anMtcHVibGlzaA.option.ZXhwZWN0X2xhc3Rfc3ViamVjdF9zZXE.short_desc": {
@@ -1108,7 +1108,7 @@
           "message": "メッセージのパブリッシュ先として期待されるストリーム名。\n\nメッセージが別のストリームに保存される場合、パブリッシュはエラーで失敗します。複数のストリームによってキャプチャされるサブジェクトにパブリッシュする際の安全性確保に使用します。"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.anMtcHVibGlzaA.option.ZXhwZWN0X3N0cmVhbQ.display_name": {
-          "source": "Expected Stream",
+          "source": "Expected stream",
           "message": "期待されるストリーム"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.anMtcHVibGlzaA.option.ZXhwZWN0X3N0cmVhbQ.short_desc": {
@@ -1132,7 +1132,7 @@
           "message": "文字列メッセージペイロード（`data` の代替）。\n\n文字列はパブリッシュ前にバイナリに変換されます。JSON、XML、その他のテキストベースのペイロードに使用します。"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.anMtcHVibGlzaA.option.c3RyaW5nX2RhdGE.display_name": {
-          "source": "String Data",
+          "source": "String data",
           "message": "文字列データ"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.anMtcHVibGlzaA.option.c3RyaW5nX2RhdGE.short_desc": {
@@ -1160,7 +1160,7 @@
           "message": "シーケンス番号でJetStreamストリームからメッセージを削除します。\n\nメッセージデータはストレージから復元可能な場合があります。確実なデータ削除を行うには、代わりに完全消去（erase）アクションを使用してください。"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.bWVzc2FnZS1kZWxldGU.display_name": {
-          "source": "Delete Message",
+          "source": "Delete message",
           "message": "メッセージの削除"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.bWVzc2FnZS1kZWxldGU.option.c2Vx.desc": {
@@ -1168,7 +1168,7 @@
           "message": "取得するメッセージのシーケンス番号。\n\nシーケンス番号はストリームによって単調増加で割り当てられます。ストリーム情報を使用して有効範囲（`first_seq` から `last_seq`）を確認してください。"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.bWVzc2FnZS1kZWxldGU.option.c2Vx.display_name": {
-          "source": "Sequence Number",
+          "source": "Sequence number",
           "message": "シーケンス番号"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.bWVzc2FnZS1kZWxldGU.option.c2Vx.short_desc": {
@@ -1180,7 +1180,7 @@
           "message": "メッセージの取得元となるJetStreamストリームの名前。\n\nストリームは既に存在している必要があります。ストリームが見つからない場合はエラーが発生します。"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.bWVzc2FnZS1kZWxldGU.option.c3RyZWFt.display_name": {
-          "source": "Stream Name",
+          "source": "Stream name",
           "message": "ストリーム名"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.bWVzc2FnZS1kZWxldGU.option.c3RyZWFt.short_desc": {
@@ -1196,7 +1196,7 @@
           "message": "シーケンス番号でJetStreamストリームからメッセージを安全に完全消去します。\n\n削除（delete）とは異なり、データ保護規制への準拠のためにストレージ内のメッセージデータを上書きします。"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.bWVzc2FnZS1lcmFzZQ.display_name": {
-          "source": "Erase Message",
+          "source": "Erase message",
           "message": "メッセージの完全消去"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.bWVzc2FnZS1lcmFzZQ.option.c2Vx.desc": {
@@ -1204,7 +1204,7 @@
           "message": "取得するメッセージのシーケンス番号。\n\nシーケンス番号はストリームによって単調増加で割り当てられます。ストリーム情報を使用して有効範囲（`first_seq` から `last_seq`）を確認してください。"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.bWVzc2FnZS1lcmFzZQ.option.c2Vx.display_name": {
-          "source": "Sequence Number",
+          "source": "Sequence number",
           "message": "シーケンス番号"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.bWVzc2FnZS1lcmFzZQ.option.c2Vx.short_desc": {
@@ -1216,7 +1216,7 @@
           "message": "メッセージの取得元となるJetStreamストリームの名前。\n\nストリームは既に存在している必要があります。ストリームが見つからない場合はエラーが発生します。"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.bWVzc2FnZS1lcmFzZQ.option.c3RyZWFt.display_name": {
-          "source": "Stream Name",
+          "source": "Stream name",
           "message": "ストリーム名"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.bWVzc2FnZS1lcmFzZQ.option.c3RyZWFt.short_desc": {
@@ -1232,7 +1232,7 @@
           "message": "シーケンス番号でJetStreamストリームからメッセージを取得します。\n\nメッセージのペイロード、サブジェクト、およびヘッダーを返します。指定されたシーケンスにメッセージが存在しない場合は何も返しません。"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.bWVzc2FnZS1nZXQ.display_name": {
-          "source": "Get Message",
+          "source": "Get message",
           "message": "メッセージの取得"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.bWVzc2FnZS1nZXQ.option.c2Vx.desc": {
@@ -1240,7 +1240,7 @@
           "message": "取得するメッセージのシーケンス番号。\n\nシーケンス番号はストリームによって単調増加で割り当てられます。ストリーム情報を使用して有効範囲（`first_seq` から `last_seq`）を確認してください。"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.bWVzc2FnZS1nZXQ.option.c2Vx.display_name": {
-          "source": "Sequence Number",
+          "source": "Sequence number",
           "message": "シーケンス番号"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.bWVzc2FnZS1nZXQ.option.c2Vx.short_desc": {
@@ -1252,7 +1252,7 @@
           "message": "メッセージの取得元となるJetStreamストリームの名前。\n\nストリームは既に存在している必要があります。ストリームが見つからない場合はエラーが発生します。"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.bWVzc2FnZS1nZXQ.option.c3RyZWFt.display_name": {
-          "source": "Stream Name",
+          "source": "Stream name",
           "message": "ストリーム名"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.bWVzc2FnZS1nZXQ.option.c3RyZWFt.short_desc": {
@@ -1268,7 +1268,7 @@
           "message": "JetStreamストリームから指定したサブジェクトの最終メッセージを取得します。\n\n指定されたサブジェクトで最も最近パブリッシュされたメッセージを返します。サブジェクトにメッセージが存在しない場合は何も返しません。"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.bWVzc2FnZS1nZXQtbGFzdA.display_name": {
-          "source": "Get Last Message",
+          "source": "Get last message",
           "message": "最終メッセージの取得"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.bWVzc2FnZS1nZXQtbGFzdA.option.c3RyZWFt.desc": {
@@ -1276,7 +1276,7 @@
           "message": "メッセージの取得元となるJetStreamストリームの名前。\n\nストリームは既に存在している必要があります。ストリームが見つからない場合はエラーが発生します。"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.bWVzc2FnZS1nZXQtbGFzdA.option.c3RyZWFt.display_name": {
-          "source": "Stream Name",
+          "source": "Stream name",
           "message": "ストリーム名"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.bWVzc2FnZS1nZXQtbGFzdA.option.c3RyZWFt.short_desc": {
@@ -1304,7 +1304,7 @@
           "message": "完全な設定や状態の詳細を含めずに、すべてのJetStreamストリーム名を一覧表示します。\n\nどのストリームが存在するかを確認するだけの軽量な列挙に使用します。"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.c3RyZWFtLW5hbWVz.display_name": {
-          "source": "Stream Names",
+          "source": "Stream names",
           "message": "ストリーム名一覧"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.c3RyZWFtLW5hbWVz.short_desc": {
@@ -1316,7 +1316,7 @@
           "message": "永続的なメッセージストレージ用に新しいJetStreamストリームを作成します。\n\nストリームは一致するサブジェクトにパブリッシュされたメッセージをキャプチャし、設定された保持ポリシーに従って永続化します。メッセージの再生、監査証跡、および配信の保証にストリームを使用します。"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.c3RyZWFtLWNyZWF0ZQ.display_name": {
-          "source": "Create Stream",
+          "source": "Create stream",
           "message": "ストリームの作成"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.c3RyZWFtLWNyZWF0ZQ.option.ZGVzY3JpcHRpb24.desc": {
@@ -1352,7 +1352,7 @@
           "message": "ストリームの上限（`max_msgs`、`max_bytes`、または `max_age`）に達したときに削除されるメッセージを制御します。\n\n- `0` (Old): 空き容量を作るために最も古いメッセージが削除されます\n- `1` (New): 新しいメッセージはエラーで拒否されます\n\n**指定しない場合のデフォルトは `0` (Old) です。**"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.c3RyZWFtLWNyZWF0ZQ.option.ZGlzY2FyZA.display_name": {
-          "source": "Discard Policy",
+          "source": "Discard policy",
           "message": "破棄ポリシー"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.c3RyZWFtLWNyZWF0ZQ.option.ZGlzY2FyZA.short_desc": {
@@ -1364,7 +1364,7 @@
           "message": "ストリームにパブリッシュされる個々のメッセージの最大サイズ（バイト単位）。\n\nこのサイズを超えるメッセージはサーバーによって拒否されます。サーバーのデフォルトの最大値（通常1 MB）を使用するには `-1` に設定します。たとえば、`1048576` は1 MBの制限を設定します。"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.c3RyZWFtLWNyZWF0ZQ.option.bWF4X21zZ19zaXpl.display_name": {
-          "source": "Max Message Size",
+          "source": "Max message size",
           "message": "最大メッセージサイズ"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.c3RyZWFtLWNyZWF0ZQ.option.bWF4X21zZ19zaXpl.short_desc": {
@@ -1376,7 +1376,7 @@
           "message": "ストリームが保持する最大メッセージ数。\n\nこの制限に達すると、`discard` ポリシーに従って古いメッセージが破棄されます。制限なしにするには `-1` に設定します。\n\n**`retention` ポリシーが Limits（`0`）に設定されている場合のみ適用されます。**"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.c3RyZWFtLWNyZWF0ZQ.option.bWF4X21zZ3M.display_name": {
-          "source": "Max Messages",
+          "source": "Max messages",
           "message": "最大メッセージ数"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.c3RyZWFtLWNyZWF0ZQ.option.bWF4X21zZ3M.short_desc": {
@@ -1388,7 +1388,7 @@
           "message": "ストリーム内のメッセージの最大保持期間（ミリ秒指定）。\n\nこの値より古いメッセージは自動的に削除されます。期間制限なしにするには `0` に設定します。たとえば、`86400000` は24時間の保持ウィンドウを設定します。\n\n**`retention` ポリシーが Limits（`0`）に設定されている場合のみ適用されます。**"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.c3RyZWFtLWNyZWF0ZQ.option.bWF4X2FnZQ.display_name": {
-          "source": "Max Age (ms)",
+          "source": "Max age (ms)",
           "message": "最大保持期間（ミリ秒）"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.c3RyZWFtLWNyZWF0ZQ.option.bWF4X2FnZQ.short_desc": {
@@ -1400,7 +1400,7 @@
           "message": "ストリーム内のすべてのメッセージの最大総ストレージ容量（バイト単位）。\n\nこの制限に達すると、`discard` ポリシーに従って古いメッセージが破棄されます。容量無制限にするには `-1` に設定します。\n\n**`retention` ポリシーが Limits（`0`）に設定されている場合のみ適用されます。**"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.c3RyZWFtLWNyZWF0ZQ.option.bWF4X2J5dGVz.display_name": {
-          "source": "Max Bytes",
+          "source": "Max bytes",
           "message": "最大バイト数"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.c3RyZWFtLWNyZWF0ZQ.option.bWF4X2J5dGVz.short_desc": {
@@ -1412,7 +1412,7 @@
           "message": "JetStreamストリームの一意の識別子。\n\nストリーム名は、パブリッシュ、サブスクライブ、管理など、すべてのJetStream操作でストリームを参照するために使用されます。**名前は英数字である必要があり、ダッシュやアンダースコアを含めることができますが、ピリオドやスペースは含められません。**"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.c3RyZWFtLWNyZWF0ZQ.option.bmFtZQ.display_name": {
-          "source": "Stream Name",
+          "source": "Stream name",
           "message": "ストリーム名"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.c3RyZWFtLWNyZWF0ZQ.option.bmFtZQ.short_desc": {
@@ -1452,7 +1452,7 @@
           "message": "ストリームメッセージの永続化先を制御します。\n\n- `0` (File): サーバーの再起動後も耐久性を確保するため、メッセージはディスクに保存されます\n- `1` (Memory): スループットを向上させるためメッセージはメモリに保存されますが、サーバーの再起動時に失われます\n\n**指定しない場合のデフォルトは `0` (File) です。**"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.c3RyZWFtLWNyZWF0ZQ.option.c3RvcmFnZQ.display_name": {
-          "source": "Storage Type",
+          "source": "Storage type",
           "message": "ストレージタイプ"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.c3RyZWFtLWNyZWF0ZQ.option.c3RvcmFnZQ.short_desc": {
@@ -1488,7 +1488,7 @@
           "message": "既知のすべてのコンシューマーが確認応答したときに削除"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.c3RyZWFtLWNyZWF0ZQ.option.cmV0ZW50aW9u.allowed-value.aW50OjI.display_name": {
-          "source": "Work Queue",
+          "source": "Work queue",
           "message": "ワークキュー"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.c3RyZWFtLWNyZWF0ZQ.option.cmV0ZW50aW9u.allowed-value.aW50OjI.short_desc": {
@@ -1500,7 +1500,7 @@
           "message": "ストリームからのメッセージの保持または削除方法を制御します。\n\n- `0` (Limits): ストリーム制限（`max_msgs`、`max_bytes`、`max_age`）に達するまでメッセージを保持します\n- `1` (Interest): 既知のすべてのコンシューマーが確認応答するとメッセージが削除されます\n- `2` (Work Queue): いずれかのコンシューマーが確認応答するとすぐにメッセージが削除されます\n\n**指定しない場合のデフォルトは `0` (Limits) です。**"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.c3RyZWFtLWNyZWF0ZQ.option.cmV0ZW50aW9u.display_name": {
-          "source": "Retention Policy",
+          "source": "Retention policy",
           "message": "保持ポリシー"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.c3RyZWFtLWNyZWF0ZQ.option.cmV0ZW50aW9u.short_desc": {
@@ -1516,7 +1516,7 @@
           "message": "JetStreamストリームとそのすべてのメッセージを永久に削除します。\n\n**警告**: これによりストリーム、保存されているすべてのメッセージ、および関連するすべてのコンシューマーが削除されます。この操作は取り消せません。"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.c3RyZWFtLWRlbGV0ZQ.display_name": {
-          "source": "Delete Stream",
+          "source": "Delete stream",
           "message": "ストリームを削除"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.c3RyZWFtLWRlbGV0ZQ.option.bmFtZQ.desc": {
@@ -1524,7 +1524,7 @@
           "message": "削除するJetStreamストリームの名前。\n\n**警告**: これによりストリームと保存されているすべてのメッセージが永久に削除されます。ストリームにアタッチされているコンシューマーもすべて削除されます。この操作は取り消せません。"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.c3RyZWFtLWRlbGV0ZQ.option.bmFtZQ.display_name": {
-          "source": "Stream Name",
+          "source": "Stream name",
           "message": "ストリーム名"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.c3RyZWFtLWRlbGV0ZQ.option.bmFtZQ.short_desc": {
@@ -1540,7 +1540,7 @@
           "message": "JetStreamストリームの設定と状態情報を取得します。\n\nストリームのサブジェクトフィルター、保持ポリシー、ストレージ制限、およびメッセージ数とバイトサイズを含む現在の状態を返します。"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.c3RyZWFtLWluZm8.display_name": {
-          "source": "Stream Info",
+          "source": "Stream info",
           "message": "ストリーム情報"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.c3RyZWFtLWluZm8.option.bmFtZQ.desc": {
@@ -1548,7 +1548,7 @@
           "message": "情報を取得するJetStreamストリームの名前。\n\nストリームはすでに存在している必要があります。ストリームが見つからない場合はエラーが発生します。"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.c3RyZWFtLWluZm8.option.bmFtZQ.display_name": {
-          "source": "Stream Name",
+          "source": "Stream name",
           "message": "ストリーム名"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.c3RyZWFtLWluZm8.option.bmFtZQ.short_desc": {
@@ -1564,7 +1564,7 @@
           "message": "すべてのJetStreamストリームをその設定および現在の状態とともに一覧表示します。\n\nサブジェクトフィルター、保持ポリシー、ストレージ制限、メッセージ数、コンシューマー数など、各ストリームの詳細情報を返します。"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.c3RyZWFtLWxpc3Q.display_name": {
-          "source": "List Streams",
+          "source": "List streams",
           "message": "ストリーム一覧"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.c3RyZWFtLWxpc3Q.short_desc": {
@@ -1576,7 +1576,7 @@
           "message": "設定を保持したまま、JetStreamストリームからすべてのメッセージを削除します。\n\n**警告**: これによりストリーム内のすべてのメッセージが永久に削除されます。ストリームの設定とコンシューマーは保持されますが、コンシューマーのシーケンス位置はリセットされます。"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.c3RyZWFtLXB1cmdl.display_name": {
-          "source": "Purge Stream",
+          "source": "Purge stream",
           "message": "ストリームをパージ"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.c3RyZWFtLXB1cmdl.option.bmFtZQ.desc": {
@@ -1584,7 +1584,7 @@
           "message": "パージするJetStreamストリームの名前。\n\n**警告**: パージを実行すると、ストリームの設定とコンシューマーを保持したままストリームからすべてのメッセージが削除されます。コンシューマーのシーケンス追跡はリセットされます。この操作は取り消せません。"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.c3RyZWFtLXB1cmdl.option.bmFtZQ.display_name": {
-          "source": "Stream Name",
+          "source": "Stream name",
           "message": "ストリーム名"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.c3RyZWFtLXB1cmdl.option.bmFtZQ.short_desc": {
@@ -1600,7 +1600,7 @@
           "message": "既存のJetStreamストリームの設定を更新します。\n\nサブジェクトフィルター、保持ポリシー、ストレージ制限、レプリケーションなどのストリーム設定を変更します。作成後にすべての設定を変更できるわけではありません。"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.c3RyZWFtLXVwZGF0ZQ.display_name": {
-          "source": "Update Stream",
+          "source": "Update stream",
           "message": "ストリームを更新"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.c3RyZWFtLXVwZGF0ZQ.option.ZGVzY3JpcHRpb24.desc": {
@@ -1636,7 +1636,7 @@
           "message": "ストリームの上限（`max_msgs`、`max_bytes`、または `max_age`）に達したときに削除されるメッセージを制御します。\n\n- `0` (Old): 空き容量を作るために最も古いメッセージが削除されます\n- `1` (New): 新しいメッセージはエラーで拒否されます\n\n**指定しない場合のデフォルトは `0` (Old) です。**"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.c3RyZWFtLXVwZGF0ZQ.option.ZGlzY2FyZA.display_name": {
-          "source": "Discard Policy",
+          "source": "Discard policy",
           "message": "破棄ポリシー"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.c3RyZWFtLXVwZGF0ZQ.option.ZGlzY2FyZA.short_desc": {
@@ -1648,7 +1648,7 @@
           "message": "ストリームにパブリッシュされる個々のメッセージの最大サイズ（バイト単位）。\n\nこのサイズを超えるメッセージはサーバーによって拒否されます。サーバーのデフォルトの最大値（通常1 MB）を使用するには `-1` に設定します。たとえば、`1048576` は1 MBの制限を設定します。"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.c3RyZWFtLXVwZGF0ZQ.option.bWF4X21zZ19zaXpl.display_name": {
-          "source": "Max Message Size",
+          "source": "Max message size",
           "message": "最大メッセージサイズ"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.c3RyZWFtLXVwZGF0ZQ.option.bWF4X21zZ19zaXpl.short_desc": {
@@ -1660,7 +1660,7 @@
           "message": "ストリームが保持する最大メッセージ数。\n\nこの制限に達すると、`discard` ポリシーに従って古いメッセージが破棄されます。制限なしにするには `-1` に設定します。\n\n**`retention` ポリシーが Limits（`0`）に設定されている場合のみ適用されます。**"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.c3RyZWFtLXVwZGF0ZQ.option.bWF4X21zZ3M.display_name": {
-          "source": "Max Messages",
+          "source": "Max messages",
           "message": "最大メッセージ数"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.c3RyZWFtLXVwZGF0ZQ.option.bWF4X21zZ3M.short_desc": {
@@ -1672,7 +1672,7 @@
           "message": "ストリーム内のメッセージの最大保持期間（ミリ秒指定）。\n\nこの値より古いメッセージは自動的に削除されます。期間制限なしにするには `0` に設定します。たとえば、`86400000` は24時間の保持ウィンドウを設定します。\n\n**`retention` ポリシーが Limits（`0`）に設定されている場合のみ適用されます。**"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.c3RyZWFtLXVwZGF0ZQ.option.bWF4X2FnZQ.display_name": {
-          "source": "Max Age (ms)",
+          "source": "Max age (ms)",
           "message": "最大保持期間（ミリ秒）"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.c3RyZWFtLXVwZGF0ZQ.option.bWF4X2FnZQ.short_desc": {
@@ -1684,7 +1684,7 @@
           "message": "ストリーム内のすべてのメッセージの最大総ストレージ容量（バイト単位）。\n\nこの制限に達すると、`discard` ポリシーに従って古いメッセージが破棄されます。容量無制限にするには `-1` に設定します。\n\n**`retention` ポリシーが Limits（`0`）に設定されている場合のみ適用されます。**"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.c3RyZWFtLXVwZGF0ZQ.option.bWF4X2J5dGVz.display_name": {
-          "source": "Max Bytes",
+          "source": "Max bytes",
           "message": "最大バイト数"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.c3RyZWFtLXVwZGF0ZQ.option.bWF4X2J5dGVz.short_desc": {
@@ -1696,7 +1696,7 @@
           "message": "JetStreamストリームの一意の識別子。\n\nストリーム名は、パブリッシュ、サブスクライブ、管理など、すべてのJetStream操作でストリームを参照するために使用されます。**名前は英数字である必要があり、ダッシュやアンダースコアを含めることができますが、ピリオドやスペースは含められません。**"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.c3RyZWFtLXVwZGF0ZQ.option.bmFtZQ.display_name": {
-          "source": "Stream Name",
+          "source": "Stream name",
           "message": "ストリーム名"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.c3RyZWFtLXVwZGF0ZQ.option.bmFtZQ.short_desc": {
@@ -1736,7 +1736,7 @@
           "message": "ストリームメッセージの永続化先を制御します。\n\n- `0` (File): サーバーの再起動後も耐久性を確保するため、メッセージはディスクに保存されます\n- `1` (Memory): スループットを向上させるためメッセージはメモリに保存されますが、サーバーの再起動時に失われます\n\n**指定しない場合のデフォルトは `0` (File) です。**"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.c3RyZWFtLXVwZGF0ZQ.option.c3RvcmFnZQ.display_name": {
-          "source": "Storage Type",
+          "source": "Storage type",
           "message": "ストレージタイプ"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.c3RyZWFtLXVwZGF0ZQ.option.c3RvcmFnZQ.short_desc": {
@@ -1772,7 +1772,7 @@
           "message": "既知のすべてのコンシューマーが確認応答したときに削除"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.c3RyZWFtLXVwZGF0ZQ.option.cmV0ZW50aW9u.allowed-value.aW50OjI.display_name": {
-          "source": "Work Queue",
+          "source": "Work queue",
           "message": "ワークキュー"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.c3RyZWFtLXVwZGF0ZQ.option.cmV0ZW50aW9u.allowed-value.aW50OjI.short_desc": {
@@ -1784,7 +1784,7 @@
           "message": "ストリームからのメッセージの保持または削除方法を制御します。\n\n- `0` (Limits): ストリーム制限（`max_msgs`、`max_bytes`、`max_age`）に達するまでメッセージを保持します\n- `1` (Interest): 既知のすべてのコンシューマーが確認応答するとメッセージが削除されます\n- `2` (Work Queue): いずれかのコンシューマーが確認応答するとすぐにメッセージが削除されます\n\n**指定しない場合のデフォルトは `0` (Limits) です。**"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.c3RyZWFtLXVwZGF0ZQ.option.cmV0ZW50aW9u.display_name": {
-          "source": "Retention Policy",
+          "source": "Retention policy",
           "message": "保持ポリシー"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.c3RyZWFtLXVwZGF0ZQ.option.cmV0ZW50aW9u.short_desc": {
@@ -1800,7 +1800,7 @@
           "message": "リアルタイムイベント処理のためにプッシュ型配信でJetStreamメッセージをサブスクライブします。\n\nメッセージはストリームに到着するとサブスクライバーにプッシュされます。ストリームシーケンス番号やタイムスタンプなどのJetStreamメタデータが含まれます。"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.c3Vic2NyaWJl.display_name": {
-          "source": "JetStream Subscribe",
+          "source": "JetStream subscribe",
           "message": "JetStreamサブスクライブ"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.c3Vic2NyaWJl.option.c3ViamVjdA.desc": {
@@ -1824,7 +1824,7 @@
           "message": "永続コンシューマーを使用してプル型配信でJetStreamメッセージをサブスクライブします。\n\nクライアントはメッセージバッチをリクエストすることで配信レートを制御し、自然なバックプレッシャーを提供します。`durable` コンシューマーは再起動をまたいで最後に確認応答された位置を追跡します。"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.cHVsbC1zdWJzY3JpYmU.display_name": {
-          "source": "JetStream Pull Subscribe",
+          "source": "JetStream pull subscribe",
           "message": "JetStreamプルサブスクライブ"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.cHVsbC1zdWJzY3JpYmU.option.ZHVyYWJsZQ.desc": {
@@ -1832,7 +1832,7 @@
           "message": "サブスクリプション状態を永続化する永続コンシューマー名。\n\n永続コンシューマーは、クライアントの切断やサーバーの再起動後も存続します。クライアントが同じ `durable` 名で再接続すると、最後に確認応答された位置からメッセージ配信が再開されます。コンシューマーはストリーム上にすでに存在しているか、自動的に作成されます。"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.cHVsbC1zdWJzY3JpYmU.option.ZHVyYWJsZQ.display_name": {
-          "source": "Durable Name",
+          "source": "Durable name",
           "message": "Durable名"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.cHVsbC1zdWJzY3JpYmU.option.ZHVyYWJsZQ.short_desc": {
@@ -1852,7 +1852,7 @@
           "message": "サブスクライブするJetStreamサブジェクト"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.cHVsbC1zdWJzY3JpYmU.option.cmVmdXNhbF9kZWxheV9tcw.display_name": {
-          "source": "Refusal Delay",
+          "source": "Refusal delay",
           "message": "拒否後の遅延"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.cHVsbC1zdWJzY3JpYmU.option.cmVmdXNhbF9kZWxheV9tcw.short_desc": {
@@ -1864,7 +1864,7 @@
           "message": "オブザーバーが拒否したメッセージをサーバーが再配信するまでの遅延 (ミリ秒) です。メッセージが配信されるたびに `max_refusal_delay_ms` まで倍増します。デフォルトは 1000 です"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.cHVsbC1zdWJzY3JpYmU.option.bWF4X3JlZnVzYWxfZGVsYXlfbXM.display_name": {
-          "source": "Max Refusal Delay",
+          "source": "Max refusal delay",
           "message": "拒否後の最大遅延"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.cHVsbC1zdWJzY3JpYmU.option.bWF4X3JlZnVzYWxfZGVsYXlfbXM.short_desc": {

@@ -8,7 +8,7 @@
           "message": "訂閱 NATS 主題上的訊息，並具備可觀察的基於事件的傳送。\n\n支援萬用字元主題（單一 Token 使用 `*`，多個 Token 使用 `>`）。每個作用中的訂閱者都會收到每條符合的訊息。若要進行負載平衡傳送，請改用 queue-subscribe。"
         },
         "app.TkFUUw.action.c3Vic2NyaWJl.display_name": {
-          "source": "Subscribe to Messages",
+          "source": "Subscribe to messages",
           "message": "訂閱訊息"
         },
         "app.TkFUUw.action.c3Vic2NyaWJl.option.c3ViamVjdA.desc": {
@@ -32,7 +32,7 @@
           "message": "使用發射後不管 (fire-and-forget) 模式發布訊息至指定的 NATS 主題。\n\n訊息會傳送至 `subject` 上的所有作用中訂閱者。不提供**傳送確認**；如果沒有訂閱者在接聽，訊息將會被靜默捨棄。"
         },
         "app.TkFUUw.action.cHVibGlzaA.display_name": {
-          "source": "Publish Message",
+          "source": "Publish message",
           "message": "發布訊息"
         },
         "app.TkFUUw.action.cHVibGlzaA.option.ZGF0YQ.desc": {
@@ -40,7 +40,7 @@
           "message": "二進位訊息酬載；請使用 `data` 或 `string_data`"
         },
         "app.TkFUUw.action.cHVibGlzaA.option.ZGF0YQ.display_name": {
-          "source": "Binary Data",
+          "source": "Binary data",
           "message": "二進位資料"
         },
         "app.TkFUUw.action.cHVibGlzaA.option.ZGF0YQ.short_desc": {
@@ -64,7 +64,7 @@
           "message": "字串訊息酬載（`data` 的替代方案）"
         },
         "app.TkFUUw.action.cHVibGlzaA.option.c3RyaW5nX2RhdGE.display_name": {
-          "source": "String Data",
+          "source": "String data",
           "message": "字串資料"
         },
         "app.TkFUUw.action.cHVibGlzaA.option.c3RyaW5nX2RhdGE.short_desc": {
@@ -92,7 +92,7 @@
           "message": "使用佇列群組訂閱 NATS 主題上的訊息，以進行負載平衡傳送。\n\n每條訊息只會傳送至佇列群組中的**恰好一個**成員，從而能夠在多個工作處理常式執行個體之間水平擴充訊息處理，而不會進行重複處理。"
         },
         "app.TkFUUw.action.cXVldWUtc3Vic2NyaWJl.display_name": {
-          "source": "Queue Subscribe",
+          "source": "Queue subscribe",
           "message": "佇列訂閱"
         },
         "app.TkFUUw.action.cXVldWUtc3Vic2NyaWJl.option.c3ViamVjdA.desc": {
@@ -112,7 +112,7 @@
           "message": "用於負載平衡訊息傳送的佇列群組名稱。\n\n共用相同 `queue` 群組名稱的所有訂閱者會組成一個工作池。每條訊息只會傳送至群組中的**恰好一個**成員，從而能夠在多個執行個體之間水平擴充訊息處理，而不會進行重複處理。"
         },
         "app.TkFUUw.action.cXVldWUtc3Vic2NyaWJl.option.cXVldWU.display_name": {
-          "source": "Queue Group",
+          "source": "Queue group",
           "message": "佇列群組"
         },
         "app.TkFUUw.action.cXVldWUtc3Vic2NyaWJl.option.cXVldWU.short_desc": {
@@ -136,7 +136,7 @@
           "message": "二進位請求酬載；請使用 `data` 或 `string_data`"
         },
         "app.TkFUUw.action.cmVxdWVzdA.option.ZGF0YQ.display_name": {
-          "source": "Binary Data",
+          "source": "Binary data",
           "message": "二進位資料"
         },
         "app.TkFUUw.action.cmVxdWVzdA.option.ZGF0YQ.short_desc": {
@@ -148,7 +148,7 @@
           "message": "字串請求酬載（`data` 的替代方案）"
         },
         "app.TkFUUw.action.cmVxdWVzdA.option.c3RyaW5nX2RhdGE.display_name": {
-          "source": "String Data",
+          "source": "String data",
           "message": "字串資料"
         },
         "app.TkFUUw.action.cmVxdWVzdA.option.c3RyaW5nX2RhdGE.short_desc": {

@@ -69,7 +69,7 @@ public class NatsJSStreamEraseMsgDataProvider inherits AbstractDataProvider {
         return <DataProviderInfo>{
             "type": "NatsJSStreamEraseMsgDataProvider",
             "supports_request": True,
-            "display_name": "Erase Message",
+            "display_name": "Erase message",
             "short_desc": "Securely erase a message from a stream",
         };
     }

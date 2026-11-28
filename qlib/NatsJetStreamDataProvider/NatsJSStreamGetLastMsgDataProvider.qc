@@ -70,7 +70,7 @@ public class NatsJSStreamGetLastMsgDataProvider inherits AbstractDataProvider {
         return <DataProviderInfo>{
             "type": "NatsJSStreamGetLastMsgDataProvider",
             "supports_request": True,
-            "display_name": "Get Last Message",
+            "display_name": "Get last message",
             "short_desc": "Get the last message for a subject from a stream",
         };
     }

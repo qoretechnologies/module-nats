@@ -16,8 +16,8 @@
           "message": "NATS is a lightweight, high-performance messaging system for cloud-native applications.\n\nSupports publish/subscribe for event broadcasting, request/reply for synchronous microservice communication, and queue groups for load-balanced message processing across worker instances."
         },
         "app.TkFUUw.action.cHVibGlzaA.display_name": {
-          "source": "Publish Message",
-          "message": "Publish Message"
+          "source": "Publish message",
+          "message": "Publish message"
         },
         "app.TkFUUw.action.cHVibGlzaA.short_desc": {
           "source": "Publish a fire-and-forget message to a NATS subject",
@@ -40,8 +40,8 @@
           "message": "The NATS subject to publish the message to"
         },
         "app.TkFUUw.action.cHVibGlzaA.option.ZGF0YQ.display_name": {
-          "source": "Binary Data",
-          "message": "Binary Data"
+          "source": "Binary data",
+          "message": "Binary data"
         },
         "app.TkFUUw.action.cHVibGlzaA.option.ZGF0YQ.short_desc": {
           "source": "Binary message payload",
@@ -52,8 +52,8 @@
           "message": "The binary message payload; use either `data` or `string_data`"
         },
         "app.TkFUUw.action.cHVibGlzaA.option.c3RyaW5nX2RhdGE.display_name": {
-          "source": "String Data",
-          "message": "String Data"
+          "source": "String data",
+          "message": "String data"
         },
         "app.TkFUUw.action.cHVibGlzaA.option.c3RyaW5nX2RhdGE.short_desc": {
           "source": "String message payload",
@@ -100,8 +100,8 @@
           "message": "The NATS subject to send the request to"
         },
         "app.TkFUUw.action.cmVxdWVzdA.option.ZGF0YQ.display_name": {
-          "source": "Binary Data",
-          "message": "Binary Data"
+          "source": "Binary data",
+          "message": "Binary data"
         },
         "app.TkFUUw.action.cmVxdWVzdA.option.ZGF0YQ.short_desc": {
           "source": "Binary request payload",
@@ -112,8 +112,8 @@
           "message": "The binary request payload; use either `data` or `string_data`"
         },
         "app.TkFUUw.action.cmVxdWVzdA.option.c3RyaW5nX2RhdGE.display_name": {
-          "source": "String Data",
-          "message": "String Data"
+          "source": "String data",
+          "message": "String data"
         },
         "app.TkFUUw.action.cmVxdWVzdA.option.c3RyaW5nX2RhdGE.short_desc": {
           "source": "String request payload",
@@ -136,8 +136,8 @@
           "message": "Timeout in milliseconds for the request/reply operation (default: `5000`)"
         },
         "app.TkFUUw.action.c3Vic2NyaWJl.display_name": {
-          "source": "Subscribe to Messages",
-          "message": "Subscribe to Messages"
+          "source": "Subscribe to messages",
+          "message": "Subscribe to messages"
         },
         "app.TkFUUw.action.c3Vic2NyaWJl.short_desc": {
           "source": "Subscribe to real-time messages on a NATS subject",
@@ -160,8 +160,8 @@
           "message": "The NATS subject to subscribe to (supports wildcards `*` and `>`)"
         },
         "app.TkFUUw.action.cXVldWUtc3Vic2NyaWJl.display_name": {
-          "source": "Queue Subscribe",
-          "message": "Queue Subscribe"
+          "source": "Queue subscribe",
+          "message": "Queue subscribe"
         },
         "app.TkFUUw.action.cXVldWUtc3Vic2NyaWJl.short_desc": {
           "source": "Queue subscribe for load-balanced message delivery",
@@ -184,8 +184,8 @@
           "message": "The NATS subject to subscribe to (supports wildcards `*` and `>`).\n\nUse `*` to match a single token (e.g. `tasks.*`) or `>` to match one or more tokens (e.g. `tasks.>` matches `tasks.process`, `tasks.process.high`, etc.)."
         },
         "app.TkFUUw.action.cXVldWUtc3Vic2NyaWJl.option.cXVldWU.display_name": {
-          "source": "Queue Group",
-          "message": "Queue Group"
+          "source": "Queue group",
+          "message": "Queue group"
         },
         "app.TkFUUw.action.cXVldWUtc3Vic2NyaWJl.option.cXVldWU.short_desc": {
           "source": "Queue group name for load balancing",

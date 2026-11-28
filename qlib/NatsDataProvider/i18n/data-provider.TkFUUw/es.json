@@ -8,7 +8,7 @@
           "message": "Se suscribe a mensajes en un asunto NATS con entrega observable basada en eventos.\n\nAdmite asuntos con comodines (`*` para un solo token, `>` para varios tokens). Cada suscriptor activo recibe cada mensaje coincidente. Para una entrega con equilibrio de carga, use queue-subscribe en su lugar."
         },
         "app.TkFUUw.action.c3Vic2NyaWJl.display_name": {
-          "source": "Subscribe to Messages",
+          "source": "Subscribe to messages",
           "message": "Suscribirse a mensajes"
         },
         "app.TkFUUw.action.c3Vic2NyaWJl.option.c3ViamVjdA.desc": {
@@ -32,7 +32,7 @@
           "message": "Publica un mensaje en el asunto NATS especificado utilizando el patrón de disparo y olvido (fire-and-forget).\n\nEl mensaje se entrega a todos los suscriptores activos en el `subject`. **No se proporciona confirmación de entrega**; si no hay suscriptores escuchando, el mensaje se descarta silenciosamente."
         },
         "app.TkFUUw.action.cHVibGlzaA.display_name": {
-          "source": "Publish Message",
+          "source": "Publish message",
           "message": "Publicar mensaje"
         },
         "app.TkFUUw.action.cHVibGlzaA.option.ZGF0YQ.desc": {
@@ -40,7 +40,7 @@
           "message": "La carga útil binaria del mensaje; use `data` o `string_data`"
         },
         "app.TkFUUw.action.cHVibGlzaA.option.ZGF0YQ.display_name": {
-          "source": "Binary Data",
+          "source": "Binary data",
           "message": "Datos binarios"
         },
         "app.TkFUUw.action.cHVibGlzaA.option.ZGF0YQ.short_desc": {
@@ -64,7 +64,7 @@
           "message": "La carga útil de cadena de texto del mensaje (alternativa a `data`)"
         },
         "app.TkFUUw.action.cHVibGlzaA.option.c3RyaW5nX2RhdGE.display_name": {
-          "source": "String Data",
+          "source": "String data",
           "message": "Datos de cadena"
         },
         "app.TkFUUw.action.cHVibGlzaA.option.c3RyaW5nX2RhdGE.short_desc": {
@@ -92,7 +92,7 @@
           "message": "Se suscribe a mensajes en un asunto NATS con un grupo de cola para la entrega con equilibrio de carga.\n\nCada mensaje se entrega a **exactamente un** miembro del grupo de cola, lo que permite el escalado horizontal del procesamiento de mensajes en varias instancias de trabajo sin procesamiento duplicado."
         },
         "app.TkFUUw.action.cXVldWUtc3Vic2NyaWJl.display_name": {
-          "source": "Queue Subscribe",
+          "source": "Queue subscribe",
           "message": "Suscripción a cola"
         },
         "app.TkFUUw.action.cXVldWUtc3Vic2NyaWJl.option.c3ViamVjdA.desc": {
@@ -112,7 +112,7 @@
           "message": "El nombre del grupo de cola para la entrega de mensajes con equilibrio de carga.\n\nTodos los suscriptores que comparten el mismo nombre de grupo `queue` forman un conjunto de trabajadores. Cada mensaje se entrega a **exactamente un** miembro del grupo, lo que permite el escalado horizontal del procesamiento de mensajes en varias instancias sin procesamiento duplicado."
         },
         "app.TkFUUw.action.cXVldWUtc3Vic2NyaWJl.option.cXVldWU.display_name": {
-          "source": "Queue Group",
+          "source": "Queue group",
           "message": "Grupo de cola"
         },
         "app.TkFUUw.action.cXVldWUtc3Vic2NyaWJl.option.cXVldWU.short_desc": {
@@ -136,7 +136,7 @@
           "message": "La carga útil binaria de la solicitud; use `data` o `string_data`"
         },
         "app.TkFUUw.action.cmVxdWVzdA.option.ZGF0YQ.display_name": {
-          "source": "Binary Data",
+          "source": "Binary data",
           "message": "Datos binarios"
         },
         "app.TkFUUw.action.cmVxdWVzdA.option.ZGF0YQ.short_desc": {
@@ -148,7 +148,7 @@
           "message": "La carga útil de cadena de texto de la solicitud (alternativa a `data`)"
         },
         "app.TkFUUw.action.cmVxdWVzdA.option.c3RyaW5nX2RhdGE.display_name": {
-          "source": "String Data",
+          "source": "String data",
           "message": "Datos de cadena"
         },
         "app.TkFUUw.action.cmVxdWVzdA.option.c3RyaW5nX2RhdGE.short_desc": {

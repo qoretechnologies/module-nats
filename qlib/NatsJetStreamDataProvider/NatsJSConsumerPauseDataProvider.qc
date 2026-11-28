@@ -31,7 +31,7 @@ public class NatsJSConsumerPauseRequestDataType inherits HashDataType {
         const Fields = {
             "stream": {
                 "type": StringType,
-                "display_name": "Stream Name",
+                "display_name": "Stream name",
                 "short_desc": "Stream name containing the consumer",
                 "desc": "The name of the JetStream stream that the consumer belongs to.\n\n"
                     "The stream must already exist; an error is raised if the stream is "
@@ -41,7 +41,7 @@ public class NatsJSConsumerPauseRequestDataType inherits HashDataType {
             },
             "consumer": {
                 "type": StringType,
-                "display_name": "Consumer Name",
+                "display_name": "Consumer name",
                 "short_desc": "Consumer name to pause",
                 "desc": "The name of the consumer to pause.\n\n"
                     "The consumer must already exist on the specified stream; an error is "
@@ -51,7 +51,7 @@ public class NatsJSConsumerPauseRequestDataType inherits HashDataType {
             },
             "pause_until": {
                 "type": DateType,
-                "display_name": "Pause Until",
+                "display_name": "Pause until",
                 "short_desc": "When the consumer should automatically resume",
                 "desc": "The date/time until which the consumer should be paused.\n\n"
                     "The consumer will stop receiving messages until this time is reached, "
@@ -113,7 +113,7 @@ public class NatsJSConsumerPauseDataProvider inherits AbstractDataProvider {
         return <DataProviderInfo>{
             "type": "NatsJSConsumerPauseDataProvider",
             "supports_request": True,
-            "display_name": "Pause Consumer",
+            "display_name": "Pause consumer",
             "short_desc": "Pause a JetStream consumer until a specified time",
         };
     }

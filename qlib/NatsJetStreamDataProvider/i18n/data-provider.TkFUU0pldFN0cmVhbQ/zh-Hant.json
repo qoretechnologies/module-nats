@@ -8,7 +8,7 @@
           "message": "在 JetStream 串流上建立新取用者以進行訊息處理。\n\n取用者定義如何從串流交付訊息，包括交付策略、確認需求和重試行為。持久性取用者在用戶端中斷連線後仍會保留。"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItY3JlYXRl.display_name": {
-          "source": "Create Consumer",
+          "source": "Create consumer",
           "message": "建立取用者"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItY3JlYXRl.option.YWNrX3BvbGljeQ.allowed-value.aW50OjA.display_name": {
@@ -40,7 +40,7 @@
           "message": "控制取用者如何確認訊息交付。\n\n- `0`（無）：不需要確認；訊息會被視為立即交付\n- `1`（全部）：確認某則訊息會隱式確認所有先前的訊息\n- `2`（明確）：必須個別確認每則訊息\n\n**若未指定，預設值為 `2`（明確）。**"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItY3JlYXRl.option.YWNrX3BvbGljeQ.display_name": {
-          "source": "Ack Policy",
+          "source": "Ack policy",
           "message": "確認策略"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItY3JlYXRl.option.YWNrX3BvbGljeQ.short_desc": {
@@ -52,7 +52,7 @@
           "message": "伺服器等待確認的持續時間（毫秒），超過此時間後將視訊息為未確認並排定重新交付。\n\n例如，`30000` 會設定 30 秒的逾時。**若未指定，將使用伺服器預設值 30 秒。**請根據訊息的預期處理時間設定此值。"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItY3JlYXRl.option.YWNrX3dhaXQ.display_name": {
-          "source": "Ack Wait (ms)",
+          "source": "Ack wait (ms)",
           "message": "確認等待（毫秒）"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItY3JlYXRl.option.YWNrX3dhaXQ.short_desc": {
@@ -64,7 +64,7 @@
           "message": "用於跨多個取用者執行個體進行負載平衡訊息交付的佇列群組名稱。\n\n設定後，訊息會分發給共享相同 `deliver_group` 值的所有取用者，確保每則訊息僅由一個取用者處理。**僅適用於推播模式**（當設定 `deliver_subject` 時）。"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItY3JlYXRl.option.ZGVsaXZlcl9ncm91cA.display_name": {
-          "source": "Deliver Group",
+          "source": "Deliver group",
           "message": "交付群組"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItY3JlYXRl.option.ZGVsaXZlcl9ncm91cA.short_desc": {
@@ -96,7 +96,7 @@
           "message": "僅交付新訊息"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItY3JlYXRl.option.ZGVsaXZlcl9wb2xpY3k.allowed-value.aW50OjM.display_name": {
-          "source": "By Start Sequence",
+          "source": "By start sequence",
           "message": "依起始序號"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItY3JlYXRl.option.ZGVsaXZlcl9wb2xpY3k.allowed-value.aW50OjM.short_desc": {
@@ -104,7 +104,7 @@
           "message": "從特定序號開始交付"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItY3JlYXRl.option.ZGVsaXZlcl9wb2xpY3k.allowed-value.aW50OjQ.display_name": {
-          "source": "By Start Time",
+          "source": "By start time",
           "message": "依起始時間"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItY3JlYXRl.option.ZGVsaXZlcl9wb2xpY3k.allowed-value.aW50OjQ.short_desc": {
@@ -112,7 +112,7 @@
           "message": "從特定時間開始交付"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItY3JlYXRl.option.ZGVsaXZlcl9wb2xpY3k.allowed-value.aW50OjU.display_name": {
-          "source": "Last Per Subject",
+          "source": "Last per subject",
           "message": "每個主題的最新訊息"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItY3JlYXRl.option.ZGVsaXZlcl9wb2xpY3k.allowed-value.aW50OjU.short_desc": {
@@ -124,7 +124,7 @@
           "message": "決定向取用者交付訊息的起點。\n\n- `0`（全部）：從串流開頭交付所有可用的訊息\n- `1`（最新）：從串流中的最後一則訊息開始\n- `2`（新）：僅交付建立取用者後發佈的訊息\n- `3`（依起始序號）：從特定的序號開始\n- `4`（依起始時間）：從特定的時間戳記開始\n- `5`（每個主題的最新訊息）：交付每個主題的最後一則訊息\n\n**若未指定，預設值為 `0`（全部）。**"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItY3JlYXRl.option.ZGVsaXZlcl9wb2xpY3k.display_name": {
-          "source": "Deliver Policy",
+          "source": "Deliver policy",
           "message": "交付策略"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItY3JlYXRl.option.ZGVsaXZlcl9wb2xpY3k.short_desc": {
@@ -136,7 +136,7 @@
           "message": "伺服器將訊息推播給取用者的 NATS 主題。\n\n若已設定，取用者將在**推播模式**下運作，伺服器會主動將訊息交付至此主題。若未設定，取用者將在**提取模式**下運作，用戶端必須明確請求訊息。"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItY3JlYXRl.option.ZGVsaXZlcl9zdWJqZWN0.display_name": {
-          "source": "Deliver Subject",
+          "source": "Deliver subject",
           "message": "交付主題"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItY3JlYXRl.option.ZGVsaXZlcl9zdWJqZWN0.short_desc": {
@@ -160,7 +160,7 @@
           "message": "使取用者成為持久性（持續）的唯一名稱。\n\n**重要**：若沒有持久名稱，取用者即為暫時性的，並會在斷開連線或變為非作用中狀態時自動移除。持久性取用者可以在用戶端中斷連線和伺服器重新啟動後，繼續保留其狀態（交付位置、待處理確認）。"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItY3JlYXRl.option.ZHVyYWJsZV9uYW1l.display_name": {
-          "source": "Durable Name",
+          "source": "Durable name",
           "message": "持久名稱"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItY3JlYXRl.option.ZHVyYWJsZV9uYW1l.short_desc": {
@@ -172,7 +172,7 @@
           "message": "限制取用者僅接收符合此模式之訊息的主題篩選器。\n\n這允許取用者處理串流訊息的子集。支援 NATS 通配符權杖（`*` 與 `>`）。若未設定，取用者會接收來自串流的所有訊息。"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItY3JlYXRl.option.ZmlsdGVyX3N1YmplY3Q.display_name": {
-          "source": "Filter Subject",
+          "source": "Filter subject",
           "message": "篩選主題"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItY3JlYXRl.option.ZmlsdGVyX3N1YmplY3Q.short_desc": {
@@ -184,7 +184,7 @@
           "message": "可交付但尚未確認的最大訊息數。\n\n這可作為流量控制機制，以防止取用者負荷過重。達到此限制後，伺服器會暫停交付，直到確認部分訊息為止。**若未指定，預設值為 `1000`。**"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItY3JlYXRl.option.bWF4X2Fja19wZW5kaW5n.display_name": {
-          "source": "Max Ack Pending",
+          "source": "Max ack pending",
           "message": "最大待處理確認數"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItY3JlYXRl.option.bWF4X2Fja19wZW5kaW5n.short_desc": {
@@ -196,7 +196,7 @@
           "message": "伺服器嘗試向取用者交付訊息的最大次數。\n\n交付失敗達到此次數後，該訊息將被丟棄；若有設定死信佇列，則會傳送至死信佇列。設定為 `-1` 表示無限次重新交付嘗試。**生產環境中通常使用值 `5`。**"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItY3JlYXRl.option.bWF4X2RlbGl2ZXI.display_name": {
-          "source": "Max Deliver",
+          "source": "Max deliver",
           "message": "最大交付次數"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItY3JlYXRl.option.bWF4X2RlbGl2ZXI.short_desc": {
@@ -208,7 +208,7 @@
           "message": "此取用者將從中讀取訊息的 JetStream 串流名稱。\n\n建立取用者之前，串流必須已存在。請使用串流設定中的串流 `name` 值。"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItY3JlYXRl.option.c3RyZWFt.display_name": {
-          "source": "Stream Name",
+          "source": "Stream name",
           "message": "串流名稱"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItY3JlYXRl.option.c3RyZWFt.short_desc": {
@@ -236,7 +236,7 @@
           "message": "控制在追趕歷史訊息時向消費者重播訊息的速度。\n\n- `0` (Instant)：盡可能快速地傳送訊息\n- `1` (Original)：按照原本發布的速率傳送訊息，保留原始時間間隔\n\n**若未指定，預設為 `0` (Instant)。**"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItY3JlYXRl.option.cmVwbGF5X3BvbGljeQ.display_name": {
-          "source": "Replay Policy",
+          "source": "Replay policy",
           "message": "重播策略"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItY3JlYXRl.option.cmVwbGF5X3BvbGljeQ.short_desc": {
@@ -252,7 +252,7 @@
           "message": "從 JetStream 串流中刪除消費者。\n\n**警告**：這將永久移除該消費者及其追蹤狀態。未確認的訊息將不會重新傳送。"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItZGVsZXRl.display_name": {
-          "source": "Delete Consumer",
+          "source": "Delete consumer",
           "message": "刪除消費者"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItZGVsZXRl.option.Y29uc3VtZXI.desc": {
@@ -260,7 +260,7 @@
           "message": "要從串流中刪除的消費者名稱。\n\n**警告**：刪除消費者會捨棄其追蹤狀態，包含最後確認的序號位置。如果重新建立該消費者，它將從設定的傳送策略開始，而非從上次中斷的地方開始。"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItZGVsZXRl.option.Y29uc3VtZXI.display_name": {
-          "source": "Consumer Name",
+          "source": "Consumer name",
           "message": "消費者名稱"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItZGVsZXRl.option.Y29uc3VtZXI.short_desc": {
@@ -272,7 +272,7 @@
           "message": "擁有要刪除之消費者的 JetStream 串流名稱。\n\n該串流必須存在且包含指定的消費者。"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItZGVsZXRl.option.c3RyZWFt.display_name": {
-          "source": "Stream Name",
+          "source": "Stream name",
           "message": "串流名稱"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItZGVsZXRl.option.c3RyZWFt.short_desc": {
@@ -288,7 +288,7 @@
           "message": "檢索 JetStream 消費者的設定與傳送狀態。\n\n傳回消費者的確認策略、傳送策略、篩選主旨以及包含待處理訊息和處理進度的目前狀態。"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItaW5mbw.display_name": {
-          "source": "Consumer Info",
+          "source": "Consumer info",
           "message": "消費者資訊"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItaW5mbw.option.Y29uc3VtZXI.desc": {
@@ -296,7 +296,7 @@
           "message": "要檢索其資訊的消費者名稱。\n\n該消費者必須存在於指定的串流上；如果未找到，將引發錯誤。"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItaW5mbw.option.Y29uc3VtZXI.display_name": {
-          "source": "Consumer Name",
+          "source": "Consumer name",
           "message": "消費者名稱"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItaW5mbw.option.Y29uc3VtZXI.short_desc": {
@@ -308,7 +308,7 @@
           "message": "擁有該消費者的 JetStream 串流名稱。\n\n該串流必須存在；如果未找到，將引發錯誤。"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItaW5mbw.option.c3RyZWFt.display_name": {
-          "source": "Stream Name",
+          "source": "Stream name",
           "message": "串流名稱"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItaW5mbw.option.c3RyZWFt.short_desc": {
@@ -324,7 +324,7 @@
           "message": "列出 JetStream 串流的所有消費者及其設定和傳送狀態。\n\n傳回每個消費者的詳細資訊，包括傳送策略、確認設定和處理進度。"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItbGlzdA.display_name": {
-          "source": "List Consumers",
+          "source": "List consumers",
           "message": "列出消費者"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItbGlzdA.option.c3RyZWFt.desc": {
@@ -332,7 +332,7 @@
           "message": "要列出其消費者的 JetStream 串流名稱。\n\n該串流必須已經存在；如果未找到該串流，將引發錯誤。"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItbGlzdA.option.c3RyZWFt.display_name": {
-          "source": "Stream Name",
+          "source": "Stream name",
           "message": "串流名稱"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItbGlzdA.option.c3RyZWFt.short_desc": {
@@ -348,7 +348,7 @@
           "message": "列出 JetStream 串流的所有消費者名稱，不包含完整設定或狀態詳細資訊。\n\n當您只需要檢查存在哪些消費者時，可用此功能進行輕量級列舉。"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItbmFtZXM.display_name": {
-          "source": "Consumer Names",
+          "source": "Consumer names",
           "message": "消費者名稱列表"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItbmFtZXM.option.c3RyZWFt.desc": {
@@ -356,7 +356,7 @@
           "message": "要列出其消費者名稱的 JetStream 串流名稱。\n\n該串流必須已經存在；如果未找到該串流，將引發錯誤。"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItbmFtZXM.option.c3RyZWFt.display_name": {
-          "source": "Stream Name",
+          "source": "Stream name",
           "message": "串流名稱"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItbmFtZXM.option.c3RyZWFt.short_desc": {
@@ -372,7 +372,7 @@
           "message": "暫停 JetStream 消費者直到指定時間。\n\n已暫停的消費者會停止接收訊息，直到指定時間到達為止，此時傳送會自動恢復。可用於維護時段或速率限制。"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItcGF1c2U.display_name": {
-          "source": "Pause Consumer",
+          "source": "Pause consumer",
           "message": "暫停消費者"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItcGF1c2U.option.Y29uc3VtZXI.desc": {
@@ -380,7 +380,7 @@
           "message": "要暫停的消費者名稱。\n\n該消費者必須已經存在於指定的串流上；如果未找到，將引發錯誤。"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItcGF1c2U.option.Y29uc3VtZXI.display_name": {
-          "source": "Consumer Name",
+          "source": "Consumer name",
           "message": "消費者名稱"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItcGF1c2U.option.Y29uc3VtZXI.short_desc": {
@@ -392,7 +392,7 @@
           "message": "該消費者所屬的 JetStream 串流名稱。\n\n該串流必須已經存在；如果未找到該串流，將引發錯誤。"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItcGF1c2U.option.c3RyZWFt.display_name": {
-          "source": "Stream Name",
+          "source": "Stream name",
           "message": "串流名稱"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItcGF1c2U.option.c3RyZWFt.short_desc": {
@@ -404,7 +404,7 @@
           "message": "消費者應暫停運作至該日期/時間。\n\n消費者將停止接收訊息，直到達到此時間為止，此時它將自動恢復傳送。可用於預定的維護時段或速率限制。"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItcGF1c2U.option.cGF1c2VfdW50aWw.display_name": {
-          "source": "Pause Until",
+          "source": "Pause until",
           "message": "暫停至"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItcGF1c2U.option.cGF1c2VfdW50aWw.short_desc": {
@@ -420,7 +420,7 @@
           "message": "更新現有 JetStream 消費者的設定。\n\n修改消費者設定，例如確認策略、傳送策略、篩選主旨和重試行為。建立後並非所有設定都可以變更。"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItdXBkYXRl.display_name": {
-          "source": "Update Consumer",
+          "source": "Update consumer",
           "message": "更新消費者"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItdXBkYXRl.option.YWNrX3BvbGljeQ.allowed-value.aW50OjA.display_name": {
@@ -452,7 +452,7 @@
           "message": "控制取用者如何確認訊息交付。\n\n- `0`（無）：不需要確認；訊息會被視為立即交付\n- `1`（全部）：確認某則訊息會隱式確認所有先前的訊息\n- `2`（明確）：必須個別確認每則訊息\n\n**若未指定，預設值為 `2`（明確）。**"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItdXBkYXRl.option.YWNrX3BvbGljeQ.display_name": {
-          "source": "Ack Policy",
+          "source": "Ack policy",
           "message": "確認策略"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItdXBkYXRl.option.YWNrX3BvbGljeQ.short_desc": {
@@ -464,7 +464,7 @@
           "message": "伺服器等待確認的持續時間（毫秒），超過此時間後將視訊息為未確認並排定重新交付。\n\n例如，`30000` 會設定 30 秒的逾時。**若未指定，將使用伺服器預設值 30 秒。**請根據訊息的預期處理時間設定此值。"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItdXBkYXRl.option.YWNrX3dhaXQ.display_name": {
-          "source": "Ack Wait (ms)",
+          "source": "Ack wait (ms)",
           "message": "確認等待（毫秒）"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItdXBkYXRl.option.YWNrX3dhaXQ.short_desc": {
@@ -476,7 +476,7 @@
           "message": "用於跨多個取用者執行個體進行負載平衡訊息交付的佇列群組名稱。\n\n設定後，訊息會分發給共享相同 `deliver_group` 值的所有取用者，確保每則訊息僅由一個取用者處理。**僅適用於推播模式**（當設定 `deliver_subject` 時）。"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItdXBkYXRl.option.ZGVsaXZlcl9ncm91cA.display_name": {
-          "source": "Deliver Group",
+          "source": "Deliver group",
           "message": "交付群組"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItdXBkYXRl.option.ZGVsaXZlcl9ncm91cA.short_desc": {
@@ -508,7 +508,7 @@
           "message": "僅交付新訊息"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItdXBkYXRl.option.ZGVsaXZlcl9wb2xpY3k.allowed-value.aW50OjM.display_name": {
-          "source": "By Start Sequence",
+          "source": "By start sequence",
           "message": "依起始序號"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItdXBkYXRl.option.ZGVsaXZlcl9wb2xpY3k.allowed-value.aW50OjM.short_desc": {
@@ -516,7 +516,7 @@
           "message": "從特定序號開始交付"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItdXBkYXRl.option.ZGVsaXZlcl9wb2xpY3k.allowed-value.aW50OjQ.display_name": {
-          "source": "By Start Time",
+          "source": "By start time",
           "message": "依起始時間"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItdXBkYXRl.option.ZGVsaXZlcl9wb2xpY3k.allowed-value.aW50OjQ.short_desc": {
@@ -524,7 +524,7 @@
           "message": "從特定時間開始交付"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItdXBkYXRl.option.ZGVsaXZlcl9wb2xpY3k.allowed-value.aW50OjU.display_name": {
-          "source": "Last Per Subject",
+          "source": "Last per subject",
           "message": "每個主題的最新訊息"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItdXBkYXRl.option.ZGVsaXZlcl9wb2xpY3k.allowed-value.aW50OjU.short_desc": {
@@ -536,7 +536,7 @@
           "message": "決定向取用者交付訊息的起點。\n\n- `0`（全部）：從串流開頭交付所有可用的訊息\n- `1`（最新）：從串流中的最後一則訊息開始\n- `2`（新）：僅交付建立取用者後發佈的訊息\n- `3`（依起始序號）：從特定的序號開始\n- `4`（依起始時間）：從特定的時間戳記開始\n- `5`（每個主題的最新訊息）：交付每個主題的最後一則訊息\n\n**若未指定，預設值為 `0`（全部）。**"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItdXBkYXRl.option.ZGVsaXZlcl9wb2xpY3k.display_name": {
-          "source": "Deliver Policy",
+          "source": "Deliver policy",
           "message": "交付策略"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItdXBkYXRl.option.ZGVsaXZlcl9wb2xpY3k.short_desc": {
@@ -548,7 +548,7 @@
           "message": "伺服器將訊息推播給取用者的 NATS 主題。\n\n若已設定，取用者將在**推播模式**下運作，伺服器會主動將訊息交付至此主題。若未設定，取用者將在**提取模式**下運作，用戶端必須明確請求訊息。"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItdXBkYXRl.option.ZGVsaXZlcl9zdWJqZWN0.display_name": {
-          "source": "Deliver Subject",
+          "source": "Deliver subject",
           "message": "交付主題"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItdXBkYXRl.option.ZGVsaXZlcl9zdWJqZWN0.short_desc": {
@@ -572,7 +572,7 @@
           "message": "使取用者成為持久性（持續）的唯一名稱。\n\n**重要**：若沒有持久名稱，取用者即為暫時性的，並會在斷開連線或變為非作用中狀態時自動移除。持久性取用者可以在用戶端中斷連線和伺服器重新啟動後，繼續保留其狀態（交付位置、待處理確認）。"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItdXBkYXRl.option.ZHVyYWJsZV9uYW1l.display_name": {
-          "source": "Durable Name",
+          "source": "Durable name",
           "message": "持久名稱"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItdXBkYXRl.option.ZHVyYWJsZV9uYW1l.short_desc": {
@@ -584,7 +584,7 @@
           "message": "限制取用者僅接收符合此模式之訊息的主題篩選器。\n\n這允許取用者處理串流訊息的子集。支援 NATS 通配符權杖（`*` 與 `>`）。若未設定，取用者會接收來自串流的所有訊息。"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItdXBkYXRl.option.ZmlsdGVyX3N1YmplY3Q.display_name": {
-          "source": "Filter Subject",
+          "source": "Filter subject",
           "message": "篩選主題"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItdXBkYXRl.option.ZmlsdGVyX3N1YmplY3Q.short_desc": {
@@ -596,7 +596,7 @@
           "message": "可交付但尚未確認的最大訊息數。\n\n這可作為流量控制機制，以防止取用者負荷過重。達到此限制後，伺服器會暫停交付，直到確認部分訊息為止。**若未指定，預設值為 `1000`。**"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItdXBkYXRl.option.bWF4X2Fja19wZW5kaW5n.display_name": {
-          "source": "Max Ack Pending",
+          "source": "Max ack pending",
           "message": "最大待處理確認數"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItdXBkYXRl.option.bWF4X2Fja19wZW5kaW5n.short_desc": {
@@ -608,7 +608,7 @@
           "message": "伺服器嘗試向取用者交付訊息的最大次數。\n\n交付失敗達到此次數後，該訊息將被丟棄；若有設定死信佇列，則會傳送至死信佇列。設定為 `-1` 表示無限次重新交付嘗試。**生產環境中通常使用值 `5`。**"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItdXBkYXRl.option.bWF4X2RlbGl2ZXI.display_name": {
-          "source": "Max Deliver",
+          "source": "Max deliver",
           "message": "最大交付次數"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItdXBkYXRl.option.bWF4X2RlbGl2ZXI.short_desc": {
@@ -620,7 +620,7 @@
           "message": "此取用者將從中讀取訊息的 JetStream 串流名稱。\n\n建立取用者之前，串流必須已存在。請使用串流設定中的串流 `name` 值。"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItdXBkYXRl.option.c3RyZWFt.display_name": {
-          "source": "Stream Name",
+          "source": "Stream name",
           "message": "串流名稱"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItdXBkYXRl.option.c3RyZWFt.short_desc": {
@@ -648,7 +648,7 @@
           "message": "控制在追趕歷史訊息時向消費者重播訊息的速度。\n\n- `0` (Instant)：盡可能快速地傳送訊息\n- `1` (Original)：按照原本發布的速率傳送訊息，保留原始時間間隔\n\n**若未指定，預設為 `0` (Instant)。**"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItdXBkYXRl.option.cmVwbGF5X3BvbGljeQ.display_name": {
-          "source": "Replay Policy",
+          "source": "Replay policy",
           "message": "重播策略"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItdXBkYXRl.option.cmVwbGF5X3BvbGljeQ.short_desc": {
@@ -664,7 +664,7 @@
           "message": "檢索 JetStream 帳戶資訊，包含資源使用量和 API 統計資料。\n\n傳回記憶體與儲存空間使用量、串流和消費者數量以及 API 請求總數。可用於容量規劃和監控。"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.YWNjb3VudC1pbmZv.display_name": {
-          "source": "Account Info",
+          "source": "Account info",
           "message": "帳戶資訊"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.YWNjb3VudC1pbmZv.short_desc": {
@@ -676,7 +676,7 @@
           "message": "建立新的 JetStream 鍵值 (KV) 儲存區塊。\n\n以指定的設定建立區塊，包含歷史深度、TTL、儲存類型和複寫設定。傳回初始區塊狀態。"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.a3YtY3JlYXRlLWJ1Y2tldA.display_name": {
-          "source": "KV Create Bucket",
+          "source": "KV create bucket",
           "message": "KV 建立區塊"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.a3YtY3JlYXRlLWJ1Y2tldA.option.YnVja2V0.desc": {
@@ -684,7 +684,7 @@
           "message": "新 KV 區塊的名稱。\n\n區塊名稱必須為英數字元，且可包含破折號或底線。名稱在 JetStream 帳戶內必須是唯一的。"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.a3YtY3JlYXRlLWJ1Y2tldA.option.YnVja2V0.display_name": {
-          "source": "Bucket Name",
+          "source": "Bucket name",
           "message": "區塊名稱"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.a3YtY3JlYXRlLWJ1Y2tldA.option.YnVja2V0.short_desc": {
@@ -720,7 +720,7 @@
           "message": "區塊中所有鍵和修訂版本的最大總儲存容量（位元組）。\n\n當達到此限制時，將移除舊修訂版本以騰出空間。如果未設定，則使用伺服器預設值。"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.a3YtY3JlYXRlLWJ1Y2tldA.option.bWF4X2J5dGVz.display_name": {
-          "source": "Max Bytes",
+          "source": "Max bytes",
           "message": "最大位元組數"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.a3YtY3JlYXRlLWJ1Y2tldA.option.bWF4X2J5dGVz.short_desc": {
@@ -732,7 +732,7 @@
           "message": "儲存在區塊中的任何單一值的最大容量（位元組）。\n\n超過此容量的值將被拒絕。如果未設定，則使用伺服器預設值。"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.a3YtY3JlYXRlLWJ1Y2tldA.option.bWF4X3ZhbHVlX3NpemU.display_name": {
-          "source": "Max Value Size",
+          "source": "Max value size",
           "message": "最大值容量"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.a3YtY3JlYXRlLWJ1Y2tldA.option.bWF4X3ZhbHVlX3NpemU.short_desc": {
@@ -772,7 +772,7 @@
           "message": "控制儲存桶資料的持久化位置。\n\n- `0` (File)：資料儲存在磁碟上，以便在伺服器重新啟動後保持持久性\n- `1` (Memory)：資料儲存在記憶體中以提供更高的輸送量，但在伺服器重新啟動時會遺失\n\n**若未指定，預設為 `0` (File)。**"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.a3YtY3JlYXRlLWJ1Y2tldA.option.c3RvcmFnZQ.display_name": {
-          "source": "Storage Type",
+          "source": "Storage type",
           "message": "儲存類型"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.a3YtY3JlYXRlLWJ1Y2tldA.option.c3RvcmFnZQ.short_desc": {
@@ -800,7 +800,7 @@
           "message": "從 JetStream KV 儲存桶中檢索鍵的目前值與元資料。\n\n傳回最新的修訂版本，包含 `value`、`revision`、`created` 時間戳記，以及 `operation` 類型。"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.a3YtZ2V0.display_name": {
-          "source": "KV Get",
+          "source": "KV get",
           "message": "KV 取得"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.a3YtZ2V0.option.YnVja2V0.desc": {
@@ -836,7 +836,7 @@
           "message": "從 JetStream KV 儲存桶軟刪除鍵。\n\n放置刪除標記，使該鍵不再出現在列表或取得操作中。鍵的修訂歷史記錄將予以保留。"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.a3YtZGVsZXRl.display_name": {
-          "source": "KV Delete",
+          "source": "KV delete",
           "message": "KV 刪除"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.a3YtZGVsZXRl.option.YnVja2V0.desc": {
@@ -872,7 +872,7 @@
           "message": "永久刪除 JetStream 鍵值儲存桶。\n\n**警告**：這會移除該儲存桶、所有儲存的鍵以及所有修訂歷史記錄。此操作無法復原。"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.a3YtZGVsZXRlLWJ1Y2tldA.display_name": {
-          "source": "KV Delete Bucket",
+          "source": "KV delete bucket",
           "message": "KV 刪除儲存桶"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.a3YtZGVsZXRlLWJ1Y2tldA.option.YnVja2V0.desc": {
@@ -880,7 +880,7 @@
           "message": "要刪除的 JetStream KV 儲存桶名稱。\n\n**警告**：這會永久移除該儲存桶、其所有鍵以及所有修訂歷史記錄。此操作無法復原。"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.a3YtZGVsZXRlLWJ1Y2tldA.option.YnVja2V0.display_name": {
-          "source": "Bucket Name",
+          "source": "Bucket name",
           "message": "區塊名稱"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.a3YtZGVsZXRlLWJ1Y2tldA.option.YnVja2V0.short_desc": {
@@ -896,7 +896,7 @@
           "message": "列出 JetStream KV 儲存桶中的所有活動鍵。\n\n傳回具有目前（未刪除）值的鍵名稱。已被刪除或清除的鍵將排除在列表之外。"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.a3Yta2V5cw.display_name": {
-          "source": "KV Keys",
+          "source": "KV keys",
           "message": "KV 鍵列表"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.a3Yta2V5cw.option.YnVja2V0.desc": {
@@ -920,7 +920,7 @@
           "message": "檢索 JetStream KV 儲存桶中鍵的完整修訂歷史記錄。\n\n傳回按由舊到新排序的所有修訂版本，包含 put、delete 與 purge 操作。請將此用於稽核軌跡與偵錯設定變更。"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.a3YtaGlzdG9yeQ.display_name": {
-          "source": "KV History",
+          "source": "KV history",
           "message": "KV 歷史記錄"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.a3YtaGlzdG9yeQ.option.YnVja2V0.desc": {
@@ -956,7 +956,7 @@
           "message": "檢索 JetStream KV 儲存桶的狀態資訊。\n\n傳回儲存桶的鍵數量、歷史深度、TTL、副本數量以及總儲存用量。"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.a3Ytc3RhdHVz.display_name": {
-          "source": "KV Bucket Status",
+          "source": "KV bucket status",
           "message": "KV 儲存桶狀態"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.a3Ytc3RhdHVz.option.YnVja2V0.desc": {
@@ -964,7 +964,7 @@
           "message": "要檢索其狀態的 JetStream KV 儲存桶名稱。\n\n儲存桶必須已存在；若未找到則會引發錯誤。"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.a3Ytc3RhdHVz.option.YnVja2V0.display_name": {
-          "source": "Bucket Name",
+          "source": "Bucket name",
           "message": "區塊名稱"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.a3Ytc3RhdHVz.option.YnVja2V0.short_desc": {
@@ -980,7 +980,7 @@
           "message": "在 JetStream KV 儲存桶中儲存鍵的值。\n\n若鍵不存在則建立，或者以新的修訂版本進行更新。傳回新的 `revision` 編號，用於樂觀並發控制。"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.a3YtcHV0.display_name": {
-          "source": "KV Put",
+          "source": "KV put",
           "message": "KV 寫入"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.a3YtcHV0.option.YnVja2V0.desc": {
@@ -1000,7 +1000,7 @@
           "message": "要儲存的二進位值；請使用 `data` 或 `string_data` 之一。\n\n二進位資料會原樣儲存而不進行編碼。如果同時提供 `data` 與 `string_data`，則 `data` 優先。"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.a3YtcHV0.option.ZGF0YQ.display_name": {
-          "source": "Binary Data",
+          "source": "Binary data",
           "message": "二進位資料"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.a3YtcHV0.option.ZGF0YQ.short_desc": {
@@ -1024,7 +1024,7 @@
           "message": "要儲存的字串值（`data` 的替代方案）。\n\n將此用於設定值、JSON 或其他文字內容。字串在儲存前會轉換為二進位。"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.a3YtcHV0.option.c3RyaW5nX2RhdGE.display_name": {
-          "source": "String Data",
+          "source": "String data",
           "message": "字串資料"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.a3YtcHV0.option.c3RyaW5nX2RhdGE.short_desc": {
@@ -1040,7 +1040,7 @@
           "message": "將訊息發佈至具備保證遞送的 JetStream 主題。\n\n與基本 NATS publish 不同，訊息會持久化至串流，並傳回發佈確認以確認儲存，其中包含 `stream` 名稱與 `sequence` 編號。"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.anMtcHVibGlzaA.display_name": {
-          "source": "JetStream Publish",
+          "source": "JetStream publish",
           "message": "JetStream 發佈"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.anMtcHVibGlzaA.option.ZGF0YQ.desc": {
@@ -1048,7 +1048,7 @@
           "message": "二進位訊息負載；請使用 `data` 或 `string_data` 之一。\n\n二進位資料會原樣儲存在串流中而不進行編碼。"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.anMtcHVibGlzaA.option.ZGF0YQ.display_name": {
-          "source": "Binary Data",
+          "source": "Binary data",
           "message": "二進位資料"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.anMtcHVibGlzaA.option.ZGF0YQ.short_desc": {
@@ -1060,7 +1060,7 @@
           "message": "當設定為 `True` 時，如果該主題已存在任何訊息，則發佈將失敗。\n\n以此確保僅接受該主題的第一則訊息，實現僅建置語意。"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.anMtcHVibGlzaA.option.ZXhwZWN0X25vX21lc3NhZ2U.display_name": {
-          "source": "Expect No Message",
+          "source": "Expect no message",
           "message": "期望無訊息"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.anMtcHVibGlzaA.option.ZXhwZWN0X25vX21lc3NhZ2U.short_desc": {
@@ -1072,7 +1072,7 @@
           "message": "串流中最後一則訊息的預期訊息 ID。\n\n如果最後一則訊息的 ID 不符合，發佈將失敗。請將此用於序號完整性檢查。"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.anMtcHVibGlzaA.option.ZXhwZWN0X2xhc3RfbXNnX2lk.display_name": {
-          "source": "Expected Last Message ID",
+          "source": "Expected last message ID",
           "message": "預期的最後訊息 ID"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.anMtcHVibGlzaA.option.ZXhwZWN0X2xhc3RfbXNnX2lk.short_desc": {
@@ -1084,7 +1084,7 @@
           "message": "串流中最後一則訊息的預期序號。\n\n如果串流的最後序號不相符，則發佈失敗。請將此用於樂觀並行控制，以確保在讀取之間沒有發佈任何訊息。"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.anMtcHVibGlzaA.option.ZXhwZWN0X2xhc3Rfc2Vx.display_name": {
-          "source": "Expected Last Sequence",
+          "source": "Expected last sequence",
           "message": "預期的最後序號"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.anMtcHVibGlzaA.option.ZXhwZWN0X2xhc3Rfc2Vx.short_desc": {
@@ -1096,7 +1096,7 @@
           "message": "此特定主題最後一則訊息的預期序號。\n\n如果該主題上的最後一則訊息沒有此序號，則發佈失敗。請將此用於主題層級的樂觀並行。"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.anMtcHVibGlzaA.option.ZXhwZWN0X2xhc3Rfc3ViamVjdF9zZXE.display_name": {
-          "source": "Expected Last Subject Sequence",
+          "source": "Expected last subject sequence",
           "message": "預期的最後主題序號"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.anMtcHVibGlzaA.option.ZXhwZWN0X2xhc3Rfc3ViamVjdF9zZXE.short_desc": {
@@ -1108,7 +1108,7 @@
           "message": "訊息應發佈到的預期串流名稱。\n\n如果訊息會儲存在不同的串流中，則發佈將失敗並傳回錯誤。當發佈到由多個串流擷取的主題時，請使用此功能以確保安全。"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.anMtcHVibGlzaA.option.ZXhwZWN0X3N0cmVhbQ.display_name": {
-          "source": "Expected Stream",
+          "source": "Expected stream",
           "message": "預期的串流"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.anMtcHVibGlzaA.option.ZXhwZWN0X3N0cmVhbQ.short_desc": {
@@ -1132,7 +1132,7 @@
           "message": "字串訊息負載（`data` 的替代方案）。\n\n字串會在發佈前轉換為二進位。將此用於 JSON、XML 或其他基於文字的負載。"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.anMtcHVibGlzaA.option.c3RyaW5nX2RhdGE.display_name": {
-          "source": "String Data",
+          "source": "String data",
           "message": "字串資料"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.anMtcHVibGlzaA.option.c3RyaW5nX2RhdGE.short_desc": {
@@ -1160,7 +1160,7 @@
           "message": "依序號從 JetStream 串流中刪除訊息。\n\n訊息資料可能仍可從儲存空間復原。如需保證資料已被移除，請改用抹除動作。"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.bWVzc2FnZS1kZWxldGU.display_name": {
-          "source": "Delete Message",
+          "source": "Delete message",
           "message": "刪除訊息"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.bWVzc2FnZS1kZWxldGU.option.c2Vx.desc": {
@@ -1168,7 +1168,7 @@
           "message": "要擷取之訊息的序號。\n\n序號由串流單調指派。請使用串流資訊來確定有效範圍（`first_seq` 至 `last_seq`）。"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.bWVzc2FnZS1kZWxldGU.option.c2Vx.display_name": {
-          "source": "Sequence Number",
+          "source": "Sequence number",
           "message": "序號"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.bWVzc2FnZS1kZWxldGU.option.c2Vx.short_desc": {
@@ -1180,7 +1180,7 @@
           "message": "要從中擷取訊息的 JetStream 串流名稱。\n\n串流必須已存在；如果找不到串流，將引發錯誤。"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.bWVzc2FnZS1kZWxldGU.option.c3RyZWFt.display_name": {
-          "source": "Stream Name",
+          "source": "Stream name",
           "message": "串流名稱"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.bWVzc2FnZS1kZWxldGU.option.c3RyZWFt.short_desc": {
@@ -1196,7 +1196,7 @@
           "message": "依序號安全地從 JetStream 串流中抹除訊息。\n\n與刪除不同，這會覆寫儲存空間中的訊息資料，以符合資料保護法規。"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.bWVzc2FnZS1lcmFzZQ.display_name": {
-          "source": "Erase Message",
+          "source": "Erase message",
           "message": "抹除訊息"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.bWVzc2FnZS1lcmFzZQ.option.c2Vx.desc": {
@@ -1204,7 +1204,7 @@
           "message": "要擷取之訊息的序號。\n\n序號由串流單調指派。請使用串流資訊來確定有效範圍（`first_seq` 至 `last_seq`）。"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.bWVzc2FnZS1lcmFzZQ.option.c2Vx.display_name": {
-          "source": "Sequence Number",
+          "source": "Sequence number",
           "message": "序號"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.bWVzc2FnZS1lcmFzZQ.option.c2Vx.short_desc": {
@@ -1216,7 +1216,7 @@
           "message": "要從中擷取訊息的 JetStream 串流名稱。\n\n串流必須已存在；如果找不到串流，將引發錯誤。"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.bWVzc2FnZS1lcmFzZQ.option.c3RyZWFt.display_name": {
-          "source": "Stream Name",
+          "source": "Stream name",
           "message": "串流名稱"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.bWVzc2FnZS1lcmFzZQ.option.c3RyZWFt.short_desc": {
@@ -1232,7 +1232,7 @@
           "message": "依序號從 JetStream 串流擷取訊息。\n\n傳回訊息負載、主題與標頭。如果給定的序號不存在任何訊息，則不傳回任何內容。"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.bWVzc2FnZS1nZXQ.display_name": {
-          "source": "Get Message",
+          "source": "Get message",
           "message": "取得訊息"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.bWVzc2FnZS1nZXQ.option.c2Vx.desc": {
@@ -1240,7 +1240,7 @@
           "message": "要擷取之訊息的序號。\n\n序號由串流單調指派。請使用串流資訊來確定有效範圍（`first_seq` 至 `last_seq`）。"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.bWVzc2FnZS1nZXQ.option.c2Vx.display_name": {
-          "source": "Sequence Number",
+          "source": "Sequence number",
           "message": "序號"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.bWVzc2FnZS1nZXQ.option.c2Vx.short_desc": {
@@ -1252,7 +1252,7 @@
           "message": "要從中擷取訊息的 JetStream 串流名稱。\n\n串流必須已存在；如果找不到串流，將引發錯誤。"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.bWVzc2FnZS1nZXQ.option.c3RyZWFt.display_name": {
-          "source": "Stream Name",
+          "source": "Stream name",
           "message": "串流名稱"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.bWVzc2FnZS1nZXQ.option.c3RyZWFt.short_desc": {
@@ -1268,7 +1268,7 @@
           "message": "從 JetStream 串流擷取指定主題的最後一則訊息。\n\n傳回指定主題上最近發佈的訊息。如果該主題不存在任何訊息，則不傳回任何內容。"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.bWVzc2FnZS1nZXQtbGFzdA.display_name": {
-          "source": "Get Last Message",
+          "source": "Get last message",
           "message": "取得最後一則訊息"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.bWVzc2FnZS1nZXQtbGFzdA.option.c3RyZWFt.desc": {
@@ -1276,7 +1276,7 @@
           "message": "要從中擷取訊息的 JetStream 串流名稱。\n\n串流必須已存在；如果找不到串流，將引發錯誤。"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.bWVzc2FnZS1nZXQtbGFzdA.option.c3RyZWFt.display_name": {
-          "source": "Stream Name",
+          "source": "Stream name",
           "message": "串流名稱"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.bWVzc2FnZS1nZXQtbGFzdA.option.c3RyZWFt.short_desc": {
@@ -1304,7 +1304,7 @@
           "message": "列出所有 JetStream 串流名稱，而不包含完整設定或狀態詳細資料。\n\n當您只需要檢查存在哪些串流時，可將此用於輕量列舉。"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.c3RyZWFtLW5hbWVz.display_name": {
-          "source": "Stream Names",
+          "source": "Stream names",
           "message": "串流名稱"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.c3RyZWFtLW5hbWVz.short_desc": {
@@ -1316,7 +1316,7 @@
           "message": "建立用於持久訊息儲存的新 JetStream 串流。\n\n串流會擷取發佈至符合主題的訊息，並根據設定的保留原則將其持久化。將串流用於訊息重播、稽核軌跡和保證交付。"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.c3RyZWFtLWNyZWF0ZQ.display_name": {
-          "source": "Create Stream",
+          "source": "Create stream",
           "message": "建立串流"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.c3RyZWFtLWNyZWF0ZQ.option.ZGVzY3JpcHRpb24.desc": {
@@ -1352,7 +1352,7 @@
           "message": "控制當達到串流上限（`max_msgs`、`max_bytes` 或 `max_age`）時要移除哪些訊息。\n\n- `0` (Old)：移除最舊的訊息以騰出空間\n- `1` (New)：拒絕新訊息並傳回錯誤\n\n**若未指定，預設值為 `0` (Old)。**"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.c3RyZWFtLWNyZWF0ZQ.option.ZGlzY2FyZA.display_name": {
-          "source": "Discard Policy",
+          "source": "Discard policy",
           "message": "捨棄原則"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.c3RyZWFtLWNyZWF0ZQ.option.ZGlzY2FyZA.short_desc": {
@@ -1364,7 +1364,7 @@
           "message": "發佈到串流的任何個別訊息的最大位元組容量。\n\n超過此容量的訊息將被伺服器拒絕。設定為 `-1` 可使用伺服器的預設最大值（通常為 1 MB）。例如，`1048576` 會設定 1 MB 的上限。"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.c3RyZWFtLWNyZWF0ZQ.option.bWF4X21zZ19zaXpl.display_name": {
-          "source": "Max Message Size",
+          "source": "Max message size",
           "message": "最大訊息容量"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.c3RyZWFtLWNyZWF0ZQ.option.bWF4X21zZ19zaXpl.short_desc": {
@@ -1376,7 +1376,7 @@
           "message": "串流將保留的最大訊息數量。\n\n達到此上限時，會根據 `discard` 原則捨棄較舊的訊息。設定為 `-1` 表示訊息數量不受限制。\n\n**僅在 `retention` 原則設定為 Limits (`0`) 時適用。**"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.c3RyZWFtLWNyZWF0ZQ.option.bWF4X21zZ3M.display_name": {
-          "source": "Max Messages",
+          "source": "Max messages",
           "message": "最大訊息數"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.c3RyZWFtLWNyZWF0ZQ.option.bWF4X21zZ3M.short_desc": {
@@ -1388,7 +1388,7 @@
           "message": "串流中任何訊息的最大保留時間（以毫秒為單位）。\n\n早於此值的訊息會自動移除。設定為 `0` 表示無時間限制。例如，`86400000` 會設定 24 小時的保留時間窗。\n\n**僅在 `retention` 原則設定為 Limits (`0`) 時適用。**"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.c3RyZWFtLWNyZWF0ZQ.option.bWF4X2FnZQ.display_name": {
-          "source": "Max Age (ms)",
+          "source": "Max age (ms)",
           "message": "最長保留時間 (毫秒)"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.c3RyZWFtLWNyZWF0ZQ.option.bWF4X2FnZQ.short_desc": {
@@ -1400,7 +1400,7 @@
           "message": "串流中所有訊息的最大總儲存容量（位元組）。\n\n達到此上限時，會根據 `discard` 原則捨棄較舊的訊息。設定為 `-1` 表示儲存空間不受限制。\n\n**僅在 `retention` 原則設定為 Limits (`0`) 時適用。**"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.c3RyZWFtLWNyZWF0ZQ.option.bWF4X2J5dGVz.display_name": {
-          "source": "Max Bytes",
+          "source": "Max bytes",
           "message": "最大位元組數"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.c3RyZWFtLWNyZWF0ZQ.option.bWF4X2J5dGVz.short_desc": {
@@ -1412,7 +1412,7 @@
           "message": "JetStream 串流的唯一識別碼。\n\n串流名稱用於在所有 JetStream 操作（例如發佈、訂閱和管理）中參照該串流。**名稱必須是英數字元，且可以包含連字號或底線，但不能包含句點或空格。**"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.c3RyZWFtLWNyZWF0ZQ.option.bmFtZQ.display_name": {
-          "source": "Stream Name",
+          "source": "Stream name",
           "message": "串流名稱"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.c3RyZWFtLWNyZWF0ZQ.option.bmFtZQ.short_desc": {
@@ -1452,7 +1452,7 @@
           "message": "控制串流訊息的持久化位置。\n\n- `0` (File)：訊息儲存在磁碟上，可在伺服器重啟後維持持久性\n- `1` (Memory)：訊息儲存在記憶體中以提供更高的輸送量，但會在伺服器重啟時遺失\n\n**若未指定，預設值為 `0` (File)。**"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.c3RyZWFtLWNyZWF0ZQ.option.c3RvcmFnZQ.display_name": {
-          "source": "Storage Type",
+          "source": "Storage type",
           "message": "儲存類型"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.c3RyZWFtLWNyZWF0ZQ.option.c3RvcmFnZQ.short_desc": {
@@ -1488,7 +1488,7 @@
           "message": "當所有已知的消費者都已確認時移除"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.c3RyZWFtLWNyZWF0ZQ.option.cmV0ZW50aW9u.allowed-value.aW50OjI.display_name": {
-          "source": "Work Queue",
+          "source": "Work queue",
           "message": "工作佇列"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.c3RyZWFtLWNyZWF0ZQ.option.cmV0ZW50aW9u.allowed-value.aW50OjI.short_desc": {
@@ -1500,7 +1500,7 @@
           "message": "控制訊息如何保留或從串流中移除。\n\n- `0` (Limits)：訊息將被保留直至達到串流限制（`max_msgs`、`max_bytes`、`max_age`）\n- `1` (Interest)：一旦所有已知的消費者都確認了訊息，訊息就會被移除\n- `2` (Work Queue)：只要有任何消費者確認訊息，訊息就會被移除\n\n**若未指定，預設為 `0` (Limits)。**"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.c3RyZWFtLWNyZWF0ZQ.option.cmV0ZW50aW9u.display_name": {
-          "source": "Retention Policy",
+          "source": "Retention policy",
           "message": "保留策略"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.c3RyZWFtLWNyZWF0ZQ.option.cmV0ZW50aW9u.short_desc": {
@@ -1516,7 +1516,7 @@
           "message": "永久刪除 JetStream 串流及其所有訊息。\n\n**警告**：這將移除該串流、所有已儲存的訊息以及所有關聯的消費者。此操作無法復原。"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.c3RyZWFtLWRlbGV0ZQ.display_name": {
-          "source": "Delete Stream",
+          "source": "Delete stream",
           "message": "刪除串流"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.c3RyZWFtLWRlbGV0ZQ.option.bmFtZQ.desc": {
@@ -1524,7 +1524,7 @@
           "message": "要刪除的 JetStream 串流名稱。\n\n**警告**：這將永久移除該串流及其所有已儲存的訊息。附加至該串流的任何消費者也將被刪除。此操作無法復原。"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.c3RyZWFtLWRlbGV0ZQ.option.bmFtZQ.display_name": {
-          "source": "Stream Name",
+          "source": "Stream name",
           "message": "串流名稱"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.c3RyZWFtLWRlbGV0ZQ.option.bmFtZQ.short_desc": {
@@ -1540,7 +1540,7 @@
           "message": "擷取 JetStream 串流的設定與狀態資訊。\n\n傳回串流的主題篩選條件、保留策略、儲存限制以及包含訊息數量和位元組大小的目前狀態。"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.c3RyZWFtLWluZm8.display_name": {
-          "source": "Stream Info",
+          "source": "Stream info",
           "message": "串流資訊"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.c3RyZWFtLWluZm8.option.bmFtZQ.desc": {
@@ -1548,7 +1548,7 @@
           "message": "要擷取資訊的 JetStream 串流名稱。\n\n串流必須已經存在；若找不到該串流，將引發錯誤。"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.c3RyZWFtLWluZm8.option.bmFtZQ.display_name": {
-          "source": "Stream Name",
+          "source": "Stream name",
           "message": "串流名稱"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.c3RyZWFtLWluZm8.option.bmFtZQ.short_desc": {
@@ -1564,7 +1564,7 @@
           "message": "列出所有 JetStream 串流及其設定與目前狀態。\n\n傳回每個串流的詳細資訊，包含主題篩選條件、保留策略、儲存限制、訊息數量和消費者數量。"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.c3RyZWFtLWxpc3Q.display_name": {
-          "source": "List Streams",
+          "source": "List streams",
           "message": "列出串流"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.c3RyZWFtLWxpc3Q.short_desc": {
@@ -1576,7 +1576,7 @@
           "message": "從 JetStream 串流中清除所有訊息，同時保留其設定。\n\n**警告**：這將永久刪除串流中的所有訊息。串流設定和消費者將予以保留，但消費者的序號位置會被重置。"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.c3RyZWFtLXB1cmdl.display_name": {
-          "source": "Purge Stream",
+          "source": "Purge stream",
           "message": "清除串流"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.c3RyZWFtLXB1cmdl.option.bmFtZQ.desc": {
@@ -1584,7 +1584,7 @@
           "message": "要清除的 JetStream 串流名稱。\n\n**警告**：清除操作會從串流中移除所有訊息，但會保留串流設定和消費者。消費者序號追蹤會被重置。此操作無法復原。"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.c3RyZWFtLXB1cmdl.option.bmFtZQ.display_name": {
-          "source": "Stream Name",
+          "source": "Stream name",
           "message": "串流名稱"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.c3RyZWFtLXB1cmdl.option.bmFtZQ.short_desc": {
@@ -1600,7 +1600,7 @@
           "message": "更新現有 JetStream 串流的設定。\n\n修改串流設定，例如主題篩選條件、保留策略、儲存限制和複寫。並非所有設定都可以在建立後進行變更。"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.c3RyZWFtLXVwZGF0ZQ.display_name": {
-          "source": "Update Stream",
+          "source": "Update stream",
           "message": "更新串流"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.c3RyZWFtLXVwZGF0ZQ.option.ZGVzY3JpcHRpb24.desc": {
@@ -1636,7 +1636,7 @@
           "message": "控制當達到串流上限（`max_msgs`、`max_bytes` 或 `max_age`）時要移除哪些訊息。\n\n- `0` (Old)：移除最舊的訊息以騰出空間\n- `1` (New)：拒絕新訊息並傳回錯誤\n\n**若未指定，預設值為 `0` (Old)。**"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.c3RyZWFtLXVwZGF0ZQ.option.ZGlzY2FyZA.display_name": {
-          "source": "Discard Policy",
+          "source": "Discard policy",
           "message": "捨棄原則"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.c3RyZWFtLXVwZGF0ZQ.option.ZGlzY2FyZA.short_desc": {
@@ -1648,7 +1648,7 @@
           "message": "發佈到串流的任何個別訊息的最大位元組容量。\n\n超過此容量的訊息將被伺服器拒絕。設定為 `-1` 可使用伺服器的預設最大值（通常為 1 MB）。例如，`1048576` 會設定 1 MB 的上限。"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.c3RyZWFtLXVwZGF0ZQ.option.bWF4X21zZ19zaXpl.display_name": {
-          "source": "Max Message Size",
+          "source": "Max message size",
           "message": "最大訊息容量"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.c3RyZWFtLXVwZGF0ZQ.option.bWF4X21zZ19zaXpl.short_desc": {
@@ -1660,7 +1660,7 @@
           "message": "串流將保留的最大訊息數量。\n\n達到此上限時，會根據 `discard` 原則捨棄較舊的訊息。設定為 `-1` 表示訊息數量不受限制。\n\n**僅在 `retention` 原則設定為 Limits (`0`) 時適用。**"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.c3RyZWFtLXVwZGF0ZQ.option.bWF4X21zZ3M.display_name": {
-          "source": "Max Messages",
+          "source": "Max messages",
           "message": "最大訊息數"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.c3RyZWFtLXVwZGF0ZQ.option.bWF4X21zZ3M.short_desc": {
@@ -1672,7 +1672,7 @@
           "message": "串流中任何訊息的最大保留時間（以毫秒為單位）。\n\n早於此值的訊息會自動移除。設定為 `0` 表示無時間限制。例如，`86400000` 會設定 24 小時的保留時間窗。\n\n**僅在 `retention` 原則設定為 Limits (`0`) 時適用。**"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.c3RyZWFtLXVwZGF0ZQ.option.bWF4X2FnZQ.display_name": {
-          "source": "Max Age (ms)",
+          "source": "Max age (ms)",
           "message": "最長保留時間 (毫秒)"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.c3RyZWFtLXVwZGF0ZQ.option.bWF4X2FnZQ.short_desc": {
@@ -1684,7 +1684,7 @@
           "message": "串流中所有訊息的最大總儲存容量（位元組）。\n\n達到此上限時，會根據 `discard` 原則捨棄較舊的訊息。設定為 `-1` 表示儲存空間不受限制。\n\n**僅在 `retention` 原則設定為 Limits (`0`) 時適用。**"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.c3RyZWFtLXVwZGF0ZQ.option.bWF4X2J5dGVz.display_name": {
-          "source": "Max Bytes",
+          "source": "Max bytes",
           "message": "最大位元組數"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.c3RyZWFtLXVwZGF0ZQ.option.bWF4X2J5dGVz.short_desc": {
@@ -1696,7 +1696,7 @@
           "message": "JetStream 串流的唯一識別碼。\n\n串流名稱用於在所有 JetStream 操作（例如發佈、訂閱和管理）中參照該串流。**名稱必須是英數字元，且可以包含連字號或底線，但不能包含句點或空格。**"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.c3RyZWFtLXVwZGF0ZQ.option.bmFtZQ.display_name": {
-          "source": "Stream Name",
+          "source": "Stream name",
           "message": "串流名稱"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.c3RyZWFtLXVwZGF0ZQ.option.bmFtZQ.short_desc": {
@@ -1736,7 +1736,7 @@
           "message": "控制串流訊息的持久化位置。\n\n- `0` (File)：訊息儲存在磁碟上，可在伺服器重啟後維持持久性\n- `1` (Memory)：訊息儲存在記憶體中以提供更高的輸送量，但會在伺服器重啟時遺失\n\n**若未指定，預設值為 `0` (File)。**"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.c3RyZWFtLXVwZGF0ZQ.option.c3RvcmFnZQ.display_name": {
-          "source": "Storage Type",
+          "source": "Storage type",
           "message": "儲存類型"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.c3RyZWFtLXVwZGF0ZQ.option.c3RvcmFnZQ.short_desc": {
@@ -1772,7 +1772,7 @@
           "message": "當所有已知的消費者都已確認時移除"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.c3RyZWFtLXVwZGF0ZQ.option.cmV0ZW50aW9u.allowed-value.aW50OjI.display_name": {
-          "source": "Work Queue",
+          "source": "Work queue",
           "message": "工作佇列"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.c3RyZWFtLXVwZGF0ZQ.option.cmV0ZW50aW9u.allowed-value.aW50OjI.short_desc": {
@@ -1784,7 +1784,7 @@
           "message": "控制訊息如何保留或從串流中移除。\n\n- `0` (Limits)：訊息將被保留直至達到串流限制（`max_msgs`、`max_bytes`、`max_age`）\n- `1` (Interest)：一旦所有已知的消費者都確認了訊息，訊息就會被移除\n- `2` (Work Queue)：只要有任何消費者確認訊息，訊息就會被移除\n\n**若未指定，預設為 `0` (Limits)。**"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.c3RyZWFtLXVwZGF0ZQ.option.cmV0ZW50aW9u.display_name": {
-          "source": "Retention Policy",
+          "source": "Retention policy",
           "message": "保留策略"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.c3RyZWFtLXVwZGF0ZQ.option.cmV0ZW50aW9u.short_desc": {
@@ -1800,7 +1800,7 @@
           "message": "使用推播式（push-based）遞送訂閱 JetStream 訊息，以進行即時事件處理。\n\n訊息抵達串流時會推播給訂閱者。包含 JetStream 中繼資料，例如串流序號和時間戳記。"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.c3Vic2NyaWJl.display_name": {
-          "source": "JetStream Subscribe",
+          "source": "JetStream subscribe",
           "message": "JetStream 訂閱"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.c3Vic2NyaWJl.option.c3ViamVjdA.desc": {
@@ -1824,7 +1824,7 @@
           "message": "使用持久消費者（durable consumer）透過拉取式（pull-based）遞送訂閱 JetStream 訊息。\n\n用戶端透過請求批次訊息來控制遞送速率，提供自然的背壓（backpressure）。`durable` 消費者可以在重啟後繼續追蹤最後確認的位置。"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.cHVsbC1zdWJzY3JpYmU.display_name": {
-          "source": "JetStream Pull Subscribe",
+          "source": "JetStream pull subscribe",
           "message": "JetStream 拉取式訂閱"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.cHVsbC1zdWJzY3JpYmU.option.ZHVyYWJsZQ.desc": {
@@ -1832,7 +1832,7 @@
           "message": "用於持久化訂閱狀態的持久消費者名稱。\n\n持久消費者能在用戶端斷線和伺服器重啟後繼續存在。當用戶端使用相同的 `durable` 名稱重新連線時，訊息遞送將從最後確認的位置恢復。該消費者必須已存在於串流中，否則將自動建立。"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.cHVsbC1zdWJzY3JpYmU.option.ZHVyYWJsZQ.display_name": {
-          "source": "Durable Name",
+          "source": "Durable name",
           "message": "持久名稱"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.cHVsbC1zdWJzY3JpYmU.option.ZHVyYWJsZQ.short_desc": {
@@ -1852,7 +1852,7 @@
           "message": "要訂閱的 JetStream 主題"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.cHVsbC1zdWJzY3JpYmU.option.cmVmdXNhbF9kZWxheV9tcw.display_name": {
-          "source": "Refusal Delay",
+          "source": "Refusal delay",
           "message": "拒絕後延遲"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.cHVsbC1zdWJzY3JpYmU.option.cmVmdXNhbF9kZWxheV9tcw.short_desc": {
@@ -1864,7 +1864,7 @@
           "message": "伺服器再次傳遞觀察者拒絕的訊息前的延遲（毫秒）；訊息每傳遞一次就會加倍，最多到 `max_refusal_delay_ms`。預設值為 1000"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.cHVsbC1zdWJzY3JpYmU.option.bWF4X3JlZnVzYWxfZGVsYXlfbXM.display_name": {
-          "source": "Max Refusal Delay",
+          "source": "Max refusal delay",
           "message": "拒絕後最大延遲"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.cHVsbC1zdWJzY3JpYmU.option.bWF4X3JlZnVzYWxfZGVsYXlfbXM.short_desc": {

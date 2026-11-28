@@ -43,7 +43,7 @@ public class NatsJSPullSubscribeRequestDataType inherits HashDataType {
             },
             "durable": {
                 "type": StringType,
-                "display_name": "Durable Name",
+                "display_name": "Durable name",
                 "short_desc": "Durable consumer name for pull subscription",
                 "desc": "The durable consumer name that persists the subscription state.\n\n"
                     "Durable consumers survive client disconnects and server restarts. "
@@ -55,7 +55,7 @@ public class NatsJSPullSubscribeRequestDataType inherits HashDataType {
             },
             "refusal_delay_ms": {
                 "type": IntOrNothingType,
-                "display_name": "Refusal Delay",
+                "display_name": "Refusal delay",
                 "short_desc": "Initial redelivery delay in milliseconds of a refused message",
                 "desc": "The delay in milliseconds after which the server delivers a message that an observer "
                     "refused again; it doubles with each delivery of the message up to `max_refusal_delay_ms`.  "
@@ -64,7 +64,7 @@ public class NatsJSPullSubscribeRequestDataType inherits HashDataType {
             },
             "max_refusal_delay_ms": {
                 "type": IntOrNothingType,
-                "display_name": "Max Refusal Delay",
+                "display_name": "Max refusal delay",
                 "short_desc": "Maximum redelivery delay in milliseconds of a refused message",
                 "desc": "The maximum delay in milliseconds after which the server delivers a message that an "
                     "observer refused again.  The default is 60000",

@@ -39,13 +39,13 @@ public class NatsRequestRequestDataType inherits HashDataType {
             },
             "data": {
                 "type": DataOrNothingType,
-                "display_name": "Binary Data",
+                "display_name": "Binary data",
                 "short_desc": "Binary request payload",
                 "desc": "The binary request payload; use either `data` or `string_data`",
             },
             "string_data": {
                 "type": StringOrNothingType,
-                "display_name": "String Data",
+                "display_name": "String data",
                 "short_desc": "String request payload",
                 "desc": "The string request payload (alternative to `data`)",
                 "example_value": "{\"id\": 123}",

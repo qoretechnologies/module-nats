@@ -39,13 +39,13 @@ public class NatsPublishRequestDataType inherits HashDataType {
             },
             "data": {
                 "type": DataOrNothingType,
-                "display_name": "Binary Data",
+                "display_name": "Binary data",
                 "short_desc": "Binary message payload",
                 "desc": "The binary message payload; use either `data` or `string_data`",
             },
             "string_data": {
                 "type": StringOrNothingType,
-                "display_name": "String Data",
+                "display_name": "String data",
                 "short_desc": "String message payload",
                 "desc": "The string message payload (alternative to `data`)",
                 "example_value": "Hello, World!",

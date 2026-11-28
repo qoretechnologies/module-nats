@@ -31,7 +31,7 @@ public class NatsJSConsumerInfoRequestDataType inherits HashDataType {
         const Fields = {
             "stream": {
                 "type": StringType,
-                "display_name": "Stream Name",
+                "display_name": "Stream name",
                 "short_desc": "Stream name containing the consumer",
                 "desc": "The name of the JetStream stream that owns the consumer.\n\n"
                     "The stream must exist; an error is raised if not found.",
@@ -40,7 +40,7 @@ public class NatsJSConsumerInfoRequestDataType inherits HashDataType {
             },
             "consumer": {
                 "type": StringType,
-                "display_name": "Consumer Name",
+                "display_name": "Consumer name",
                 "short_desc": "Consumer name to get info for",
                 "desc": "The name of the consumer to retrieve information for.\n\n"
                     "The consumer must exist on the specified stream; an error is raised "

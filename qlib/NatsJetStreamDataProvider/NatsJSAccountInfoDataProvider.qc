@@ -69,7 +69,7 @@ public class NatsJSAccountInfoDataProvider inherits AbstractDataProvider {
         return <DataProviderInfo>{
             "type": "NatsJSAccountInfoDataProvider",
             "supports_request": True,
-            "display_name": "Account Info",
+            "display_name": "Account info",
             "short_desc": "Get JetStream account resource usage and API statistics",
         };
     }

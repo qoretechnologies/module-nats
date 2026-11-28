@@ -8,7 +8,7 @@
           "message": "Sottoscrive i messaggi su un subject NATS con consegna osservabile basata su eventi.\n\nSupporta subject con caratteri jolly (`*` per token singolo, `>` per token multipli). Ogni sottoscrittore attivo riceve tutti i messaggi corrispondenti. Per una consegna con bilanciamento del carico, usa invece queue-subscribe."
         },
         "app.TkFUUw.action.c3Vic2NyaWJl.display_name": {
-          "source": "Subscribe to Messages",
+          "source": "Subscribe to messages",
           "message": "Sottoscrivi ai messaggi"
         },
         "app.TkFUUw.action.c3Vic2NyaWJl.option.c3ViamVjdA.desc": {
@@ -32,7 +32,7 @@
           "message": "Pubblica un messaggio sul subject NATS specificato utilizzando il pattern fire-and-forget.\n\nIl messaggio viene consegnato a tutti i sottoscrittori attivi su `subject`. Non viene fornita **alcuna conferma di consegna**; se non ci sono sottoscrittori in ascolto, il messaggio viene scartato silenziosamente."
         },
         "app.TkFUUw.action.cHVibGlzaA.display_name": {
-          "source": "Publish Message",
+          "source": "Publish message",
           "message": "Pubblica messaggio"
         },
         "app.TkFUUw.action.cHVibGlzaA.option.ZGF0YQ.desc": {
@@ -40,7 +40,7 @@
           "message": "Il payload del messaggio binario; usa `data` oppure `string_data`"
         },
         "app.TkFUUw.action.cHVibGlzaA.option.ZGF0YQ.display_name": {
-          "source": "Binary Data",
+          "source": "Binary data",
           "message": "Dati binari"
         },
         "app.TkFUUw.action.cHVibGlzaA.option.ZGF0YQ.short_desc": {
@@ -64,7 +64,7 @@
           "message": "Il payload del messaggio come stringa (alternativa a `data`)"
         },
         "app.TkFUUw.action.cHVibGlzaA.option.c3RyaW5nX2RhdGE.display_name": {
-          "source": "String Data",
+          "source": "String data",
           "message": "Dati stringa"
         },
         "app.TkFUUw.action.cHVibGlzaA.option.c3RyaW5nX2RhdGE.short_desc": {
@@ -92,7 +92,7 @@
           "message": "Sottoscrive i messaggi su un subject NATS con un gruppo di code per la consegna con bilanciamento del carico.\n\nOgni messaggio viene consegnato a **esattamente un** membro del gruppo di code, consentendo la scalabilità orizzontale dell'elaborazione dei messaggi su più istanze worker senza elaborazione duplicata."
         },
         "app.TkFUUw.action.cXVldWUtc3Vic2NyaWJl.display_name": {
-          "source": "Queue Subscribe",
+          "source": "Queue subscribe",
           "message": "Sottoscrizione alla coda"
         },
         "app.TkFUUw.action.cXVldWUtc3Vic2NyaWJl.option.c3ViamVjdA.desc": {
@@ -112,7 +112,7 @@
           "message": "Il nome del gruppo di code per la consegna dei messaggi con bilanciamento del carico.\n\nTutti i sottoscrittori che condividono lo stesso nome di gruppo `queue` formano un pool di worker. Ogni messaggio viene consegnato a **esattamente un** membro del gruppo, consentendo la scalabilità orizzontale dell'elaborazione dei messaggi su più istanze senza elaborazione duplicata."
         },
         "app.TkFUUw.action.cXVldWUtc3Vic2NyaWJl.option.cXVldWU.display_name": {
-          "source": "Queue Group",
+          "source": "Queue group",
           "message": "Gruppo di code"
         },
         "app.TkFUUw.action.cXVldWUtc3Vic2NyaWJl.option.cXVldWU.short_desc": {
@@ -136,7 +136,7 @@
           "message": "Il payload della richiesta binaria; usa `data` oppure `string_data`"
         },
         "app.TkFUUw.action.cmVxdWVzdA.option.ZGF0YQ.display_name": {
-          "source": "Binary Data",
+          "source": "Binary data",
           "message": "Dati binari"
         },
         "app.TkFUUw.action.cmVxdWVzdA.option.ZGF0YQ.short_desc": {
@@ -148,7 +148,7 @@
           "message": "Il payload della richiesta come stringa (alternativa a `data`)"
         },
         "app.TkFUUw.action.cmVxdWVzdA.option.c3RyaW5nX2RhdGE.display_name": {
-          "source": "String Data",
+          "source": "String data",
           "message": "Dati stringa"
         },
         "app.TkFUUw.action.cmVxdWVzdA.option.c3RyaW5nX2RhdGE.short_desc": {

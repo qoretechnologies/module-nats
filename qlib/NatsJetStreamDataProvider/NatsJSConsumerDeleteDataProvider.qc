@@ -31,7 +31,7 @@ public class NatsJSConsumerDeleteRequestDataType inherits HashDataType {
         const Fields = {
             "stream": {
                 "type": StringType,
-                "display_name": "Stream Name",
+                "display_name": "Stream name",
                 "short_desc": "Stream name containing the consumer",
                 "desc": "The name of the JetStream stream that owns the consumer to delete.\n\n"
                     "The stream must exist and contain the specified consumer.",
@@ -40,7 +40,7 @@ public class NatsJSConsumerDeleteRequestDataType inherits HashDataType {
             },
             "consumer": {
                 "type": StringType,
-                "display_name": "Consumer Name",
+                "display_name": "Consumer name",
                 "short_desc": "Consumer name to delete",
                 "desc": "The name of the consumer to delete from the stream.\n\n"
                     "**Warning**: deleting a consumer discards its tracking state, "

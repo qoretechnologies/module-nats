@@ -65,7 +65,7 @@ module NatsJetStreamDataProvider {
             "app": NatsJetStreamDataProvider::AppName,
             "path": "/streams/create",
             "action": "stream-create",
-            "display_name": "Create Stream",
+            "display_name": "Create stream",
             "short_desc": "Create a JetStream stream for durable message storage",
             "desc": "Creates a new JetStream stream for durable message storage.\n\n"
                 "Streams capture messages published to matching subjects and persist "
@@ -91,7 +91,7 @@ module NatsJetStreamDataProvider {
             "app": NatsJetStreamDataProvider::AppName,
             "path": "/streams/delete",
             "action": "stream-delete",
-            "display_name": "Delete Stream",
+            "display_name": "Delete stream",
             "short_desc": "Permanently delete a JetStream stream",
             "desc": "Permanently deletes a JetStream stream and all its messages.\n\n"
                 "**Warning**: this removes the stream, all stored messages, and all "
@@ -110,7 +110,7 @@ module NatsJetStreamDataProvider {
             "app": NatsJetStreamDataProvider::AppName,
             "path": "/streams/info",
             "action": "stream-info",
-            "display_name": "Stream Info",
+            "display_name": "Stream info",
             "short_desc": "Get stream configuration and state information",
             "desc": "Retrieves configuration and state information for a JetStream "
                 "stream.\n\n"
@@ -130,7 +130,7 @@ module NatsJetStreamDataProvider {
             "app": NatsJetStreamDataProvider::AppName,
             "path": "/streams/purge",
             "action": "stream-purge",
-            "display_name": "Purge Stream",
+            "display_name": "Purge stream",
             "short_desc": "Purge all messages from a stream",
             "desc": "Removes all messages from a JetStream stream while preserving "
                 "its configuration.\n\n"
@@ -152,7 +152,7 @@ module NatsJetStreamDataProvider {
             "app": NatsJetStreamDataProvider::AppName,
             "path": "/streams/list",
             "action": "stream-list",
-            "display_name": "List Streams",
+            "display_name": "List streams",
             "short_desc": "List all JetStream streams with configuration and state",
             "desc": "Lists all JetStream streams with their configuration and current "
                 "state.\n\n"
@@ -166,7 +166,7 @@ module NatsJetStreamDataProvider {
             "app": NatsJetStreamDataProvider::AppName,
             "path": "/streams/names",
             "action": "stream-names",
-            "display_name": "Stream Names",
+            "display_name": "Stream names",
             "short_desc": "List all JetStream stream names",
             "desc": "Lists all JetStream stream names without full configuration or "
                 "state details.\n\n"
@@ -180,7 +180,7 @@ module NatsJetStreamDataProvider {
             "app": NatsJetStreamDataProvider::AppName,
             "path": "/streams/update",
             "action": "stream-update",
-            "display_name": "Update Stream",
+            "display_name": "Update stream",
             "short_desc": "Update a JetStream stream configuration",
             "desc": "Updates the configuration of an existing JetStream stream.\n\n"
                 "Modifies stream settings such as subject filters, retention policy, "
@@ -208,7 +208,7 @@ module NatsJetStreamDataProvider {
             "app": NatsJetStreamDataProvider::AppName,
             "path": "/consumers/create",
             "action": "consumer-create",
-            "display_name": "Create Consumer",
+            "display_name": "Create consumer",
             "short_desc": "Create a consumer for stream message processing",
             "desc": "Creates a new consumer on a JetStream stream for message "
                 "processing.\n\n"
@@ -236,7 +236,7 @@ module NatsJetStreamDataProvider {
             "app": NatsJetStreamDataProvider::AppName,
             "path": "/consumers/delete",
             "action": "consumer-delete",
-            "display_name": "Delete Consumer",
+            "display_name": "Delete consumer",
             "short_desc": "Delete a consumer from a JetStream stream",
             "desc": "Deletes a consumer from a JetStream stream.\n\n"
                 "**Warning**: this permanently removes the consumer and its tracking "
@@ -255,7 +255,7 @@ module NatsJetStreamDataProvider {
             "app": NatsJetStreamDataProvider::AppName,
             "path": "/consumers/info",
             "action": "consumer-info",
-            "display_name": "Consumer Info",
+            "display_name": "Consumer info",
             "short_desc": "Get consumer configuration and delivery state",
             "desc": "Retrieves configuration and delivery state for a JetStream "
                 "consumer.\n\n"
@@ -276,7 +276,7 @@ module NatsJetStreamDataProvider {
             "app": NatsJetStreamDataProvider::AppName,
             "path": "/consumers/list",
             "action": "consumer-list",
-            "display_name": "List Consumers",
+            "display_name": "List consumers",
             "short_desc": "List all consumers for a JetStream stream",
             "desc": "Lists all consumers for a JetStream stream with their configuration "
                 "and delivery state.\n\n"
@@ -296,7 +296,7 @@ module NatsJetStreamDataProvider {
             "app": NatsJetStreamDataProvider::AppName,
             "path": "/consumers/names",
             "action": "consumer-names",
-            "display_name": "Consumer Names",
+            "display_name": "Consumer names",
             "short_desc": "List all consumer names for a JetStream stream",
             "desc": "Lists all consumer names for a JetStream stream without full "
                 "configuration or state details.\n\n"
@@ -316,7 +316,7 @@ module NatsJetStreamDataProvider {
             "app": NatsJetStreamDataProvider::AppName,
             "path": "/consumers/update",
             "action": "consumer-update",
-            "display_name": "Update Consumer",
+            "display_name": "Update consumer",
             "short_desc": "Update a JetStream consumer configuration",
             "desc": "Updates the configuration of an existing JetStream consumer.\n\n"
                 "Modifies consumer settings such as acknowledgment policy, delivery "
@@ -343,7 +343,7 @@ module NatsJetStreamDataProvider {
             "app": NatsJetStreamDataProvider::AppName,
             "path": "/consumers/pause",
             "action": "consumer-pause",
-            "display_name": "Pause Consumer",
+            "display_name": "Pause consumer",
             "short_desc": "Pause a JetStream consumer until a specified time",
             "desc": "Pauses a JetStream consumer until a specified time.\n\n"
                 "A paused consumer stops receiving messages until the specified time, "
@@ -370,7 +370,7 @@ module NatsJetStreamDataProvider {
             "app": NatsJetStreamDataProvider::AppName,
             "path": "/publish",
             "action": "js-publish",
-            "display_name": "JetStream Publish",
+            "display_name": "JetStream publish",
             "short_desc": "Publish with guaranteed delivery and acknowledgment",
             "desc": "Publishes a message to a JetStream subject with guaranteed "
                 "delivery.\n\n"
@@ -395,7 +395,7 @@ module NatsJetStreamDataProvider {
             "app": NatsJetStreamDataProvider::AppName,
             "path": "/kv/put",
             "action": "kv-put",
-            "display_name": "KV Put",
+            "display_name": "KV put",
             "short_desc": "Store a value for a key in a KV bucket",
             "desc": "Stores a value for a key in a JetStream KV bucket.\n\n"
                 "Creates the key if it does not exist, or updates it with a new "
@@ -417,7 +417,7 @@ module NatsJetStreamDataProvider {
             "app": NatsJetStreamDataProvider::AppName,
             "path": "/kv/get",
             "action": "kv-get",
-            "display_name": "KV Get",
+            "display_name": "KV get",
             "short_desc": "Retrieve a value and metadata for a key",
             "desc": "Retrieves the current value and metadata for a key from a "
                 "JetStream KV bucket.\n\n"
@@ -437,7 +437,7 @@ module NatsJetStreamDataProvider {
             "app": NatsJetStreamDataProvider::AppName,
             "path": "/kv/delete",
             "action": "kv-delete",
-            "display_name": "KV Delete",
+            "display_name": "KV delete",
             "short_desc": "Soft-delete a key from a KV bucket",
             "desc": "Soft-deletes a key from a JetStream KV bucket.\n\n"
                 "Places a delete marker so the key no longer appears in listings or "
@@ -456,7 +456,7 @@ module NatsJetStreamDataProvider {
             "app": NatsJetStreamDataProvider::AppName,
             "path": "/kv/keys",
             "action": "kv-keys",
-            "display_name": "KV Keys",
+            "display_name": "KV keys",
             "short_desc": "List all active keys in a KV bucket",
             "desc": "Lists all active keys in a JetStream KV bucket.\n\n"
                 "Returns key names with current (non-deleted) values. Deleted or "
@@ -475,7 +475,7 @@ module NatsJetStreamDataProvider {
             "app": NatsJetStreamDataProvider::AppName,
             "path": "/kv/history",
             "action": "kv-history",
-            "display_name": "KV History",
+            "display_name": "KV history",
             "short_desc": "Get the complete revision history for a KV key",
             "desc": "Retrieves the complete revision history for a key in a JetStream "
                 "KV bucket.\n\n"
@@ -498,7 +498,7 @@ module NatsJetStreamDataProvider {
             "app": NatsJetStreamDataProvider::AppName,
             "path": "/messages/get",
             "action": "message-get",
-            "display_name": "Get Message",
+            "display_name": "Get message",
             "short_desc": "Retrieve a message from a stream by sequence number",
             "desc": "Retrieves a message from a JetStream stream by sequence number.\n\n"
                 "Returns the message payload, subject, and headers. Returns nothing if no "
@@ -517,7 +517,7 @@ module NatsJetStreamDataProvider {
             "app": NatsJetStreamDataProvider::AppName,
             "path": "/messages/get-last",
             "action": "message-get-last",
-            "display_name": "Get Last Message",
+            "display_name": "Get last message",
             "short_desc": "Get the last message for a subject from a stream",
             "desc": "Retrieves the last message for a subject from a JetStream stream.\n\n"
                 "Returns the most recently published message on the specified subject. "
@@ -536,7 +536,7 @@ module NatsJetStreamDataProvider {
             "app": NatsJetStreamDataProvider::AppName,
             "path": "/messages/delete",
             "action": "message-delete",
-            "display_name": "Delete Message",
+            "display_name": "Delete message",
             "short_desc": "Delete a message from a stream by sequence number",
             "desc": "Deletes a message from a JetStream stream by sequence number.\n\n"
                 "The message data may still be recoverable from storage. For guaranteed "
@@ -555,7 +555,7 @@ module NatsJetStreamDataProvider {
             "app": NatsJetStreamDataProvider::AppName,
             "path": "/messages/erase",
             "action": "message-erase",
-            "display_name": "Erase Message",
+            "display_name": "Erase message",
             "short_desc": "Securely erase a message from a stream",
             "desc": "Securely erases a message from a JetStream stream by sequence "
                 "number.\n\n"
@@ -577,7 +577,7 @@ module NatsJetStreamDataProvider {
             "app": NatsJetStreamDataProvider::AppName,
             "path": "/account-info",
             "action": "account-info",
-            "display_name": "Account Info",
+            "display_name": "Account info",
             "short_desc": "Get JetStream account resource usage and API statistics",
             "desc": "Retrieves JetStream account information including resource usage "
                 "and API statistics.\n\n"
@@ -593,7 +593,7 @@ module NatsJetStreamDataProvider {
             "app": NatsJetStreamDataProvider::AppName,
             "path": "/kv/create-bucket",
             "action": "kv-create-bucket",
-            "display_name": "KV Create Bucket",
+            "display_name": "KV create bucket",
             "short_desc": "Create a new KV store bucket",
             "desc": "Creates a new JetStream Key-Value store bucket.\n\n"
                 "Creates a bucket with the specified configuration including history "
@@ -615,7 +615,7 @@ module NatsJetStreamDataProvider {
             "app": NatsJetStreamDataProvider::AppName,
             "path": "/kv/delete-bucket",
             "action": "kv-delete-bucket",
-            "display_name": "KV Delete Bucket",
+            "display_name": "KV delete bucket",
             "short_desc": "Permanently delete a KV store bucket",
             "desc": "Permanently deletes a JetStream Key-Value store bucket.\n\n"
                 "**Warning**: this removes the bucket, all stored keys, and all revision "
@@ -634,7 +634,7 @@ module NatsJetStreamDataProvider {
             "app": NatsJetStreamDataProvider::AppName,
             "path": "/kv/status",
             "action": "kv-status",
-            "display_name": "KV Bucket Status",
+            "display_name": "KV bucket status",
             "short_desc": "Get status information for a KV bucket",
             "desc": "Retrieves status information for a JetStream KV bucket.\n\n"
                 "Returns the bucket's key count, history depth, TTL, replica count, and "
@@ -655,7 +655,7 @@ module NatsJetStreamDataProvider {
             "app": NatsJetStreamDataProvider::AppName,
             "path": "/subscribe",
             "action": "subscribe",
-            "display_name": "JetStream Subscribe",
+            "display_name": "JetStream subscribe",
             "short_desc": "Subscribe to JetStream messages with push delivery",
             "desc": "Subscribes to JetStream messages with push-based delivery for "
                 "real-time event processing.\n\n"
@@ -677,7 +677,7 @@ module NatsJetStreamDataProvider {
             "app": NatsJetStreamDataProvider::AppName,
             "path": "/pull-subscribe",
             "action": "pull-subscribe",
-            "display_name": "JetStream Pull Subscribe",
+            "display_name": "JetStream pull subscribe",
             "short_desc": "Pull subscribe with a durable consumer",
             "desc": "Subscribes to JetStream messages with pull-based delivery using "
                 "a durable consumer.\n\n"

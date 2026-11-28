@@ -52,7 +52,7 @@ public class NatsJSKVPutRequestDataType inherits HashDataType {
             },
             "data": {
                 "type": DataOrNothingType,
-                "display_name": "Binary Data",
+                "display_name": "Binary data",
                 "short_desc": "Binary value to store",
                 "desc": "The binary value to store; use either `data` or `string_data`.\n\n"
                     "Binary data is stored as-is without encoding. If both `data` and "
@@ -60,7 +60,7 @@ public class NatsJSKVPutRequestDataType inherits HashDataType {
             },
             "string_data": {
                 "type": StringOrNothingType,
-                "display_name": "String Data",
+                "display_name": "String data",
                 "short_desc": "String value to store",
                 "desc": "The string value to store (alternative to `data`).\n\n"
                     "Use this for configuration values, JSON, or other text content. "
