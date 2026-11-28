@@ -52,6 +52,7 @@ public class NatsErrorFormatTest inherits QUnit::Test {
         addTestCase("a microservice error keeps the conversions of its name", \microErrorTest());
         addTestCase("a microservice that cannot be added to a closed connection is refused",
             \microClosedConnectionTest());
+        addTestCase("an endpoint that cnats would not release is refused by the module", \microEndpointRefusedTest());
         set_return_value(main());
     }
 
@@ -141,5 +142,52 @@ public class NatsErrorFormatTest inherits QUnit::Test {
         }
         assertEq("NATS-MICRO-ERROR", ex.err);
         assertRegex("closed", ex.desc, "the error names the closed connection");
+    }
+
+    #! an endpoint that cnats would refuse after it made its subject, which it then does not release, is refused by the
+    #! module (run under valgrind)
+    microEndpointRefusedTest() {
+        if (!server) {
+            testSkip("no NATS server is available");
+        }
+        NatsConnection conn(server.url);
+        on_exit conn.close();
+        code handler = *data sub (hash<auto> req) {
+            return req.data;
+        };
+        # each endpoint, and the text that the error has
+        foreach list<auto> tc in ((
+                ({"name": "no_handler", "subject": "refused.none"}, "requires a 'handler'"),
+                ({"name": "bad name", "subject": "refused.bad", "handler": handler}, "invalid endpoint name 'bad name'"),
+                # a valid subject, but an invalid name
+                ({"name": "a.b", "handler": handler}, "invalid endpoint name 'a.b'"),
+                ({"name": "", "subject": "refused.empty", "handler": handler}, "invalid endpoint name ''"),
+            )) {
+            hash<auto> endpoint = tc[0];
+            hash<ExceptionInfo> ex;
+            try {
+                conn.createMicroService(cast<hash<NatsMicroServiceConfig>>({
+                    "name": "refused_endpoint_svc",
+                    "version": "1.0.0",
+                    "endpoint": cast<hash<NatsMicroEndpointConfig>>(endpoint),
+                }));
+                assertTrue(False, endpoint.name + ": the service is refused");
+            } catch (hash<ExceptionInfo> ex1) {
+                ex = ex1;
+            }
+            assertEq("NATS-MICRO-ERROR", ex.err, endpoint.name);
+            assertRegex(tc[1], ex.desc, endpoint.name + ": the error");
+        }
+        # an endpoint added to a service or a group is checked in the same way
+        NatsMicroService svc = conn.createMicroService(cast<hash<NatsMicroServiceConfig>>({
+            "name": "accepted_svc",
+            "version": "1.0.0",
+        }));
+        assertFalse(svc.isStopped(), "a service is created on the connection afterwards");
+        assertThrows("NATS-MICRO-ERROR", "requires a 'handler'", \svc.addEndpoint(),
+            cast<hash<NatsMicroEndpointConfig>>({"name": "no_handler"}));
+        NatsMicroGroup grp = svc.addGroup("grp");
+        assertThrows("NATS-MICRO-ERROR", "invalid endpoint name", \grp.addEndpoint(),
+            cast<hash<NatsMicroEndpointConfig>>({"name": "bad name", "handler": handler}));
     }
 }

@@ -105,6 +105,17 @@ public:
     //! Static request handler that bridges nats.c micro to Qore closures
     static microError* requestHandler(microRequest* req);
 
+    //! Checks the name and the handler of an endpoint as cnats does, before cnats is given the endpoint
+    /** cnats 3.12 refuses an endpoint with an invalid name or without a handler after it made the endpoint's subject,
+        which it then does not release (micro.c: _new_endpoint()), so the module refuses such an endpoint itself
+        (qore#7875); also an endpoint whose subject is that of an existing endpoint, which cnats would take as an
+        update of that endpoint without checking its name or handler (one without a handler would then drop the
+        endpoint's requests)
+
+        @return 0 for OK, -1 if an exception was raised
+    */
+    DLLLOCAL static int checkEndpointConfig(const char* name, bool has_handler, ExceptionSink* xsink);
+
     //! Called by cnats when the last endpoint subscription of the service is complete
     /** Setting a done handler also makes cnats release the service when it is destroyed (cnats 3.12 releases the
         reference that the connection holds on the service only after calling the done handler)

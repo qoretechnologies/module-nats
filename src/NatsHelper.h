@@ -40,7 +40,7 @@
     @param fmt printf-style format string for the description
 */
 DLLLOCAL void nats_error(ExceptionSink* xsink, const char* err, natsStatus s,
-    const char* fmt, ...);
+    const char* fmt, ...) QORE_PRINTF_FORMAT(4, 5);
 
 //! Raise a Qore exception from a natsStatus error code with JetStream error code
 /** @param xsink the exception sink
@@ -50,7 +50,7 @@ DLLLOCAL void nats_error(ExceptionSink* xsink, const char* err, natsStatus s,
     @param fmt printf-style format string for the description
 */
 DLLLOCAL void nats_js_error(ExceptionSink* xsink, const char* err, natsStatus s,
-    jsErrCode jerr, const char* fmt, ...);
+    jsErrCode jerr, const char* fmt, ...) QORE_PRINTF_FORMAT(5, 6);
 
 //! Raise a Qore exception from a microError
 /** @param xsink the exception sink
@@ -59,7 +59,7 @@ DLLLOCAL void nats_js_error(ExceptionSink* xsink, const char* err, natsStatus s,
     @param fmt printf-style format string for the description
 */
 DLLLOCAL void nats_micro_error(ExceptionSink* xsink, const char* err, microError* me,
-    const char* fmt, ...);
+    const char* fmt, ...) QORE_PRINTF_FORMAT(4, 5);
 
 //! Convert a natsMsg to a hash<NatsMsgInfo>
 /** @param msg the NATS message (caller retains ownership)

@@ -27,6 +27,7 @@
 #include "QoreNatsMicroService.h"
 #include "QoreNatsMicroGroup.h"
 
+#include <atomic>
 #include <cstdint>
 #include <string>
 #include <unordered_map>
@@ -38,13 +39,27 @@ namespace {
     failure, which its caller cannot tell (qore#7875).  The done handler therefore finds the state by an id, not by a
     pointer that it owns: a service that failed to be created removes its id at once, and a done handler that runs for
     it later finds nothing to release.  Never destroyed, as a done handler can run on a cnats thread while the process
-    exits.
+    exits.  A child process created with fork() uses a registry of its own and abandons the parent's (its memory is
+    released with the process): the parent's services are abandoned in the child (see NatsCreatorProcess), and the
+    parent's registry can have been locked by a thread of the parent, which does not run in the child, when fork()
+    was called.
 */
 class MicroServiceStates {
 public:
     static MicroServiceStates& get() {
-        static MicroServiceStates* states = new MicroServiceStates;
-        return *states;
+        static std::atomic<MicroServiceStates*> states{nullptr};
+        MicroServiceStates* current = states.load(std::memory_order_acquire);
+        while (!current || current->creator.isForkedChild()) {
+            // the first registry of this process; one of a parent process is abandoned, never locked
+            MicroServiceStates* created = new MicroServiceStates;
+            if (states.compare_exchange_strong(current, created, std::memory_order_acq_rel,
+                    std::memory_order_acquire)) {
+                return *created;
+            }
+            // another thread made the registry first: it is used
+            delete created;
+        }
+        return *current;
     }
 
     //! Registers a state; returns its id, never 0
@@ -74,6 +89,8 @@ public:
     }
 
 private:
+    //! the process that the registry belongs to
+    NatsCreatorProcess creator;
     std::mutex m;
     std::unordered_map<uintptr_t, std::shared_ptr<MicroServiceState>> map;
     uintptr_t last_id = 0;
@@ -238,6 +255,10 @@ QoreNatsMicroService::QoreNatsMicroService(natsConnection* conn,
         }
 
         QoreStringValueHelper ep_name_str(ep_name);
+        if (checkEndpointConfig(ep_name_str->c_str(),
+                ep_handler.getType() != NT_NOTHING && ep_handler.getType() != NT_NULL, xsink)) {
+            return;
+        }
         ep_name_storage = ep_name_str->c_str();
         ep_cfg.Name = ep_name_storage.c_str();
         if (ep_subject.getType() == NT_STRING) {
@@ -286,6 +307,29 @@ QoreNatsMicroService::QoreNatsMicroService(natsConnection* conn,
     if (ep_ctx) {
         registerHandler(ep_ctx);
     }
+}
+
+int QoreNatsMicroService::checkEndpointConfig(const char* name, bool has_handler, ExceptionSink* xsink) {
+    // the rule of cnats (micro_is_valid_name()): a name of at least one letter, digit, '_' or '-'; ASCII letters and
+    // digits only, which cnats takes as such in every locale (it tests with isalnum())
+    bool valid = *name;
+    for (const char* p = name; *p; ++p) {
+        char c = *p;
+        if (!((c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') || (c >= '0' && c <= '9') || c == '_' || c == '-')) {
+            valid = false;
+            break;
+        }
+    }
+    if (!valid) {
+        xsink->raiseException("NATS-MICRO-ERROR", "invalid endpoint name '%s': a name consists of letters, digits, "
+            "'_' and '-'", name);
+        return -1;
+    }
+    if (!has_handler) {
+        xsink->raiseException("NATS-MICRO-ERROR", "endpoint '%s' requires a 'handler'", name);
+        return -1;
+    }
+    return 0;
 }
 
 void QoreNatsMicroService::serviceDone(microService* m) {
@@ -631,6 +675,10 @@ int QoreNatsMicroService::addEndpoint(const QoreHashNode* config,
 
     microEndpointConfig ep_cfg = {};
     QoreStringValueHelper ep_name_str(ep_name);
+    if (checkEndpointConfig(ep_name_str->c_str(),
+            ep_handler.getType() != NT_NOTHING && ep_handler.getType() != NT_NULL, xsink)) {
+        return -1;
+    }
     ep_cfg.Name = ep_name_str->c_str();
     QoreStringValueHelper ep_subject_str(ep_subject);
     if (ep_subject.getType() == NT_STRING) {

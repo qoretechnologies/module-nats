@@ -77,6 +77,10 @@ int QoreNatsMicroGroup::addEndpoint(const QoreHashNode* config,
 
     microEndpointConfig ep_cfg = {};
     QoreStringValueHelper ep_name_str(ep_name);
+    if (QoreNatsMicroService::checkEndpointConfig(ep_name_str->c_str(),
+            ep_handler.getType() != NT_NOTHING && ep_handler.getType() != NT_NULL, xsink)) {
+        return -1;
+    }
     ep_cfg.Name = ep_name_str->c_str();
     QoreStringValueHelper ep_subject_str(ep_subject);
     if (ep_subject.getType() == NT_STRING) {
