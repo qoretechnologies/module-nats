@@ -54,7 +54,7 @@ void nats_error(ExceptionSink* xsink, const char* err, natsStatus s,
     }
     desc.concat(": ");
     desc.concat(natsStatus_GetText(s));
-    xsink->raiseException(err, desc.c_str());
+    xsink->raiseException(err, "%s", desc.c_str());
 }
 
 void nats_js_error(ExceptionSink* xsink, const char* err, natsStatus s,
@@ -74,7 +74,7 @@ void nats_js_error(ExceptionSink* xsink, const char* err, natsStatus s,
     if (jerr != 0) {
         desc.sprintf(" (JetStream error code: %d)", (int)jerr);
     }
-    xsink->raiseException(err, desc.c_str());
+    xsink->raiseException(err, "%s", desc.c_str());
 }
 
 void nats_micro_error(ExceptionSink* xsink, const char* err, microError* me,
@@ -96,7 +96,7 @@ void nats_micro_error(ExceptionSink* xsink, const char* err, microError* me,
         desc.concat(buf);
         microError_Destroy(me);
     }
-    xsink->raiseException(err, desc.c_str());
+    xsink->raiseException(err, "%s", desc.c_str());
 }
 
 QoreHashNode* nats_msg_to_hash(natsMsg* msg, ExceptionSink* xsink) {

@@ -1,0 +1,145 @@
+#!/usr/bin/env qore
+# -*- mode: qore; indent-tabs-mode: nil -*-
+
+/*
+    Copyright (C) 2026 Qore Technologies, s.r.o., all rights reserved
+
+    Permission is hereby granted, free of charge, to any person obtaining a
+    copy of this software and associated documentation files (the "Software"),
+    to deal in the Software without restriction, including without limitation
+    the rights to use, copy, modify, merge, publish, distribute, sublicense,
+    and/or sell copies of the Software, and to permit persons to whom the
+    Software is furnished to do so, subject to the following conditions:
+
+    The above copyright notice and this permission notice shall be included in
+    all copies or substantial portions of the Software.
+
+    THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+    IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+    FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+    AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+    DEALINGS IN THE SOFTWARE.
+
+    qore#7875: the text of an exception that the module raises for a NATS error contains values that are not the
+    module's own (a URL, a stream or service name that the caller gives, the server's error text); it is raised as
+    text, so printf conversions in it are not interpreted.  Before the fix, a URL with "%s" conversions crashed the
+    process when the connection failed.  A microservice that cnats refuses releases its state whether or not cnats
+    calls its done handler later (run under valgrind: the state of a refused service was lost).
+*/
+
+%modern
+%prepend-module-path "${SCRIPT_DIR}/../qlib"
+
+%requires QUnit
+%requires nats
+%requires ./NatsTestServer.qm
+
+%exec-class NatsErrorFormatTest
+
+#! printf conversions that read arguments; interpreted, they read memory that is not there
+const Conversions = "%s%s%s%s%s%s%s%s%n";
+
+public class NatsErrorFormatTest inherits QUnit::Test {
+    private {
+        *NatsTestServer server;
+    }
+
+    constructor() : QUnit::Test("NatsErrorFormatTest", "1.0") {
+        addTestCase("a connection error keeps the conversions of its URL", \connectionErrorTest());
+        addTestCase("a JetStream error keeps the conversions of its stream name", \jetStreamErrorTest());
+        addTestCase("a microservice error keeps the conversions of its name", \microErrorTest());
+        addTestCase("a microservice that cannot be added to a closed connection is refused",
+            \microClosedConnectionTest());
+        set_return_value(main());
+    }
+
+    globalSetUp() {
+        if (NatsTestServer::available()) {
+            server = new NatsTestServer(("-js",));
+        }
+    }
+
+    globalTearDown() {
+        if (server) {
+            server.stop();
+        }
+    }
+
+    #! no server listens on port 1: the connection fails, and its error names the URL
+    connectionErrorTest() {
+        string url = "nats://127.0.0.1:1/" + Conversions;
+        hash<ExceptionInfo> ex;
+        try {
+            NatsConnection conn(url);
+            assertTrue(False, "the connection fails");
+        } catch (hash<ExceptionInfo> ex1) {
+            ex = ex1;
+        }
+        assertEq("NATS-CONNECTION-ERROR", ex.err);
+        assertRegex(Conversions, ex.desc, "the URL is in the error as given");
+    }
+
+    jetStreamErrorTest() {
+        if (!server) {
+            testSkip("no NATS server with JetStream is available");
+        }
+        NatsConnection conn(server.url);
+        on_exit conn.close();
+        JetStreamContext js = conn.jetStream();
+        string name = "missing" + Conversions;
+        hash<ExceptionInfo> ex;
+        try {
+            js.deleteStream(name);
+            assertTrue(False, "deleting a stream that does not exist fails");
+        } catch (hash<ExceptionInfo> ex1) {
+            ex = ex1;
+        }
+        assertEq("NATS-JETSTREAM-ERROR", ex.err);
+        assertRegex(Conversions, ex.desc, "the stream name is in the error as given");
+    }
+
+    microErrorTest() {
+        if (!server) {
+            testSkip("no NATS server is available");
+        }
+        NatsConnection conn(server.url);
+        on_exit conn.close();
+        # a service name may contain only letters, digits, '-' and '_': this one is refused
+        string name = "svc" + Conversions;
+        hash<ExceptionInfo> ex;
+        try {
+            conn.createMicroService(cast<hash<NatsMicroServiceConfig>>({
+                "name": name,
+                "version": "1.0.0",
+            }));
+            assertTrue(False, "a service with an invalid name is refused");
+        } catch (hash<ExceptionInfo> ex1) {
+            ex = ex1;
+        }
+        assertEq("NATS-MICRO-ERROR", ex.err);
+        assertRegex(Conversions, ex.desc, "the service name is in the error as given");
+    }
+
+    #! cnats refuses the service after it is created and before it adds an endpoint: its done handler is never called
+    microClosedConnectionTest() {
+        if (!server) {
+            testSkip("no NATS server is available");
+        }
+        NatsConnection conn(server.url);
+        conn.close();
+        hash<ExceptionInfo> ex;
+        try {
+            conn.createMicroService(cast<hash<NatsMicroServiceConfig>>({
+                "name": "closed_svc",
+                "version": "1.0.0",
+            }));
+            assertTrue(False, "a service cannot be added to a closed connection");
+        } catch (hash<ExceptionInfo> ex1) {
+            ex = ex1;
+        }
+        assertEq("NATS-MICRO-ERROR", ex.err);
+        assertRegex("closed", ex.desc, "the error names the closed connection");
+    }
+}
