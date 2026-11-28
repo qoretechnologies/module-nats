@@ -128,7 +128,7 @@
           "message": "Sendet eine synchrone Anfrage an ein NATS-Subject und wartet auf eine Antwort.\n\nImplementiert das Request-Reply-Muster für die Microservice-Kommunikation. Ein eindeutiger Posteingang wird automatisch erstellt. Der Aufruf blockiert, bis eine Antwort eingeht oder `timeout_ms` abläuft."
         },
         "app.TkFUUw.action.cmVxdWVzdA.display_name": {
-          "source": "Request/Reply",
+          "source": "Request/reply",
           "message": "Request/Reply"
         },
         "app.TkFUUw.action.cmVxdWVzdA.option.ZGF0YQ.desc": {

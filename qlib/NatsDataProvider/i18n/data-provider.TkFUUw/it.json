@@ -128,7 +128,7 @@
           "message": "Invia una richiesta sincrona a un subject NATS e attende una risposta.\n\nImplementa il pattern request-reply per la comunicazione tra microservizi. Viene creata automaticamente una inbox univoca. La chiamata si blocca finché non arriva una risposta o non scade `timeout_ms`."
         },
         "app.TkFUUw.action.cmVxdWVzdA.display_name": {
-          "source": "Request/Reply",
+          "source": "Request/reply",
           "message": "Richiesta/Risposta"
         },
         "app.TkFUUw.action.cmVxdWVzdA.option.ZGF0YQ.desc": {

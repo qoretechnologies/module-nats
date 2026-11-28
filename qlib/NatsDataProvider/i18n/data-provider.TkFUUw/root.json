@@ -76,8 +76,8 @@
           "message": "Optional NATS message headers as key-value pairs.\n\nHeaders provide out-of-band metadata without modifying the message payload. Common uses include routing hints, content types, and correlation IDs. Header keys are case-sensitive."
         },
         "app.TkFUUw.action.cmVxdWVzdA.display_name": {
-          "source": "Request/Reply",
-          "message": "Request/Reply"
+          "source": "Request/reply",
+          "message": "Request/reply"
         },
         "app.TkFUUw.action.cmVxdWVzdA.short_desc": {
           "source": "Send a synchronous request and wait for a reply",

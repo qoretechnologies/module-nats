@@ -128,7 +128,7 @@
           "message": "Envía una solicitud sincrónica a un asunto NATS y espera una respuesta.\n\nImplementa el patrón solicitud-respuesta para la comunicación entre microservicios. Se crea una bandeja de entrada única automáticamente. La llamada se bloquea hasta que llega una respuesta o expira `timeout_ms`."
         },
         "app.TkFUUw.action.cmVxdWVzdA.display_name": {
-          "source": "Request/Reply",
+          "source": "Request/reply",
           "message": "Solicitud/Respuesta"
         },
         "app.TkFUUw.action.cmVxdWVzdA.option.ZGF0YQ.desc": {

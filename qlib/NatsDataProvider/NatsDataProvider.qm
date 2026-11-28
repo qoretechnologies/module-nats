@@ -93,7 +93,7 @@ module NatsDataProvider {
             "app": NatsDataProvider::AppName,
             "path": "/request",
             "action": "request",
-            "display_name": "Request/Reply",
+            "display_name": "Request/reply",
             "short_desc": "Send a synchronous request and wait for a reply",
             "desc": "Sends a synchronous request to a NATS subject and waits for a "
                 "reply.\n\n"

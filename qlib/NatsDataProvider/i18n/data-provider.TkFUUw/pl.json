@@ -128,7 +128,7 @@
           "message": "Wysyła synchroniczne żądanie do tematu NATS i czeka na odpowiedź.\n\nImplementuje wzorzec żądanie-odpowiedź (request-reply) dla komunikacji między mikrousługami. Unikalna skrzynka odbiorcza (inbox) jest tworzona automatycznie. Wywołanie blokuje się, aż nadejdzie odpowiedź lub upłynie czas `timeout_ms`."
         },
         "app.TkFUUw.action.cmVxdWVzdA.display_name": {
-          "source": "Request/Reply",
+          "source": "Request/reply",
           "message": "Żądanie/Odpowiedź"
         },
         "app.TkFUUw.action.cmVxdWVzdA.option.ZGF0YQ.desc": {

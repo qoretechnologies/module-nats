@@ -130,7 +130,7 @@ public namespace NatsJetStreamDataProvider {
                         "`max_bytes`, `max_age`) are reached\n"
                         "- `1` (Interest): messages are removed once all known consumers have "
                         "acknowledged them\n"
-                        "- `2` (Work Queue): messages are removed as soon as any consumer "
+                        "- `2` (Work queue): messages are removed as soon as any consumer "
                         "acknowledges them\n\n"
                         "**Default is `0` (Limits) if not specified.**",
                     "allowed_values": (
@@ -338,9 +338,9 @@ public namespace NatsJetStreamDataProvider {
                         "- `1` (Last): start with the last message in the stream\n"
                         "- `2` (New): deliver only messages published after the consumer is "
                         "created\n"
-                        "- `3` (By Start Sequence): start at a specific sequence number\n"
-                        "- `4` (By Start Time): start at a specific timestamp\n"
-                        "- `5` (Last Per Subject): deliver the last message for each subject\n"
+                        "- `3` (By start sequence): start at a specific sequence number\n"
+                        "- `4` (By start time): start at a specific timestamp\n"
+                        "- `5` (Last per subject): deliver the last message for each subject\n"
                         "\n**Default is `0` (All) if not specified.**",
                     "allowed_values": (
                         <AllowedValueInfo>{"value": 0, "display_name": "All",

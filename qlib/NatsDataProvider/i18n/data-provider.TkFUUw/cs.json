@@ -128,7 +128,7 @@
           "message": "Odesílá synchronní požadavek na téma NATS a čeká na odpověď.\n\nImplementuje vzor požadavek-odpověď pro komunikaci mezi mikroslužbami. Unikátní příchozí schránka (inbox) je vytvořena automaticky. Volání blokuje, dokud nepřijde odpověď nebo nevyprší `timeout_ms`."
         },
         "app.TkFUUw.action.cmVxdWVzdA.display_name": {
-          "source": "Request/Reply",
+          "source": "Request/reply",
           "message": "Požadavek/odpověď"
         },
         "app.TkFUUw.action.cmVxdWVzdA.option.ZGF0YQ.desc": {

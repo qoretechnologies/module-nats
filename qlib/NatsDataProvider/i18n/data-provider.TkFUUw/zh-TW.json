@@ -128,7 +128,7 @@
           "message": "傳送同步請求至 NATS 主題並等待回覆。\n\n實作用於微服務通訊的請求-回覆模式。系統會自動建立獨一無二的收件匣。此呼叫會保持封鎖，直到收到回應或 `timeout_ms` 過期為止。"
         },
         "app.TkFUUw.action.cmVxdWVzdA.display_name": {
-          "source": "Request/Reply",
+          "source": "Request/reply",
           "message": "請求/回覆"
         },
         "app.TkFUUw.action.cmVxdWVzdA.option.ZGF0YQ.desc": {

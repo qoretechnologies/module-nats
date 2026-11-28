@@ -128,7 +128,7 @@
           "message": "NATS サブジェクトに同期リクエストを送信し、返答を待ちます。\n\nマイクロサービス通信用のリクエスト/リプライパターンを実装します。一意のインボックスが自動的に作成されます。レスポンスが届くか、または `timeout_ms` が期限切れになるまで呼び出しはブロックされます。"
         },
         "app.TkFUUw.action.cmVxdWVzdA.display_name": {
-          "source": "Request/Reply",
+          "source": "Request/reply",
           "message": "リクエスト/リプライ"
         },
         "app.TkFUUw.action.cmVxdWVzdA.option.ZGF0YQ.desc": {

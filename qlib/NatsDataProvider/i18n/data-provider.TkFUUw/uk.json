@@ -128,7 +128,7 @@
           "message": "Надсилає синхронний запит у тему NATS і очікує на відповідь.\n\nРеалізує шаблон «запит-відповідь» (request-reply) для взаємодії мікросервісів. Унікальна скринька вхідних (inbox) створюється автоматично. Виклик блокується, доки не надійде відповідь або не закінчиться термін дії `timeout_ms`."
         },
         "app.TkFUUw.action.cmVxdWVzdA.display_name": {
-          "source": "Request/Reply",
+          "source": "Request/reply",
           "message": "Запит/Відповідь"
         },
         "app.TkFUUw.action.cmVxdWVzdA.option.ZGF0YQ.desc": {

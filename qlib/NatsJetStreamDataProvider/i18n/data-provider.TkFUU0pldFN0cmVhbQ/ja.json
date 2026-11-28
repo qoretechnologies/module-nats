@@ -120,7 +120,7 @@
           "message": "サブジェクトごとの最新メッセージを配信"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItY3JlYXRl.option.ZGVsaXZlcl9wb2xpY3k.desc": {
-          "source": "Determines the starting point for message delivery to the consumer.\n\n- `0` (All): deliver all available messages from the beginning of the stream\n- `1` (Last): start with the last message in the stream\n- `2` (New): deliver only messages published after the consumer is created\n- `3` (By Start Sequence): start at a specific sequence number\n- `4` (By Start Time): start at a specific timestamp\n- `5` (Last Per Subject): deliver the last message for each subject\n\n**Default is `0` (All) if not specified.**",
+          "source": "Determines the starting point for message delivery to the consumer.\n\n- `0` (All): deliver all available messages from the beginning of the stream\n- `1` (Last): start with the last message in the stream\n- `2` (New): deliver only messages published after the consumer is created\n- `3` (By start sequence): start at a specific sequence number\n- `4` (By start time): start at a specific timestamp\n- `5` (Last per subject): deliver the last message for each subject\n\n**Default is `0` (All) if not specified.**",
           "message": "コンシューマーへのメッセージ配信の開始点を決定します。\n\n- `0` (すべて): ストリームの最初から利用可能なすべてのメッセージを配信します\n- `1` (最新): ストリーム内の最後のメッセージから開始します\n- `2` (新規): コンシューマー作成後に発行されたメッセージのみを配信します\n- `3` (開始シーケンス指定): 指定したシーケンス番号から開始します\n- `4` (開始時刻指定): 指定したタイムスタンプから開始します\n- `5` (サブジェクトごとの最新): サブジェクトごとに最後のメッセージを配信します\n\n**指定しない場合のデフォルトは `0` (すべて) です。**"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItY3JlYXRl.option.ZGVsaXZlcl9wb2xpY3k.display_name": {
@@ -532,7 +532,7 @@
           "message": "サブジェクトごとの最新メッセージを配信"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItdXBkYXRl.option.ZGVsaXZlcl9wb2xpY3k.desc": {
-          "source": "Determines the starting point for message delivery to the consumer.\n\n- `0` (All): deliver all available messages from the beginning of the stream\n- `1` (Last): start with the last message in the stream\n- `2` (New): deliver only messages published after the consumer is created\n- `3` (By Start Sequence): start at a specific sequence number\n- `4` (By Start Time): start at a specific timestamp\n- `5` (Last Per Subject): deliver the last message for each subject\n\n**Default is `0` (All) if not specified.**",
+          "source": "Determines the starting point for message delivery to the consumer.\n\n- `0` (All): deliver all available messages from the beginning of the stream\n- `1` (Last): start with the last message in the stream\n- `2` (New): deliver only messages published after the consumer is created\n- `3` (By start sequence): start at a specific sequence number\n- `4` (By start time): start at a specific timestamp\n- `5` (Last per subject): deliver the last message for each subject\n\n**Default is `0` (All) if not specified.**",
           "message": "コンシューマーへのメッセージ配信の開始点を決定します。\n\n- `0` (すべて): ストリームの最初から利用可能なすべてのメッセージを配信します\n- `1` (最新): ストリーム内の最後のメッセージから開始します\n- `2` (新規): コンシューマー作成後に発行されたメッセージのみを配信します\n- `3` (開始シーケンス指定): 指定したシーケンス番号から開始します\n- `4` (開始時刻指定): 指定したタイムスタンプから開始します\n- `5` (サブジェクトごとの最新): サブジェクトごとに最後のメッセージを配信します\n\n**指定しない場合のデフォルトは `0` (すべて) です。**"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.Y29uc3VtZXItdXBkYXRl.option.ZGVsaXZlcl9wb2xpY3k.display_name": {
@@ -1496,7 +1496,7 @@
           "message": "いずれかのコンシューマーが確認応答したときに削除"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.c3RyZWFtLWNyZWF0ZQ.option.cmV0ZW50aW9u.desc": {
-          "source": "Controls how messages are retained or removed from the stream.\n\n- `0` (Limits): messages are kept until stream limits (`max_msgs`, `max_bytes`, `max_age`) are reached\n- `1` (Interest): messages are removed once all known consumers have acknowledged them\n- `2` (Work Queue): messages are removed as soon as any consumer acknowledges them\n\n**Default is `0` (Limits) if not specified.**",
+          "source": "Controls how messages are retained or removed from the stream.\n\n- `0` (Limits): messages are kept until stream limits (`max_msgs`, `max_bytes`, `max_age`) are reached\n- `1` (Interest): messages are removed once all known consumers have acknowledged them\n- `2` (Work queue): messages are removed as soon as any consumer acknowledges them\n\n**Default is `0` (Limits) if not specified.**",
           "message": "ストリームからのメッセージの保持または削除方法を制御します。\n\n- `0` (Limits): ストリーム制限（`max_msgs`、`max_bytes`、`max_age`）に達するまでメッセージを保持します\n- `1` (Interest): 既知のすべてのコンシューマーが確認応答するとメッセージが削除されます\n- `2` (Work Queue): いずれかのコンシューマーが確認応答するとすぐにメッセージが削除されます\n\n**指定しない場合のデフォルトは `0` (Limits) です。**"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.c3RyZWFtLWNyZWF0ZQ.option.cmV0ZW50aW9u.display_name": {
@@ -1780,7 +1780,7 @@
           "message": "いずれかのコンシューマーが確認応答したときに削除"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.c3RyZWFtLXVwZGF0ZQ.option.cmV0ZW50aW9u.desc": {
-          "source": "Controls how messages are retained or removed from the stream.\n\n- `0` (Limits): messages are kept until stream limits (`max_msgs`, `max_bytes`, `max_age`) are reached\n- `1` (Interest): messages are removed once all known consumers have acknowledged them\n- `2` (Work Queue): messages are removed as soon as any consumer acknowledges them\n\n**Default is `0` (Limits) if not specified.**",
+          "source": "Controls how messages are retained or removed from the stream.\n\n- `0` (Limits): messages are kept until stream limits (`max_msgs`, `max_bytes`, `max_age`) are reached\n- `1` (Interest): messages are removed once all known consumers have acknowledged them\n- `2` (Work queue): messages are removed as soon as any consumer acknowledges them\n\n**Default is `0` (Limits) if not specified.**",
           "message": "ストリームからのメッセージの保持または削除方法を制御します。\n\n- `0` (Limits): ストリーム制限（`max_msgs`、`max_bytes`、`max_age`）に達するまでメッセージを保持します\n- `1` (Interest): 既知のすべてのコンシューマーが確認応答するとメッセージが削除されます\n- `2` (Work Queue): いずれかのコンシューマーが確認応答するとすぐにメッセージが削除されます\n\n**指定しない場合のデフォルトは `0` (Limits) です。**"
         },
         "app.TkFUU0pldFN0cmVhbQ.action.c3RyZWFtLXVwZGF0ZQ.option.cmV0ZW50aW9u.display_name": {

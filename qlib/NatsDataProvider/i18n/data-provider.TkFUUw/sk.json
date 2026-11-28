@@ -128,7 +128,7 @@
           "message": "Odošle synchrónnu požiadavku na predmet NATS a čaká na odpoveď.\n\nImplementuje vzor request-reply pre komunikáciu mikroslužieb. Automaticky sa vytvorí unikátny inbox. Volanie blokuje, kým nepríde odpoveď alebo kým neuplynie `timeout_ms`."
         },
         "app.TkFUUw.action.cmVxdWVzdA.display_name": {
-          "source": "Request/Reply",
+          "source": "Request/reply",
           "message": "Požiadavka/Odpoveď"
         },
         "app.TkFUUw.action.cmVxdWVzdA.option.ZGF0YQ.desc": {

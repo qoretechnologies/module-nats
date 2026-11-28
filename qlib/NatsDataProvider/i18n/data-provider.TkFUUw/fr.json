@@ -128,7 +128,7 @@
           "message": "Envoie une requête synchrone à un sujet NATS et attend une réponse.\n\nImplémente le modèle requête-réponse pour la communication entre microservices. Une boîte de réception unique est créée automatiquement. L'appel bloque jusqu'à ce qu'une réponse arrive ou que `timeout_ms` expire."
         },
         "app.TkFUUw.action.cmVxdWVzdA.display_name": {
-          "source": "Request/Reply",
+          "source": "Request/reply",
           "message": "Requête/Réponse"
         },
         "app.TkFUUw.action.cmVxdWVzdA.option.ZGF0YQ.desc": {
