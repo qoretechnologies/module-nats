@@ -27,7 +27,89 @@
 #include "QoreNatsMicroService.h"
 #include "QoreNatsMicroGroup.h"
 
+#include <cstdint>
 #include <string>
+#include <unordered_map>
+
+namespace {
+//! The states of the microservices whose done handler cnats can call, by the id given to cnats as the state
+/** cnats calls a service's done handler when the last endpoint subscription of the service is complete, on a
+    delivery thread; after micro_AddService() fails, it calls it only if the service had added an endpoint before the
+    failure, which its caller cannot tell (qore#7875).  The done handler therefore finds the state by an id, not by a
+    pointer that it owns: a service that failed to be created removes its id at once, and a done handler that runs for
+    it later finds nothing to release.  Never destroyed, as a done handler can run on a cnats thread while the process
+    exits.
+*/
+class MicroServiceStates {
+public:
+    static MicroServiceStates& get() {
+        static MicroServiceStates* states = new MicroServiceStates;
+        return *states;
+    }
+
+    //! Registers a state; returns its id, never 0
+    uintptr_t add(const std::shared_ptr<MicroServiceState>& state) {
+        std::lock_guard<std::mutex> lock(m);
+        uintptr_t id = ++last_id;
+        map.emplace(id, state);
+        return id;
+    }
+
+    //! Removes a state, if it is registered
+    void remove(uintptr_t id) {
+        std::lock_guard<std::mutex> lock(m);
+        map.erase(id);
+    }
+
+    //! Removes and returns a state, or an empty pointer if it is not registered
+    std::shared_ptr<MicroServiceState> take(uintptr_t id) {
+        std::lock_guard<std::mutex> lock(m);
+        auto i = map.find(id);
+        if (i == map.end()) {
+            return std::shared_ptr<MicroServiceState>();
+        }
+        std::shared_ptr<MicroServiceState> rv = std::move(i->second);
+        map.erase(i);
+        return rv;
+    }
+
+private:
+    std::mutex m;
+    std::unordered_map<uintptr_t, std::shared_ptr<MicroServiceState>> map;
+    uintptr_t last_id = 0;
+};
+
+//! The registration of a microservice's state, removed unless the service is created
+class MicroServiceStateRegistration {
+public:
+    explicit MicroServiceStateRegistration(const std::shared_ptr<MicroServiceState>& state)
+            : id(MicroServiceStates::get().add(state)) {
+    }
+
+    ~MicroServiceStateRegistration() {
+        if (!kept) {
+            MicroServiceStates::get().remove(id);
+        }
+    }
+
+    MicroServiceStateRegistration(const MicroServiceStateRegistration&) = delete;
+    MicroServiceStateRegistration& operator=(const MicroServiceStateRegistration&) = delete;
+
+    //! The service is created: its done handler takes the state
+    void keep() {
+        kept = true;
+    }
+
+    //! The state that cnats gives the done handler
+    void* token() const {
+        return reinterpret_cast<void*>(id);
+    }
+
+private:
+    uintptr_t id;
+    bool kept = false;
+};
+}
 
 microError* QoreNatsMicroService::requestHandler(microRequest* req) {
     MicroEndpointCallbackContext* ctx =
@@ -132,6 +214,11 @@ QoreNatsMicroService::QoreNatsMicroService(natsConnection* conn,
         svc_cfg.Description = desc_str->c_str();
     }
 
+    // the done handler releases the handler contexts and makes cnats release the service; it finds the state shared
+    // with it by the id that the service's state pointer holds
+    state = std::make_shared<MicroServiceState>();
+    MicroServiceStateRegistration state_reg(state);
+
     // Handle default endpoint if provided
     microEndpointConfig ep_cfg = {};
     MicroEndpointCallbackContext* ep_ctx = nullptr;
@@ -174,17 +261,14 @@ QoreNatsMicroService::QoreNatsMicroService(natsConnection* conn,
         svc_cfg.Endpoint = &ep_cfg;
     }
 
-    // the done handler releases the handler contexts and makes cnats release the service; the state is shared
-    // with it through the service's state pointer, which it deletes
-    state = std::make_shared<MicroServiceState>();
-    std::shared_ptr<MicroServiceState>* done_state = new std::shared_ptr<MicroServiceState>(state);
-    svc_cfg.State = done_state;
+    svc_cfg.State = state_reg.token();
     svc_cfg.DoneHandler = serviceDone;
 
     microError* err = micro_AddService(&svc, conn, &svc_cfg);
     if (err) {
         // the default endpoint was not added, so its context is not used; the done handler can still be called for
-        // the monitoring endpoints added before the failure, so its state is not deleted here
+        // the monitoring endpoints added before the failure, and then finds no state, as the registration of the
+        // state is removed when this constructor returns
         if (ep_ctx) {
             ep_ctx->cleanup(xsink);
             delete ep_ctx;
@@ -195,6 +279,9 @@ QoreNatsMicroService::QoreNatsMicroService(natsConnection* conn,
         return;
     }
 
+    // the service is created: its done handler takes the state
+    state_reg.keep();
+
     // Store handler context for cleanup
     if (ep_ctx) {
         registerHandler(ep_ctx);
@@ -202,19 +289,19 @@ QoreNatsMicroService::QoreNatsMicroService(natsConnection* conn,
 }
 
 void QoreNatsMicroService::serviceDone(microService* m) {
-    std::shared_ptr<MicroServiceState>* done_state =
-        static_cast<std::shared_ptr<MicroServiceState>*>(microService_GetState(m));
+    std::shared_ptr<MicroServiceState> done_state =
+        MicroServiceStates::get().take(reinterpret_cast<uintptr_t>(microService_GetState(m)));
+    // a service that failed to be created has no state
     if (!done_state) {
         return;
     }
     std::vector<MicroEndpointCallbackContext*> handlers;
     {
-        std::lock_guard<std::mutex> lock((*done_state)->m);
-        (*done_state)->done = true;
-        handlers.swap((*done_state)->handlers);
+        std::lock_guard<std::mutex> lock(done_state->m);
+        done_state->done = true;
+        handlers.swap(done_state->handlers);
     }
     releaseHandlers(handlers);
-    delete done_state;
 }
 
 void QoreNatsMicroService::releaseHandlers(std::vector<MicroEndpointCallbackContext*>& handlers) {
